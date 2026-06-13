@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム管理 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .form-card {
+      background: white; border: 1px solid var(--gray-200); border-radius: 10px;
+      overflow: hidden; transition: var(--transition); cursor: pointer;
+    }
+    .form-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary); transform: translateY(-1px); }
+    .form-card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); }
+    .form-card-body { padding: 16px 20px; }
+    .form-card-footer {
+      padding: 12px 20px; background: var(--gray-50);
+      border-top: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .response-rate-bar {
+      height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden;
+      margin-top: 4px;
+    }
+    .response-rate-fill { height: 100%; border-radius: 3px; }
+    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 1200px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">フォーム管理</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">フォーム管理</div>
+          <div class="page-subtitle">アンケート・調査フォームの作成・配信・集計</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="navigate('form-builder.html')">＋ 新規フォーム作成</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs">
+          <button class="tab-item active">公開中 <span style="background:var(--primary);color:white;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px">3</span></button>
+          <button class="tab-item">下書き</button>
+          <button class="tab-item">終了済み</button>
+          <button class="tab-item">テンプレート</button>
+        </div>
+
+        <!-- Active Forms -->
+        <div class="tab-content active">
+          <div class="form-grid">
+
+            <!-- Form 1 -->
+            <div class="form-card" onclick="navigate('form-results.html')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-green">公開中</span>
+                  <span style="font-size:11px;color:var(--gray-400)">2024/06/01 〜 2024/06/30</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">2024年度 緊急連絡先確認調査</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">教員・保護者の緊急連絡先情報を収集します</div>
+              </div>
+              <div class="form-card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">配信対象</div>
+                    <div style="font-size:13px;font-weight:600;margin-top:2px">横浜市全教員</div>
+                    <div style="font-size:11px;color:var(--gray-400)">4,521名</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">回答状況</div>
+                    <div style="font-size:13px;font-weight:600;margin-top:2px">3,456 / 4,521</div>
+                    <div class="response-rate-bar">
+                      <div class="response-rate-fill" style="width:76%;background:var(--secondary)"></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--secondary);margin-top:2px">76.4%</div>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-500)">
+                  <span style="color:var(--warning)">⚠ 未回答 1,065名</span>　リマインド送信済み
+                </div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">作成者: 田中 義雄</div>
+                <div class="flex gap-2" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('form-builder.html')">✏️ 編集</button>
+                  <button class="btn btn-primary btn-sm" onclick="navigate('form-results.html')">📊 集計</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form 2 -->
+            <div class="form-card" onclick="navigate('form-results.html')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-green">公開中</span>
+                  <span style="font-size:11px;color:var(--gray-400)">2024/06/10 〜 2024/07/10</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">部活動顧問 希望調査</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">2024年度後期の部活動顧問希望を収集します</div>
+              </div>
+              <div class="form-card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">配信対象</div>
+                    <div style="font-size:13px;font-weight:600;margin-top:2px">全市町村 教員</div>
+                    <div style="font-size:11px;color:var(--gray-400)">8,234名</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">回答状況</div>
+                    <div style="font-size:13px;font-weight:600;margin-top:2px">1,234 / 8,234</div>
+                    <div class="response-rate-bar">
+                      <div class="response-rate-fill" style="width:15%;background:var(--warning)"></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--warning);margin-top:2px">15.0%</div>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-500)">
+                  回答期限まで残り <strong style="color:var(--danger)">30日</strong>
+                </div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">作成者: 山田 花子</div>
+                <div class="flex gap-2" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('form-builder.html')">✏️ 編集</button>
+                  <button class="btn btn-primary btn-sm" onclick="navigate('form-results.html')">📊 集計</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form 3 -->
+            <div class="form-card" onclick="navigate('form-results.html')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-green">公開中</span>
+                  <span style="font-size:11px;color:var(--gray-400)">2024/06/12 〜 2024/06/20</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">ICT研修 参加意向調査</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">7月開催のICT研修への参加希望を確認します</div>
+              </div>
+              <div class="form-card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">配信対象</div>
+                    <div style="font-size:13px;font-weight:600;margin-top:2px">横浜市・川崎市 教員</div>
+                    <div style="font-size:11px;color:var(--gray-400)">6,655名</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">回答状況</div>
+                    <div style="font-size:13px;font-weight:600;margin-top:2px">234 / 6,655</div>
+                    <div class="response-rate-bar">
+                      <div class="response-rate-fill" style="width:4%;background:var(--danger)"></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--danger);margin-top:2px">3.5%（今日開始）</div>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:var(--gray-500)">
+                  本日 2024年6月12日 開始
+                </div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">作成者: 田中 義雄</div>
+                <div class="flex gap-2" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('form-builder.html')">✏️ 編集</button>
+                  <button class="btn btn-primary btn-sm" onclick="navigate('form-results.html')">📊 集計</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drafts -->
+        <div class="tab-content">
+          <div class="form-grid">
+            <div class="form-card" onclick="navigate('form-builder.html')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-gray">下書き</span>
+                  <span style="font-size:11px;color:var(--gray-400)">最終更新: 2024/06/11</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">2024年度 健康調査（教員）</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">教員の健康状態・メンタルヘルス調査</div>
+              </div>
+              <div class="form-card-body">
+                <div style="font-size:13px;color:var(--gray-500)">質問数: 12問　/ 未公開</div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">作成者: 佐藤 次郎</div>
+                <div class="flex gap-2" onclick="event.stopPropagation()">
+                  <button class="btn btn-primary btn-sm" onclick="navigate('form-builder.html')">✏️ 編集を続ける</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ended -->
+        <div class="tab-content">
+          <div class="form-grid">
+            <div class="form-card" onclick="navigate('form-results.html')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-gray">終了</span>
+                  <span style="font-size:11px;color:var(--gray-400)">2024/04/01 〜 2024/04/30</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">2024年度 着任確認調査</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">4月着任教員の情報確認</div>
+              </div>
+              <div class="form-card-body">
+                <div style="font-size:13px;color:var(--gray-600)">回答率: <strong>98.2%</strong>（2,341 / 2,384名）</div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">作成者: 田中 義雄</div>
+                <div class="flex gap-2" onclick="event.stopPropagation()">
+                  <button class="btn btn-secondary btn-sm" onclick="navigate('form-results.html')">📊 集計を見る</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Templates -->
+        <div class="tab-content">
+          <div class="form-grid">
+            <div class="form-card" onclick="openModal('useTemplateModal')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-purple">テンプレート</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">緊急連絡先確認（標準）</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">自宅・携帯・勤務先の連絡先を収集する標準テンプレート</div>
+              </div>
+              <div class="form-card-body">
+                <div style="font-size:13px;color:var(--gray-500)">質問数: 8問</div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">公式テンプレート</div>
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openModal('useTemplateModal')">このテンプレートを使用</button>
+              </div>
+            </div>
+            <div class="form-card" onclick="openModal('useTemplateModal')">
+              <div class="form-card-header">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="tag tag-purple">テンプレート</span>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:var(--gray-900)">部活動顧問希望調査（標準）</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:4px">部活動顧問の希望・可否を収集する標準テンプレート</div>
+              </div>
+              <div class="form-card-body">
+                <div style="font-size:13px;color:var(--gray-500)">質問数: 5問</div>
+              </div>
+              <div class="form-card-footer">
+                <div style="font-size:12px;color:var(--gray-400)">公式テンプレート</div>
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openModal('useTemplateModal')">このテンプレートを使用</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Use Template Modal -->
+<div class="modal-overlay" id="useTemplateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">テンプレートを使用</span>
+      <button class="modal-close" onclick="closeModal('useTemplateModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">フォーム名 <span class="required">*</span></label>
+        <input type="text" class="form-control" value="緊急連絡先確認調査 2024">
+      </div>
+      <div class="form-group">
+        <label class="form-label">配信対象</label>
+        <select class="form-control">
+          <option>選択してください</option>
+          <option>テナント全体</option>
+          <option>横浜市 教員</option>
+          <option>川崎市 教員</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('useTemplateModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('useTemplateModal');navigate('form-builder.html')">フォームを作成</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('フォーム管理');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('forms.html');
+</script>
+</body>
+</html>

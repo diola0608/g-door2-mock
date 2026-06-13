@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アカウント一覧 - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="sync-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Workspace 同期の詳細</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.9rem;color:var(--color-gray-600);margin-bottom:16px">
+          このシステムから Google Workspace への一方通行同期です。名簿に登録された情報が Workspace アカウントに反映されます。
+        </p>
+        <div style="padding:12px;background:var(--color-gray-50);border-radius:var(--radius);margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px">
+            <span>最終同期</span><strong>2026/06/12 08:30</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px">
+            <span>同期項目</span><span>氏名, メール, 所属, 電話番号</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem">
+            <span>ステータス</span><span class="sync-badge synced">${Icons.check} 正常</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('同期を開始しました（モック）')">${Icons.google} 今すぐ同期</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('accounts', 'accounts');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} アカウント管理</div>
+        <h1>アカウント一覧</h1>
+        <p>Google Workspace との同期状態を管理。メールアカウントの有無・同期状況を確認できます。</p>
+      </div>
+
+      <div class="alert-banner warning" style="margin-bottom:20px">
+        ${Icons.google}
+        <div>
+          <strong>Google Workspace 連携</strong> — このテナントは <code>edu-oo-ken.jp</code> ドメインの Workspace と連携しています。同期は本システム → Workspace の一方通行です。
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <select class="form-select"><option>すべて</option><option>同期済</option><option>未同期</option><option>エラー</option><option>メールなし</option></select>
+          <input class="form-input" style="width:240px" placeholder="名前・メールで検索">
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('一括同期を開始しました')">${Icons.google} 一括同期</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>氏名</th>
+                <th>メールアドレス</th>
+                <th>人物区分</th>
+                <th>所属</th>
+                <th>Workspace同期</th>
+                <th>最終同期日時</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>山田 太郎</strong></td>
+                <td>t.yamada@edu.example.jp</td>
+                <td><span class="badge-tag blue">教員</span></td>
+                <td>A市立第一小学校</td>
+                <td><span class="sync-badge synced">${Icons.check} 同期済</span></td>
+                <td>2026/06/12 08:30</td>
+                <td><button class="btn btn-ghost btn-sm" data-modal-open="sync-modal">${Icons.eye}</button></td>
+              </tr>
+              <tr>
+                <td><strong>鈴木 一郎</strong></td>
+                <td>i.suzuki@edu.example.jp</td>
+                <td><span class="badge-tag purple">校長</span></td>
+                <td>A市立第一小学校</td>
+                <td><span class="sync-badge synced">${Icons.check} 同期済</span></td>
+                <td>2026/06/12 08:30</td>
+                <td><button class="btn btn-ghost btn-sm" data-modal-open="sync-modal">${Icons.eye}</button></td>
+              </tr>
+              <tr>
+                <td><strong>佐藤 花子</strong></td>
+                <td>—</td>
+                <td><span class="badge-tag gray">生徒</span></td>
+                <td>A市立第一小学校</td>
+                <td><span class="sync-badge unsynced">メールなし</span></td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><strong>田中 次郎</strong></td>
+                <td>j.tanaka@edu.example.jp</td>
+                <td><span class="badge-tag blue">教員</span></td>
+                <td>A市立第一小学校</td>
+                <td><span class="sync-badge error">${Icons.x} エラー</span></td>
+                <td>2026/06/10 22:15</td>
+                <td><button class="btn btn-ghost btn-sm" data-modal-open="sync-modal">${Icons.eye}</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  </script>
+</body>
+</html>

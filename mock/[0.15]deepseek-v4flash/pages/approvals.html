@@ -1,0 +1,269 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>承認管理</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>承認管理</span>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card animate-in">
+    <div class="stat-icon amber">⏳</div>
+    <div class="stat-value">12</div>
+    <div class="stat-label">承認待ち</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon green">✅</div>
+    <div class="stat-value">847</div>
+    <div class="stat-label">今月承認済</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon red">❌</div>
+    <div class="stat-value">23</div>
+    <div class="stat-label">却下</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon blue">📅</div>
+    <div class="stat-value">7/1</div>
+    <div class="stat-label">次回バッチ処理日</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="pending">承認待ち</button>
+  <button class="tab" data-tab="approved">承認済</button>
+  <button class="tab" data-tab="rejected">却下</button>
+  <button class="tab" data-tab="scheduled">実行予定</button>
+</div>
+
+<div class="tab-content active" data-tab="pending">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>申請ID</th>
+          <th>申請者</th>
+          <th>種類</th>
+          <th>異動元</th>
+          <th>異動先</th>
+          <th>希望日</th>
+          <th>申請日</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0042</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--navy-500),var(--navy-400));display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:var(--text-primary);">SM</div>
+              <span style="color:var(--text-primary);">佐藤 美咲</span>
+            </div>
+          </td>
+          <td><span class="tag tag-blue">所属変更</span></td>
+          <td>川口市立中学校</td>
+          <td>浦和高校</td>
+          <td>2026/07/01</td>
+          <td>2026/06/10</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <button class="btn btn-emerald btn-sm" data-modal="approve-modal">承認</button>
+              <button class="btn btn-secondary btn-sm" data-modal="reject-modal">却下</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0041</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:white;">YT</div>
+              <span style="color:var(--text-primary);">山田 太郎</span>
+            </div>
+          </td>
+          <td><span class="tag tag-blue">所属変更</span></td>
+          <td>さいたま市立中央小</td>
+          <td>さいたま市立北小</td>
+          <td>2026/06/15</td>
+          <td>2026/06/08</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <button class="btn btn-emerald btn-sm" data-modal="approve-modal">承認</button>
+              <button class="btn btn-secondary btn-sm" data-modal="reject-modal">却下</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0040</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--terracotta),var(--terracotta-dark));display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:white;">SI</div>
+              <span style="color:var(--text-primary);">鈴木 一郎</span>
+            </div>
+          </td>
+          <td><span class="tag tag-green">属性変更</span></td>
+          <td>指導主事</td>
+          <td>管理主事</td>
+          <td>2026/06/20</td>
+          <td>2026/06/05</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <button class="btn btn-emerald btn-sm" data-modal="approve-modal">承認</button>
+              <button class="btn btn-secondary btn-sm" data-modal="reject-modal">却下</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="approved">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>申請ID</th>
+          <th>申請者</th>
+          <th>種類</th>
+          <th>承認者</th>
+          <th>反映予定日</th>
+          <th>ステータス</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0038</span></td>
+          <td>田中 花子</td>
+          <td><span class="tag tag-blue">所属変更</span></td>
+          <td>高橋 校長</td>
+          <td>2026/07/01</td>
+          <td><span class="tag tag-amber">実行待ち</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0035</span></td>
+          <td>伊藤 誠</td>
+          <td><span class="tag tag-green">属性変更</span></td>
+          <td>システム</td>
+          <td>2026/06/01</td>
+          <td><span class="tag tag-green">反映済</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="rejected">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>申請ID</th>
+          <th>申請者</th>
+          <th>種類</th>
+          <th>却下者</th>
+          <th>理由</th>
+          <th>却下日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0030</span></td>
+          <td>渡辺 健</td>
+          <td><span class="tag tag-blue">所属変更</span></td>
+          <td>佐藤 教育長</td>
+          <td>異動先の受入人数超過</td>
+          <td>2026/05/20</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="scheduled">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">次回バッチ処理: 2026/07/01 03:00</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>申請ID</th>
+            <th>申請者</th>
+            <th>異動元</th>
+            <th>異動先</th>
+            <th>反映日</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0042</span></td>
+            <td>佐藤 美咲</td>
+            <td>川口市立中学校</td>
+            <td>浦和高校</td>
+            <td>2026/07/01</td>
+            <td><button class="btn btn-secondary btn-sm">取り消し</button></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);font-size:0.8rem;">#AP-2026-0038</span></td>
+            <td>田中 花子</td>
+            <td>大宮高校</td>
+            <td>浦和高校</td>
+            <td>2026/07/01</td>
+            <td><button class="btn btn-secondary btn-sm">取り消し</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal-overlay" id="approve-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>申請を承認</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div>承認後、異動希望日にバッチ処理で自動反映されます。実行前であれば取り消し可能です。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">コメント（任意）</label>
+        <textarea class="form-textarea" placeholder="承認コメントを入力"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-emerald modal-close">承認する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>申請を却下</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">却下理由 <span style="color:var(--terracotta);">*</span></label>
+        <textarea class="form-textarea" placeholder="却下理由を入力してください"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-secondary modal-close">却下する</button>
+    </div>
+  </div>
+</div>

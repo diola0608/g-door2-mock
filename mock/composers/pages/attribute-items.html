@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>属性項目設定 - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="add-attr-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2>属性項目を追加</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">項目名</label><input class="form-input" placeholder="例: 部活動"></div>
+          <div class="form-group"><label class="form-label">カテゴリー</label><select class="form-select"><option>基本情報</option><option>連絡先情報</option><option>機微情報</option><option>カスタム属性</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">データ形式</label>
+            <select class="form-select" id="data-type-select">
+              <option value="string">単一の文字列</option>
+              <option value="strings">複数の文字列</option>
+              <option value="number">数値</option>
+              <option value="date">日付</option>
+              <option value="code">コードマスター</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">対象人物区分</label><select class="form-select" multiple style="height:80px"><option>教員</option><option>生徒</option><option>関係者</option></select></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">バリデーション</label>
+          <div class="form-check"><input type="checkbox"> 必須入力</div>
+          <div class="form-check"><input type="checkbox"> 履歴を保持する</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">コードマスター（データ形式がコードの場合）</label>
+          <select class="form-select"><option>—</option><option>部活動一覧</option><option>人物の特徴</option><option>血液型</option></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('属性項目を追加しました')">追加</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('roster', 'attribute-items');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 名簿管理 ${Icons.chevronRight} 属性項目設定</div>
+        <h1>属性項目設定</h1>
+        <p>テナントごとに自由にデータ項目を定義。カテゴリー・データ形式・バリデーション・履歴保持を設定できます。</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <select class="form-select"><option>すべてのカテゴリー</option><option>基本情報</option><option>連絡先情報</option><option>機微情報</option><option>カスタム属性</option></select>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-primary btn-sm" data-modal-open="add-attr-modal">${Icons.plus} 項目を追加</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>項目名</th>
+                <th>カテゴリー</th>
+                <th>データ形式</th>
+                <th>対象</th>
+                <th>履歴</th>
+                <th>必須</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>氏名</strong></td>
+                <td><span class="badge-tag blue">基本情報</span></td>
+                <td>単一の文字列</td>
+                <td>すべて</td>
+                <td>—</td>
+                <td>✓</td>
+                <td><span style="color:var(--color-gray-400);font-size:0.8rem">システム</span></td>
+              </tr>
+              <tr>
+                <td><strong>生年月日</strong></td>
+                <td><span class="badge-tag blue">基本情報</span></td>
+                <td>日付</td>
+                <td>すべて</td>
+                <td>✓</td>
+                <td>✓</td>
+                <td><span style="color:var(--color-gray-400);font-size:0.8rem">システム</span></td>
+              </tr>
+              <tr>
+                <td><strong>部活動</strong></td>
+                <td><span class="badge-tag green">カスタム属性</span></td>
+                <td>コードマスター（部活動一覧）</td>
+                <td>教員, 生徒</td>
+                <td>✓</td>
+                <td></td>
+                <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+              </tr>
+              <tr>
+                <td><strong>教員免許番号</strong></td>
+                <td><span class="badge-tag green">カスタム属性</span></td>
+                <td>数値</td>
+                <td>教員</td>
+                <td>✓</td>
+                <td></td>
+                <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+              </tr>
+              <tr>
+                <td><strong>いじめ歴</strong></td>
+                <td><span class="badge-tag red">機微情報</span></td>
+                <td>単一の文字列</td>
+                <td>生徒</td>
+                <td>✓</td>
+                <td></td>
+                <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+              </tr>
+              <tr>
+                <td><strong>人物の特徴</strong></td>
+                <td><span class="badge-tag red">機微情報</span></td>
+                <td>コードマスター（人物の特徴）</td>
+                <td>生徒</td>
+                <td>✓</td>
+                <td></td>
+                <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  </script>
+</body>
+</html>

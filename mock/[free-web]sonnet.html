@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeX – 教育委員会統合管理</title>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface2: #f8fafc;
+    --border: #e2e8f0;
+    --border2: #cbd5e1;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --primary: #1d4ed8;
+    --primary-hover: #1e40af;
+    --primary-light: #eff6ff;
+    --primary-mid: #bfdbfe;
+    --accent: #0891b2;
+    --accent-light: #ecfeff;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --warn: #d97706;
+    --warn-light: #fffbeb;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+    --sidebar-w: 220px;
+    --header-h: 52px;
+    --radius: 8px;
+    --radius-sm: 5px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,.15);
+    --font: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+  /* ── HEADER ── */
+  #header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: #1e3a5f; color: #fff; display: flex; align-items: center;
+    padding: 0 16px; gap: 12px; z-index: 1000; box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  }
+  #header .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: -.3px; }
+  #header .logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg,#60a5fa,#3b82f6); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; }
+  #header .tenant-badge { margin-left: 4px; padding: 2px 10px; background: rgba(255,255,255,.12); border-radius: 20px; font-size: 12px; color: #bfdbfe; }
+  #header .spacer { flex: 1; }
+  #header .header-btn { padding: 5px 10px; border-radius: var(--radius-sm); background: rgba(255,255,255,.1); border: none; color: #fff; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; transition: background .15s; }
+  #header .header-btn:hover { background: rgba(255,255,255,.2); }
+  #header .notif-dot { width: 7px; height: 7px; background: #f87171; border-radius: 50%; margin-left: -3px; margin-top: -8px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#60a5fa,#a78bfa); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; }
+
+  /* ── LAYOUT ── */
+  #layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w); flex-shrink: 0; background: #1a3352;
+    position: fixed; top: var(--header-h); bottom: 0; left: 0;
+    overflow-y: auto; display: flex; flex-direction: column; padding: 12px 0;
+    box-shadow: 1px 0 0 rgba(255,255,255,.06);
+  }
+  .sb-section { padding: 0 12px 8px; }
+  .sb-label { font-size: 10px; font-weight: 700; color: #64748b; letter-spacing: .08em; text-transform: uppercase; padding: 8px 8px 4px; }
+  .sb-item {
+    display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 6px;
+    color: #94a3b8; cursor: pointer; transition: all .15s; font-size: 13px; font-weight: 500;
+    text-decoration: none; margin-bottom: 1px;
+  }
+  .sb-item:hover { background: rgba(255,255,255,.08); color: #e2e8f0; }
+  .sb-item.active { background: rgba(59,130,246,.25); color: #93c5fd; }
+  .sb-item .sb-icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+  .sb-item .sb-badge { margin-left: auto; background: #dc2626; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+  .sb-item .sb-badge.warn { background: #d97706; }
+  .sb-divider { height: 1px; background: rgba(255,255,255,.07); margin: 8px 12px; }
+  #sidebar .bottom-info { margin-top: auto; padding: 12px 14px; border-top: 1px solid rgba(255,255,255,.07); font-size: 11px; color: #475569; }
+
+  /* ── CONTENT ── */
+  #content { margin-left: var(--sidebar-w); flex: 1; padding: 24px; min-height: 100%; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── COMMON COMPONENTS ── */
+  .page-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+  .page-title { font-size: 20px; font-weight: 700; color: var(--text); }
+  .page-subtitle { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .page-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; text-decoration: none; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border2); }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-ghost { background: transparent; color: var(--text2); }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .btn-icon { padding: 6px; }
+
+  .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .card-body { padding: 18px; }
+  .card-title { font-size: 14px; font-weight: 600; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .badge-blue { background: var(--primary-light); color: var(--primary); }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .badge-warn { background: var(--warn-light); color: var(--warn); }
+  .badge-red { background: var(--danger-light); color: var(--danger); }
+  .badge-gray { background: #f1f5f9; color: #64748b; }
+  .badge-purple { background: var(--purple-light); color: var(--purple); }
+  .badge-cyan { background: var(--accent-light); color: var(--accent); }
+
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot-green { background: var(--success); }
+  .dot-red { background: var(--danger); }
+  .dot-warn { background: var(--warn); }
+  .dot-gray { background: #94a3b8; }
+
+  .tag { display: inline-flex; align-items: center; padding: 1px 7px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .tag-green { background: var(--success-light); color: var(--success); }
+  .tag-gray { background: #f1f5f9; color: #64748b; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 9px 12px; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; background: var(--surface2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  .sortable { cursor: pointer; user-select: none; }
+  .sortable:hover { color: var(--text); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 9px 18px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; white-space: nowrap; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+
+  /* Search & Filter bar */
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .search-input { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--surface); flex: 1; min-width: 200px; max-width: 340px; }
+  .search-input input { border: none; outline: none; font-size: 13px; width: 100%; background: transparent; }
+  .search-input span { color: var(--text3); font-size: 15px; }
+  .select-input { padding: 6px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; color: var(--text); background: var(--surface); cursor: pointer; outline: none; }
+
+  /* Form */
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; display: block; }
+  .form-input { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; color: var(--text); outline: none; background: var(--surface); transition: border .15s; }
+  .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-mid); }
+  .form-select { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; color: var(--text); background: var(--surface); outline: none; }
+  .form-hint { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  /* Stat card */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+  .stat-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+  .stat-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .stat-icon { font-size: 18px; margin-right: 2px; }
+
+  /* Alert */
+  .alert { padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid; font-size: 13px; display: flex; align-items: flex-start; gap: 8px; }
+  .alert-warn { background: var(--warn-light); border-color: var(--warn); color: #92400e; }
+  .alert-danger { background: var(--danger-light); border-color: var(--danger); color: #991b1b; }
+  .alert-info { background: var(--primary-light); border-color: var(--primary); color: #1e40af; }
+  .alert-success { background: var(--success-light); border-color: var(--success); color: #14532d; }
+  .alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Breadcrumb */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); margin-bottom: 16px; }
+  .breadcrumb a { color: var(--primary); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb-sep { color: var(--text3); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 10px; box-shadow: var(--shadow-lg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .modal-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .modal-close { padding: 5px; cursor: pointer; color: var(--text3); font-size: 18px; background: none; border: none; border-radius: 4px; }
+  .modal-close:hover { background: var(--bg); color: var(--text); }
+  .modal-body { padding: 20px; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* Detail pane */
+  .detail-section { margin-bottom: 24px; }
+  .detail-section-title { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .detail-grid { display: grid; grid-template-columns: 160px 1fr; gap: 10px 16px; }
+  .detail-key { font-size: 12px; font-weight: 600; color: var(--text2); padding-top: 2px; }
+  .detail-val { font-size: 13px; color: var(--text); }
+
+  /* Step indicator */
+  .steps { display: flex; align-items: center; gap: 0; margin-bottom: 24px; }
+  .step { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .step-circle { width: 28px; height: 28px; border-radius: 50%; background: var(--border); color: var(--text3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .step.done .step-circle { background: var(--success); color: #fff; }
+  .step.active .step-circle { background: var(--primary); color: #fff; }
+  .step-label { font-size: 12px; font-weight: 500; color: var(--text3); }
+  .step.done .step-label, .step.active .step-label { color: var(--text); }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; }
+  .step-line.done { background: var(--success); }
+
+  /* Progress bar */
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+
+  /* Chip */
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 100px; font-size: 11px; font-weight: 600; background: var(--primary-light); color: var(--primary); cursor: pointer; }
+  .chip:hover { opacity: .8; }
+
+  /* Icon boxes */
+  .icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .icon-box-blue { background: var(--primary-light); }
+  .icon-box-green { background: var(--success-light); }
+  .icon-box-warn { background: var(--warn-light); }
+  .icon-box-purple { background: var(--purple-light); }
+  .icon-box-cyan { background: var(--accent-light); }
+  .icon-box-red { background: var(--danger-light); }
+
+  /* Org tree */
+  .org-tree { font-size: 13px; }
+  .org-node { margin-left: 16px; }
+  .org-row { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 5px; cursor: pointer; }
+  .org-row:hover { background: var(--bg); }
+  .org-toggle { width: 16px; color: var(--text3); font-size: 11px; flex-shrink: 0; }
+  .org-icon { font-size: 15px; }
+  .org-name { font-weight: 500; }
+  .org-count { color: var(--text3); font-size: 11px; margin-left: auto; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+  /* Responsive helpers */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .row { display: flex; gap: 16px; }
+  .flex { display: flex; }
+  .flex-1 { flex: 1; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-20 { margin-top: 20px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-12 { margin-bottom: 12px; }
+  .mb-16 { margin-bottom: 16px; }
+  .text-sm { font-size: 12px; }
+  .text-xs { font-size: 11px; }
+  .text-muted { color: var(--text2); }
+  .text-danger { color: var(--danger); }
+  .text-success { color: var(--success); }
+  .fw-600 { font-weight: 600; }
+  .fw-700 { font-weight: 700; }
+
+  /* Toast */
+  #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 12px 16px; border-radius: var(--radius); background: #1e293b; color: #fff; font-size: 13px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 8px; animation: slideIn .3s ease; max-width: 320px; }
+  .toast-success { background: #16a34a; }
+  .toast-warn { background: #d97706; }
+  .toast-danger { background: #dc2626; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* Profile img placeholder */
+  .person-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+
+  .gws-sync-indicator { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; }
+  .inline-block { display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- ── GLOBAL HEADER ── -->
+<header id="header">
+  <div class="logo">
+    <div class="logo-icon">CX</div>
+    CodeX
+  </div>
+  <div class="tenant-badge">🏛 神奈川県教育委員会</div>
+  <div class="spacer"></div>
+  <button class="header-btn" onclick="showToast('インポートログを確認中...','info')">
+    ⚡ バッチ実行中 <span style="background:#22d3ee;width:7px;height:7px;border-radius:50%;display:inline-block"></span>
+  </button>
+  <button class="header-btn" onclick="showToast('通知一覧を表示しました','info')">
+    🔔
+    <div class="notif-dot"></div>
+  </button>
+  <button class="header-btn" onclick="navigate('settings')">⚙ 設定</button>
+  <div class="avatar" onclick="showToast('山田 太郎（システム管理者）','info')">山</div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<div id="layout">
+<nav id="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">メイン</div>
+    <div class="sb-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+      <span class="sb-icon">🏠</span> ダッシュボード
+    </div>
+    <div class="sb-item" onclick="navigate('roster')" id="nav-roster">
+      <span class="sb-icon">👥</span> 名簿管理
+    </div>
+    <div class="sb-item" onclick="navigate('transfer')" id="nav-transfer">
+      <span class="sb-icon">🔄</span> 所属変更申請
+      <span class="sb-badge warn">3</span>
+    </div>
+    <div class="sb-item" onclick="navigate('forms')" id="nav-forms">
+      <span class="sb-icon">📋</span> フォーム管理
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-label">データ管理</div>
+    <div class="sb-item" onclick="navigate('import')" id="nav-import">
+      <span class="sb-icon">📥</span> CSVインポート
+    </div>
+    <div class="sb-item" onclick="navigate('logs')" id="nav-logs">
+      <span class="sb-icon">📊</span> ログ・監査
+      <span class="sb-badge">2</span>
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-label">設定</div>
+    <div class="sb-item" onclick="navigate('settings')" id="nav-settings">
+      <span class="sb-icon">🏢</span> 組織管理
+    </div>
+    <div class="sb-item" onclick="navigate('attr-settings')" id="nav-attr-settings">
+      <span class="sb-icon">🏷</span> 属性項目設定
+    </div>
+    <div class="sb-item" onclick="navigate('permissions')" id="nav-permissions">
+      <span class="sb-icon">🔐</span> 権限設定
+    </div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <div class="sb-label">システム</div>
+    <div class="sb-item" onclick="navigate('gws')" id="nav-gws">
+      <span class="sb-icon">☁️</span> GWS 連携
+    </div>
+    <div class="sb-item" onclick="showToast('マニュアルを開いています...','info')">
+      <span class="sb-icon">📖</span> ヘルプ
+    </div>
+  </div>
+  <div class="bottom-info">
+    <div>v2.4.1 – 最終同期 5分前</div>
+  </div>
+</nav>
+
+<!-- ── CONTENT ── -->
+<main id="content">
+
+<!-- ════════════════ PAGE: DASHBOARD ════════════════ -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header">
+    <div>
+      <div class="page-title">🏠 ダッシュボード</div>
+      <div class="page-subtitle">神奈川県教育委員会 — 2025年度</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" onclick="navigate('import')">📥 CSVインポート</button>
+      <button class="btn btn-primary" onclick="openModal('modal-add-person')">＋ 人物を追加</button>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+    <div class="alert alert-danger">
+      <div class="alert-icon">⚠️</div>
+      <div>
+        <strong>インポートエラーが 2件 あります。</strong>
+        <span class="text-sm"> 2025-01-15 のバッチで失敗行が検出されました。</span>
+        <button class="btn btn-sm btn-danger" style="margin-left:8px" onclick="navigate('logs')">ログを確認</button>
+      </div>
+    </div>
+    <div class="alert alert-warn">
+      <div class="alert-icon">⏳</div>
+      <div>
+        <strong>承認待ちの所属変更申請が 3件 あります。</strong>
+        <button class="btn btn-sm btn-secondary" style="margin-left:8px" onclick="navigate('transfer')">申請を確認</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label"><span>👥</span> 総人数</div>
+      <div class="stat-value">28,547</div>
+      <div class="stat-sub">教員: 3,421 / 生徒: 25,126</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span>🏫</span> 学校数</div>
+      <div class="stat-value">186</div>
+      <div class="stat-sub">小学校 112 / 中学校 54 / 高校 20</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span>📧</span> GWS 同期済み</div>
+      <div class="stat-value">26,204</div>
+      <div class="stat-sub" style="color:var(--success)">↑ 91.8% 同期率</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span>🔄</span> 今月の変更</div>
+      <div class="stat-value">1,042</div>
+      <div class="stat-sub">インポート 876 / 手動 166</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span>📋</span> 実施中フォーム</div>
+      <div class="stat-value">7</div>
+      <div class="stat-sub">回答待ち 2,341件</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span>⚡</span> エラー件数</div>
+      <div class="stat-value" style="color:var(--danger)">2</div>
+      <div class="stat-sub">直近7日間のインポート</div>
+    </div>
+  </div>
+
+  <!-- Service Launcher -->
+  <div class="card mb-16">
+    <div class="card-header">
+      <span style="font-size:16px">🚀</span>
+      <div class="card-title">サービスランチャー</div>
+    </div>
+    <div class="card-body">
+      <div class="three-col" style="gap:12px">
+        <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="navigate('roster')">
+          <div class="card-body" style="display:flex;gap:14px;align-items:flex-start">
+            <div class="icon-box icon-box-blue">👥</div>
+            <div>
+              <div class="fw-600">名簿管理</div>
+              <div class="text-sm text-muted mt-8">人物の検索・閲覧・編集、属性情報の管理</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="navigate('import')">
+          <div class="card-body" style="display:flex;gap:14px;align-items:flex-start">
+            <div class="icon-box icon-box-green">📥</div>
+            <div>
+              <div class="fw-600">CSVインポート</div>
+              <div class="text-sm text-muted mt-8">一括データ更新・マッピング設定</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="navigate('forms')">
+          <div class="card-body" style="display:flex;gap:14px;align-items:flex-start">
+            <div class="icon-box icon-box-purple">📋</div>
+            <div>
+              <div class="fw-600">フォーム管理</div>
+              <div class="text-sm text-muted mt-8">アンケート作成・集計・名簿連携</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="navigate('transfer')">
+          <div class="card-body" style="display:flex;gap:14px;align-items:flex-start">
+            <div class="icon-box icon-box-warn">🔄</div>
+            <div>
+              <div class="fw-600">所属変更申請</div>
+              <div class="text-sm text-muted mt-8">転出入申請・承認フロー管理</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="navigate('gws')">
+          <div class="card-body" style="display:flex;gap:14px;align-items:flex-start">
+            <div class="icon-box icon-box-cyan">☁️</div>
+            <div>
+              <div class="fw-600">GWS 連携管理</div>
+              <div class="text-sm text-muted mt-8">Google Workspace との同期状況</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="navigate('logs')">
+          <div class="card-body" style="display:flex;gap:14px;align-items:flex-start">
+            <div class="icon-box icon-box-red">📊</div>
+            <div>
+              <div class="fw-600">ログ・監査</div>
+              <div class="text-sm text-muted mt-8">操作ログ・インポート履歴確認</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent activity & Pending -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header"><span>🕒</span><div class="card-title">最近の操作</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <tbody>
+            <tr><td><span class="badge badge-blue">インポート</span></td><td>2025-01-15 09:00 – 中学校教員 CSV (342件)</td><td><span class="badge badge-green">成功</span></td></tr>
+            <tr><td><span class="badge badge-warn">編集</span></td><td>横浜市立山手中学校 – 田中一郎 連絡先更新</td><td class="text-muted text-sm">8分前</td></tr>
+            <tr><td><span class="badge badge-purple">申請</span></td><td>所属変更申請 #2051 – 承認待ち</td><td class="text-muted text-sm">1時間前</td></tr>
+            <tr><td><span class="badge badge-blue">インポート</span></td><td>2025-01-14 – 生徒CSV 高校 (2,104件)</td><td><span class="badge badge-red">エラーあり</span></td></tr>
+            <tr><td><span class="badge badge-cyan">フォーム</span></td><td>「緊急連絡先調査」作成</td><td class="text-muted text-sm">昨日</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>📬</span><div class="card-title">承認待ち申請</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <div class="fw-600">田中 一郎</div>
+                <div class="text-xs text-muted">中原中 → 高津中（2/1付）</div>
+              </td>
+              <td><span class="badge badge-warn">承認待ち</span></td>
+              <td><button class="btn btn-sm btn-primary" onclick="openModal('modal-approve')">確認</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="fw-600">鈴木 花子</div>
+                <div class="text-xs text-muted">教育委員会 → 磯子小（3/1付）</div>
+              </td>
+              <td><span class="badge badge-warn">承認待ち</span></td>
+              <td><button class="btn btn-sm btn-primary" onclick="openModal('modal-approve')">確認</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="fw-600">佐藤 次郎</div>
+                <div class="text-xs text-muted">港南中 → 港南小（4/1付）</div>
+              </td>
+              <td><span class="badge badge-warn">承認待ち</span></td>
+              <td><button class="btn btn-sm btn-primary" onclick="openModal('modal-approve')">確認</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: ROSTER ════════════════ -->
+<div id="page-roster" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>名簿管理</span>
+  </div>
+  <div class="page-header">
+    <div>
+      <div class="page-title">👥 名簿管理</div>
+      <div class="page-subtitle">全 28,547 件</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" onclick="openModal('modal-filter')">🔽 詳細フィルター</button>
+      <button class="btn btn-secondary" onclick="navigate('import')">📥 CSVインポート</button>
+      <button class="btn btn-primary" onclick="openModal('modal-add-person')">＋ 人物を追加</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="setRosterTab(this,'all')">すべて <span class="badge badge-gray" style="margin-left:4px">28,547</span></div>
+    <div class="tab" onclick="setRosterTab(this,'teacher')">教職員 <span class="badge badge-gray" style="margin-left:4px">3,421</span></div>
+    <div class="tab" onclick="setRosterTab(this,'student')">生徒 <span class="badge badge-gray" style="margin-left:4px">25,126</span></div>
+    <div class="tab" onclick="setRosterTab(this,'admin')">教育委員会職員</div>
+    <div class="tab" onclick="setRosterTab(this,'other')">その他関係者</div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="search-input">
+      <span>🔍</span>
+      <input type="text" placeholder="名前・メール・ID で検索...">
+    </div>
+    <select class="select-input" onchange="showToast('フィルター適用','info')">
+      <option>組織：すべて</option>
+      <option>横浜市</option>
+      <option>川崎市</option>
+      <option>相模原市</option>
+    </select>
+    <select class="select-input" onchange="showToast('フィルター適用','info')">
+      <option>学校種：すべて</option>
+      <option>小学校</option>
+      <option>中学校</option>
+      <option>高等学校</option>
+    </select>
+    <select class="select-input" onchange="showToast('フィルター適用','info')">
+      <option>GWS 同期：すべて</option>
+      <option>同期済み</option>
+      <option>未同期</option>
+      <option>エラー</option>
+    </select>
+    <div class="text-sm text-muted" style="margin-left:auto">50件表示</div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px"><input type="checkbox" onchange="showToast('全件選択','info')"></th>
+            <th class="sortable">氏名 ▲</th>
+            <th class="sortable">区分</th>
+            <th class="sortable">所属組織</th>
+            <th>クラス</th>
+            <th class="sortable">GWS アカウント</th>
+            <th>同期状態</th>
+            <th>最終更新</th>
+            <th style="width:80px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="navigate('roster-detail')" style="cursor:pointer">
+            <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="person-avatar" style="background:linear-gradient(135deg,#60a5fa,#3b82f6);color:#fff">田</div>
+                <div>
+                  <div class="fw-600">田中 一郎</div>
+                  <div class="text-xs text-muted">T-00421</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">教員</span></td>
+            <td>横浜市立中原中学校</td>
+            <td>2年A組（担任）</td>
+            <td>tanaka.ichiro@edu.kanagawa.jp</td>
+            <td><span class="gws-sync-indicator"><span class="status-dot dot-green"></span> 同期済み</span></td>
+            <td class="text-muted text-sm">1時間前</td>
+            <td onclick="event.stopPropagation()">
+              <button class="btn btn-sm btn-ghost" onclick="navigate('roster-detail')">詳細</button>
+            </td>
+          </tr>
+          <tr onclick="navigate('roster-detail')" style="cursor:pointer">
+            <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="person-avatar" style="background:linear-gradient(135deg,#f472b6,#ec4899);color:#fff">鈴</div>
+                <div>
+                  <div class="fw-600">鈴木 花子</div>
+                  <div class="text-xs text-muted">T-00834</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">教員</span></td>
+            <td>横浜市立磯子小学校</td>
+            <td>3年B組（担任）</td>
+            <td>suzuki.hanako@edu.kanagawa.jp</td>
+            <td><span class="gws-sync-indicator"><span class="status-dot dot-green"></span> 同期済み</span></td>
+            <td class="text-muted text-sm">昨日</td>
+            <td onclick="event.stopPropagation()">
+              <button class="btn btn-sm btn-ghost" onclick="navigate('roster-detail')">詳細</button>
+            </td>
+          </tr>
+          <tr onclick="navigate('roster-detail')" style="cursor:pointer">
+            <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="person-avatar" style="background:linear-gradient(135deg,#34d399,#10b981);color:#fff">佐</div>
+                <div>
+                  <div class="fw-600">佐藤 次郎</div>
+                  <div class="text-xs text-muted">S-14201</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-green">生徒</span></td>
+            <td>横浜市立港南中学校</td>
+            <td>1年C組</td>
+            <td>sato.jiro@students.kanagawa.jp</td>
+            <td><span class="gws-sync-indicator"><span class="status-dot dot-warn"></span> 保留中</span></td>
+            <td class="text-muted text-sm">3日前</td>
+            <td onclick="event.stopPropagation()">
+              <button class="btn btn-sm btn-ghost" onclick="navigate('roster-detail')">詳細</button>
+            </td>
+          </tr>
+          <tr onclick="navigate('roster-detail')" style="cursor:pointer">
+            <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="person-avatar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff">山</div>
+                <div>
+                  <div class="fw-600">山本 恵子</div>
+                  <div class="text-xs text-muted">A-00102</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-purple">委員会職員</span></td>
+            <td>神奈川県教育委員会 指導課</td>
+            <td>—</td>
+            <td>yamamoto.k@pref.kanagawa.jp</td>
+            <td><span class="gws-sync-indicator"><span class="status-dot dot-green"></span> 同期済み</span></td>
+            <td class="text-muted text-sm">2日前</td>
+            <td onclick="event.stopPropagation()">
+              <button class="btn btn-sm btn-ghost" onclick="navigate('roster-detail')">詳細</button>
+            </td>
+          </tr>
+          <tr onclick="navigate('roster-detail')" style="cursor:pointer">
+            <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="person-avatar" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff">小</div>
+                <div>
+                  <div class="fw-600">小林 拓也</div>
+                  <div class="text-xs text-muted">T-02215</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">教員</span></td>
+            <td>川崎市立高津高校</td>
+            <td>—（数学科）</td>
+            <td>kobayashi.t@edu.kanagawa.jp</td>
+            <td><span class="gws-sync-indicator"><span class="status-dot dot-red"></span> エラー</span></td>
+            <td class="text-muted text-sm">5日前</td>
+            <td onclick="event.stopPropagation()">
+              <button class="btn btn-sm btn-ghost" onclick="navigate('roster-detail')">詳細</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px">
+      <div class="text-sm text-muted">1–50 / 28,547 件</div>
+      <div style="margin-left:auto;display:flex;gap:4px">
+        <button class="btn btn-sm btn-secondary">‹ 前へ</button>
+        <button class="btn btn-sm btn-primary">1</button>
+        <button class="btn btn-sm btn-secondary">2</button>
+        <button class="btn btn-sm btn-secondary">3</button>
+        <button class="btn btn-sm btn-secondary">次へ ›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: ROSTER DETAIL ════════════════ -->
+<div id="page-roster-detail" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a>
+    <span class="breadcrumb-sep">›</span>
+    <a onclick="navigate('roster')">名簿管理</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>田中 一郎</span>
+  </div>
+  <div class="page-header" style="align-items:center">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="person-avatar" style="width:56px;height:56px;font-size:20px;background:linear-gradient(135deg,#60a5fa,#3b82f6);color:#fff">田</div>
+      <div>
+        <div class="page-title">田中 一郎</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+          <span class="badge badge-blue">教員</span>
+          <span class="text-sm text-muted">ID: T-00421</span>
+          <span class="gws-sync-indicator"><span class="status-dot dot-green"></span> <span class="text-xs">GWS 同期済み</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" onclick="navigate('roster')">← 一覧に戻る</button>
+      <button class="btn btn-secondary" onclick="openModal('modal-transfer-apply')">🔄 所属変更申請</button>
+      <button class="btn btn-primary" onclick="openModal('modal-edit-person')">✏ 編集</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="setDetailTab(this,'basic')">📋 基本情報</div>
+    <div class="tab" onclick="setDetailTab(this,'contact')">📞 連絡先情報</div>
+    <div class="tab" onclick="setDetailTab(this,'sensitive')">🔒 機微情報</div>
+    <div class="tab" onclick="setDetailTab(this,'gws')">☁️ GWS 同期</div>
+    <div class="tab" onclick="setDetailTab(this,'history')">🕒 変更履歴</div>
+  </div>
+
+  <div id="detail-basic" class="detail-pane">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span>👤</span><div class="card-title">基本情報</div></div>
+        <div class="card-body">
+          <div class="detail-section">
+            <div class="detail-grid">
+              <div class="detail-key">氏名（漢字）</div><div class="detail-val">田中 一郎</div>
+              <div class="detail-key">氏名（フリガナ）</div><div class="detail-val">タナカ イチロウ</div>
+              <div class="detail-key">生年月日</div><div class="detail-val">1985年7月15日</div>
+              <div class="detail-key">性別</div><div class="detail-val">男性</div>
+              <div class="detail-key">職種</div><div class="detail-val">一般教員</div>
+              <div class="detail-key">教員免許番号</div><div class="detail-val">神奈川-中-2010-04521</div>
+              <div class="detail-key">担当教科</div><div class="detail-val">数学</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span>🏢</span><div class="card-title">所属情報</div></div>
+        <div class="card-body">
+          <div class="detail-grid">
+            <div class="detail-key">所属組織</div><div class="detail-val">横浜市立中原中学校</div>
+            <div class="detail-key">担任クラス</div><div class="detail-val">2年A組</div>
+            <div class="detail-key">部活顧問</div><div class="detail-val"><span class="tag">サッカー部</span></div>
+            <div class="detail-key">着任日</div><div class="detail-val">2020年4月1日</div>
+            <div class="detail-key">メールアドレス</div><div class="detail-val">tanaka.ichiro@edu.kanagawa.jp</div>
+            <div class="detail-key">職員番号</div><div class="detail-val">KEK-20-00421</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-16">
+      <div class="card-header">
+        <span>🏷</span><div class="card-title">カスタム属性</div>
+        <button class="btn btn-sm btn-secondary" style="margin-left:auto" onclick="navigate('attr-settings')">属性設定</button>
+      </div>
+      <div class="card-body">
+        <div class="three-col" style="gap:12px">
+          <div style="padding:12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+            <div class="text-xs text-muted mb-8">採用区分</div>
+            <div class="fw-600">正規採用</div>
+            <div class="text-xs text-muted" style="margin-top:4px">2025-01-01 〜 現在</div>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+            <div class="text-xs text-muted mb-8">研修修了状況</div>
+            <div class="fw-600">学校安全 <span class="tag-green" style="padding:1px 6px;border-radius:3px;font-size:10px">済</span></div>
+            <div class="text-xs text-muted" style="margin-top:4px">2024年度</div>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+            <div class="text-xs text-muted mb-8">異動希望</div>
+            <div class="fw-600">希望なし</div>
+            <div class="text-xs text-muted" style="margin-top:4px">2024-12-01 更新</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="detail-contact" class="detail-pane" style="display:none">
+    <div class="card">
+      <div class="card-header"><span>📞</span><div class="card-title">連絡先情報</div><span class="badge badge-purple" style="margin-left:auto">閲覧権限あり</span></div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-key">自宅住所</div><div class="detail-val">神奈川県横浜市中区山下町 X-XX-X</div>
+          <div class="detail-key">自宅電話</div><div class="detail-val">045-XXX-XXXX</div>
+          <div class="detail-key">携帯番号</div><div class="detail-val">090-XXXX-XXXX</div>
+          <div class="detail-key">緊急連絡先</div><div class="detail-val">田中 春子（妻） 090-XXXX-YYYY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="detail-sensitive" class="detail-pane" style="display:none">
+    <div class="alert alert-warn mb-16">
+      <div class="alert-icon">🔒</div>
+      <div>この情報は限られた権限者のみ閲覧できます。アクセスはすべて記録されています。</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>🔒</span><div class="card-title">機微情報</div><span class="badge badge-red" style="margin-left:auto">要注意</span></div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-key">人物評価</div><div class="detail-val"><span class="chip">優良教員</span></div>
+          <div class="detail-key">特記事項</div><div class="detail-val text-muted">（記録なし）</div>
+          <div class="detail-key">メンタルヘルス記録</div><div class="detail-val"><span class="badge badge-gray">非表示（権限なし）</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="detail-gws" class="detail-pane" style="display:none">
+    <div class="card">
+      <div class="card-header"><span>☁️</span><div class="card-title">Google Workspace 同期状況</div>
+        <button class="btn btn-sm btn-secondary" style="margin-left:auto" onclick="showToast('GWS 同期をキューに追加しました','success')">🔁 手動同期</button>
+      </div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-key">GWS アカウント</div><div class="detail-val">tanaka.ichiro@edu.kanagawa.jp</div>
+          <div class="detail-key">最終同期日時</div><div class="detail-val">2025-01-15 08:32:04</div>
+          <div class="detail-key">同期ステータス</div><div class="detail-val"><span class="gws-sync-indicator"><span class="status-dot dot-green"></span> 同期済み（差分なし）</span></div>
+          <div class="detail-key">OU パス</div><div class="detail-val">/神奈川県/横浜市/中学校/中原中/教員</div>
+          <div class="detail-key">グループ所属</div><div class="detail-val">
+            <span class="tag" style="margin-right:4px">teachers@edu.kanagawa.jp</span>
+            <span class="tag">nakahara-jh-staff@edu.kanagawa.jp</span>
+          </div>
+        </div>
+        <div class="mt-16">
+          <div class="detail-section-title">同期対象フィールド</div>
+          <table>
+            <thead><tr><th>CodeX フィールド</th><th>GWS フィールド</th><th>最終同期値</th><th>状態</th></tr></thead>
+            <tbody>
+              <tr><td>氏名</td><td>displayName</td><td>田中 一郎</td><td><span class="badge badge-green">✓ 一致</span></td></tr>
+              <tr><td>所属組織</td><td>orgUnitPath</td><td>/神奈川県/横浜市/中学校/…</td><td><span class="badge badge-green">✓ 一致</span></td></tr>
+              <tr><td>職種</td><td>organizations[0].title</td><td>一般教員</td><td><span class="badge badge-green">✓ 一致</span></td></tr>
+              <tr><td>携帯番号</td><td>phones[0].value</td><td>090-XXXX-XXXX</td><td><span class="badge badge-green">✓ 一致</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="detail-history" class="detail-pane" style="display:none">
+    <div class="card">
+      <div class="card-header"><span>🕒</span><div class="card-title">属性変更履歴</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>変更日時</th><th>項目</th><th>変更前</th><th>変更後</th><th>操作者</th><th>方法</th></tr></thead>
+          <tbody>
+            <tr><td class="text-sm">2025-01-10 09:12</td><td>担任クラス</td><td class="text-muted">2年B組</td><td class="fw-600">2年A組</td><td>山田 太郎</td><td><span class="badge badge-blue">CSV</span></td></tr>
+            <tr><td class="text-sm">2024-09-01 00:00</td><td>所属組織</td><td class="text-muted">中原第二中学校</td><td class="fw-600">中原中学校</td><td>システム</td><td><span class="badge badge-warn">バッチ</span></td></tr>
+            <tr><td class="text-sm">2024-04-01 00:00</td><td>職種</td><td class="text-muted">—</td><td class="fw-600">一般教員</td><td>鈴木 管理子</td><td><span class="badge badge-green">手動</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: IMPORT ════════════════ -->
+<div id="page-import" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>CSVインポート</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">📥 CSVインポート</div><div class="page-subtitle">一括データ更新・マッピング設定</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-import-new')">＋ 新規インポート</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="setImportTab(this,'history')">インポート履歴</div>
+    <div class="tab" onclick="setImportTab(this,'mapping')">マッピングプリセット</div>
+  </div>
+
+  <div id="import-tab-history">
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>実行日時</th><th>ファイル名</th><th>対象</th><th>件数</th><th>状態</th><th>エラー</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="text-sm">2025-01-15 09:00</td>
+              <td class="fw-600">teacher_list_0115.csv</td>
+              <td>中学校教員</td>
+              <td>342件</td>
+              <td><span class="badge badge-green">完了</span></td>
+              <td class="text-muted">0件</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="showToast('ログ詳細を表示','info')">詳細</button></td>
+            </tr>
+            <tr>
+              <td class="text-sm">2025-01-14 22:00</td>
+              <td class="fw-600">students_highschool_0114.csv</td>
+              <td>高校生徒</td>
+              <td>2,104件</td>
+              <td><span class="badge badge-red">エラーあり</span></td>
+              <td><span class="text-danger fw-600">2件</span></td>
+              <td><button class="btn btn-sm btn-danger" onclick="navigate('logs')">エラー確認</button></td>
+            </tr>
+            <tr>
+              <td class="text-sm">2025-01-13 09:00</td>
+              <td class="fw-600">admin_staff_0113.csv</td>
+              <td>教育委員会職員</td>
+              <td>87件</td>
+              <td><span class="badge badge-green">完了</span></td>
+              <td class="text-muted">0件</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="showToast('ログ詳細を表示','info')">詳細</button></td>
+            </tr>
+            <tr>
+              <td class="text-sm">実行中 ⟳</td>
+              <td class="fw-600">students_elementary_0115.csv</td>
+              <td>小学校生徒</td>
+              <td>4,208件</td>
+              <td><span class="badge badge-cyan">処理中</span></td>
+              <td>—</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;width:120px">
+                  <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:62%;background:var(--accent)"></div></div>
+                  <span class="text-xs text-muted">62%</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="import-tab-mapping" style="display:none">
+    <div class="card">
+      <div class="card-header"><div class="card-title">マッピングプリセット</div>
+        <button class="btn btn-sm btn-primary" style="margin-left:auto" onclick="openModal('modal-mapping-new')">＋ 新規プリセット</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>プリセット名</th><th>対象区分</th><th>識別子</th><th>最終使用</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="fw-600">教員標準インポート</td><td>教職員</td><td>職員番号</td><td>2025-01-15</td><td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-mapping-edit')">編集</button></td></tr>
+            <tr><td class="fw-600">生徒全校インポート</td><td>生徒</td><td>学籍番号</td><td>2025-01-14</td><td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-mapping-edit')">編集</button></td></tr>
+            <tr><td class="fw-600">委員会職員インポート</td><td>教育委員会職員</td><td>メールアドレス</td><td>2025-01-13</td><td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-mapping-edit')">編集</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: TRANSFER ════════════════ -->
+<div id="page-transfer" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>所属変更申請</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">🔄 所属変更申請</div><div class="page-subtitle">転出入の申請・承認管理</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-transfer-apply')">＋ 変更申請を作成</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="setTransferTab(this,'pending')">承認待ち <span class="badge badge-warn" style="margin-left:4px">3</span></div>
+    <div class="tab" onclick="setTransferTab(this,'scheduled')">実行予定</div>
+    <div class="tab" onclick="setTransferTab(this,'done')">完了済み</div>
+    <div class="tab" onclick="setTransferTab(this,'cancelled')">取消済み</div>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>申請ID</th><th>対象者</th><th>変更内容</th><th>実施予定日</th><th>申請者</th><th>ステータス</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="text-sm text-muted">#2051</td>
+            <td>
+              <div class="fw-600">田中 一郎</div>
+              <div class="text-xs text-muted">T-00421 / 教員</div>
+            </td>
+            <td>
+              <div class="text-sm">横浜市立中原中 <span style="color:var(--primary)">→</span> 横浜市立高津中</div>
+              <div class="text-xs text-muted">2025年2月1日付</div>
+            </td>
+            <td class="fw-600">2025-02-01</td>
+            <td class="text-sm">中原中学校 教頭</td>
+            <td><span class="badge badge-warn">承認待ち</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-sm btn-primary" onclick="openModal('modal-approve')">承認</button>
+                <button class="btn btn-sm btn-secondary" onclick="openModal('modal-reject')">却下</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-sm text-muted">#2052</td>
+            <td>
+              <div class="fw-600">鈴木 花子</div>
+              <div class="text-xs text-muted">T-00834 / 教員</div>
+            </td>
+            <td>
+              <div class="text-sm">教育委員会指導課 <span style="color:var(--primary)">→</span> 磯子小学校</div>
+              <div class="text-xs text-muted">2025年3月1日付</div>
+            </td>
+            <td class="fw-600">2025-03-01</td>
+            <td class="text-sm">県教育委員会</td>
+            <td><span class="badge badge-warn">承認待ち</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-sm btn-primary" onclick="openModal('modal-approve')">承認</button>
+                <button class="btn btn-sm btn-secondary" onclick="openModal('modal-reject')">却下</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-sm text-muted">#2053</td>
+            <td>
+              <div class="fw-600">佐藤 次郎</div>
+              <div class="text-xs text-muted">T-02215 / 教員</div>
+            </td>
+            <td>
+              <div class="text-sm">港南中学校 <span style="color:var(--primary)">→</span> 港南小学校</div>
+              <div class="text-xs text-muted">2025年4月1日付</div>
+            </td>
+            <td class="fw-600">2025-04-01</td>
+            <td class="text-sm">港南中学校 校長</td>
+            <td><span class="badge badge-warn">承認待ち</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-sm btn-primary" onclick="openModal('modal-approve')">承認</button>
+                <button class="btn btn-sm btn-secondary" onclick="openModal('modal-reject')">却下</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: FORMS ════════════════ -->
+<div id="page-forms" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>フォーム管理</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">📋 フォーム管理</div><div class="page-subtitle">アンケート・調査フォームの作成・集計</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-form-new')">＋ フォームを作成</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat-card"><div class="stat-label">実施中</div><div class="stat-value">7</div></div>
+    <div class="stat-card"><div class="stat-label">回答待ち</div><div class="stat-value">2,341</div></div>
+    <div class="stat-card"><div class="stat-label">今月作成</div><div class="stat-value">3</div></div>
+    <div class="stat-card"><div class="stat-label">名簿連携中</div><div class="stat-value">2</div></div>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>フォーム名</th><th>対象</th><th>回答数/対象数</th><th>名簿連携</th><th>期限</th><th>状態</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="fw-600">教員緊急連絡先調査 2025</div>
+              <div class="text-xs text-muted">県内全教員の個人携帯登録</div>
+            </td>
+            <td><span class="tag">全教員</span></td>
+            <td>
+              <div class="flex items-center gap-8">
+                <div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:71%;background:var(--primary)"></div></div>
+                <span class="text-sm">2,431 / 3,421</span>
+              </div>
+            </td>
+            <td><span class="badge badge-green">✓ 連携中</span></td>
+            <td class="text-sm">2025-01-31</td>
+            <td><span class="badge badge-blue">実施中</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="navigate('form-detail')">詳細</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fw-600">部活動希望調査（生徒向け）</div>
+              <div class="text-xs text-muted">中学校全生徒</div>
+            </td>
+            <td><span class="tag">中学校生徒</span></td>
+            <td>
+              <div class="flex items-center gap-8">
+                <div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:44%;background:var(--primary)"></div></div>
+                <span class="text-sm">3,891 / 8,820</span>
+              </div>
+            </td>
+            <td><span class="badge badge-gray">なし</span></td>
+            <td class="text-sm">2025-02-15</td>
+            <td><span class="badge badge-blue">実施中</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="navigate('form-detail')">詳細</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fw-600">学校安全研修 受講状況確認</div>
+              <div class="text-xs text-muted">小学校教員</div>
+            </td>
+            <td><span class="tag">小学校教員</span></td>
+            <td>
+              <div class="flex items-center gap-8">
+                <div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--success)"></div></div>
+                <span class="text-sm">1,204 / 1,204</span>
+              </div>
+            </td>
+            <td><span class="badge badge-green">✓ 連携中</span></td>
+            <td class="text-sm">2024-12-31</td>
+            <td><span class="badge badge-gray">締切済み</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="navigate('form-detail')">詳細</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: LOGS ════════════════ -->
+<div id="page-logs" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>ログ・監査</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">📊 ログ・監査</div><div class="page-subtitle">操作ログ・インポートエラーの確認</div></div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" onclick="showToast('ログをCSVでエクスポートしました','success')">📤 エクスポート</button>
+    </div>
+  </div>
+
+  <div class="alert alert-danger mb-16">
+    <div class="alert-icon">⚠️</div>
+    <div>
+      <strong>要対応: 2件のインポートエラーがあります。</strong>内容を確認し、手動修正またはシステム管理者への問い合わせを行ってください。
+      <a style="color:var(--danger);margin-left:8px;cursor:pointer;text-decoration:underline" onclick="showToast('サポート問い合わせフォームを開きました','info')">管理者に問い合わせ</a>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="setLogTab(this,'errors')">エラーログ <span class="badge badge-red" style="margin-left:4px">2</span></div>
+    <div class="tab" onclick="setLogTab(this,'import')">インポートログ</div>
+    <div class="tab" onclick="setLogTab(this,'operation')">操作ログ</div>
+    <div class="tab" onclick="setLogTab(this,'gws')">GWS 同期ログ</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">エラー詳細</div>
+      <div class="page-actions">
+        <div class="search-input" style="max-width:200px">
+          <span>🔍</span><input type="text" placeholder="行番号・項目で絞込">
+        </div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>発生日時</th><th>バッチ</th><th>行番号</th><th>エラー種別</th><th>内容</th><th>状態</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="text-sm">2025-01-14 22:14</td>
+            <td>students_highschool_0114.csv</td>
+            <td>Row 847</td>
+            <td><span class="badge badge-red">バリデーション</span></td>
+            <td>「生年月日」の値が不正: "2008/13/45"（日付形式エラー）</td>
+            <td><span class="badge badge-warn">未対応</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="openModal('modal-error-fix')">修正</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-sm">2025-01-14 22:14</td>
+            <td>students_highschool_0114.csv</td>
+            <td>Row 1203</td>
+            <td><span class="badge badge-red">識別子不一致</span></td>
+            <td>学籍番号「HS-2024-99999」が名簿に存在しません</td>
+            <td><span class="badge badge-warn">未対応</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="openModal('modal-error-fix')">修正</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: SETTINGS (Org) ════════════════ -->
+<div id="page-settings" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>組織管理</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">🏢 組織管理</div><div class="page-subtitle">テナント階層・組織ツリーの管理</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-add-org')">＋ 組織を追加</button>
+    </div>
+  </div>
+  <div class="two-col" style="align-items:start">
+    <div class="card">
+      <div class="card-header"><span>🗂</span><div class="card-title">組織ツリー</div></div>
+      <div class="card-body">
+        <div class="org-tree">
+          <div class="org-row" style="font-weight:700;color:var(--primary)">
+            <span class="org-toggle">▼</span>
+            <span class="org-icon">🏛</span>
+            <span class="org-name">神奈川県教育委員会</span>
+            <span class="org-count">28,547人</span>
+          </div>
+          <div class="org-node">
+            <div class="org-row" onclick="showToast('横浜市を選択','info')"><span class="org-toggle">▼</span><span class="org-icon">🏙</span><span class="org-name">横浜市</span><span class="org-count">14,201人</span></div>
+            <div class="org-node">
+              <div class="org-row" onclick="showToast('小学校グループを選択','info')"><span class="org-toggle">▼</span><span class="org-icon">🏫</span><span class="org-name">小学校</span><span class="org-count">8,122人</span></div>
+              <div class="org-node">
+                <div class="org-row" onclick="showToast('中原小を選択','info')"><span class="org-toggle"> </span><span class="org-icon">🏫</span><span class="org-name">中原小学校</span><span class="org-count">620人</span></div>
+                <div class="org-row" onclick="showToast('磯子小を選択','info')"><span class="org-toggle"> </span><span class="org-icon">🏫</span><span class="org-name">磯子小学校</span><span class="org-count">584人</span></div>
+                <div class="org-row" style="color:var(--text3);font-size:12px;padding-left:32px">… 他 45 校</div>
+              </div>
+              <div class="org-row" onclick="showToast('中学校グループを選択','info')"><span class="org-toggle">▼</span><span class="org-icon">🏫</span><span class="org-name">中学校</span><span class="org-count">5,841人</span></div>
+              <div class="org-node">
+                <div class="org-row" onclick="showToast('中原中を選択','info')"><span class="org-toggle"> </span><span class="org-icon">🏫</span><span class="org-name">中原中学校</span><span class="org-count">730人</span></div>
+                <div class="org-row" onclick="showToast('港南中を選択','info')"><span class="org-toggle"> </span><span class="org-icon">🏫</span><span class="org-name">港南中学校</span><span class="org-count">688人</span></div>
+                <div class="org-row" style="color:var(--text3);font-size:12px;padding-left:32px">… 他 22 校</div>
+              </div>
+            </div>
+            <div class="org-row" onclick="showToast('川崎市を選択','info')"><span class="org-toggle">▶</span><span class="org-icon">🏙</span><span class="org-name">川崎市</span><span class="org-count">9,204人</span></div>
+            <div class="org-row" onclick="showToast('相模原市を選択','info')"><span class="org-toggle">▶</span><span class="org-icon">🏙</span><span class="org-name">相模原市</span><span class="org-count">5,142人</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card mb-16">
+        <div class="card-header"><span>🏫</span><div class="card-title">横浜市立中原中学校</div></div>
+        <div class="card-body">
+          <div class="detail-grid">
+            <div class="detail-key">組織 ID</div><div class="detail-val">ORG-1042</div>
+            <div class="detail-key">種別</div><div class="detail-val">中学校</div>
+            <div class="detail-key">所在地</div><div class="detail-val">横浜市中区…</div>
+            <div class="detail-key">教員数</div><div class="detail-val">62名</div>
+            <div class="detail-key">生徒数</div><div class="detail-val">668名</div>
+            <div class="detail-key">GWS OU</div><div class="detail-val">/神奈川県/横浜市/中学校/中原中</div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button class="btn btn-sm btn-secondary" onclick="showToast('組織設定を編集','info')">✏ 編集</button>
+            <button class="btn btn-sm btn-secondary" onclick="navigate('permissions')">🔐 権限設定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: ATTR SETTINGS ════════════════ -->
+<div id="page-attr-settings" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>属性項目設定</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">🏷 属性項目設定</div><div class="page-subtitle">カスタム項目の定義・データ形式・権限制御</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-attr-new')">＋ 項目を追加</button>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <div class="search-input"><span>🔍</span><input type="text" placeholder="項目名で検索..."></div>
+    <select class="select-input"><option>区分：すべて</option><option>教職員</option><option>生徒</option><option>共通</option></select>
+    <select class="select-input"><option>グループ：すべて</option><option>基本情報</option><option>連絡先</option><option>機微情報</option></select>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目名</th><th>表示グループ</th><th>対象区分</th><th>データ形式</th><th>必須</th><th>権限制御</th><th>履歴</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="fw-600">教員免許番号</div><div class="text-xs text-muted">teacher_license_no</div></td>
+            <td><span class="tag-gray" style="padding:2px 7px;border-radius:3px;font-size:11px">基本情報</span></td>
+            <td><span class="badge badge-blue">教職員</span></td>
+            <td>文字列（単一）</td>
+            <td><span class="badge badge-blue">必須</span></td>
+            <td><span class="badge badge-green">あり</span></td>
+            <td><span class="badge badge-green">有効</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-attr-edit')">編集</button></td>
+          </tr>
+          <tr>
+            <td><div class="fw-600">部活顧問</div><div class="text-xs text-muted">club_advisor</div></td>
+            <td><span class="tag-gray" style="padding:2px 7px;border-radius:3px;font-size:11px">基本情報</span></td>
+            <td><span class="badge badge-blue">教職員</span></td>
+            <td>コードマスター（複数）</td>
+            <td><span class="badge badge-gray">任意</span></td>
+            <td><span class="badge badge-green">あり</span></td>
+            <td><span class="badge badge-green">有効</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-attr-edit')">編集</button></td>
+          </tr>
+          <tr>
+            <td><div class="fw-600">人物評価</div><div class="text-xs text-muted">person_evaluation</div></td>
+            <td><span class="tag" style="padding:2px 7px;border-radius:3px;font-size:11px;background:var(--danger-light);color:var(--danger)">機微情報</span></td>
+            <td><span class="badge badge-gray">共通</span></td>
+            <td>コードマスター（複数）</td>
+            <td><span class="badge badge-gray">任意</span></td>
+            <td><span class="badge badge-red">コードごと制限</span></td>
+            <td><span class="badge badge-green">有効</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-attr-edit')">編集</button></td>
+          </tr>
+          <tr>
+            <td><div class="fw-600">自家用携帯番号</div><div class="text-xs text-muted">personal_mobile</div></td>
+            <td><span class="tag-gray" style="padding:2px 7px;border-radius:3px;font-size:11px">連絡先情報</span></td>
+            <td><span class="badge badge-blue">教職員</span></td>
+            <td>文字列（単一）</td>
+            <td><span class="badge badge-gray">任意</span></td>
+            <td><span class="badge badge-green">あり</span></td>
+            <td><span class="badge badge-green">有効</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-attr-edit')">編集</button></td>
+          </tr>
+          <tr>
+            <td><div class="fw-600">異動希望</div><div class="text-xs text-muted">transfer_preference</div></td>
+            <td><span class="tag-gray" style="padding:2px 7px;border-radius:3px;font-size:11px">基本情報</span></td>
+            <td><span class="badge badge-blue">教職員</span></td>
+            <td>コードマスター（単一）</td>
+            <td><span class="badge badge-gray">任意</span></td>
+            <td><span class="badge badge-gray">なし</span></td>
+            <td><span class="badge badge-green">有効</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="openModal('modal-attr-edit')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: PERMISSIONS ════════════════ -->
+<div id="page-permissions" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>権限設定</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">🔐 権限設定</div><div class="page-subtitle">ロール・組織スコープ・属性条件の複合設定</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('modal-permission-new')">＋ 権限ルールを追加</button>
+    </div>
+  </div>
+  <div class="alert alert-info mb-16">
+    <div class="alert-icon">ℹ️</div>
+    <div>権限はテナント全体設定を基底とし、下位組織が上書き・追加できます。下位組織の設定が優先されます。</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header"><div class="card-title">権限ルール一覧</div>
+        <select class="select-input" style="margin-left:auto;width:auto" onchange="showToast('組織スコープ変更','info')">
+          <option>テナント全体</option>
+          <option>横浜市</option>
+          <option>中原中学校</option>
+        </select>
+      </div>
+      <div style="padding:0">
+        <table>
+          <thead><tr><th>ルール名</th><th>主体（誰が）</th><th>対象（誰の）</th><th>操作</th><th>スコープ</th><th></th></tr></thead>
+          <tbody>
+            <tr onclick="selectPermission(this)" style="cursor:pointer">
+              <td><div class="fw-600">担任クラス閲覧</div></td>
+              <td><span class="chip">一般教員</span></td>
+              <td><span class="chip" style="background:var(--success-light);color:var(--success)">担任クラス生徒</span></td>
+              <td><span class="badge badge-blue">閲覧</span></td>
+              <td>学校</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();openModal('modal-permission-edit')">編集</button></td>
+            </tr>
+            <tr onclick="selectPermission(this)" style="cursor:pointer">
+              <td><div class="fw-600">部活担当生徒連絡先</div></td>
+              <td><span class="chip">部活顧問（属性）</span></td>
+              <td><span class="chip" style="background:var(--success-light);color:var(--success)">担当部活生徒</span></td>
+              <td><span class="badge badge-blue">閲覧</span> <span class="badge badge-warn">連絡先のみ</span></td>
+              <td>学校</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();openModal('modal-permission-edit')">編集</button></td>
+            </tr>
+            <tr onclick="selectPermission(this)" style="cursor:pointer">
+              <td><div class="fw-600">同一市教員連絡先（校長）</div></td>
+              <td><span class="chip">校長</span></td>
+              <td><span class="chip" style="background:var(--success-light);color:var(--success)">同市同学校種教員</span></td>
+              <td><span class="badge badge-blue">閲覧</span></td>
+              <td>市町村</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();openModal('modal-permission-edit')">編集</button></td>
+            </tr>
+            <tr onclick="selectPermission(this)" style="cursor:pointer">
+              <td><div class="fw-600">機微情報閲覧（学年主任）</div></td>
+              <td><span class="chip">学年主任</span></td>
+              <td><span class="chip" style="background:var(--success-light);color:var(--success)">学年内全生徒</span></td>
+              <td><span class="badge badge-red">閲覧（機微）</span></td>
+              <td>学校</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();openModal('modal-permission-edit')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">ルール詳細</div></div>
+      <div class="card-body">
+        <div class="detail-section">
+          <div class="detail-section-title">主体条件（サブジェクト）</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="padding:8px 12px;background:var(--surface2);border-radius:5px;border:1px solid var(--border)">
+              <div class="text-xs text-muted">職種 = </div>
+              <div class="fw-600">一般教員</div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title">対象条件（オブジェクト）</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="padding:8px 12px;background:var(--success-light);border-radius:5px;border:1px solid #bbf7d0">
+              <div class="text-xs text-muted">クラス担任 =</div>
+              <div class="fw-600">主体が担任を持つクラスに所属する生徒</div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title">許可する操作・表示項目</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="badge badge-blue">閲覧：基本情報</span>
+            <span class="badge badge-blue">閲覧：連絡先情報</span>
+            <span class="badge badge-warn">編集：基本情報</span>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title">組織スコープ</div>
+          <div class="fw-600">主体と同一学校内</div>
+        </div>
+        <div class="detail-section" style="margin-bottom:0">
+          <div class="detail-section-title">継承・上書き</div>
+          <div class="text-sm text-muted">テナント全体設定 — 下位組織が上書き可能</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: GWS ════════════════ -->
+<div id="page-gws" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span><span>GWS 連携管理</span>
+  </div>
+  <div class="page-header">
+    <div><div class="page-title">☁️ GWS 連携管理</div><div class="page-subtitle">Google Workspace との同期状況・設定</div></div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" onclick="showToast('全件同期をキューに追加しました','success')">🔁 全件同期</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat-card"><div class="stat-label">同期済み</div><div class="stat-value" style="color:var(--success)">26,204</div></div>
+    <div class="stat-card"><div class="stat-label">保留中</div><div class="stat-value" style="color:var(--warn)">2,201</div></div>
+    <div class="stat-card"><div class="stat-label">エラー</div><div class="stat-value" style="color:var(--danger)">142</div></div>
+    <div class="stat-card"><div class="stat-label">同期率</div><div class="stat-value">91.8%</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header"><div class="card-title">フィールドマッピング設定</div>
+        <button class="btn btn-sm btn-secondary" style="margin-left:auto" onclick="openModal('modal-field-mapping')">編集</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CodeX フィールド</th><th>GWS フィールド</th><th>状態</th></tr></thead>
+          <tbody>
+            <tr><td>氏名</td><td>displayName</td><td><span class="badge badge-green">有効</span></td></tr>
+            <tr><td>所属組織</td><td>orgUnitPath</td><td><span class="badge badge-green">有効</span></td></tr>
+            <tr><td>職種</td><td>organizations[0].title</td><td><span class="badge badge-green">有効</span></td></tr>
+            <tr><td>携帯番号</td><td>phones[0].value</td><td><span class="badge badge-green">有効</span></td></tr>
+            <tr><td>部活顧問</td><td>externalIds[0].value</td><td><span class="badge badge-warn">試験中</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">OU マッピング</div>
+        <button class="btn btn-sm btn-secondary" style="margin-left:auto" onclick="showToast('OU設定を編集','info')">編集</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>組織 × 区分</th><th>GWS OU パス</th></tr></thead>
+          <tbody>
+            <tr><td>中原中 / 教員</td><td class="text-sm text-muted">/神奈川/横浜市/中学校/中原中/教員</td></tr>
+            <tr><td>中原中 / 生徒</td><td class="text-sm text-muted">/神奈川/横浜市/中学校/中原中/生徒</td></tr>
+            <tr><td>磯子小 / 教員</td><td class="text-sm text-muted">/神奈川/横浜市/小学校/磯子小/教員</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PAGE: FORM DETAIL ════════════════ -->
+<div id="page-form-detail" class="page">
+  <div class="breadcrumb">
+    <a onclick="navigate('dashboard')">ホーム</a><span class="breadcrumb-sep">›</span>
+    <a onclick="navigate('forms')">フォーム管理</a><span class="breadcrumb-sep">›</span>
+    <span>教員緊急連絡先調査 2025</span>
+  </div>
+  <div class="page-header">
+    <div>
+      <div class="page-title">教員緊急連絡先調査 2025</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+        <span class="badge badge-blue">実施中</span>
+        <span class="badge badge-green">✓ 名簿連携</span>
+        <span class="text-sm text-muted">期限: 2025-01-31</span>
+      </div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-secondary" onclick="navigate('forms')">← 一覧へ</button>
+      <button class="btn btn-secondary" onclick="showToast('リマインドメールを送信しました（990件）','success')">📧 未回答者にリマインド</button>
+      <button class="btn btn-primary" onclick="showToast('結果CSVをエクスポートしました','success')">📤 結果エクスポート</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat-card"><div class="stat-label">対象人数</div><div class="stat-value">3,421</div></div>
+    <div class="stat-card"><div class="stat-label">回答済み</div><div class="stat-value" style="color:var(--success)">2,431</div><div class="stat-sub">71.1%</div></div>
+    <div class="stat-card"><div class="stat-label">未回答</div><div class="stat-value" style="color:var(--warn)">990</div></div>
+    <div class="stat-card"><div class="stat-label">名簿反映済み</div><div class="stat-value" style="color:var(--primary)">2,431</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header"><div class="card-title">フォーム設定</div></div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-key">対象条件</div><div class="detail-val">職種 = 教員（全組織）</div>
+          <div class="detail-key">名簿連携先</div><div class="detail-val">自家用携帯番号（personal_mobile）</div>
+          <div class="detail-key">回答フィールド</div><div class="detail-val">メールアドレス、自家用携帯番号</div>
+          <div class="detail-key">識別方式</div><div class="detail-val">GWS アカウント（メール）</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">回答率推移（学校種別）</div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="text-sm">小学校</span><span class="text-sm fw-600">78%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:78%;background:var(--success)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="text-sm">中学校</span><span class="text-sm fw-600">68%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:68%;background:var(--primary)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="text-sm">高等学校</span><span class="text-sm fw-600">61%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:61%;background:var(--warn)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ════════════════ MODALS ════════════════ -->
+
+<!-- Add Person -->
+<div class="modal-overlay" id="modal-add-person">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">＋ 人物を追加</div>
+      <button class="modal-close" onclick="closeModal('modal-add-person')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">区分 <span style="color:var(--danger)">*</span></label>
+        <select class="form-select"><option>教職員</option><option>生徒</option><option>教育委員会職員</option><option>その他</option></select>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">姓（漢字）*</label><input class="form-input" type="text" placeholder="田中"></div>
+        <div class="form-group"><label class="form-label">名（漢字）*</label><input class="form-input" type="text" placeholder="一郎"></div>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">姓（フリガナ）</label><input class="form-input" type="text" placeholder="タナカ"></div>
+        <div class="form-group"><label class="form-label">名（フリガナ）</label><input class="form-input" type="text" placeholder="イチロウ"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">所属組織 <span style="color:var(--danger)">*</span></label>
+        <select class="form-select"><option>横浜市立中原中学校</option><option>横浜市立磯子小学校</option><option>川崎市立高津高校</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス（GWS アカウント）</label>
+        <input class="form-input" type="email" placeholder="taro.yamada@edu.kanagawa.jp">
+        <div class="form-hint">GWS アカウントと紐づける場合に入力してください</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-person')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-add-person');showToast('人物を追加しました','success')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Transfer -->
+<div class="modal-overlay" id="modal-approve">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔄 所属変更申請の確認</div>
+      <button class="modal-close" onclick="closeModal('modal-approve')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info mb-16">
+        <div class="alert-icon">ℹ️</div>
+        <div>申請 #2051 — 承認するとバッチにより <strong>2025年2月1日</strong> に実行されます。</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-grid">
+          <div class="detail-key">対象者</div><div class="detail-val fw-600">田中 一郎（T-00421）</div>
+          <div class="detail-key">変更前組織</div><div class="detail-val">横浜市立中原中学校</div>
+          <div class="detail-key">変更後組織</div><div class="detail-val fw-600" style="color:var(--primary)">横浜市立高津中学校</div>
+          <div class="detail-key">実施予定日</div><div class="detail-val">2025年2月1日</div>
+          <div class="detail-key">申請者</div><div class="detail-val">中原中学校 教頭</div>
+          <div class="detail-key">申請日</div><div class="detail-val">2025-01-10</div>
+        </div>
+      </div>
+      <div class="form-group mt-16">
+        <label class="form-label">承認コメント（任意）</label>
+        <textarea class="form-input" rows="3" placeholder="コメントを入力..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-approve')">キャンセル</button>
+      <button class="btn btn-danger" onclick="closeModal('modal-approve');showToast('申請を却下しました','warn')" style="margin-right:auto">却下</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-approve');showToast('申請を承認しました。2/1に実行されます','success')">承認する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer Apply -->
+<div class="modal-overlay" id="modal-transfer-apply">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔄 所属変更申請を作成</div>
+      <button class="modal-close" onclick="closeModal('modal-transfer-apply')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">変更後の所属組織 <span style="color:var(--danger)">*</span></label>
+        <select class="form-select"><option>横浜市立高津中学校</option><option>横浜市立磯子小学校</option><option>川崎市立高津高校</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">実施予定日 <span style="color:var(--danger)">*</span></label>
+        <input class="form-input" type="date" value="2025-02-01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">申請理由</label>
+        <textarea class="form-input" rows="3" placeholder="理由を入力してください..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-transfer-apply')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-transfer-apply');showToast('所属変更申請を送信しました','success')">申請する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject -->
+<div class="modal-overlay" id="modal-reject">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">申請を却下</div>
+      <button class="modal-close" onclick="closeModal('modal-reject')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">却下理由 <span style="color:var(--danger)">*</span></label>
+        <textarea class="form-input" rows="4" placeholder="却下の理由を入力してください..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-reject')">キャンセル</button>
+      <button class="btn btn-danger" onclick="closeModal('modal-reject');showToast('申請を却下しました','warn')">却下する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import New -->
+<div class="modal-overlay" id="modal-import-new">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📥 新規 CSV インポート</div>
+      <button class="modal-close" onclick="closeModal('modal-import-new')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="steps">
+        <div class="step active">
+          <div class="step-circle">1</div>
+          <div class="step-label">ファイル選択</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-circle">2</div>
+          <div class="step-label">マッピング確認</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-circle">3</div>
+          <div class="step-label">プレビュー</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-circle">4</div>
+          <div class="step-label">実行</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">マッピングプリセット</label>
+        <select class="form-select"><option>教員標準インポート</option><option>生徒全校インポート</option><option>委員会職員インポート</option><option>新規作成...</option></select>
+      </div>
+      <div style="border:2px dashed var(--border2);border-radius:var(--radius);padding:32px;text-align:center;background:var(--surface2);cursor:pointer" onclick="showToast('ファイル選択ダイアログを開きました','info')">
+        <div style="font-size:32px;margin-bottom:8px">📁</div>
+        <div class="fw-600">CSV ファイルをドロップ、またはクリックして選択</div>
+        <div class="text-sm text-muted mt-8">UTF-8 / Shift-JIS 対応 · 最大 50MB</div>
+      </div>
+      <div class="form-group mt-16">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox">
+          <span class="text-sm">所属変更の承認フローを省略する（権限が必要）</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-import-new')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-import-new');showToast('ファイルをアップロードしました。マッピング確認画面へ進みます','success')">次へ →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Fix -->
+<div class="modal-overlay" id="modal-error-fix">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⚠️ エラー修正</div>
+      <button class="modal-close" onclick="closeModal('modal-error-fix')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-danger mb-16">
+        <div class="alert-icon">⚠️</div>
+        <div><strong>Row 847:</strong> 「生年月日」の値が不正です: "2008/13/45"</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">生年月日（修正値）</label>
+        <input class="form-input" type="date" value="">
+      </div>
+      <div class="form-group">
+        <label class="form-label">対象者</label>
+        <input class="form-input" type="text" value="HS-2024-00847（氏名不明）" readonly style="background:var(--surface2)">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-error-fix')">スキップ</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-error-fix');showToast('修正を保存しました。再処理をキューに追加します','success')">修正して再処理</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Org -->
+<div class="modal-overlay" id="modal-add-org">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">🏢 組織を追加</div>
+      <button class="modal-close" onclick="closeModal('modal-add-org')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">組織名 *</label><input class="form-input" placeholder="例：横浜市立〇〇小学校"></div>
+      <div class="form-group">
+        <label class="form-label">種別 *</label>
+        <select class="form-select"><option>小学校</option><option>中学校</option><option>高等学校</option><option>教育委員会</option><option>市町村</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">親組織 *</label>
+        <select class="form-select"><option>横浜市</option><option>川崎市</option><option>相模原市</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">GWS OU パス</label><input class="form-input" placeholder="/神奈川県/横浜市/小学校/〇〇小"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-org')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-add-org');showToast('組織を追加しました','success')">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attr New -->
+<div class="modal-overlay" id="modal-attr-new">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🏷 属性項目を追加</div>
+      <button class="modal-close" onclick="closeModal('modal-attr-new')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">項目名（表示用）*</label><input class="form-input" placeholder="例：教員免許番号"></div>
+        <div class="form-group"><label class="form-label">フィールドキー *</label><input class="form-input" placeholder="teacher_license_no"><div class="form-hint">英数字・アンダースコアのみ</div></div>
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">データ形式 *</label>
+          <select class="form-select"><option>文字列（単一）</option><option>文字列（複数）</option><option>数値</option><option>日付</option><option>コードマスター（単一）</option><option>コードマスター（複数）</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">対象区分 *</label>
+          <select class="form-select"><option>教職員</option><option>生徒</option><option>共通</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">表示グループ</label>
+        <select class="form-select"><option>基本情報</option><option>連絡先情報</option><option>機微情報</option></select>
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"><span class="text-sm">必須項目</span></label>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked><span class="text-sm">変更履歴を記録</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-attr-new')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-attr-new');showToast('属性項目を追加しました','success')">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Form New -->
+<div class="modal-overlay" id="modal-form-new">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📋 フォームを作成</div>
+      <button class="modal-close" onclick="closeModal('modal-form-new')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">フォーム名 *</label><input class="form-input" placeholder="例：2025年度 緊急連絡先調査"></div>
+      <div class="form-group">
+        <label class="form-label">対象条件 *</label>
+        <select class="form-select"><option>全教員</option><option>小学校教員</option><option>中学校生徒</option><option>条件を詳細設定...</option></select>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">公開開始日</label><input class="form-input" type="date"></div>
+        <div class="form-group"><label class="form-label">回答期限</label><input class="form-input" type="date"></div>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px"><input type="checkbox"><span class="text-sm fw-600">名簿への自動反映を有効にする</span></label>
+        <select class="form-select" style="margin-top:4px"><option>反映先項目を選択...</option><option>自家用携帯番号</option><option>緊急連絡先</option></select>
+        <div class="form-hint">回答値が自動的に指定した属性項目に反映されます</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-form-new')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-form-new');showToast('フォームを作成しました。質問を追加してください','success')">作成してエディタへ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Permission New -->
+<div class="modal-overlay" id="modal-permission-new">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔐 権限ルールを追加</div>
+      <button class="modal-close" onclick="closeModal('modal-permission-new')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">ルール名 *</label><input class="form-input" placeholder="例：副担任クラス閲覧権"></div>
+      <div class="form-group">
+        <label class="form-label">主体条件（誰が）*</label>
+        <select class="form-select"><option>職種: 一般教員</option><option>職種: 校長</option><option>職種: 学年主任</option><option>属性値で条件指定...</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">対象条件（誰の）*</label>
+        <select class="form-select"><option>担任クラスの生徒</option><option>同一学校の生徒</option><option>同一市の教員</option><option>条件を詳細設定...</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">許可する操作・表示</label>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked><span class="text-sm">閲覧：基本情報</span></label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"><span class="text-sm">閲覧：連絡先情報</span></label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"><span class="text-sm">閲覧：機微情報</span></label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"><span class="text-sm">編集：基本情報</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-permission-new')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-permission-new');showToast('権限ルールを追加しました','success')">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal-overlay" id="modal-filter">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔽 詳細フィルター</div>
+      <button class="modal-close" onclick="closeModal('modal-filter')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">組織</label><select class="form-select"><option>すべて</option><option>横浜市</option><option>川崎市</option></select></div>
+        <div class="form-group"><label class="form-label">学校種</label><select class="form-select"><option>すべて</option><option>小学校</option><option>中学校</option><option>高校</option></select></div>
+        <div class="form-group"><label class="form-label">職種</label><select class="form-select"><option>すべて</option><option>一般教員</option><option>校長</option><option>学年主任</option></select></div>
+        <div class="form-group"><label class="form-label">GWS 同期状態</label><select class="form-select"><option>すべて</option><option>同期済み</option><option>エラー</option></select></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">属性条件を追加</label>
+        <div style="display:flex;gap:8px">
+          <select class="form-select" style="flex:1"><option>項目を選択...</option><option>部活顧問</option><option>採用区分</option></select>
+          <select class="form-select" style="width:120px"><option>＝（等しい）</option><option>≠（等しくない）</option><option>含む</option></select>
+          <input class="form-input" style="flex:1" placeholder="値...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="showToast('フィルターをリセットしました','info')">リセット</button>
+      <button class="btn btn-secondary" onclick="closeModal('modal-filter')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-filter');showToast('フィルターを適用しました','success')">適用</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<script>
+// ── NAVIGATION ──
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  const nav = document.getElementById('nav-' + page);
+  if (nav) nav.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── TABS ──
+function setRosterTab(el) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function setDetailTab(el, section) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.detail-pane').forEach(p => p.style.display = 'none');
+  const t = document.getElementById('detail-' + section);
+  if (t) t.style.display = '';
+}
+function setImportTab(el, section) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('import-tab-history').style.display = section === 'history' ? '' : 'none';
+  document.getElementById('import-tab-mapping').style.display = section === 'mapping' ? '' : 'none';
+}
+function setTransferTab(el) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  showToast('タブを切り替えました','info');
+}
+function setLogTab(el) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  showToast('ログを切り替えました','info');
+}
+function selectPermission(row) {
+  document.querySelectorAll('#page-permissions tbody tr').forEach(r => r.style.background = '');
+  row.style.background = 'var(--primary-light)';
+}
+
+// ── MODALS ──
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ── TOAST ──
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'success' ? ' toast-success' : type === 'warn' ? ' toast-warn' : type === 'danger' ? ' toast-danger' : '');
+  const icons = { success: '✓', warn: '⚠', danger: '⚠', info: 'ℹ' };
+  t.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.style.opacity = '0', 2800);
+  setTimeout(() => t.remove(), 3200);
+}
+</script>
+</body>
+</html>

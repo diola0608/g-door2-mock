@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名簿詳細 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.detail-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: calc(100vh - 56px - 57px);
+  overflow: hidden;
+}
+.detail-left {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.detail-right {
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+/* Profile header */
+.profile-header {
+  padding: 20px;
+  background: linear-gradient(135deg, var(--brand-800) 0%, var(--brand-700) 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.profile-avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-300), var(--brand-200));
+  color: var(--brand-900);
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255,255,255,.3);
+}
+.profile-name { font-size: 17px; font-weight: 700; }
+.profile-kana { font-size: 12px; opacity: .65; letter-spacing: .5px; }
+.profile-badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 2px; }
+.profile-id { font-size: 11px; font-family: var(--font-mono); opacity: .55; }
+
+/* side detail list */
+.detail-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.detail-list-item:last-child { border-bottom: none; }
+.detail-list-label { color: var(--text-low); min-width: 80px; }
+.detail-list-value { color: var(--text-high); font-weight: 500; flex: 1; }
+
+/* field group */
+.field-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 14px;
+}
+.field-group-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--n-50);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+.field-group-title { font-size: 12px; font-weight: 700; color: var(--text-med); text-transform: uppercase; letter-spacing: .4px; }
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.field-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.field-item:last-child, .field-item:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+.field-item:nth-child(even) { border-right: none; }
+.field-item.full { grid-column: 1 / -1; border-right: none; }
+.field-label { font-size: 11px; color: var(--text-low); margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+.field-value { font-size: 13px; color: var(--text-high); font-weight: 500; }
+.field-value.empty { color: var(--text-low); font-weight: 400; font-style: italic; }
+.field-edit-btn {
+  position: absolute;
+  right: 8px; top: 8px;
+  opacity: 0;
+  width: 22px; height: 22px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: var(--text-low);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.field-item:hover .field-edit-btn { opacity: 1; }
+.field-edit-btn:hover { background: var(--n-100); color: var(--brand); }
+
+/* history */
+.history-badge {
+  font-size: 10px;
+  background: var(--n-100);
+  color: var(--text-med);
+  padding: 1px 6px;
+  border-radius: var(--r-full);
+  cursor: pointer;
+}
+.history-badge:hover { background: var(--brand-100); color: var(--brand); }
+
+/* inline editor */
+.inline-edit-input {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--brand-400);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--brand-50);
+}
+</style>
+</head>
+<body data-page="roster-list">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <a href="roster-list.html">名簿一覧</a>
+        <span class="sep">›</span>
+        <span class="current">山田 太郎</span>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-ghost btn-sm"><i class="fa-solid fa-chevron-left"></i> 前の人物</button>
+        <button class="btn btn-ghost btn-sm">次の人物 <i class="fa-solid fa-chevron-right"></i></button>
+        <button class="btn btn-secondary btn-sm" data-modal-open="modal-transfer-req"><i class="fa-solid fa-right-left"></i> 所属変更申請</button>
+        <button class="btn btn-primary btn-sm" onclick="toggleEdit()"><i class="fa-solid fa-pen" id="edit-icon"></i> <span id="edit-label">編集モード</span></button>
+      </div>
+    </div>
+
+    <div class="detail-layout">
+      <!-- Left panel: profile summary -->
+      <div class="detail-left">
+        <div class="profile-header">
+          <div class="profile-avatar">山</div>
+          <div>
+            <p class="profile-name">山田 太郎</p>
+            <p class="profile-kana">やまだ たろう</p>
+          </div>
+          <div class="profile-badges">
+            <span class="badge badge-sky"><i class="fa-solid fa-chalkboard-teacher"></i> 教員</span>
+            <span class="badge" style="background:rgba(255,255,255,.15);color:white;">在籍</span>
+          </div>
+          <p class="profile-id">TCH-00142</p>
+        </div>
+
+        <!-- Quick info -->
+        <div style="flex:1">
+          <div class="detail-list-item">
+            <i class="fa-solid fa-building" style="color:var(--text-low);font-size:12px;width:14px"></i>
+            <span class="detail-list-label">所属</span>
+            <span class="detail-list-value" style="font-size:11px">名古屋市立千種小学校</span>
+          </div>
+          <div class="detail-list-item">
+            <i class="fa-solid fa-door-open" style="color:var(--text-low);font-size:12px;width:14px"></i>
+            <span class="detail-list-label">クラス</span>
+            <span class="detail-list-value">3年1組 担任</span>
+          </div>
+          <div class="detail-list-item">
+            <i class="fa-solid fa-envelope" style="color:var(--text-low);font-size:12px;width:14px"></i>
+            <span class="detail-list-label">メール</span>
+            <span class="detail-list-value" style="font-size:11px;word-break:break-all">yamada.taro@edu.nagoya.jp</span>
+          </div>
+          <div class="detail-list-item">
+            <i class="fa-brands fa-google" style="color:#4285f4;font-size:12px;width:14px"></i>
+            <span class="detail-list-label">G同期</span>
+            <span class="google-sync-badge synced detail-list-value"><i class="fa-solid fa-check-circle"></i> 同期済み</span>
+          </div>
+          <div class="detail-list-item">
+            <i class="fa-solid fa-calendar" style="color:var(--text-low);font-size:12px;width:14px"></i>
+            <span class="detail-list-label">在籍期間</span>
+            <span class="detail-list-value" style="font-size:11px">2009/04/01 〜</span>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div style="padding:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px">
+          <button class="btn btn-secondary btn-sm w-full" onclick="showToast('Google同期を開始しました', 'info')">
+            <i class="fa-brands fa-google"></i> Google同期を実行
+          </button>
+          <button class="btn btn-ghost btn-sm w-full" data-modal-open="modal-history-all">
+            <i class="fa-solid fa-clock-rotate-left"></i> 変更履歴を見る
+          </button>
+          <button class="btn btn-ghost btn-sm w-full" style="color:var(--red-600)">
+            <i class="fa-solid fa-user-slash"></i> アカウントを停止
+          </button>
+        </div>
+      </div>
+
+      <!-- Right panel: detail tabs -->
+      <div class="detail-right">
+        <div style="padding:16px 20px">
+          <div data-tabs>
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="basic">基本情報</button>
+              <button class="tab-btn" data-tab="contact">連絡先情報</button>
+              <button class="tab-btn" data-tab="sensitive">機微情報 <i class="fa-solid fa-lock" style="font-size:10px"></i></button>
+              <button class="tab-btn" data-tab="belong">所属・クラス</button>
+              <button class="tab-btn" data-tab="attrs">属性項目</button>
+              <button class="tab-btn" data-tab="history">変更履歴</button>
+            </div>
+
+            <!-- Basic Info -->
+            <div class="tab-panel active" data-tab-panel="basic">
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-circle-user" style="color:var(--brand)"></i>
+                  <span class="field-group-title">個人基本情報</span>
+                </div>
+                <div class="field-grid">
+                  <div class="field-item">
+                    <p class="field-label">姓</p>
+                    <p class="field-value" onclick="startInlineEdit(this)">山田</p>
+                    <button class="field-edit-btn" onclick="startInlineEdit(this.previousElementSibling)"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">名</p>
+                    <p class="field-value" onclick="startInlineEdit(this)">太郎</p>
+                    <button class="field-edit-btn" onclick="startInlineEdit(this.previousElementSibling)"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">姓（読み）</p>
+                    <p class="field-value" onclick="startInlineEdit(this)">やまだ</p>
+                    <button class="field-edit-btn" onclick="startInlineEdit(this.previousElementSibling)"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">名（読み）</p>
+                    <p class="field-value" onclick="startInlineEdit(this)">たろう</p>
+                    <button class="field-edit-btn" onclick="startInlineEdit(this.previousElementSibling)"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">生年月日 <span class="history-badge" onclick="showToast('履歴: 変更なし', 'info')">履歴</span></p>
+                    <p class="field-value">1982年4月15日</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">性別</p>
+                    <p class="field-value">男</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item full">
+                    <p class="field-label">メールアドレス</p>
+                    <p class="field-value">yamada.taro@edu.nagoya.jp</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-chalkboard-teacher" style="color:var(--sky-600)"></i>
+                  <span class="field-group-title">教員情報</span>
+                </div>
+                <div class="field-grid">
+                  <div class="field-item">
+                    <p class="field-label">職種</p>
+                    <p class="field-value">一般教員</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">教員免許番号 <span class="history-badge">履歴</span></p>
+                    <p class="field-value font-mono" style="font-size:12px">AIC-1982-042680</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">担当教科</p>
+                    <div class="field-value" style="display:flex;gap:4px;flex-wrap:wrap">
+                      <span class="badge badge-blue">国語</span>
+                      <span class="badge badge-blue">社会</span>
+                    </div>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">部活顧問</p>
+                    <div class="field-value">
+                      <span class="badge badge-green">サッカー部</span>
+                    </div>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">在籍区分 <span class="history-badge">履歴</span></p>
+                    <p class="field-value">正規採用</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">職員番号</p>
+                    <p class="field-value font-mono" style="font-size:12px">E20091432</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="tab-panel" data-tab-panel="contact">
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-phone" style="color:var(--green-600)"></i>
+                  <span class="field-group-title">連絡先</span>
+                </div>
+                <div class="field-grid">
+                  <div class="field-item full">
+                    <p class="field-label">住所 <span class="history-badge">履歴</span></p>
+                    <p class="field-value">〒466-0825 愛知県名古屋市昭和区山里町1-5-2</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">固定電話</p>
+                    <p class="field-value">052-851-XXXX</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">携帯電話（自家用）</p>
+                    <p class="field-value">090-XXXX-XXXX</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">緊急連絡先</p>
+                    <p class="field-value">山田 花子（配偶者）</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">緊急連絡先 電話</p>
+                    <p class="field-value">080-XXXX-XXXX</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sensitive -->
+            <div class="tab-panel" data-tab-panel="sensitive">
+              <div class="alert alert-warning mb-16">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div>このタブは権限を持つ閲覧者のみに表示されます。データへのアクセスはすべてログに記録されます。</div>
+              </div>
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-user-shield" style="color:var(--red-600)"></i>
+                  <span class="field-group-title">機微情報</span>
+                </div>
+                <div class="field-grid">
+                  <div class="field-item">
+                    <p class="field-label">人物の特徴 <i class="fa-solid fa-lock" style="font-size:9px;color:var(--text-low)"></i></p>
+                    <div class="field-value" style="display:flex;gap:4px;flex-wrap:wrap">
+                      <span class="badge badge-green">優良教員</span>
+                    </div>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">健康状態区分</p>
+                    <p class="field-value">良好</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item full">
+                    <p class="field-label">特記事項</p>
+                    <p class="field-value empty">（未入力）</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Belong -->
+            <div class="tab-panel" data-tab-panel="belong">
+              <div class="alert alert-blue mb-12">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>所属・クラスの変更は承認フローを経て実施されます。<a href="transfer.html" style="color:var(--brand-700);font-weight:600">所属変更申請画面</a>から申請してください。</div>
+              </div>
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-sitemap" style="color:var(--teal-600)"></i>
+                  <span class="field-group-title">現在の所属</span>
+                  <span class="badge badge-green ml-auto">在籍中</span>
+                </div>
+                <div class="field-grid">
+                  <div class="field-item full">
+                    <p class="field-label">所属組織</p>
+                    <p class="field-value">名古屋市 → 小学校 → 名古屋市立千種小学校</p>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">担任クラス</p>
+                    <p class="field-value">3年1組</p>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">所属開始</p>
+                    <p class="field-value">2009年4月1日</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-clock-rotate-left" style="color:var(--text-med)"></i>
+                  <span class="field-group-title">所属履歴</span>
+                </div>
+                <div style="padding:10px 14px">
+                  <div class="history-entry">
+                    <div class="history-meta">2009/04/01 〜<br>現在</div>
+                    <div>
+                      <p class="field-value" style="font-size:13px">名古屋市立千種小学校 / 3年1組 担任</p>
+                    </div>
+                    <span class="badge badge-green ml-auto">現在</span>
+                  </div>
+                  <div class="history-entry">
+                    <div class="history-meta">2004/04/01 〜<br>2009/03/31</div>
+                    <div><p class="field-value" style="font-size:13px">名古屋市立東山小学校 / 2年3組 担任</p></div>
+                  </div>
+                  <div class="history-entry">
+                    <div class="history-meta">2002/04/01 〜<br>2004/03/31</div>
+                    <div><p class="field-value" style="font-size:13px">名古屋市立東山小学校 / 担任なし</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom attrs -->
+            <div class="tab-panel" data-tab-panel="attrs">
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-list-check" style="color:var(--purple-600)"></i>
+                  <span class="field-group-title">カスタム属性項目</span>
+                  <span class="badge badge-purple ml-auto">6 項目</span>
+                </div>
+                <div class="field-grid">
+                  <div class="field-item">
+                    <p class="field-label">採用区分</p>
+                    <p class="field-value">正規採用 <span class="history-badge">履歴</span></p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">在籍年数</p>
+                    <p class="field-value">17年</p>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">最終研修参加日</p>
+                    <p class="field-value">2025/11/14 <span class="history-badge">履歴</span></p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item">
+                    <p class="field-label">研修参加回数</p>
+                    <p class="field-value">8 回</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="field-item full">
+                    <p class="field-label">備考（カスタム）</p>
+                    <p class="field-value empty">（未入力）</p>
+                    <button class="field-edit-btn"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- History -->
+            <div class="tab-panel" data-tab-panel="history">
+              <div class="field-group">
+                <div class="field-group-header">
+                  <i class="fa-solid fa-clock-rotate-left" style="color:var(--text-med)"></i>
+                  <span class="field-group-title">全変更履歴</span>
+                </div>
+                <div style="padding:0 14px">
+                  <div class="history-entry">
+                    <div class="history-meta">2026/06/10<br>09:15</div>
+                    <div class="history-value">
+                      <p style="font-size:12px;color:var(--text-med);margin-bottom:3px"><strong>担任クラス</strong> を変更</p>
+                      <p class="old-val">2年2組</p>
+                      <p class="new-val">3年1組</p>
+                    </div>
+                    <div class="history-by">田中 教子 が変更</div>
+                  </div>
+                  <div class="history-entry">
+                    <div class="history-meta">2025/11/14<br>13:40</div>
+                    <div class="history-value">
+                      <p style="font-size:12px;color:var(--text-med);margin-bottom:3px"><strong>最終研修参加日</strong> を変更</p>
+                      <p class="old-val">2024/10/20</p>
+                      <p class="new-val">2025/11/14</p>
+                    </div>
+                    <div class="history-by">自動同期</div>
+                  </div>
+                  <div class="history-entry">
+                    <div class="history-meta">2024/04/01<br>00:01</div>
+                    <div class="history-value">
+                      <p style="font-size:12px;color:var(--text-med);margin-bottom:3px"><strong>担任クラス</strong> を変更</p>
+                      <p class="old-val">1年1組</p>
+                      <p class="new-val">2年2組</p>
+                    </div>
+                    <div class="history-by">バッチ処理</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Transfer modal -->
+<div class="modal-overlay" id="modal-transfer-req">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-right-left" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">所属変更申請</h3>
+        <p class="modal-subtitle">山田 太郎 (TCH-00142)</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-transfer-req"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-blue mb-12">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>申請後、転入先組織の管理者が承認すると、指定日にバッチで実施されます。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">転入先組織 <span class="required">*</span></label>
+        <select class="form-control">
+          <option>— 転入先を選択 —</option>
+          <option>名古屋市立西小学校</option>
+          <option>名古屋市立東山小学校</option>
+          <option>愛知県立千種高等学校</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">変更予定日 <span class="required">*</span></label>
+        <input type="date" class="form-control" value="2026-07-01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">理由・備考</label>
+        <textarea class="form-control" rows="3" placeholder="変更理由を入力してください"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-transfer-req">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('所属変更申請を送信しました', 'success');closeModal('modal-transfer-req')">
+        <i class="fa-solid fa-paper-plane"></i> 申請を送信する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- History all modal -->
+<div class="modal-overlay" id="modal-history-all">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <i class="fa-solid fa-clock-rotate-left" style="color:var(--text-med)"></i>
+      <div><h3 class="modal-title">全変更履歴 — 山田 太郎</h3></div>
+      <button class="modal-close" data-modal-close="modal-history-all"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-low);margin-bottom:12px">直近50件の変更履歴を表示しています</p>
+      <div class="history-entry">
+        <div class="history-meta">2026/06/10 09:15</div>
+        <div class="history-value">
+          <p style="font-size:12px;color:var(--text-med)"><strong>担任クラス</strong></p>
+          <p class="old-val">2年2組</p><p class="new-val">3年1組</p>
+        </div>
+        <div class="history-by">田中 教子</div>
+      </div>
+      <div class="history-entry">
+        <div class="history-meta">2025/11/14 13:40</div>
+        <div class="history-value">
+          <p style="font-size:12px;color:var(--text-med)"><strong>最終研修参加日</strong></p>
+          <p class="old-val">2024/10/20</p><p class="new-val">2025/11/14</p>
+        </div>
+        <div class="history-by">自動同期</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+let editMode = false;
+function toggleEdit() {
+  editMode = !editMode;
+  document.getElementById('edit-icon').className = editMode ? 'fa-solid fa-check' : 'fa-solid fa-pen';
+  document.getElementById('edit-label').textContent = editMode ? '変更を保存' : '編集モード';
+  if (!editMode) showToast('変更を保存しました', 'success');
+}
+
+function startInlineEdit(el) {
+  const original = el.textContent.trim();
+  const input = document.createElement('input');
+  input.className = 'inline-edit-input';
+  input.value = original;
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+  function save() {
+    const p = document.createElement('p');
+    p.className = 'field-value';
+    p.textContent = input.value || original;
+    p.onclick = () => startInlineEdit(p);
+    input.replaceWith(p);
+    if (input.value !== original) showToast('値を更新しました', 'success');
+  }
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); if (e.key === 'Escape') { input.value = original; save(); } });
+}
+</script>
+</body>
+</html>

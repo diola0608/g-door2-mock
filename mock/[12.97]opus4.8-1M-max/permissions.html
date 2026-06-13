@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>権限管理 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .cond-block { border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; }
+    .cond-row { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-sm); margin-bottom: 8px; }
+    .cond-and { font-size: 11px; font-weight: 700; color: var(--brand-600); padding: 2px 0 2px 11px; }
+  </style>
+</head>
+<body data-page="permissions">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">権限管理</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile warning" style="width:38px;height:38px"><i data-ic="shield" data-size="20"></i></span> 権限管理</h1>
+          <p class="page-subtitle">「誰が（サブジェクト）」「何を（オブジェクト）」「どの範囲で（スコープ）」できるかを柔軟に組み合わせて設定します。</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-open="simulateModal"><i data-ic="eye" data-size="16"></i> 権限シミュレーション</button>
+          <button class="btn btn--primary" data-open="builderDrawer"><i data-ic="plus" data-size="16"></i> ポリシーを追加</button>
+        </div>
+      </div>
+
+      <!-- Scope selector -->
+      <div class="card mb-20"><div class="card__body flex items-center gap-16" style="padding:14px 18px">
+        <span class="fw-6 text-2"><i data-ic="layers" data-size="16" data-cls="text-3" style="vertical-align:-3px"></i> 設定対象スコープ</span>
+        <div class="segmented"><button class="active">テナント全体（既定）</button><button>青葉市</button><button>青葉第一中学校</button></div>
+        <span class="text-3 text-sm spacer">下位組織は上位設定を継承し、独自に上書き・追加できます（下位優先）。</span>
+      </div></div>
+
+      <div class="card">
+        <div class="card__head"><span class="card__title">権限ポリシー</span><span class="badge badge--neutral spacer">5 件</span></div>
+        <div class="table-wrap"><table class="tbl tbl-clickable" id="polTable"><thead>
+          <tr><th>ポリシー名</th><th>サブジェクト（誰が）</th><th>オブジェクト（何を）</th><th>スコープ（範囲）</th><th>由来</th><th>有効</th><th class="col-actions"></th></tr>
+        </thead><tbody id="polBody"></tbody></table></div>
+      </div>
+
+      <div class="alert alert--info mt-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">権限は属性項目やコード（選択肢）単位にも及びます。例:「人物の特徴」のうち「いじめ加害」は学年主任のみ閲覧可。これは<a href="codes.html" class="muted-link">コードマスター</a>で制御します。</div></div>
+    </div>
+  </main>
+
+  <!-- Policy builder drawer -->
+  <div class="overlay drawer-right" id="builderDrawer"><div class="drawer drawer--lg">
+    <div class="drawer__head"><span class="ico-tile warning"><i data-ic="shield"></i></span><div class="grow"><div class="fw-7" style="font-size:16px">ポリシービルダー</div><div class="text-3 text-sm">サブジェクト × オブジェクト × スコープ</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="drawer__body">
+      <div class="field"><label class="label">ポリシー名 <span class="req">*</span></label><input class="input" value="部活顧問：連絡先閲覧" /></div>
+
+      <!-- Subject -->
+      <div class="field"><span class="label"><span class="badge badge--info">1</span> サブジェクト（誰が）</span>
+        <div class="cond-block">
+          <div class="cond-row"><span class="badge badge--violet">職種</span><span class="text-2">が</span><select class="select btn--sm" style="height:32px;width:auto"><option>一般教員</option><option>学年主任</option><option>校長</option><option>養護教諭</option></select></div>
+          <div class="cond-and">AND</div>
+          <div class="cond-row"><span class="badge badge--teal">属性「部活顧問」</span><span class="text-2">に</span><select class="select btn--sm" style="height:32px;width:auto"><option>値が設定されている</option><option>特定の値を含む</option></select><button class="btn btn--icon btn--sm btn--ghost spacer"><i data-ic="x" data-size="14"></i></button></div>
+          <button class="btn btn--sm btn--ghost"><i data-ic="plus" data-size="14"></i> 条件を追加</button>
+        </div>
+      </div>
+
+      <!-- Object -->
+      <div class="field"><span class="label"><span class="badge badge--violet">2</span> オブジェクト（何を / どの機能を）</span>
+        <div class="cond-block">
+          <div class="field-row" style="gap:10px">
+            <select class="select"><option>連絡先情報</option><option>基本情報</option><option>機微情報</option><option>人物の特徴（コード）</option></select>
+            <select class="select" style="max-width:160px"><option>閲覧</option><option>閲覧・編集</option></select>
+          </div>
+          <div class="flex gap-16 mt-12"><label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 名簿表示</label><label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> エクスポート</label><label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 一括連絡</label></div>
+        </div>
+      </div>
+
+      <!-- Scope -->
+      <div class="field"><span class="label"><span class="badge badge--success">3</span> スコープ（どの範囲の対象に）</span>
+        <div class="cond-block">
+          <div class="cond-row"><span class="badge badge--neutral">組織範囲</span><select class="select btn--sm" style="height:32px;width:auto"><option>担当校</option><option>同一市町村・同一学校種</option><option>所属組織のみ</option><option>所属学年</option></select></div>
+          <div class="cond-and">AND（サブジェクト・オブジェクト関係）</div>
+          <div class="cond-row"><span class="badge badge--teal">対象の「所属部活」</span><span class="text-2">＝</span><span class="badge badge--teal">自分の「部活顧問」</span><span class="text-3 text-sm spacer">関係マッチング</span></div>
+        </div>
+        <div class="help">例: サッカー部顧問は、担当校のサッカー部に所属する生徒の連絡先のみ閲覧可。</div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="flex items-center gap-12"><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label><span class="fw-6">このポリシーを有効にする</span></div>
+    </div>
+    <div class="drawer__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--secondary" data-close data-toast="下書き保存しました（デモ）">下書き</button><button class="btn btn--primary" data-close data-toast="ポリシーを保存しました（デモ）">保存して有効化</button></div>
+  </div></div>
+
+  <!-- Simulate modal -->
+  <div class="overlay modal-center" id="simulateModal"><div class="modal modal--lg"><div class="modal__head"><span class="modal__icon ico-tile info"><i data-ic="eye"></i></span><div><div class="modal__title">権限シミュレーション</div><div class="modal__desc">特定ユーザーが特定の対象に何ができるかを確認</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field-row"><div class="field"><label class="label">ユーザー</label><div class="input-icon"><i data-ic="search" data-size="16"></i><input class="input" value="伊藤 学（一般教員・サッカー部顧問）" /></div></div><div class="field"><label class="label">対象</label><div class="input-icon"><i data-ic="search" data-size="16"></i><input class="input" value="佐藤 花子（2年A組・サッカー部）" /></div></div></div>
+      <div class="card"><div class="table-wrap"><table class="tbl tbl--compact"><thead><tr><th>情報カテゴリ</th><th>閲覧</th><th>編集</th><th>根拠ポリシー</th></tr></thead><tbody>
+        <tr><td>基本情報</td><td><span class="badge badge--success">可</span></td><td><span class="badge badge--success">可</span></td><td class="text-2 text-sm">担任クラスの基本情報</td></tr>
+        <tr><td>連絡先情報</td><td><span class="badge badge--success">可</span></td><td><span class="badge badge--neutral">不可</span></td><td class="text-2 text-sm">部活顧問：連絡先閲覧</td></tr>
+        <tr><td>機微情報</td><td><span class="badge badge--success">可</span></td><td><span class="badge badge--neutral">不可</span></td><td class="text-2 text-sm">担任権限</td></tr>
+        <tr><td>人物の特徴「いじめ加害」</td><td><span class="badge badge--danger">不可</span></td><td><span class="badge badge--neutral">—</span></td><td class="text-2 text-sm">学年主任のみ（コード制限）</td></tr>
+      </tbody></table></div></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--primary spacer" data-close>閉じる</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, POL = window.DATA.policies;
+      var srcBadge = { 'テナント既定': 'badge--neutral', '青葉第一中（上書き）': 'badge--violet', '青葉市（追加）': 'badge--teal' };
+      document.getElementById('polBody').innerHTML = POL.map(function (p) {
+        return '<tr onclick="if(!event.target.closest(\'label,.menu,button\'))openOverlay(\'builderDrawer\')">' +
+          '<td class="cell-main">' + p.name + '</td>' +
+          '<td><span class="badge badge--info">' + p.subject + '</span></td>' +
+          '<td class="text-2 text-sm">' + p.object + '</td>' +
+          '<td class="text-2 text-sm">' + p.scope + '</td>' +
+          '<td><span class="badge ' + (srcBadge[p.source] || 'badge--neutral') + '">' + p.source + '</span></td>' +
+          '<td onclick="event.stopPropagation()"><label class="toggle"><input type="checkbox"' + (p.enabled ? ' checked' : '') + ' /><span class="toggle__track"></span></label></td>' +
+          '<td class="col-actions" onclick="event.stopPropagation()"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item" onclick="openOverlay(\'builderDrawer\')">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item">' + I('copy', { size: 16 }) + '複製</div><div class="menu__item">' + I('eye', { size: 16 }) + 'シミュレート</div><div class="menu__sep"></div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('polBody'));
+    })();
+  </script>
+</body>
+</html>

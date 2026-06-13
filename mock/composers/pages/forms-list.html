@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム一覧 - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('forms', 'forms-list');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} フォーム</div>
+        <h1>フォーム一覧</h1>
+        <p>アンケート・情報収集フォームの管理。対象者の設定、名簿への自動反映、集計・閲覧権限の設定が可能です。</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <select class="form-select"><option>すべて</option><option>公開中</option><option>下書き</option><option>終了</option></select>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-primary btn-sm" onclick="location.href='form-builder.html'">${Icons.plus} フォームを作成</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>フォーム名</th>
+                <th>対象</th>
+                <th>回答期限</th>
+                <th>回答率</th>
+                <th>名簿連携</th>
+                <th>状態</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="clickable" onclick="location.href='form-results.html'">
+                <td>
+                  <strong>自家用携帯番号登録</strong>
+                  <p style="font-size:0.8rem;color:var(--color-gray-400);margin-top:2px">教員全員の自家用携帯番号を収集</p>
+                </td>
+                <td>△△市 小学校 一般教員</td>
+                <td>2026/06/15</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div class="progress-bar" style="width:80px"><div class="fill" style="width:68%"></div></div>
+                    <span>68%</span>
+                  </div>
+                </td>
+                <td><span class="badge-tag green">名簿反映あり</span></td>
+                <td><span class="badge-tag blue">公開中</span></td>
+                <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();location.href='form-results.html'">${Icons.barChart}</button></td>
+              </tr>
+              <tr class="clickable">
+                <td>
+                  <strong>ICT活用実態調査 2026</strong>
+                  <p style="font-size:0.8rem;color:var(--color-gray-400);margin-top:2px">教育委員会向けアンケート</p>
+                </td>
+                <td>〇〇県 全教員</td>
+                <td>2026/06/30</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div class="progress-bar" style="width:80px"><div class="fill" style="width:42%"></div></div>
+                    <span>42%</span>
+                  </div>
+                </td>
+                <td><span class="badge-tag gray">なし</span></td>
+                <td><span class="badge-tag blue">公開中</span></td>
+                <td><button class="btn btn-ghost btn-sm">${Icons.barChart}</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>新年度 クラス編成ヒアリング</strong>
+                </td>
+                <td>A市立第一小学校 教員</td>
+                <td>—</td>
+                <td>—</td>
+                <td><span class="badge-tag gray">なし</span></td>
+                <td><span class="badge-tag yellow">下書き</span></td>
+                <td><button class="btn btn-ghost btn-sm" onclick="location.href='form-builder.html'">${Icons.edit}</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  </script>
+</body>
+</html>

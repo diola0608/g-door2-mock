@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>コードマスター - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="code-perm-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>コード別権限制限 — いじめ加害者</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.9rem;color:var(--color-gray-600);margin-bottom:16px">このコードの選択肢を閲覧・選択できるユーザーを制限します。</p>
+        <div class="form-group">
+          <label class="form-label">閲覧可能な職種</label>
+          <div class="form-check"><input type="checkbox" checked> 学年主任</div>
+          <div class="form-check"><input type="checkbox"> 一般教員</div>
+          <div class="form-check"><input type="checkbox"> 校長</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">追加条件</label>
+          <select class="form-select"><option>同一学校の担任</option><option>なし</option></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('コード別権限を保存しました')">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('permissions', 'code-master');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 権限設定 ${Icons.chevronRight} コードマスター</div>
+        <h1>コードマスター</h1>
+        <p>属性項目で使用する選択肢コードの管理。コードごとに権限制限を設定できます。</p>
+      </div>
+
+      <div class="two-pane">
+        <div class="pane-left">
+          <div class="pane-header" style="display:flex;justify-content:space-between">
+            コードグループ
+            <button class="btn btn-ghost btn-sm">${Icons.plus}</button>
+          </div>
+          <div class="tree-item" data-selectable>部活動一覧</div>
+          <div class="tree-item active" data-selectable>人物の特徴</div>
+          <div class="tree-item" data-selectable>血液型</div>
+          <div class="tree-item" data-selectable>学校種</div>
+          <div class="tree-item" data-selectable>職種</div>
+        </div>
+        <div class="pane-right">
+          <div class="pane-header" style="display:flex;justify-content:space-between;align-items:center">
+            人物の特徴（4コード）
+            <button class="btn btn-primary btn-sm">${Icons.plus} コード追加</button>
+          </div>
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>コード</th>
+                    <th>表示名</th>
+                    <th>権限制限</th>
+                    <th>使用数</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>EXCELLENT</code></td>
+                    <td>優良生徒</td>
+                    <td><span class="badge-tag blue">担任・学年主任</span></td>
+                    <td>42</td>
+                    <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+                  </tr>
+                  <tr>
+                    <td><code>BULLY_VICTIM</code></td>
+                    <td>いじめ被害者</td>
+                    <td><span class="badge-tag yellow">学年主任</span></td>
+                    <td>8</td>
+                    <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+                  </tr>
+                  <tr>
+                    <td><code>BULLY_OFFENDER</code></td>
+                    <td>いじめ加害者</td>
+                    <td><span class="badge-tag red">学年主任のみ</span></td>
+                    <td>3</td>
+                    <td><button class="btn btn-ghost btn-sm" data-modal-open="code-perm-modal">${Icons.shield}</button></td>
+                  </tr>
+                  <tr>
+                    <td><code>FOLLOW_UP</code></td>
+                    <td>要フォロー</td>
+                    <td><span class="badge-tag blue">担任・学年主任</span></td>
+                    <td>15</td>
+                    <td><button class="btn btn-ghost btn-sm">${Icons.edit}</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+    initTreeToggle();
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム集計 - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('forms', 'forms-list');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb">
+          <a href="../index.html">ホーム</a> ${Icons.chevronRight}
+          <a href="forms-list.html">フォーム</a> ${Icons.chevronRight} 集計
+        </div>
+        <h1>自家用携帯番号登録 — 集計</h1>
+        <p>回答状況の確認と集計。名簿連携により回答は自動的に名簿に反映されています。</p>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card">
+          <div class="stat-icon blue">${Icons.users}</div>
+          <div><div class="stat-value">248</div><div class="stat-label">対象者数</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">${Icons.check}</div>
+          <div><div class="stat-value">169</div><div class="stat-label">回答済（68%）</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">${Icons.clock}</div>
+          <div><div class="stat-value">3日</div><div class="stat-label">回答期限まで</div></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <select class="form-select"><option>すべて</option><option>回答済</option><option>未回答</option></select>
+          <select class="form-select"><option>すべての学校</option><option>A市立第一小学校</option><option>B市立第二小学校</option></select>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-secondary btn-sm">CSVエクスポート</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>氏名</th>
+                <th>所属</th>
+                <th>自家用携帯番号</th>
+                <th>緊急連絡先</th>
+                <th>回答日時</th>
+                <th>名簿反映</th>
+                <th>状態</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>山田 太郎</strong></td>
+                <td>A市立第一小学校</td>
+                <td>090-1234-5678</td>
+                <td>山田 花子 090-9876-5432</td>
+                <td>2026/06/10 14:32</td>
+                <td><span class="sync-badge synced">${Icons.check} 反映済</span></td>
+                <td><span class="badge-tag green">回答済</span></td>
+              </tr>
+              <tr>
+                <td><strong>伊藤 健太</strong></td>
+                <td>A市立第一小学校</td>
+                <td>080-2345-6789</td>
+                <td>—</td>
+                <td>2026/06/11 09:15</td>
+                <td><span class="sync-badge synced">${Icons.check} 反映済</span></td>
+                <td><span class="badge-tag green">回答済</span></td>
+              </tr>
+              <tr>
+                <td><strong>田中 次郎</strong></td>
+                <td>A市立第一小学校</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td><span class="badge-tag yellow">未回答</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>コードマスター | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="codes">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">コードマスター</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile pink" style="width:38px;height:38px"><i data-ic="list" data-size="20"></i></span> コードマスター</h1>
+          <p class="page-subtitle">属性項目で使うコード（選択肢）を管理。コードごとに閲覧できる権限を制限できます。</p>
+        </div>
+        <div class="page-head__actions"><button class="btn btn--primary" data-open="addSetModal"><i data-ic="plus" data-size="16"></i> コードセット追加</button></div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:300px 1fr;align-items:start">
+        <div class="card">
+          <div class="card__head"><span class="card__title">コードセット</span></div>
+          <div class="card__body" style="padding:8px"><div id="setList"></div></div>
+        </div>
+
+        <div class="flex col gap-18">
+          <div class="card"><div class="card__body flex items-center gap-14">
+            <span class="ico-tile pink" style="width:48px;height:48px"><i data-ic="tag" data-size="22"></i></span>
+            <div class="grow"><div class="flex items-center gap-10"><h2 style="font-size:18px;font-weight:740">FEATURE（人物の特徴）</h2><span class="badge badge--danger"><i data-ic="lock" data-size="12"></i> 権限制限あり</span></div><div class="text-3 text-sm mt-4">6 コード ・ 機微情報カテゴリで使用 ・ 最終更新 2026-05-22</div></div>
+            <div class="flex items-center gap-8"><span class="text-sm text-2">コード単位の権限制限</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></div>
+          </div></div>
+
+          <div class="card">
+            <div class="card__head"><span class="card__title">コード一覧</span><button class="btn btn--sm btn--secondary spacer" data-open="addCodeModal"><i data-ic="plus" data-size="14"></i> コード追加</button></div>
+            <div class="table-wrap"><table class="tbl"><thead><tr><th>コード</th><th>表示ラベル</th><th>色</th><th>閲覧できる権限</th><th>有効</th><th class="col-actions"></th></tr></thead><tbody id="codeBody"></tbody></table></div>
+          </div>
+
+          <div class="alert alert--warning"><span class="alert__ico"><i data-ic="shieldAlert" data-size="18"></i></span><div class="alert__text">「いじめ加害」のように、<b>選択肢自体が学年主任にしか表示されない</b>といった制限が可能です。許可されていない権限のユーザーには、その選択肢が入力時にも表示されません。</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay modal-center" id="addCodeModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile pink"><i data-ic="tag"></i></span><div><div class="modal__title">コードを追加</div><div class="modal__desc">FEATURE（人物の特徴）</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field-row"><div class="field"><label class="label">コード <span class="req">*</span></label><input class="input mono" placeholder="F07" /></div><div class="field"><label class="label">表示ラベル <span class="req">*</span></label><input class="input" placeholder="例: 帰国生徒" /></div></div>
+      <div class="field"><label class="label">表示色</label><div class="pills"><span class="pill active">グレー</span><span class="pill">緑</span><span class="pill">黄</span><span class="pill">赤</span><span class="pill">紫</span></div></div>
+      <div class="field"><label class="label">このコードを閲覧できる権限</label><select class="select"><option>所属校教職員</option><option>担任・学年主任・養護</option><option>学年主任のみ</option><option>管理職・教育委員会</option></select></div>
+      <div class="help">設定した権限を持たないユーザーには、このコードが表示・選択できなくなります。</div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="コードを追加しました（デモ）">追加</button></div></div></div>
+
+  <div class="overlay modal-center" id="addSetModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile pink"><i data-ic="list"></i></span><div><div class="modal__title">コードセットを追加</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body"><div class="field"><label class="label">コードセットID <span class="req">*</span></label><input class="input mono" placeholder="例: NATIONALITY" /></div><div class="field"><label class="label">名称 <span class="req">*</span></label><input class="input" placeholder="例: 国籍" /></div><label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> コード単位の権限制限を有効化</label></div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="コードセットを作成しました（デモ）">作成</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, CS = window.DATA.codeSets, FC = window.DATA.featureCodes;
+      document.getElementById('setList').innerHTML = CS.map(function (s, i) {
+        return '<div class="nav-item' + (s.id === 'FEATURE' ? ' active' : '') + '" style="cursor:pointer" onclick="selSet(this)">' + I('tag', { size: 17 }) +
+          '<div class="grow" style="min-width:0"><div class="fw-6" style="font-size:13px">' + s.id + '</div><div class="text-3 text-xs">' + s.name + ' ・ ' + s.count + '件</div></div>' +
+          (s.restricted ? I('lock', { size: 14, class: 'text-3' }) : '') + '</div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('setList'));
+      window.selSet = function (el) { document.querySelectorAll('#setList .nav-item').forEach(function (n) { n.classList.remove('active'); }); el.classList.add('active'); };
+
+      document.getElementById('codeBody').innerHTML = FC.map(function (f) {
+        return '<tr><td class="mono">' + f.code + '</td><td class="cell-main">' + f.label + '</td>' +
+          '<td><span class="badge badge--' + f.color + '">' + f.label + '</span></td>' +
+          '<td><span class="badge badge--outline"><i data-ic="lock" data-size="12"></i> ' + f.restrict + '</span></td>' +
+          '<td><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></td>' +
+          '<td class="col-actions"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item">' + I('shield', { size: 16 }) + '権限設定</div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('codeBody'));
+    })();
+  </script>
+</body>
+</html>

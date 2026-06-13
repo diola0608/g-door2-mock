@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>監査ログ | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .log-row { cursor: pointer; }
+    .log-row:hover td { background: var(--gray-50); }
+    .action-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+    }
+    .action-create { background: #def7ec; color: #03543f; }
+    .action-update { background: var(--primary-light); color: var(--primary-dark); }
+    .action-delete { background: var(--danger-light); color: #9b1c1c; }
+    .action-login { background: #ede9fe; color: #5b21b6; }
+    .action-export { background: var(--warning-light); color: #92400e; }
+    .action-import { background: #e0f2fe; color: #0c4a6e; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">監査ログ</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">監査ログ</div>
+          <div class="page-subtitle">システム内のすべての操作履歴を記録・確認できます</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="showToast('CSVをエクスポートしました', 'info')">📥 CSV出力</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+        <div class="stat-card">
+          <div class="stat-icon blue">📊</div>
+          <div class="stat-info">
+            <div class="stat-value">12,847</div>
+            <div class="stat-label">今月の操作件数</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">👤</div>
+          <div class="stat-info">
+            <div class="stat-value">234</div>
+            <div class="stat-label">アクティブユーザー</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">⚠️</div>
+          <div class="stat-info">
+            <div class="stat-value">7</div>
+            <div class="stat-label">警告イベント</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">🔐</div>
+          <div class="stat-info">
+            <div class="stat-value">1,234</div>
+            <div class="stat-label">ログイン件数</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar mb-3">
+        <div style="position:relative;flex:1;max-width:280px">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400)">🔍</span>
+          <input type="text" placeholder="ユーザー・操作内容で検索..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid var(--gray-300);border-radius:6px;font-size:13px;outline:none">
+        </div>
+        <select class="form-control" style="max-width:160px">
+          <option>すべての操作</option>
+          <option>作成</option>
+          <option>更新</option>
+          <option>削除</option>
+          <option>ログイン</option>
+          <option>エクスポート</option>
+          <option>インポート</option>
+        </select>
+        <select class="form-control" style="max-width:160px">
+          <option>すべてのユーザー</option>
+          <option>田中 義雄</option>
+          <option>山田 花子</option>
+          <option>佐藤 次郎</option>
+        </select>
+        <input type="date" class="form-control" style="max-width:160px" value="2024-06-01">
+        <span style="font-size:13px;color:var(--gray-400)">〜</span>
+        <input type="date" class="form-control" style="max-width:160px" value="2024-06-12">
+        <button class="btn btn-secondary btn-sm">検索</button>
+      </div>
+
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>日時</th>
+                <th>操作者</th>
+                <th>操作種別</th>
+                <th>対象</th>
+                <th>詳細</th>
+                <th>IPアドレス</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/12 14:32:11</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">田中 義雄</div>
+                  <div style="font-size:11px;color:var(--gray-400)">システム管理者</div>
+                </td>
+                <td><span class="action-badge action-import">📤 インポート</span></td>
+                <td style="font-size:12px">横浜市立南小学校 教員名簿</td>
+                <td style="font-size:12px;color:var(--gray-500)">CSVインポート実行（45件 / エラー3件）</td>
+                <td style="font-size:11px;color:var(--gray-400)">192.168.1.10</td>
+              </tr>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/12 13:15:44</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">山田 花子</div>
+                  <div style="font-size:11px;color:var(--gray-400)">学校管理者</div>
+                </td>
+                <td><span class="action-badge action-update">✏️ 更新</span></td>
+                <td style="font-size:12px">人物: 鈴木 美咲（T-00445）</td>
+                <td style="font-size:12px;color:var(--gray-500)">携帯電話番号を変更</td>
+                <td style="font-size:11px;color:var(--gray-400)">10.0.0.45</td>
+              </tr>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/12 11:02:30</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">佐藤 次郎</div>
+                  <div style="font-size:11px;color:var(--gray-400)">一般ユーザー</div>
+                </td>
+                <td><span class="action-badge action-login">🔐 ログイン</span></td>
+                <td style="font-size:12px">認証システム</td>
+                <td style="font-size:12px;color:var(--gray-500)">ログイン成功</td>
+                <td style="font-size:11px;color:var(--gray-400)">203.0.113.22</td>
+              </tr>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/12 10:44:18</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">田中 義雄</div>
+                  <div style="font-size:11px;color:var(--gray-400)">システム管理者</div>
+                </td>
+                <td><span class="action-badge action-create">＋ 作成</span></td>
+                <td style="font-size:12px">アカウント: 高橋 美穂</td>
+                <td style="font-size:12px;color:var(--gray-500)">GWSアカウント新規作成（t-takahashi@edu.kanagawa.jp）</td>
+                <td style="font-size:11px;color:var(--gray-400)">192.168.1.10</td>
+              </tr>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/12 09:30:05</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">田中 義雄</div>
+                  <div style="font-size:11px;color:var(--gray-400)">システム管理者</div>
+                </td>
+                <td><span class="action-badge action-export">📥 エクスポート</span></td>
+                <td style="font-size:12px">人物一覧（全件）</td>
+                <td style="font-size:12px;color:var(--gray-500)">CSVエクスポート（4,521件）</td>
+                <td style="font-size:11px;color:var(--gray-400)">192.168.1.10</td>
+              </tr>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/11 17:22:50</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">鈴木 一郎</div>
+                  <div style="font-size:11px;color:var(--gray-400)">学校管理者</div>
+                </td>
+                <td><span class="action-badge action-update">✏️ 更新</span></td>
+                <td style="font-size:12px">所属変更申請（REQ-2024-0089）</td>
+                <td style="font-size:12px;color:var(--gray-500)">所属変更申請を承認</td>
+                <td style="font-size:11px;color:var(--gray-400)">10.0.0.12</td>
+              </tr>
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td style="font-size:12px;color:var(--gray-500);white-space:nowrap">2024/06/11 16:10:33</td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">田中 義雄</div>
+                  <div style="font-size:11px;color:var(--gray-400)">システム管理者</div>
+                </td>
+                <td><span class="action-badge action-delete" style="background:var(--danger-light);color:#9b1c1c">🗑 削除</span></td>
+                <td style="font-size:12px">人物: 退職者 山本 太郎（T-00123）</td>
+                <td style="font-size:12px;color:var(--danger)">⚠ アカウント削除（退職処理）</td>
+                <td style="font-size:11px;color:var(--gray-400)">192.168.1.10</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="padding:0 8px;color:var(--gray-400);font-size:13px">...</span>
+          <button class="page-btn">257</button>
+          <button class="page-btn">›</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Log Detail Modal -->
+<div class="modal-overlay" id="logDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">操作ログ詳細</span>
+      <button class="modal-close" onclick="closeModal('logDetailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase">日時</div>
+          <div style="font-size:13px;margin-top:4px">2024年6月12日 14:32:11</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase">操作者</div>
+          <div style="font-size:13px;margin-top:4px">田中 義雄（システム管理者）</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase">操作種別</div>
+          <div style="margin-top:4px"><span class="action-badge action-import">📤 インポート</span></div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase">IPアドレス</div>
+          <div style="font-size:13px;margin-top:4px">192.168.1.10</div>
+        </div>
+      </div>
+      <div style="background:var(--gray-50);border-radius:8px;padding:16px;font-size:12px;font-family:monospace;color:var(--gray-700);white-space:pre-wrap">
+{
+  "action": "csv_import",
+  "target": "横浜市立南小学校 教員名簿",
+  "file": "nanasho_teachers_20240612.csv",
+  "total_rows": 48,
+  "success": 45,
+  "error": 3,
+  "error_rows": [12, 23, 41],
+  "error_reason": "必須項目の欠損（氏名カナ）",
+  "import_id": "IMP-2024-0234"
+}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('logDetailModal')">閉じる</button>
+      <button class="btn btn-primary" onclick="closeModal('logDetailModal');navigate('import-log.html')">インポートログを見る →</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('監査ログ');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('audit-log.html');
+</script>
+</body>
+</html>

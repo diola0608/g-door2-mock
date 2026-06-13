@@ -1,0 +1,368 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>権限設定</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>権限設定</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-primary btn-sm" data-modal="add-rule-modal">＋ 新規ルール</button>
+  </div>
+</div>
+
+<div class="alert alert-info" style="margin-bottom:20px;">
+  <span class="alert-icon">🔐</span>
+  <div>
+    <strong>現在のスコープ: 埼玉県（テナント全体）</strong><br>
+    この設定はテナント全体に適用されます。各組織で上書き・追加設定が可能です。
+    <a href="#" data-page="organization" style="margin-left:8px;">組織別設定を見る →</a>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="subjects">サブジェクト（誰が）</button>
+  <button class="tab" data-tab="objects">オブジェクト（何を）</button>
+  <button class="tab" data-tab="conditions">条件設定</button>
+  <button class="tab" data-tab="attributes">属性項目権限</button>
+  <button class="tab" data-tab="overrides">組織別上書き</button>
+</div>
+
+<div class="tab-content active" data-tab="subjects">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">サブジェクト条件（誰が操作できるか）</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>ルール名</th>
+            <th>対象職種</th>
+            <th>組織スコープ</th>
+            <th>条件（属性）</th>
+            <th>優先度</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">担任教員のクラス閲覧</span></td>
+            <td><span class="tag tag-blue">教諭</span></td>
+            <td>所属学校</td>
+            <td>担任クラス = 対象クラス</td>
+            <td><span class="tag tag-amber">高</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">部活顧問の生徒連絡先閲覧</span></td>
+            <td><span class="tag tag-blue">教諭</span></td>
+            <td>所属学校</td>
+            <td>部活顧問 = 対象部活</td>
+            <td><span class="tag tag-amber">高</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">校長の同一学校種閲覧</span></td>
+            <td><span class="tag tag-orange">校長</span></td>
+            <td>同一市町村・同一学校種</td>
+            <td>—</td>
+            <td><span class="tag tag-gray">中</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">教育委員会の全体閲覧</span></td>
+            <td><span class="tag tag-orange">指導主事</span></td>
+            <td>テナント全体</td>
+            <td>—</td>
+            <td><span class="tag tag-gray">中</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">システム管理者</span></td>
+            <td><span class="tag tag-red">管理者</span></td>
+            <td>テナント全体</td>
+            <td>—</td>
+            <td><span class="tag tag-green">最高</span></td>
+            <td><button class="btn btn-ghost btn-sm">✏️</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="objects">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">オブジェクト権限（何への操作か）</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>機能</th>
+            <th>閲覧</th>
+            <th>編集</th>
+            <th>作成</th>
+            <th>削除</th>
+            <th>エクスポート</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);">基本情報</span></td>
+            <td><span class="tag tag-green">全員</span></td>
+            <td><span class="tag tag-green">担任・管理者</span></td>
+            <td><span class="tag tag-green">管理者</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-green">全員</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">連絡先情報</span></td>
+            <td><span class="tag tag-green">担任・部活顧問</span></td>
+            <td><span class="tag tag-orange">担任のみ</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-orange">担任・管理者</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">機微情報</span></td>
+            <td><span class="tag tag-red">校長・管理者</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">カスタム属性</span></td>
+            <td><span class="tag tag-green">属性別設定</span></td>
+            <td><span class="tag tag-green">属性別設定</span></td>
+            <td><span class="tag tag-green">属性別設定</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-orange">属性別設定</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">フォーム管理</span></td>
+            <td><span class="tag tag-green">全員</span></td>
+            <td><span class="tag tag-green">作成者のみ</span></td>
+            <td><span class="tag tag-green">全員</span></td>
+            <td><span class="tag tag-orange">作成者・管理者</span></td>
+            <td><span class="tag tag-green">全員</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="conditions">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">条件設定の組み合わせ</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="padding:16px;background:var(--surface-alt);border-radius:var(--radius-md);border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="tag tag-blue">条件ルール #1</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);font-weight:500;">担任教員 → 担任クラスの生徒の基本情報</span>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">
+          IF サブジェクト.職種 = "教諭" AND サブジェクト.担任クラス = オブジェクト.所属クラス<br>
+          THEN 基本情報.{閲覧, 編集} = true
+        </div>
+      </div>
+      <div style="padding:16px;background:var(--surface-alt);border-radius:var(--radius-md);border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="tag tag-blue">条件ルール #2</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);font-weight:500;">部活顧問 → 担当部活の生徒の連絡先</span>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">
+          IF サブジェクト.属性「部活顧問」= オブジェクト.属性「所属部活」<br>
+          THEN 連絡先情報.{閲覧} = true
+        </div>
+      </div>
+      <div style="padding:16px;background:var(--surface-alt);border-radius:var(--radius-md);border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="tag tag-blue">条件ルール #3</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);font-weight:500;">校長 → 同一市町村同一学校種の教員連絡先</span>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">
+          IF サブジェクト.職種 = "校長"<br>
+          AND サブジェクト.所属市町村 = オブジェクト.所属市町村<br>
+          AND サブジェクト.学校種 = オブジェクト.学校種<br>
+          THEN 連絡先情報.{閲覧} = true
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="attributes">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">属性項目ごとの権限設定</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>属性項目</th>
+            <th>データ形式</th>
+            <th>閲覧権限</th>
+            <th>編集権限</th>
+            <th>コード別制限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);">人物の特徴</span></td>
+            <td><span class="tag tag-gray">コード</span></td>
+            <td><span class="tag tag-orange">担任・学年主任</span></td>
+            <td><span class="tag tag-red">学年主任のみ</span></td>
+            <td>
+              <span class="tag tag-green" style="margin-right:4px;">優良生徒: 担任以上</span>
+              <span class="tag tag-red">いじめ加害者: 学年主任のみ</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">教員免許番号</span></td>
+            <td><span class="tag tag-gray">文字列</span></td>
+            <td><span class="tag tag-orange">校長・管理者</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-gray">—</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">担当部活</span></td>
+            <td><span class="tag tag-gray">複数文字列</span></td>
+            <td><span class="tag tag-green">全教職員</span></td>
+            <td><span class="tag tag-green">本人・管理者</span></td>
+            <td><span class="tag tag-gray">—</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">勤務評価点</span></td>
+            <td><span class="tag tag-gray">数値</span></td>
+            <td><span class="tag tag-red">校長・管理者</span></td>
+            <td><span class="tag tag-red">管理者のみ</span></td>
+            <td><span class="tag tag-gray">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="overrides">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">組織別上書き設定</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>組織</th>
+            <th>上書きルール</th>
+            <th>状態</th>
+            <th>最終更新</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);">さいたま市教育委員会</span></td>
+            <td>担任教員のクラス閲覧 → 学年全体に拡大</td>
+            <td><span class="tag tag-orange">上書きあり</span></td>
+            <td>2026/04/01</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">川口市立中学校</span></td>
+            <td>部活顧問の権限に「編集」を追加</td>
+            <td><span class="tag tag-orange">上書きあり</span></td>
+            <td>2026/05/15</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">浦和高校</span></td>
+            <td>—</td>
+            <td><span class="tag tag-green">継承</span></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Rule Modal -->
+<div class="modal-overlay" id="add-rule-modal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <h2>新規権限ルール</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ルール名</label>
+        <input class="form-input" placeholder="例: 学年主任の機微情報閲覧">
+      </div>
+      <div class="form-group">
+        <label class="form-label">サブジェクト条件（誰が）</label>
+        <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;">
+            <span style="color:var(--text-muted);">職種:</span>
+            <select class="form-select" style="width:auto;flex:1;">
+              <option>教諭</option>
+              <option>指導主事</option>
+              <option>校長</option>
+              <option>管理職</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;">
+            <span style="color:var(--text-muted);">属性条件:</span>
+            <select class="form-select" style="width:auto;flex:1;">
+              <option>指定なし</option>
+              <option>担任クラス</option>
+              <option>部活顧問</option>
+              <option>学年主任</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">オブジェクト（何を）</label>
+        <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;">
+            <span style="color:var(--text-muted);">対象データ:</span>
+            <select class="form-select" style="width:auto;flex:1;">
+              <option>基本情報</option>
+              <option>連絡先情報</option>
+              <option>機微情報</option>
+              <option>カスタム属性</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;">
+            <span style="color:var(--text-muted);">操作:</span>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" checked style="accent-color:var(--terracotta);"> 閲覧</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" style="accent-color:var(--terracotta);"> 編集</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" style="accent-color:var(--terracotta);"> 作成</label>
+            <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" style="accent-color:var(--terracotta);"> 削除</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">組織スコープ</label>
+        <select class="form-select">
+          <option>所属学校</option>
+          <option>同一市町村</option>
+          <option>同一学校種</option>
+          <option>テナント全体</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">ルールを作成</button>
+    </div>
+  </div>
+</div>

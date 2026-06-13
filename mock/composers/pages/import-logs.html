@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>インポートログ - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="error-detail-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2>エラー詳細 — 教員名簿_2026年4月.csv</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem;color:var(--color-gray-500);margin-bottom:12px">12件のエラーが検出されました。修正後に再インポートしてください。</p>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>行</th><th>識別子</th><th>エラー内容</th></tr></thead>
+            <tbody>
+              <tr><td>15</td><td>T-2018-0091</td><td>識別子不一致: メールアドレスが既存データと異なります</td></tr>
+              <tr><td>23</td><td>T-2020-0112</td><td>所属組織コード「SCH-999」が存在しません</td></tr>
+              <tr><td>47</td><td>—</td><td>必須項目「氏名」が空です</td></tr>
+              <tr><td>89</td><td>T-2012-0034</td><td>教員免許番号の形式が不正です</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm">エラーレポートをダウンロード</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('管理者へ問い合わせを送信しました')">システム管理者に問い合わせ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('roster', 'import-logs');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 名簿管理 ${Icons.chevronRight} インポートログ</div>
+        <h1>インポートログ</h1>
+        <p>CSVインポート・バッチ処理の実行履歴と結果を確認。エラー時は詳細を確認し対応できます。</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <select class="form-select"><option>すべての状態</option><option>エラー</option><option>処理中</option><option>完了</option></select>
+          <input class="form-input" style="width:200px" placeholder="ファイル名で検索">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>実行日時</th>
+                <th>ファイル名</th>
+                <th>種別</th>
+                <th>件数</th>
+                <th>成功</th>
+                <th>エラー</th>
+                <th>実行者</th>
+                <th>状態</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2026/06/12 09:15</td>
+                <td><strong>教員名簿_2026年4月.csv</strong></td>
+                <td>教員名簿</td>
+                <td>186</td>
+                <td>174</td>
+                <td style="color:var(--color-danger);font-weight:600">12</td>
+                <td>田中 太郎</td>
+                <td><span class="badge-tag red">エラー</span></td>
+                <td><button class="btn btn-ghost btn-sm" data-modal-open="error-detail-modal">詳細</button></td>
+              </tr>
+              <tr>
+                <td>2026/06/11 14:20</td>
+                <td><strong>生徒名簿_新1年_2026.csv</strong></td>
+                <td>生徒名簿</td>
+                <td>186</td>
+                <td>186</td>
+                <td>0</td>
+                <td>鈴木 次郎</td>
+                <td><span class="badge-tag green">完了</span></td>
+                <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+              </tr>
+              <tr>
+                <td>2026/06/12 10:30</td>
+                <td><strong>教員名簿_2026年4月.csv</strong></td>
+                <td>教員名簿</td>
+                <td>186</td>
+                <td colspan="2">
+                  <div class="progress-bar" style="margin-top:4px"><div class="fill" style="width:65%"></div></div>
+                  <span style="font-size:0.75rem;color:var(--color-gray-400)">121/186 処理中...</span>
+                </td>
+                <td>田中 太郎</td>
+                <td><span class="badge-tag yellow">処理中</span></td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>2026/06/08 11:00</td>
+                <td><strong>所属変更_4月分.csv</strong></td>
+                <td>所属変更</td>
+                <td>24</td>
+                <td>24</td>
+                <td>0</td>
+                <td>山田 一郎</td>
+                <td><span class="badge-tag green">完了</span></td>
+                <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  </script>
+</body>
+</html>

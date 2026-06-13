@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>テナント設定 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="settings">
+  <main id="main" class="main">
+    <div class="page page--wide" data-tabs>
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">テナント設定</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile" style="width:38px;height:38px;background:var(--c-100);color:var(--c-600)"><i data-ic="settings" data-size="20"></i></span> テナント設定</h1>
+          <p class="page-subtitle">青葉県教育委員会（テナント全体）の既定設定。1テナント=1GCPプロジェクトとしてデプロイされ、他テナントとデータは分離されています。</p>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:228px 1fr;align-items:start">
+        <!-- side nav -->
+        <div class="card"><div class="card__body" style="padding:8px">
+          <div class="nav-item active" data-tab="general" style="cursor:pointer"><i data-ic="building" data-size="18"></i><span>基本情報</span></div>
+          <div class="nav-item" data-tab="identify" style="cursor:pointer"><i data-ic="key" data-size="18"></i><span>本人識別設定</span></div>
+          <div class="nav-item" data-tab="approval" style="cursor:pointer"><i data-ic="swap" data-size="18"></i><span>承認フロー既定</span></div>
+          <div class="nav-item" data-tab="google" style="cursor:pointer"><i data-ic="google" data-size="18"></i><span>Google連携</span></div>
+          <div class="nav-item" data-tab="security" style="cursor:pointer"><i data-ic="shield" data-size="18"></i><span>セキュリティ</span></div>
+        </div></div>
+
+        <div>
+          <!-- general -->
+          <div data-tab-panel="general" class="tab-pane active">
+            <div class="card"><div class="card__head"><span class="card__title">基本情報</span></div><div class="card__body" style="max-width:560px">
+              <div class="field"><label class="label">テナント名</label><input class="input" value="青葉県教育委員会" /></div>
+              <div class="field-row"><div class="field"><label class="label">都道府県</label><input class="input" value="青葉県" /></div><div class="field"><label class="label">テナントID</label><input class="input mono" value="tenant-aoba" disabled /></div></div>
+              <div class="field"><label class="label">プライマリドメイン</label><input class="input mono" value="aoba-edu.ed.jp" /></div>
+              <div class="field"><span class="label">ブランドカラー</span><div class="flex gap-8">
+                <span style="width:34px;height:34px;border-radius:8px;background:#4f46e5;border:2px solid var(--brand-600);cursor:pointer"></span>
+                <span style="width:34px;height:34px;border-radius:8px;background:#0d9488;cursor:pointer"></span>
+                <span style="width:34px;height:34px;border-radius:8px;background:#2563eb;cursor:pointer"></span>
+                <span style="width:34px;height:34px;border-radius:8px;background:#db2777;cursor:pointer"></span>
+              </div></div>
+            </div><div class="card__foot"><button class="btn btn--primary spacer" data-toast="設定を保存しました（デモ）">保存</button></div></div>
+          </div>
+
+          <!-- identify -->
+          <div data-tab-panel="identify" class="tab-pane">
+            <div class="card"><div class="card__head"><span class="card__title"><i data-ic="key" data-size="17"></i> 本人識別設定（全体既定）</span></div><div class="card__body">
+              <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">同一人物を識別するための既定の識別子です。CSVインポート時にこの設定が初期値として使われます。識別子が一致した上で全項目一致を確認します。</div></div>
+              <div class="grid grid-2" style="max-width:680px">
+                <div class="field"><label class="label">教職員の主識別子</label><select class="select"><option>職員番号</option><option>メールアドレス</option></select></div>
+                <div class="field"><label class="label">児童生徒の主識別子</label><select class="select"><option>生徒番号</option><option>メールアドレス</option></select></div>
+              </div>
+              <label class="check mb-8"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 識別子一致時に全項目一致を確認する</label><br>
+              <label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 氏名＋生年月日を補助識別子として使用</label>
+            </div><div class="card__foot"><button class="btn btn--primary spacer" data-toast="識別設定を保存しました（デモ）">保存</button></div></div>
+          </div>
+
+          <!-- approval -->
+          <div data-tab-panel="approval" class="tab-pane">
+            <div class="card"><div class="card__head"><span class="card__title"><i data-ic="swap" data-size="17"></i> 承認フロー既定</span></div><div class="card__body">
+              <div class="flex col gap-14" style="max-width:620px">
+                <label class="check" style="justify-content:space-between"><span><b>所属変更に承認を必須にする</b><div class="help">無効にすると申請なしで変更可能（非推奨）</div></span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+                <div class="divider" style="margin:4px 0"></div>
+                <div class="field" style="margin:0"><label class="label">承認者</label><select class="select"><option>変更先組織の管理者</option><option>上位組織の管理者</option></select></div>
+                <label class="check" style="justify-content:space-between"><span>教育委員会権限はCSVで承認スキップ可</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+                <label class="check" style="justify-content:space-between"><span>発効前の取り消しを許可</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+              </div>
+            </div><div class="card__foot"><button class="btn btn--primary spacer" data-toast="承認設定を保存しました（デモ）">保存</button></div></div>
+          </div>
+
+          <!-- google -->
+          <div data-tab-panel="google" class="tab-pane">
+            <div class="card"><div class="card__head"><span class="card__title"><i data-ic="google" data-size="17"></i> Google Workspace連携</span><span class="badge badge--success spacer"><span class="dot-s"></span>接続済</span></div><div class="card__body">
+              <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">同期は本システム→Workspaceの一方向です。本システムで管理する項目がWorkspaceのアカウントへ反映されます。</div></div>
+              <dl class="def-list" style="grid-template-columns:200px 1fr;max-width:620px">
+                <dt>連携ドメイン</dt><dd class="mono">aoba-edu.ed.jp</dd>
+                <dt>同期対象OU</dt><dd>/青葉県 配下すべて</dd>
+                <dt>同期スケジュール</dt><dd>毎日 03:00（差分）</dd>
+                <dt>最終同期</dt><dd>2026-06-13 03:00（成功 1,204件）</dd>
+              </dl>
+              <div class="flex gap-10 mt-12"><button class="btn btn--secondary" data-toast="同期を開始しました（デモ）"><i data-ic="refresh" data-size="15"></i> 今すぐ同期</button><button class="btn btn--secondary">同期項目を設定</button></div>
+            </div></div>
+          </div>
+
+          <!-- security -->
+          <div data-tab-panel="security" class="tab-pane">
+            <div class="card"><div class="card__head"><span class="card__title"><i data-ic="shield" data-size="17"></i> セキュリティ</span></div><div class="card__body">
+              <div class="flex col gap-14" style="max-width:620px">
+                <label class="check" style="justify-content:space-between"><span>Googleアカウントでのログインを必須化</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+                <label class="check" style="justify-content:space-between"><span>機微情報の閲覧を監査ログに記録</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+                <label class="check" style="justify-content:space-between"><span>IPアドレス制限</span><label class="toggle"><input type="checkbox" /><span class="toggle__track"></span></label></label>
+                <div class="field" style="margin:0"><label class="label">セッションタイムアウト</label><select class="select" style="max-width:200px"><option>8時間</option><option>4時間</option><option>1時間</option></select></div>
+              </div>
+            </div><div class="card__foot"><button class="btn btn--primary spacer" data-toast="セキュリティ設定を保存しました（デモ）">保存</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // settings side-nav uses .nav-item; ensure active toggling on click
+    document.querySelectorAll('.page [data-tab]').forEach(function (t) {
+      t.addEventListener('click', function () {
+        document.querySelectorAll('.page .nav-item[data-tab]').forEach(function (n) { n.classList.remove('active'); });
+        if (t.classList.contains('nav-item')) t.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

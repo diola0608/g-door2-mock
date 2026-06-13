@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人物一覧 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .person-name-cell { display: flex; align-items: center; gap: 10px; }
+    .person-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      background: var(--primary-light); color: var(--primary-dark); cursor: pointer;
+    }
+    .filter-chip .remove { font-size: 14px; opacity: 0.6; }
+    .filter-chip .remove:hover { opacity: 1; }
+    .view-toggle { display: flex; gap: 2px; }
+    .view-btn {
+      width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-300);
+      background: white; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; transition: var(--transition);
+    }
+    .view-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .col-toggle-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 6px;
+      background: white; font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: var(--transition);
+    }
+    .col-toggle-btn:hover { background: var(--gray-50); }
+    .bulk-actions {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px; background: var(--primary-light);
+      border-radius: 8px; margin-bottom: 12px;
+    }
+    .bulk-count { font-size: 13px; font-weight: 600; color: var(--primary-dark); }
+    .table-row-link { cursor: pointer; }
+    .table-row-link:hover td { background: var(--gray-50); }
+    .history-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; color: var(--gray-400);
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">人物一覧</span>
+      </div>
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">人物一覧</div>
+          <div class="page-subtitle">全テナント登録人物 12,847件</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="openModal('importModal')">📤 CSVインポート</button>
+          <button class="btn btn-primary" onclick="openModal('addPersonModal')">＋ 人物を追加</button>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="card mb-4">
+        <div class="card-body" style="padding:16px">
+          <div class="filter-bar">
+            <div class="search-input" style="flex:1;max-width:360px;position:relative">
+              <span class="si" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400)">🔍</span>
+              <input type="text" placeholder="名前・メール・職員番号で検索..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid var(--gray-300);border-radius:6px;font-size:13px;outline:none">
+            </div>
+            <select class="form-control" style="max-width:160px">
+              <option>人物種別: すべて</option>
+              <option>教員</option>
+              <option>生徒</option>
+              <option>教育委員会職員</option>
+              <option>保護者</option>
+            </select>
+            <select class="form-control" style="max-width:200px">
+              <option>組織: すべて</option>
+              <option>横浜市</option>
+              <option>川崎市</option>
+              <option>相模原市</option>
+            </select>
+            <select class="form-control" style="max-width:160px">
+              <option>学校種: すべて</option>
+              <option>小学校</option>
+              <option>中学校</option>
+              <option>高校</option>
+            </select>
+            <button class="btn btn-primary btn-sm">絞り込む</button>
+            <button class="btn btn-ghost btn-sm">リセット</button>
+          </div>
+          <!-- Active Filters -->
+          <div class="filter-chips">
+            <div class="filter-chip">教員 <span class="remove" onclick="showToast('フィルターを解除しました', 'info')">×</span></div>
+            <div class="filter-chip">横浜市 <span class="remove" onclick="showToast('フィルターを解除しました', 'info')">×</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Controls -->
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2">
+          <span style="font-size:13px;color:var(--gray-500)">1,234件中 1-50件表示</span>
+          <select class="form-control" style="width:auto;padding:4px 28px 4px 8px;font-size:12px">
+            <option>50件表示</option>
+            <option>100件表示</option>
+            <option>200件表示</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="col-toggle-btn" onclick="openModal('colModal')">⚙️ 表示列</button>
+          <div class="view-toggle">
+            <button class="view-btn active" data-tooltip="テーブル表示">☰</button>
+            <button class="view-btn" data-tooltip="カード表示">⊞</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk Actions (shown when rows selected) -->
+      <div class="bulk-actions" id="bulkActions" style="display:none">
+        <span class="bulk-count" id="bulkCount">0件選択中</span>
+        <button class="btn btn-secondary btn-sm">📤 エクスポート</button>
+        <button class="btn btn-secondary btn-sm">🔄 所属変更</button>
+        <button class="btn btn-danger btn-sm">🗑 削除</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearSelection()">選択解除</button>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                <th>氏名</th>
+                <th>人物種別</th>
+                <th>所属組織</th>
+                <th>クラス / 役職</th>
+                <th>メールアドレス</th>
+                <th>ステータス</th>
+                <th>最終更新</th>
+                <th style="width:80px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#1a56db,#6366f1)">山</div>
+                    <div>
+                      <div style="font-weight:600">山田 花子</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00234</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-blue">教員</span></td>
+                <td>横浜市立北中学校</td>
+                <td>3年A組 担任 / 数学</td>
+                <td>h.yamada@edu.kanagawa.jp</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/10</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#0e9f6e,#059669)">佐</div>
+                    <div>
+                      <div style="font-weight:600">佐藤 次郎</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00189</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-blue">教員</span></td>
+                <td>川崎市立東小学校</td>
+                <td>2年B組 担任 / 国語</td>
+                <td>j.sato@edu.kanagawa.jp</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/08</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#c27803,#d97706)">鈴</div>
+                    <div>
+                      <div style="font-weight:600">鈴木 美咲</div>
+                      <div style="font-size:11px;color:var(--gray-400)">S-10045</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-green">生徒</span></td>
+                <td>相模原市立第一中学校</td>
+                <td>1年C組</td>
+                <td>—</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/05</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">田</div>
+                    <div>
+                      <div style="font-weight:600">田中 義雄</div>
+                      <div style="font-size:11px;color:var(--gray-400)">A-00012</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-purple">教育委員会</span></td>
+                <td>神奈川県教育委員会 情報課</td>
+                <td>課長</td>
+                <td>y.tanaka@edu.kanagawa.jp</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/12</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#e02424,#dc2626)">高</div>
+                    <div>
+                      <div style="font-weight:600">高橋 美穂</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00567</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-blue">教員</span></td>
+                <td>横浜市立南小学校</td>
+                <td>校長</td>
+                <td>m.takahashi@edu.kanagawa.jp</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/01</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#0694a2,#0891b2)">伊</div>
+                    <div>
+                      <div style="font-weight:600">伊藤 拓也</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00891</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-blue">教員</span></td>
+                <td>横浜市立西中学校</td>
+                <td>2年D組 担任 / 体育</td>
+                <td>t.ito@edu.kanagawa.jp</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot pending"></span>停止中</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/05/20</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+              <tr class="table-row-link" onclick="navigate('person-detail.html')">
+                <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" onchange="updateBulkActions()"></td>
+                <td>
+                  <div class="person-name-cell">
+                    <div class="person-avatar" style="background:linear-gradient(135deg,#be185d,#db2777)">渡</div>
+                    <div>
+                      <div style="font-weight:600">渡辺 健一</div>
+                      <div style="font-size:11px;color:var(--gray-400)">S-20123</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="tag tag-green">生徒</span></td>
+                <td>横浜市立東高校</td>
+                <td>3年B組</td>
+                <td>—</td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/04/01</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('person-detail.html')">詳細</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div class="pagination">
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="padding:0 8px;color:var(--gray-400);font-size:13px">...</span>
+          <button class="page-btn">25</button>
+          <button class="page-btn">›</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add Person Modal -->
+<div class="modal-overlay" id="addPersonModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">人物を追加</span>
+      <button class="modal-close" onclick="closeModal('addPersonModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓 <span class="required">*</span></label>
+          <input type="text" class="form-control" placeholder="山田">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名 <span class="required">*</span></label>
+          <input type="text" class="form-control" placeholder="花子">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓（かな）</label>
+          <input type="text" class="form-control" placeholder="やまだ">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名（かな）</label>
+          <input type="text" class="form-control" placeholder="はなこ">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">人物種別 <span class="required">*</span></label>
+          <select class="form-control">
+            <option>選択してください</option>
+            <option>教員</option>
+            <option>生徒</option>
+            <option>教育委員会職員</option>
+            <option>保護者</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">所属組織 <span class="required">*</span></label>
+          <select class="form-control">
+            <option>選択してください</option>
+            <option>横浜市立北中学校</option>
+            <option>横浜市立南小学校</option>
+            <option>川崎市立東小学校</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" placeholder="h.yamada@edu.kanagawa.jp">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">職員番号 / 生徒番号</label>
+          <input type="text" class="form-control" placeholder="T-00001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">生年月日</label>
+          <input type="date" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addPersonModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('addPersonModal');showToast('人物を追加しました')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal shortcut -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">CSVインポート</span>
+      <button class="modal-close" onclick="closeModal('importModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">CSVインポートページに移動して詳細な設定を行います。</p>
+      <button class="btn btn-primary w-full" onclick="navigate('csv-import.html')">CSVインポートページへ →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Column Settings Modal -->
+<div class="modal-overlay" id="colModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">表示列の設定</span>
+      <button class="modal-close" onclick="closeModal('colModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--gray-500);margin-bottom:12px">表示する列を選択してください</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <label class="checkbox-group"><input type="checkbox" checked> 氏名</label>
+        <label class="checkbox-group"><input type="checkbox" checked> 人物種別</label>
+        <label class="checkbox-group"><input type="checkbox" checked> 所属組織</label>
+        <label class="checkbox-group"><input type="checkbox" checked> クラス/役職</label>
+        <label class="checkbox-group"><input type="checkbox" checked> メールアドレス</label>
+        <label class="checkbox-group"><input type="checkbox" checked> ステータス</label>
+        <label class="checkbox-group"><input type="checkbox"> 生年月日</label>
+        <label class="checkbox-group"><input type="checkbox"> 教員免許番号</label>
+        <label class="checkbox-group"><input type="checkbox"> 部活動顧問</label>
+        <label class="checkbox-group"><input type="checkbox"> 職員番号</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('colModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('colModal');showToast('表示列を更新しました')">適用</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('人物一覧');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('roster.html');
+
+  function toggleSelectAll(cb) {
+    document.querySelectorAll('.row-check').forEach(c => c.checked = cb.checked);
+    updateBulkActions();
+  }
+
+  function updateBulkActions() {
+    const checked = document.querySelectorAll('.row-check:checked').length;
+    const ba = document.getElementById('bulkActions');
+    const bc = document.getElementById('bulkCount');
+    if (checked > 0) {
+      ba.style.display = 'flex';
+      bc.textContent = `${checked}件選択中`;
+    } else {
+      ba.style.display = 'none';
+    }
+  }
+
+  function clearSelection() {
+    document.querySelectorAll('.row-check, #selectAll').forEach(c => c.checked = false);
+    updateBulkActions();
+  }
+</script>
+</body>
+</html>

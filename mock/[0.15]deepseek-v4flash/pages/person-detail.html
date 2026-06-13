@@ -1,0 +1,521 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>人物詳細</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <a href="#" data-page="roster">名簿管理</a>
+      <span class="sep">/</span>
+      <span>佐藤 美咲</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" data-modal="edit-person-modal">✏️ 編集</button>
+    <button class="btn btn-secondary btn-sm" data-modal="transfer-modal">🔄 所属変更</button>
+    <button class="btn btn-primary btn-sm" data-modal="export-modal">📤 エクスポート</button>
+  </div>
+</div>
+
+<!-- Person Header -->
+<div class="card" style="margin-bottom:24px;">
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div style="width:64px;height:64px;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--navy-500),var(--navy-400));display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:600;color:var(--text-primary);flex-shrink:0;">SM</div>
+    <div style="flex:1;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;color:var(--text-primary);">佐藤 美咲</h2>
+        <span class="tag tag-green">在籍</span>
+        <span class="tag tag-blue">教諭</span>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text-muted);margin-top:4px;">
+        サトウ ミサキ • misaki.sato@edu-saitama.jp • 職員番号: TCH-48291
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:0.8rem;color:var(--text-muted);">最終更新</div>
+      <div style="font-size:0.85rem;color:var(--text-secondary);">2026/06/10 14:32</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="basic">基本情報</button>
+  <button class="tab" data-tab="contact">連絡先情報</button>
+  <button class="tab" data-tab="sensitive">機微情報</button>
+  <button class="tab" data-tab="attributes">カスタム属性</button>
+  <button class="tab" data-tab="history">変更履歴</button>
+  <button class="tab" data-tab="forms">フォーム回答</button>
+</div>
+
+<!-- Tab: Basic -->
+<div class="tab-content active" data-tab="basic">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">基本プロフィール</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">氏名</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">佐藤 美咲</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">氏名（かな）</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">さとう みさき</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">生年月日</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">1992/04/15 (34歳)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">性別</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">女性</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-size:0.8rem;color:var(--text-muted);">職員番号</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">TCH-48291</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">所属情報</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">所属組織</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">川口市立中学校</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">所属市町村</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">川口市</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">学校種</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">中学校</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">担当クラス</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">3年A組 (担任)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-size:0.8rem;color:var(--text-muted);">着任日</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">2020/04/01</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: Contact -->
+<div class="tab-content" data-tab="contact">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">連絡先</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">メールアドレス</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">misaki.sato@edu-saitama.jp</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">電話番号</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">048-XXX-XXXX</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">携帯電話</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">090-XXXX-XXXX</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-size:0.8rem;color:var(--text-muted);">住所</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);text-align:right;max-width:280px;">埼玉県川口市XXXXX 1-2-3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">緊急連絡先</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">緊急連絡先名</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">佐藤 健一 (父)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-size:0.8rem;color:var(--text-muted);">緊急連絡先電話</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">090-XXXX-XXXX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: Sensitive -->
+<div class="tab-content" data-tab="sensitive">
+  <div class="alert alert-warning">
+    <span class="alert-icon">🔒</span>
+    <div>この情報は権限のあるユーザーのみ閲覧できます。アクセスログが記録されます。</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">機微情報</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">要配慮事項</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.8rem;color:var(--text-muted);">不登校歴</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-size:0.8rem;color:var(--text-muted);">いじめ関連</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">アクセスログ（機微情報）</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(42,64,112,0.3);font-size:0.8rem;">
+          <span style="color:var(--text-secondary);">田中 管理者</span>
+          <span style="color:var(--text-muted);">2026/06/10 14:32</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(42,64,112,0.3);font-size:0.8rem;">
+          <span style="color:var(--text-secondary);">高橋 校長</span>
+          <span style="color:var(--text-muted);">2026/06/08 09:15</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.8rem;">
+          <span style="color:var(--text-secondary);">システム監査</span>
+          <span style="color:var(--text-muted);">2026/06/01 03:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: Custom Attributes -->
+<div class="tab-content" data-tab="attributes">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <span class="card-title">カスタム属性項目</span>
+      <button class="btn btn-secondary btn-sm" data-modal="add-attr-modal">＋ 属性を追加</button>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>属性項目</th>
+            <th>値</th>
+            <th>データ形式</th>
+            <th>有効期間</th>
+            <th>最終更新</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);">教員免許番号</span></td>
+            <td>平30 中教 第XXXXX号</td>
+            <td><span class="tag tag-gray">文字列</span></td>
+            <td>2020/04/01 〜 無期限</td>
+            <td>2026/04/01</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">担当部活</span></td>
+            <td>
+              <span class="tag tag-blue" style="margin-right:4px;">バスケットボール部</span>
+              <span class="tag tag-blue">美術部</span>
+            </td>
+            <td><span class="tag tag-gray">複数文字列</span></td>
+            <td>2024/04/01 〜 無期限</td>
+            <td>2026/04/01</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">人物の特徴</span></td>
+            <td><span class="tag tag-green">優良生徒</span></td>
+            <td><span class="tag tag-gray">コード</span></td>
+            <td>2025/06/01 〜 無期限</td>
+            <td>2025/06/01</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">勤務評価点</span></td>
+            <td>88.5</td>
+            <td><span class="tag tag-gray">数値</span></td>
+            <td>2025年度</td>
+            <td>2026/03/31</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: History -->
+<div class="tab-content" data-tab="history">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">変更履歴</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <div style="display:flex;gap:16px;padding:14px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+        <div style="width:40px;text-align:center;color:var(--emerald-light);font-size:1.1rem;">✏️</div>
+        <div style="flex:1;">
+          <div style="font-size:0.85rem;color:var(--text-primary);">担当クラスが変更されました</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">2年B組 → 3年A組</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.8rem;color:var(--text-secondary);">田中 管理者</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">2026/04/01 09:00</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:14px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+        <div style="width:40px;text-align:center;color:var(--terracotta-light);font-size:1.1rem;">🏷</div>
+        <div style="flex:1;">
+          <div style="font-size:0.85rem;color:var(--text-primary);">属性「人物の特徴」が追加されました</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">値: 優良生徒</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.8rem;color:var(--text-secondary);">高橋 校長</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">2025/06/01 11:20</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:14px 0;">
+        <div style="width:40px;text-align:center;color:var(--navy-200);font-size:1.1rem;">🏛</div>
+        <div style="flex:1;">
+          <div style="font-size:0.85rem;color:var(--text-primary);">所属組織が変更されました</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">川口市立南中学校 → 川口市立中学校</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.8rem;color:var(--text-secondary);">システム (CSVインポート)</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">2024/04/01 08:00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab: Forms -->
+<div class="tab-content" data-tab="forms">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">フォーム回答履歴</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>フォーム名</th>
+            <th>回答日</th>
+            <th>ステータス</th>
+            <th>名簿連携</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);">2026年度 教員携帯電話番号登録</span></td>
+            <td>2026/05/20</td>
+            <td><span class="tag tag-green">回答済</span></td>
+            <td><span class="tag tag-green">連携済</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">校内ICT環境アンケート</span></td>
+            <td>2026/04/15</td>
+            <td><span class="tag tag-green">回答済</span></td>
+            <td><span class="tag tag-gray">—</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);">2026年度 研修希望調査</span></td>
+            <td>—</td>
+            <td><span class="tag tag-amber">未回答</span></td>
+            <td><span class="tag tag-gray">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Person Modal -->
+<div class="modal-overlay" id="edit-person-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>基本情報を編集</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓</label>
+          <input class="form-input" value="佐藤">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名</label>
+          <input class="form-input" value="美咲">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓（かな）</label>
+          <input class="form-input" value="さとう">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名（かな）</label>
+          <input class="form-input" value="みさき">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input class="form-input" value="misaki.sato@edu-saitama.jp">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">生年月日</label>
+          <input class="form-input" type="date" value="1992-04-15">
+        </div>
+        <div class="form-group">
+          <label class="form-label">性別</label>
+          <select class="form-select">
+            <option>男性</option>
+            <option selected>女性</option>
+            <option>その他</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div class="modal-overlay" id="transfer-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>所属変更申請</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div>所属変更は承認フローが必要です。申請後、異動先組織の承認者による承認が必要となります。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">異動元組織</label>
+        <input class="form-input" value="川口市立中学校" disabled style="opacity:0.6;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">異動先組織</label>
+        <select class="form-select">
+          <option value="">選択してください</option>
+          <option>浦和高校</option>
+          <option>大宮高校</option>
+          <option>川口市立南中学校</option>
+          <option>さいたま市立中央小学校</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">異動希望日</label>
+        <input class="form-input" type="date" value="2026-07-01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">備考</label>
+        <textarea class="form-textarea" placeholder="異動理由など"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">申請する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Attribute Modal -->
+<div class="modal-overlay" id="add-attr-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>属性項目を追加</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">属性項目</label>
+        <select class="form-select">
+          <option>教員免許番号</option>
+          <option>担当部活</option>
+          <option>人物の特徴</option>
+          <option>勤務評価点</option>
+          <option>所有資格</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">値</label>
+        <input class="form-input" placeholder="値を入力">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">開始日</label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">終了日（任意）</label>
+          <input class="form-input" type="date">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>データエクスポート</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">出力形式</label>
+        <select class="form-select">
+          <option>CSV</option>
+          <option>Excel (.xlsx)</option>
+          <option>JSON</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">出力対象</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:var(--terracotta);"> 基本情報
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:var(--terracotta);"> 連絡先情報
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" style="accent-color:var(--terracotta);"> 機微情報
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:var(--terracotta);"> カスタム属性
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">エクスポート</button>
+    </div>
+  </div>
+</div>

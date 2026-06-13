@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人物ディレクトリ - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="filter-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2>詳細フィルター</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">人物区分</label>
+            <select class="form-select"><option>すべて</option><option>教員</option><option>生徒</option><option>教育委員会職員</option><option>関係者</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">所属組織</label>
+            <select class="form-select"><option>すべて</option><option>〇〇県（テナント全体）</option><option>△△市教育委員会</option><option>A市立第一小学校</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">クラス</label>
+            <select class="form-select"><option>すべて</option><option>1年1組</option><option>1年2組</option><option>2年1組</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">在籍状態</label>
+            <select class="form-select"><option>在籍中</option><option>休学中</option><option>卒業・退職</option><option>すべて</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('フィルターを適用しました')">適用</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('roster', 'roster-list');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 名簿管理 ${Icons.chevronRight} 人物ディレクトリ</div>
+        <h1>人物ディレクトリ</h1>
+        <p>登録されている教員・生徒・関係者の一覧。カテゴリータブで表示項目を切り替えられます。</p>
+      </div>
+
+      <div class="tabs" id="roster-tabs">
+        <button class="tab active" data-tab="basic">基本情報</button>
+        <button class="tab" data-tab="contact">連絡先情報</button>
+        <button class="tab" data-tab="sensitive">機微情報</button>
+        <button class="tab" data-tab="custom">カスタム属性</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <select class="form-select" style="min-width:140px">
+            <option>教員</option><option>生徒</option><option>教育委員会職員</option><option>関係者</option><option>すべて</option>
+          </select>
+          <select class="form-select" style="min-width:180px">
+            <option>A市立第一小学校</option><option>すべての組織</option><option>△△市教育委員会</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary btn-sm" data-modal-open="filter-modal">${Icons.settings} 詳細フィルター</button>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-secondary btn-sm" onclick="location.href='import.html'">${Icons.upload} CSVインポート</button>
+        <button class="btn btn-primary btn-sm" data-modal-open="add-person-modal">${Icons.plus} 人物を追加</button>
+      </div>
+
+      <div class="tab-panel" data-panel="basic">
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>氏名</th>
+                  <th>フリガナ</th>
+                  <th>生年月日</th>
+                  <th>性別</th>
+                  <th>所属組織</th>
+                  <th>クラス</th>
+                  <th>職種</th>
+                  <th>在籍</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>山田 太郎</strong></td>
+                  <td>ヤマダ タロウ</td>
+                  <td>1985/04/12</td>
+                  <td>男性</td>
+                  <td>A市立第一小学校</td>
+                  <td>3年2組（担任）</td>
+                  <td><span class="badge-tag blue">一般教員</span></td>
+                  <td><span class="status-dot active"></span>在籍</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>佐藤 花子</strong></td>
+                  <td>サトウ ハナコ</td>
+                  <td>2014/08/23</td>
+                  <td>女性</td>
+                  <td>A市立第一小学校</td>
+                  <td>5年1組</td>
+                  <td><span class="badge-tag gray">生徒</span></td>
+                  <td><span class="status-dot active"></span>在籍</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>鈴木 一郎</strong></td>
+                  <td>スズキ イチロウ</td>
+                  <td>1978/11/05</td>
+                  <td>男性</td>
+                  <td>A市立第一小学校</td>
+                  <td>—</td>
+                  <td><span class="badge-tag purple">校長</span></td>
+                  <td><span class="status-dot active"></span>在籍</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>高橋 美咲</strong></td>
+                  <td>タカハシ ミサキ</td>
+                  <td>2015/02/14</td>
+                  <td>女性</td>
+                  <td>A市立第一小学校</td>
+                  <td>4年3組</td>
+                  <td><span class="badge-tag gray">生徒</span></td>
+                  <td><span class="status-dot active"></span>在籍</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>伊藤 健太</strong></td>
+                  <td>イトウ ケンタ</td>
+                  <td>1990/06/30</td>
+                  <td>男性</td>
+                  <td>A市立第一小学校</td>
+                  <td>2年1組（担任）</td>
+                  <td><span class="badge-tag blue">一般教員</span></td>
+                  <td><span class="status-dot active"></span>在籍</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--color-gray-100);font-size:0.85rem;color:var(--color-gray-500)">
+            <span>1–5 / 248 件</span>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-secondary btn-sm" disabled>前へ</button>
+              <button class="btn btn-secondary btn-sm">次へ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="contact" style="display:none">
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>氏名</th><th>メールアドレス</th><th>自宅電話</th><th>携帯電話</th><th>住所</th><th>緊急連絡先</th></tr></thead>
+              <tbody>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>山田 太郎</strong></td>
+                  <td>t.yamada@edu.example.jp</td>
+                  <td>03-1234-5678</td>
+                  <td>090-1234-5678</td>
+                  <td>△△市中央1-2-3</td>
+                  <td>山田 花子（妻）090-9876-5432</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>佐藤 花子</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>△△市東町4-5-6</td>
+                  <td>佐藤 一郎（父）080-1111-2222</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="sensitive" style="display:none">
+        <div class="alert-banner warning" style="margin-bottom:16px">
+          ${Icons.shield}
+          <div><strong>機微情報カテゴリー</strong> — このタブの情報は権限設定により閲覧が制限されています。表示内容はあなたの権限に基づいています。</div>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>氏名</th><th>いじめ歴</th><th>不登校歴</th><th>人物の特徴</th><th>特記事項</th></tr></thead>
+              <tbody>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>佐藤 花子</strong></td>
+                  <td>なし</td>
+                  <td>なし</td>
+                  <td><span class="badge-tag green">優良生徒</span></td>
+                  <td>—</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>高橋 美咲</strong></td>
+                  <td>2024年度 軽微</td>
+                  <td>なし</td>
+                  <td>—</td>
+                  <td>フォロー継続中</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="custom" style="display:none">
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>氏名</th><th>部活動</th><th>教員免許番号</th><th>血液型</th><th>アレルギー</th></tr></thead>
+              <tbody>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>山田 太郎</strong></td>
+                  <td>サッカー部（顧問）</td>
+                  <td>1234567890</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+                <tr class="clickable" onclick="location.href='roster-detail.html'">
+                  <td><strong>佐藤 花子</strong></td>
+                  <td>吹奏楽部</td>
+                  <td>—</td>
+                  <td>A型</td>
+                  <td>花粉症</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `);
+
+    initTabs(document.getElementById('roster-tabs'));
+  </script>
+
+  <div class="modal-overlay" id="add-person-modal">
+    <div class="modal">
+      <div class="modal-header"><h2>人物を追加</h2><button class="modal-close" data-modal-close>&times;</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">氏名</label><input class="form-input" placeholder="山田 太郎"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">人物区分</label><select class="form-select"><option>教員</option><option>生徒</option><option>関係者</option></select></div>
+          <div class="form-group"><label class="form-label">所属組織</label><select class="form-select"><option>A市立第一小学校</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">メールアドレス</label><input class="form-input" type="email" placeholder="t.yamada@edu.example.jp"><p class="form-hint">Workspace同期対象の場合は入力してください</p></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('人物を登録しました（モック）')">登録</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

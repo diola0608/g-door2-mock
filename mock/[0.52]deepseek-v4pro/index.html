@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduCore — 教育委員会統合管理システム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font-sans:'Noto Sans JP',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',monospace;
+  --bg:#f1f5f9;--surface:#ffffff;--surface-alt:#f8fafc;
+  --border:#e2e8f0;--border-light:#f1f5f9;
+  --text:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
+  --primary:#1d4ed8;--primary-hover:#1e40af;--primary-light:#dbeafe;--primary-bg:#eff6ff;
+  --sidebar:#0f172a;--sidebar-hover:#1e293b;--sidebar-active:#1d4ed8;
+  --sidebar-text:#94a3b8;--sidebar-text-active:#e2e8f0;
+  --success:#059669;--success-bg:#ecfdf5;--warning:#d97706;--warning-bg:#fffbeb;
+  --danger:#dc2626;--danger-bg:#fef2f2;--info:#0284c7;--info-bg:#f0f9ff;
+  --radius-sm:6px;--radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -2px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -4px rgba(0,0,0,.04);
+  --header-h:56px;--sidebar-w:240px;--transition:150ms ease;
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh}
+button{cursor:pointer;font-family:inherit;border:none;background:none;font-size:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit}
+a{color:var(--primary);text-decoration:none}ul{list-style:none}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:100;box-shadow:var(--shadow-sm)}
+.header-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:var(--text)}
+.logo-mark{width:32px;height:32px;background:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.header-tenant{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg);border-radius:var(--radius);font-size:13px;color:var(--text-secondary);border:1px solid var(--border);font-weight:500}
+.tenant-dot{width:7px;height:7px;background:var(--success);border-radius:50%}
+.header-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);color:var(--text-secondary);position:relative;transition:all var(--transition)}
+.header-btn:hover{background:var(--bg);color:var(--text)}
+.header-btn .badge{position:absolute;top:4px;right:4px;width:16px;height:16px;background:var(--danger);color:#fff;border-radius:50%;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1}
+.header-user{display:flex;align-items:center;gap:8px;padding:4px 8px 4px 4px;border-radius:var(--radius);transition:all var(--transition);margin-left:4px}
+.header-user:hover{background:var(--bg)}
+.header-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:13px}
+.header-user-name{font-size:13px;font-weight:500;color:var(--text)}
+.header-user-role{font-size:11px;color:var(--text-muted)}
+
+.layout{display:flex;height:100vh;padding-top:var(--header-h)}
+.sidebar{width:var(--sidebar-w);background:var(--sidebar);overflow-y:auto;flex-shrink:0;padding:16px 0;z-index:50}
+.sidebar-section{margin-bottom:4px}
+.sidebar-section-title{padding:8px 20px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--sidebar-text)}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 20px;color:var(--sidebar-text);font-size:13px;font-weight:500;transition:all var(--transition);border-left:3px solid transparent;cursor:pointer}
+.sidebar-item:hover{background:var(--sidebar-hover);color:var(--sidebar-text-active)}
+.sidebar-item.active{background:rgba(29,78,216,.15);color:#93c5fd;border-left-color:var(--sidebar-active);font-weight:600}
+.sidebar-badge{margin-left:auto;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600;background:rgba(220,38,38,.2);color:#fca5a5}
+.sidebar-divider{height:1px;background:rgba(148,163,184,.12);margin:8px 16px}
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+
+.page-header{margin-bottom:24px}
+.page-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.page-subtitle{font-size:13px;color:var(--text-muted);margin-top:2px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin-bottom:6px}
+.breadcrumb a{color:var(--text-muted)}.breadcrumb a:hover{color:var(--primary)}.breadcrumb .sep{color:var(--border)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;transition:all var(--transition);white-space:nowrap;line-height:1.4}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover);box-shadow:var(--shadow-md)}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg);border-color:#cbd5e1}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#b91c1c}
+.btn-ghost{color:var(--text-secondary)}.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:var(--radius-sm)}
+.btn-lg{padding:10px 22px;font-size:14px}
+.btn-icon{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius);color:var(--text-secondary);border:1px solid var(--border);background:var(--surface)}
+.btn-icon:hover{background:var(--bg);color:var(--text)}
+.btn-icon.danger{color:var(--danger);border-color:#fecaca;background:var(--danger-bg)}.btn-icon.danger:hover{background:#fee2e2}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header-title{font-size:14px;font-weight:600}
+.card-body{padding:20px}
+.card-footer{padding:12px 20px;border-top:1px solid var(--border);background:var(--surface-alt);border-radius:0 0 var(--radius-lg) var(--radius-lg)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:flex-start;justify-content:space-between;transition:all var(--transition)}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stat-card-label{font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+.stat-card-value{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.02em;line-height:1}
+.stat-card-change{font-size:11px;color:var(--success);margin-top:6px;font-weight:500}
+.stat-card-change.down{color:var(--danger)}
+.stat-card-icon{width:40px;height:40px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all var(--transition);cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--text)}.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:10px 14px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);background:var(--surface-alt);border-bottom:1px solid var(--border);white-space:nowrap}
+thead th.sortable{cursor:pointer;user-select:none}thead th.sortable:hover{color:var(--text)}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+tbody tr{transition:background var(--transition)}tbody tr:hover{background:var(--primary-bg)}
+tbody tr:last-child td{border-bottom:none}.checkbox-cell{width:40px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-success{background:var(--success-bg);color:var(--success)}.badge-warning{background:var(--warning-bg);color:var(--warning)}
+.badge-danger{background:var(--danger-bg);color:var(--danger)}.badge-info{background:var(--info-bg);color:var(--info)}
+.badge-neutral{background:var(--bg);color:var(--text-secondary)}
+.badge-count{font-size:10px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:var(--primary-light);color:var(--primary);font-weight:700}
+
+.empty-state{text-align:center;padding:60px 20px}
+.empty-state-icon{width:64px;height:64px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--text-muted)}
+.empty-state-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.empty-state-text{font-size:13px;color:var(--text-muted);max-width:360px;margin:0 auto 20px}
+
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;letter-spacing:.01em}
+.form-label .required{color:var(--danger);margin-left:2px}
+.form-input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);transition:all var(--transition);outline:none}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+.form-input::placeholder{color:var(--text-muted)}
+.form-select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px;cursor:pointer;outline:none}
+.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+.form-textarea{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);resize:vertical;min-height:80px;outline:none}
+.form-textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease;backdrop-filter:blur(2px)}
+.modal{background:var(--surface);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);width:90%;max-width:560px;max-height:85vh;overflow-y:auto;animation:slideUp .2s ease}
+.modal-lg{max-width:780px}
+.modal-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1;border-radius:var(--radius-xl) var(--radius-xl) 0 0}
+.modal-title{font-size:16px;font-weight:700}
+.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);color:var(--text-muted)}
+.modal-close:hover{background:var(--bg);color:var(--text)}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.toast-container{position:fixed;top:72px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);animation:slideIn .2s ease;display:flex;align-items:center;gap:10px;max-width:380px;background:var(--surface);border:1px solid var(--border)}
+.toast.success{border-left:4px solid var(--success)}.toast.error{border-left:4px solid var(--danger)}.toast.warning{border-left:4px solid var(--warning)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.search-box{position:relative}
+.search-box .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
+.search-box input{padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);background:var(--surface);outline:none;width:280px}
+.search-box input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+
+.page-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.page-toolbar-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.page-toolbar-right{display:flex;align-items:center;gap:8px}
+
+.tree-node-header{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;transition:all var(--transition)}
+.tree-node-header:hover{background:var(--bg)}
+.tree-toggle{width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);flex-shrink:0;transition:transform var(--transition)}
+.tree-toggle.open{transform:rotate(90deg)}
+.tree-node-children{padding-left:24px;display:none}.tree-node-children.open{display:block}
+.tree-node.active>.tree-node-header{background:var(--primary-light);color:var(--primary);font-weight:600}
+.tree-badge{font-size:11px;color:var(--text-muted);margin-left:auto}
+
+.steps{display:flex;gap:0;margin-bottom:28px}
+.step{flex:1;display:flex;align-items:center;gap:10px;padding:14px 16px;position:relative;font-size:13px;font-weight:500;color:var(--text-muted)}
+.step::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--border);border-radius:1.5px}
+.step-number{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--border);flex-shrink:0;background:var(--surface)}
+.step.active{color:var(--text);font-weight:600}
+.step.active .step-number{border-color:var(--primary);background:var(--primary);color:#fff}
+.step.active::after{background:var(--primary)}
+.step.done{color:var(--success)}.step.done .step-number{border-color:var(--success);background:var(--success);color:#fff}
+.step.done::after{background:var(--success)}
+
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:13px;color:var(--text-secondary)}
+.pagination-btns{display:flex;gap:4px}
+.pagination-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--text-secondary);border:1px solid var(--border);background:var(--surface);transition:all var(--transition)}
+.pagination-btn:hover{border-color:#cbd5e1}
+.pagination-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+.pagination-btn:disabled{opacity:.4;cursor:not-allowed}
+
+.notification-panel{position:fixed;top:var(--header-h);right:0;width:380px;background:var(--surface);border-left:1px solid var(--border);border-bottom:1px solid var(--border);box-shadow:var(--shadow-lg);z-index:150;max-height:calc(100vh - var(--header-h));overflow-y:auto;display:none;border-radius:0 0 0 var(--radius-lg)}
+.notification-panel.open{display:block;animation:slideRight .15s ease}
+.notification-item{padding:14px 18px;border-bottom:1px solid var(--border-light);transition:background var(--transition);cursor:pointer;display:flex;gap:10px}
+.notification-item:hover{background:var(--bg)}.notification-item.unread{background:var(--primary-bg)}
+.notification-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:5px}
+.notification-content{flex:1;min-width:0}
+.notification-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.notification-desc{font-size:12px;color:var(--text-muted);line-height:1.5}
+.notification-time{font-size:11px;color:var(--text-muted);margin-top:4px}
+@keyframes slideRight{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+
+.panel-layout{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+
+.detail-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px;display:flex;align-items:flex-start;gap:20px}
+.detail-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;flex-shrink:0}
+.detail-info{flex:1}.detail-name{font-size:20px;font-weight:700;margin-bottom:2px}
+.detail-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--text-muted)}
+.detail-meta-item{display:flex;align-items:center;gap:4px}
+.detail-actions{display:flex;gap:8px;flex-shrink:0}
+
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.info-item{padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--border-light)}
+.info-item:nth-child(odd){border-right:1px solid var(--border-light)}.info-item:nth-last-child(-n+2){border-bottom:none}
+.info-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.info-value{font-size:14px;color:var(--text);font-weight:500}
+
+.timeline-item{padding:14px 0 14px 28px;border-left:2px solid var(--border);position:relative;margin-left:6px}
+.timeline-item::before{content:'';position:absolute;left:-6px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--border);border:2px solid var(--surface)}
+.timeline-item:last-child{border-left-color:transparent}
+.timeline-date{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:3px}
+.timeline-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.timeline-desc{font-size:12px;color:var(--text-secondary)}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all var(--transition);cursor:pointer}
+.form-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);border-color:#cbd5e1}
+.form-card-icon{width:40px;height:40px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.form-card-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.form-card-desc{font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.6}
+.form-card-meta{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-muted)}
+
+.icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}.icon-sm{width:16px;height:16px}.icon-md{width:20px;height:20px}.icon-lg{width:24px;height:24px}
+
+.checkbox-wrap{display:flex;align-items:center;gap:8px;cursor:pointer}
+.checkbox-wrap input[type=checkbox]{appearance:none;width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;cursor:pointer;transition:all var(--transition);flex-shrink:0;position:relative}
+.checkbox-wrap input[type=checkbox]:checked{background:var(--primary);border-color:var(--primary)}
+.checkbox-wrap input[type=checkbox]:checked::after{content:'';position:absolute;left:4px;top:1px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0}
+.text-muted{color:var(--text-muted)}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.announcement-bar{padding:10px 20px;background:var(--warning-bg);border-bottom:1px solid #fde68a;font-size:12px;text-align:center;color:#92400e;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px}
+
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}.panel-layout{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{display:none}.content{padding:16px}.stats-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo"><div class="logo-mark">E</div><span>EduCore</span></div>
+  <div class="header-actions">
+    <button class="header-tenant" onclick="toast('テナント切替はモックでは無効です')"><span class="tenant-dot"></span>埼玉県教育委員会<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="header-btn" onclick="toggleNotifications()" title="通知"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="badge">3</span></button>
+    <button class="header-btn" onclick="toast('ヘルプセンター（モック）')" title="ヘルプ"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <div class="header-user" onclick="toast('ユーザーメニュー（モック）')"><div class="header-avatar">管</div><div><div class="header-user-name">管理者 太郎</div><div class="header-user-role">システム管理者</div></div><svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+  </div>
+</header>
+
+<div class="notification-panel" id="notifPanel">
+  <div class="card-header"><span class="card-header-title">通知</span><button class="btn btn-ghost btn-sm">全て既読にする</button></div>
+  <div class="notification-item unread" onclick="nav('approvals');closeNotifications()"><div class="notification-dot"></div><div class="notification-content"><div class="notification-title">所属変更申請が届いています</div><div class="notification-desc">さいたま市立大宮小学校の山田花子先生から、鈴木一郎さんの所属変更申請があります。</div><div class="notification-time">10分前</div></div></div>
+  <div class="notification-item unread" onclick="nav('logs');closeNotifications()"><div class="notification-dot"></div><div class="notification-content"><div class="notification-title">CSVインポートエラー</div><div class="notification-desc">2026年度新入生一括登録.csv 12件のエラーが発生しました。</div><div class="notification-time">1時間前</div></div></div>
+  <div class="notification-item unread" onclick="nav('forms');closeNotifications()"><div class="notification-dot"></div><div class="notification-content"><div class="notification-title">アンケート回答期限が迫っています</div><div class="notification-desc">教員ICT活用状況調査 回答率 67%（期限: 06/20）</div><div class="notification-time">3時間前</div></div></div>
+  <div class="notification-item"><div class="notification-content"><div class="notification-title">06/12 夜間メンテナンスのお知らせ</div><div class="notification-desc">22:00〜翌2:00までサービスが一時停止します。</div><div class="notification-time">1日前</div></div></div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">メイン</div>
+      <div class="sidebar-item active" data-route="dashboard" onclick="nav('dashboard')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>ダッシュボード</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">名簿</div>
+      <div class="sidebar-item" data-route="roster" onclick="nav('roster')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>名簿一覧</div>
+      <div class="sidebar-item" data-route="csv-import" onclick="nav('csv-import')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></span>CSVインポート</div>
+      <div class="sidebar-item" data-route="approvals" onclick="nav('approvals')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>承認管理<span class="sidebar-badge">7</span></div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">組織・アカウント</div>
+      <div class="sidebar-item" data-route="organizations" onclick="nav('organizations')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/></svg></span>組織管理</div>
+      <div class="sidebar-item" data-route="accounts" onclick="nav('accounts')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>アカウント管理</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">フォーム</div>
+      <div class="sidebar-item" data-route="forms" onclick="nav('forms')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>フォーム一覧</div>
+      <div class="sidebar-item" data-route="form-responses" onclick="nav('form-responses','F001')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></span>回答管理</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">設定</div>
+      <div class="sidebar-item" data-route="attributes" onclick="nav('attributes')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>属性項目設定</div>
+      <div class="sidebar-item" data-route="codes" onclick="nav('codes')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>コード管理</div>
+      <div class="sidebar-item" data-route="permissions" onclick="nav('permissions')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>権限設定</div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">その他</div>
+      <div class="sidebar-item" data-route="logs" onclick="nav('logs')"><span class="sidebar-icon"><svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>変更ログ</div>
+    </div>
+  </nav>
+  <main class="content" id="contentArea"></main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<div id="modalContainer"></div>
+
+<script>
+// ===== ICON SVG PATHS =====
+const IS={search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM21 21l-4.3-4.3',plus:'M5 12h14M12 5v14',download:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',upload:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',filter:'M22 3H2l8 9.46V19l4 2v-8.54L22 3',edit:'M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z',trash:'M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',check:'M20 6 9 17l-5-5',x:'M18 6 6 18M6 6l12 12',eye:'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6',user:'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8',users:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',building:'M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01',clock:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20M12 6v6l4 2',alertTriangle:'M21.73 18l-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3ZM12 9v4M12 17h.01',settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1',mail:'M2 4h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7',barChart:'M12 20V10M18 20V4M6 20v-4',fileText:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H9H8',chevronRight:'M9 18l6-6-6-6',calendar:'M3 4h18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2M16 2v4M8 2v4M3 10h18',formIcon:'M2 3h20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2M8 21h8M12 17v4'};
+function si(p,cl='icon-md'){return `<svg class="icon ${cl}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="${p}"/></svg>`}
+
+// ===== DATA =====
+const D={
+  stats:{totalPeople:'48,293',organizations:'1,247',pendingApprovals:'7',errorLogs:'12'},
+  roster:[{id:'P001',name:'鈴木 一郎',kana:'スズキ イチロウ',email:'suzuki.ichiro@saitama-c.ed.jp',org:'さいたま市立大宮小学校',orgPath:'埼玉県 > さいたま市 > 小学校 > 大宮小学校',role:'教員',cls:'3年1組（担任）',code:'T-10042',gender:'男性',birth:'1985-04-12',phone:'080-1234-5678',status:'在籍'},{id:'P002',name:'佐藤 花子',kana:'サトウ ハナコ',email:'sato.hanako@saitama-c.ed.jp',org:'さいたま市立大宮小学校',orgPath:'埼玉県 > さいたま市 > 小学校 > 大宮小学校',role:'教員',cls:'5年2組（担任）',code:'T-10089',gender:'女性',birth:'1990-08-23',phone:'090-2345-6789',status:'在籍'},{id:'P003',name:'田中 健太',kana:'タナカ ケンタ',email:'tanaka.kenta@saitama-c.ed.jp',org:'川口市立青木中学校',orgPath:'埼玉県 > 川口市 > 中学校 > 青木中学校',role:'教員',cls:'2年A組（担任）',code:'T-20115',gender:'男性',birth:'1988-01-30',phone:'070-3456-7890',status:'在籍'},{id:'P004',name:'高橋 美咲',kana:'タカハシ ミサキ',email:'takahashi.misaki@saitama-c.ed.jp',org:'さいたま市教育委員会',orgPath:'埼玉県 > さいたま市 > 教育委員会 > 学校教育課',role:'指導主事',cls:'-',code:'T-30007',gender:'女性',birth:'1982-11-05',phone:'080-4567-8901',status:'在籍'},{id:'P005',name:'伊藤 大輔',kana:'イトウ ダイスケ',email:'ito.daisuke@kawagoe.ed.jp',org:'川越市立第一小学校',orgPath:'埼玉県 > 川越市 > 小学校 > 第一小学校',role:'校長',cls:'-',code:'T-05001',gender:'男性',birth:'1965-07-15',phone:'090-5678-9012',status:'在籍'},{id:'P006',name:'山田 優子',kana:'ヤマダ ユウコ',email:'yamada.yuko@saitama-c.ed.jp',org:'さいたま市立大宮小学校',orgPath:'埼玉県 > さいたま市 > 小学校 > 大宮小学校',role:'教員',cls:'1年3組（担任）',code:'T-10102',gender:'女性',birth:'1992-03-18',phone:'080-6789-0123',status:'休職中'},{id:'P007',name:'渡辺 誠',kana:'ワタナベ マコト',email:'watanabe.makoto@koshigaya.ed.jp',org:'越谷市立南中学校',orgPath:'埼玉県 > 越谷市 > 中学校 > 南中学校',role:'教頭',cls:'-',code:'T-40123',gender:'男性',birth:'1975-09-28',phone:'070-7890-1234',status:'在籍'},{id:'P008',name:'小林 さくら',kana:'コバヤシ サクラ',email:'kobayashi.sakura@saitama-c.ed.jp',org:'さいたま市立大宮小学校',orgPath:'埼玉県 > さいたま市 > 小学校 > 大宮小学校',role:'教員',cls:'6年1組（担任）',code:'T-10145',gender:'女性',birth:'1987-12-03',phone:'090-8901-2345',status:'在籍'},{id:'S001',name:'斎藤 翔太',kana:'サイトウ ショウタ',email:'saito.shota@student.saitama-c.ed.jp',org:'さいたま市立大宮小学校',orgPath:'埼玉県 > さいたま市 > 小学校 > 大宮小学校',role:'生徒',cls:'3年1組',code:'S-30015',gender:'男性',birth:'2016-06-20',parentName:'斎藤 健一',parentPhone:'080-9012-3456',status:'在籍'},{id:'S002',name:'中村 葵',kana:'ナカムラ アオイ',email:'',org:'さいたま市立大宮小学校',orgPath:'埼玉県 > さいたま市 > 小学校 > 大宮小学校',role:'生徒',cls:'5年2組',code:'S-50028',gender:'女性',birth:'2014-02-14',parentName:'中村 真理',parentPhone:'090-0123-4567',status:'在籍'}],
+  orgs:[{id:'ORG-ROOT',name:'埼玉県教育委員会',type:'tenant',children:[{id:'ORG-001',name:'さいたま市',type:'municipality',children:[{id:'ORG-001-1',name:'教育委員会',type:'board',children:[{id:'ORG-001-1-1',name:'学校教育課',type:'dept'},{id:'ORG-001-1-2',name:'教育支援課',type:'dept'}]},{id:'ORG-001-2',name:'小学校',type:'school_type',children:[{id:'ORG-001-2-1',name:'大宮小学校',type:'school'},{id:'ORG-001-2-2',name:'浦和小学校',type:'school'},{id:'ORG-001-2-3',name:'与野小学校',type:'school'}]},{id:'ORG-001-3',name:'中学校',type:'school_type',children:[{id:'ORG-001-3-1',name:'大宮中学校',type:'school'},{id:'ORG-001-3-2',name:'浦和中学校',type:'school'}]}]},{id:'ORG-002',name:'川口市',type:'municipality',children:[{id:'ORG-002-1',name:'中学校',type:'school_type',children:[{id:'ORG-002-1-1',name:'青木中学校',type:'school'}]}]},{id:'ORG-003',name:'川越市',type:'municipality',children:[{id:'ORG-003-1',name:'小学校',type:'school_type',children:[{id:'ORG-003-1-1',name:'第一小学校',type:'school'}]}]},{id:'ORG-004',name:'越谷市',type:'municipality',children:[{id:'ORG-004-1',name:'中学校',type:'school_type',children:[{id:'ORG-004-1-1',name:'南中学校',type:'school'}]}]}]}],
+  approvals:[{id:'A001',type:'所属変更',applicant:'山田 花子',target:'鈴木 一郎',from:'さいたま市立大宮小学校',to:'さいたま市立浦和小学校',date:'2026-07-01',status:'pending',at:'2026-06-10 14:30'},{id:'A002',type:'所属変更',applicant:'佐藤 花子',target:'斎藤 翔太',from:'さいたま市立大宮小学校',to:'川口市立青木中学校',date:'2026-08-01',status:'pending',at:'2026-06-11 09:15'},{id:'A003',type:'所属変更',applicant:'田中 健太',target:'中村 葵',from:'さいたま市立大宮小学校',to:'川越市立第一小学校',date:'2026-07-15',status:'pending',at:'2026-06-11 11:00'},{id:'A004',type:'所属変更',applicant:'伊藤 大輔',target:'小林 さくら',from:'さいたま市立大宮小学校',to:'川越市立第一小学校',date:'2026-06-20',status:'approved',at:'2026-06-05 16:45'},{id:'A005',type:'アカウント発行',applicant:'高橋 美咲',target:'新規教員（5名）',from:'-',to:'さいたま市立大宮小学校',date:'2026-06-15',status:'approved',at:'2026-06-03 10:00'}],
+  forms:[{id:'F001',title:'教員ICT活用状況調査',desc:'全小中学校の教員を対象に、ICT機器の活用状況と課題を調査します。',target:'教員',scope:'さいたま市・川口市 全小中学校',deadline:'2026-06-20',responses:2034,total:3021,status:'active',created:'2026-06-01'},{id:'F002',title:'緊急連絡先（自家用携帯番号）登録',desc:'全教員の自家用携帯電話番号を収集し、名簿情報と連携します。回答内容は自動的に名簿へ反映されます。',target:'教員',scope:'埼玉県 全公立学校',deadline:'2026-07-15',responses:12456,total:28500,status:'active',created:'2026-06-05'},{id:'F003',title:'令和8年度 教科書選定アンケート',desc:'次年度の教科書選定に関する意見を各学校の教科主任から収集します。',target:'教員（教科主任）',scope:'川越市 全小中学校',deadline:'2026-06-25',responses:45,total:78,status:'active',created:'2026-06-08'},{id:'F004',title:'学校施設安全点検報告',desc:'各学校の施設安全点検結果を報告してください。',target:'校長・教頭',scope:'埼玉県 全公立学校',deadline:'2026-05-31',responses:1245,total:1247,status:'closed',created:'2026-05-01'}],
+  formResponses:[{id:'R001',formId:'F001',respondent:'佐藤 花子',org:'さいたま市立大宮小学校',at:'2026-06-12 10:30',a:{q1:'週5回以上',q2:'とても役立っている',q3:'デジタル教科書、学習支援ソフト'}},{id:'R002',formId:'F001',respondent:'田中 健太',org:'川口市立青木中学校',at:'2026-06-11 15:20',a:{q1:'週3〜4回',q2:'まあまあ役立っている',q3:'プロジェクター、タブレット端末'}},{id:'R003',formId:'F001',respondent:'山田 優子',org:'さいたま市立大宮小学校',at:'2026-06-12 09:00',a:{q1:'週1〜2回',q2:'あまり役立っていない',q3:'パソコン室のPC'}}],
+  attrs:[{id:'ATTR001',name:'部活顧問',cat:'基本情報',type:'code',master:'部活動コード',target:'教員'},{id:'ATTR002',name:'教員免許番号',cat:'基本情報',type:'string',master:null,target:'教員'},{id:'ATTR003',name:'人物の特徴',cat:'機微情報',type:'code',master:'人物特徴コード',target:'生徒'},{id:'ATTR005',name:'不登校歴',cat:'機微情報',type:'string',master:null,target:'生徒'},{id:'ATTR007',name:'緊急連絡先（自家用携帯）',cat:'連絡先情報',type:'string',master:null,target:'教員'},{id:'ATTR008',name:'部活動所属',cat:'基本情報',type:'code',master:'部活動コード',target:'生徒'}],
+  logs:[{id:'L001',type:'CSVインポート',file:'2026年度新入生一括登録.csv',status:'error',total:350,success:338,error:12,user:'管理者 太郎',started:'2026-06-12 08:00',ended:'2026-06-12 08:05',detail:'12件エラー: メールアドレス重複(5), 未定義組織コード(4), 必須項目不足(3)'},{id:'L002',type:'CSVインポート',file:'教員異動一括反映_20260611.csv',status:'success',total:45,success:45,error:0,user:'高橋 美咲',started:'2026-06-11 16:30',ended:'2026-06-11 16:32',detail:''},{id:'L003',type:'所属変更（承認不要）',file:'越谷市_南中学校_転入者.csv',status:'success',total:8,success:8,error:0,user:'管理者 太郎',started:'2026-06-10 11:00',ended:'2026-06-10 11:01',detail:''},{id:'L004',type:'CSVインポート',file:'さいたま市_教員連絡先更新.csv',status:'partial',total:120,success:118,error:2,user:'高橋 美咲',started:'2026-06-09 14:20',ended:'2026-06-09 14:25',detail:'2件の警告: 該当職員番号なし'}],
+  perms:[{id:'PERM001',name:'一般教員_担任クラス_基本情報',desc:'一般教員は担任クラスの生徒の基本情報を閲覧・編集できる',subject:'職種:一般教員',object:'ロール:生徒',scope:'所属学校_担任クラス',features:'名簿閲覧・編集',attrScope:'基本情報タブ'},{id:'PERM002',name:'部活顧問_部員_連絡先',desc:'部活顧問に設定された教員は、担当部活の生徒の連絡先情報を閲覧できる',subject:'属性:部活顧問=*',object:'属性:部活動所属=subject値',scope:'所属学校',features:'名簿閲覧',attrScope:'連絡先情報タブ'},{id:'PERM003',name:'校長_同一市町村_教員連絡先',desc:'校長は同一市町村同一学校種の一般教員の連絡先を閲覧できる',subject:'職種:校長',object:'職種:一般教員',scope:'同一市町村_同一学校種',features:'名簿閲覧',attrScope:'連絡先情報タブ'},{id:'PERM004',name:'学年主任_機微情報_いじめ加害者',desc:'学年主任のみが「いじめ加害者」タグを閲覧できる',subject:'職種:学年主任',object:'属性コード値:人物の特徴=いじめ加害者',scope:'所属学校_担当学年',features:'属性項目表示',attrScope:'機微情報_特定コード値のみ'}],
+  codes:[{id:'CG001',name:'部活動コード',items:[{code:'CLB-001',name:'サッカー部'},{code:'CLB-002',name:'野球部'},{code:'CLB-003',name:'バスケットボール部'},{code:'CLB-004',name:'吹奏楽部'},{code:'CLB-005',name:'美術部'},{code:'CLB-006',name:'陸上部'},{code:'CLB-007',name:'水泳部'},{code:'CLB-008',name:'テニス部'}]},{id:'CG002',name:'人物特徴コード',items:[{code:'CHR-001',name:'優良生徒'},{code:'CHR-002',name:'いじめ加害者'},{code:'CHR-003',name:'いじめ被害者'},{code:'CHR-004',name:'不登校傾向'},{code:'CHR-005',name:'特別支援必要'},{code:'CHR-006',name:'要保護'}]},{id:'CG003',name:'学校種コード',items:[{code:'SCH-001',name:'小学校'},{code:'SCH-002',name:'中学校'},{code:'SCH-003',name:'高等学校'},{code:'SCH-004',name:'特別支援学校'}]}],
+};
+function sb(s){const m={success:'<span class="badge badge-success">'+s+'</span>',active:'<span class="badge badge-success">'+s+'</span>',approved:'<span class="badge badge-success">承認済</span>',pending:'<span class="badge badge-warning">未承認</span>',rejected:'<span class="badge badge-danger">却下</span>',error:'<span class="badge badge-danger">エラー</span>',partial:'<span class="badge badge-warning">一部成功</span>',closed:'<span class="badge badge-neutral">終了</span>',active_f:'<span class="badge badge-success">受付中</span>',在籍:'<span class="badge badge-success">在籍</span>',休職中:'<span class="badge badge-warning">休職中</span>'};return m[s]||'<span class="badge badge-neutral">'+s+'</span>';}
+
+// ===== ROUTING =====
+let cr='dashboard';
+function nav(route,params){
+  cr=route;window.location.hash=route;
+  document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.toggle('active',el.dataset.route===route));
+  closeNotifications();
+  document.getElementById('contentArea').innerHTML=render(route,params);
+  document.getElementById('contentArea').scrollTop=0;
+}
+function render(route,params){
+  switch(route){
+    case 'dashboard':return rDashboard();
+    case 'roster':return rRoster();
+    case 'roster-detail':return rRosterDetail(params);
+    case 'organizations':return rOrganizations();
+    case 'csv-import':return rCsvImport();
+    case 'approvals':return rApprovals();
+    case 'forms':return rForms();
+    case 'form-builder':return rFormBuilder();
+    case 'form-responses':return rFormResponses(params);
+    case 'attributes':return rAttributes();
+    case 'codes':return rCodes();
+    case 'permissions':return rPermissions();
+    case 'logs':return rLogs();
+    case 'accounts':return rAccounts();
+    default:return rDashboard();
+  }
+}
+
+// ===== TOASTS & NOTIFICATIONS =====
+function toast(msg,type='success'){
+  const tc=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.textContent=msg;
+  tc.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .2s';setTimeout(()=>t.remove(),200)},3000);
+}
+function toggleNotifications(){document.getElementById('notifPanel').classList.toggle('open');}
+function closeNotifications(){document.getElementById('notifPanel').classList.remove('open');}
+
+// ===== MODALS =====
+function openModal(title,body,footer,cls=''){
+  document.getElementById('modalContainer').innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal ${cls}"><div class="modal-header"><span class="modal-title">${title}</span><button class="modal-close" onclick="closeModal()">${si(IS.x,'icon-md')}</button></div><div class="modal-body">${body}</div>${footer?`<div class="modal-footer">${footer}</div>`:''}</div></div>`;
+}
+function closeModal(){document.getElementById('modalContainer').innerHTML='';}
+
+// ===== PAGE RENDERERS =====
+function rDashboard(){
+  const s=D.stats;
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>ダッシュボード</span></div><div class="page-header-top"><div><h1 class="page-title">ダッシュボード</h1><p class="page-subtitle">埼玉県教育委員会 — 最終ログイン: 2026/06/12 13:30</p></div><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="nav('csv-import')">${si(IS.upload,'icon-sm')}CSVインポート</button><button class="btn btn-primary" onclick="nav('forms')">${si(IS.formIcon,'icon-sm')}フォーム作成</button></div></div></div>
+  <div class="stats-grid">
+    <div class="stat-card" onclick="nav('roster')" style="cursor:pointer"><div class="stat-card-info"><div class="stat-card-label">登録人数</div><div class="stat-card-value">${s.totalPeople}</div><div class="stat-card-change">+256 今月</div></div><div class="stat-card-icon" style="background:#dbeafe;color:#1d4ed8">${si(IS.users)}</div></div>
+    <div class="stat-card" onclick="nav('organizations')" style="cursor:pointer"><div class="stat-card-info"><div class="stat-card-label">組織数</div><div class="stat-card-value">${s.organizations}</div><div class="stat-card-change">+12 今月</div></div><div class="stat-card-icon" style="background:#d1fae5;color:#059669">${si(IS.building)}</div></div>
+    <div class="stat-card" onclick="nav('approvals')" style="cursor:pointer"><div class="stat-card-info"><div class="stat-card-label">未処理申請</div><div class="stat-card-value">${s.pendingApprovals}</div><div class="stat-card-change down">要対応</div></div><div class="stat-card-icon" style="background:#fef3c7;color:#d97706">${si(IS.alertTriangle)}</div></div>
+    <div class="stat-card" onclick="nav('logs')" style="cursor:pointer"><div class="stat-card-info"><div class="stat-card-label">エラーログ</div><div class="stat-card-value">${s.errorLogs}</div><div class="stat-card-change down">+3 本日</div></div><div class="stat-card-icon" style="background:#fee2e2;color:#dc2626">${si(IS.alertTriangle)}</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="card"><div class="card-header"><span class="card-header-title">最近のインポートログ</span><button class="btn btn-ghost btn-sm" onclick="nav('logs')">すべて表示 →</button></div><div class="card-body" style="padding:0"><div class="table-wrap"><table><thead><tr><th>ファイル名</th><th>ステータス</th><th>処理日時</th></tr></thead><tbody>${D.logs.slice(0,4).map(l=>`<tr style="cursor:pointer" onclick="showLogDetail('${l.id}')"><td>${l.file}</td><td>${sb(l.status)}</td><td>${l.started}</td></tr>`).join('')}</tbody></table></div></div></div>
+    <div class="card"><div class="card-header"><span class="card-header-title">未処理の承認申請</span><button class="btn btn-ghost btn-sm" onclick="nav('approvals')">すべて表示 →</button></div><div class="card-body" style="padding:0"><div class="table-wrap"><table><thead><tr><th>申請者</th><th>対象</th><th>申請日</th><th></th></tr></thead><tbody>${D.approvals.filter(a=>a.status==='pending').slice(0,4).map(a=>`<tr><td>${a.applicant}</td><td>${a.target}</td><td>${a.at}</td><td><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();approveRequest('${a.id}')">承認</button></td></tr>`).join('')}</tbody></table></div></div></div>
+  </div>
+  <div style="margin-top:20px"><div class="card"><div class="card-header"><span class="card-header-title">クイックアクセス</span></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">${[{l:'名簿を検索',i:IS.users,r:'roster',c:'#dbeafe',f:'#1d4ed8'},{l:'CSVインポート',i:IS.upload,r:'csv-import',c:'#d1fae5',f:'#059669'},{l:'承認確認',i:IS.check,r:'approvals',c:'#fef3c7',f:'#d97706'},{l:'組織管理',i:IS.building,r:'organizations',c:'#ede9fe',f:'#7c3aed'},{l:'フォーム作成',i:IS.formIcon,r:'forms',c:'#fce7f3',f:'#db2777'},{l:'権限設定',i:IS.settings,r:'permissions',c:'#e0e7ff',f:'#4f46e5'},{l:'属性項目設定',i:IS.edit,r:'attributes',c:'#ccfbf1',f:'#0d9488'},{l:'変更ログ',i:IS.fileText,r:'logs',c:'#f1f5f9',f:'#475569'}].map(it=>`<div class="stat-card" onclick="nav('${it.r}')" style="cursor:pointer;padding:16px;flex-direction:column;align-items:center;text-align:center;gap:10px"><div style="width:44px;height:44px;border-radius:12px;background:${it.c};color:${it.f};display:flex;align-items:center;justify-content:center">${si(it.i,'icon-lg')}</div><span style="font-size:13px;font-weight:600">${it.l}</span></div>`).join('')}</div></div></div></div>`;
+}
+
+function rRoster(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>名簿一覧</span></div><div class="page-header-top"><h1 class="page-title">名簿一覧</h1><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="toast('CSVエクスポート機能（モック）')">${si(IS.download,'icon-sm')}エクスポート</button><button class="btn btn-primary" onclick="openPersonModal()">${si(IS.plus,'icon-sm')}新規登録</button></div></div></div>
+  <div class="tabs"><div class="tab active" onclick="switchRosterTab(this,'all')">すべて</div><div class="tab" onclick="switchRosterTab(this,'staff')">教職員 (8)</div><div class="tab" onclick="switchRosterTab(this,'student')">生徒 (2)</div><div class="tab" onclick="switchRosterTab(this,'active')">在籍中</div><div class="tab" onclick="switchRosterTab(this,'leave')">休職・休学</div></div>
+  <div class="page-toolbar"><div class="page-toolbar-left"><div class="search-box"><svg class="icon icon-sm search-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="${IS.search}"/></svg><input type="text" placeholder="名前、メール、職員番号で検索..." id="rosterSearch" oninput="filterRoster()"></div><select class="form-select" style="width:200px" onchange="filterRoster()" id="rosterOrgFilter"><option value="">すべての組織</option><option value="大宮小学校">さいたま市立大宮小学校</option><option value="青木中学校">川口市立青木中学校</option><option value="第一小学校">川越市立第一小学校</option><option value="南中学校">越谷市立南中学校</option></select></div><div class="page-toolbar-right"><span style="font-size:13px;color:var(--text-muted)">${D.roster.length}件</span></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th class="checkbox-cell"><label class="checkbox-wrap"><input type="checkbox" onchange="toggleAll(this)"></label></th><th class="sortable" onclick="toast('ソート（モック）')">名前</th><th>メールアドレス</th><th>所属組織</th><th>職種</th><th>クラス</th><th>職員/生徒番号</th><th>ステータス</th><th></th></tr></thead><tbody id="rosterTableBody">${D.roster.map(p=>`<tr data-search="${p.name} ${p.kana} ${p.email} ${p.org} ${p.code} ${p.role}" data-role="${p.role}" data-status="${p.status}" data-org="${p.org}"><td class="checkbox-cell"><label class="checkbox-wrap"><input type="checkbox"></label></td><td style="cursor:pointer;font-weight:500" onclick="nav('roster-detail','${p.id}')">${p.name}<br><span style="font-size:11px;color:var(--text-muted)">${p.kana}</span></td><td>${p.email||'<span style="color:var(--text-muted)">未設定</span>'}</td><td style="font-size:12px;max-width:180px" title="${p.orgPath}"><div class="truncate">${p.org}</div></td><td>${p.role}</td><td>${p.cls}</td><td><code style="font-family:var(--font-mono);font-size:12px;background:var(--bg);padding:2px 6px;border-radius:4px">${p.code}</code></td><td>${sb(p.status)}</td><td><button class="btn-icon" onclick="nav('roster-detail','${p.id}')">${si(IS.eye,'icon-sm')}</button><button class="btn-icon" onclick="openPersonModal('${p.id}')" style="margin-left:4px">${si(IS.edit,'icon-sm')}</button></td></tr>`).join('')}</tbody></table></div><div class="card-footer"><div class="pagination"><span>1-${D.roster.length} / ${D.roster.length}件</span><div class="pagination-btns"><button class="pagination-btn" disabled>←</button><button class="pagination-btn active">1</button><button class="pagination-btn">→</button></div></div></div></div>`;
+}
+
+function rRosterDetail(id){
+  const p=D.roster.find(x=>x.id===id)||D.roster[0];
+  const ini=p.name.replace(/ .*$/,'').slice(0,2);
+  const cols=['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4'];
+  const col=cols[p.name.charCodeAt(0)%cols.length];
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><a href="#roster" onclick="nav('roster');return false">名簿一覧</a><span class="sep">/</span><span>${p.name}</span></div></div>
+  <div class="detail-header"><div class="detail-avatar" style="background:linear-gradient(135deg,${col},${col}dd)">${ini}</div><div class="detail-info"><div class="detail-name">${p.name} <span style="font-size:14px;font-weight:400;color:var(--text-muted)">${p.kana}</span></div><div class="detail-meta"><span class="detail-meta-item">${si(IS.building,'icon-sm')}<span>${p.org}</span></span><span class="detail-meta-item">${si(IS.user,'icon-sm')}<span>${p.role} · ${p.cls}</span></span><span class="detail-meta-item">${si(IS.mail,'icon-sm')}<span>${p.email||'未設定'}</span></span><span class="detail-meta-item"><code style="font-size:11px">${p.code}</code></span></div></div><div class="detail-actions"><button class="btn btn-secondary" onclick="openPersonModal('${p.id}')">${si(IS.edit,'icon-sm')}編集</button><button class="btn btn-secondary" onclick="toast('履歴表示（モック）')">${si(IS.clock,'icon-sm')}履歴</button><button class="btn btn-danger" onclick="toast('削除確認ダイアログ（モック）')">${si(IS.trash,'icon-sm')}削除</button></div></div>
+  <div class="tabs"><div class="tab active" onclick="switchDetailTab(this,'basic')">基本情報</div><div class="tab" onclick="switchDetailTab(this,'contact')">連絡先情報</div><div class="tab" onclick="switchDetailTab(this,'sensitive')">機微情報</div><div class="tab" onclick="switchDetailTab(this,'custom')">カスタム項目</div><div class="tab" onclick="switchDetailTab(this,'history')">変更履歴</div></div>
+  <div id="dt-basic"><div class="card"><div class="card-body"><div class="info-grid"><div class="info-item"><div class="info-label">氏名</div><div class="info-value">${p.name}</div></div><div class="info-item"><div class="info-label">フリガナ</div><div class="info-value">${p.kana}</div></div><div class="info-item"><div class="info-label">性別</div><div class="info-value">${p.gender||'-'}</div></div><div class="info-item"><div class="info-label">生年月日</div><div class="info-value">${p.birth||'-'}</div></div><div class="info-item"><div class="info-label">所属組織</div><div class="info-value" style="font-size:12px">${p.orgPath}</div></div><div class="info-item"><div class="info-label">職種</div><div class="info-value">${p.role}</div></div><div class="info-item"><div class="info-label">クラス</div><div class="info-value">${p.cls}</div></div><div class="info-item"><div class="info-label">職員/生徒番号</div><div class="info-value"><code style="font-size:13px">${p.code}</code></div></div><div class="info-item"><div class="info-label">ステータス</div><div class="info-value">${sb(p.status)}</div></div><div class="info-item"><div class="info-label">メールアドレス</div><div class="info-value">${p.email||'未設定'}</div></div>${p.role==='生徒'?`<div class="info-item"><div class="info-label">保護者名</div><div class="info-value">${p.parentName||'-'}</div></div><div class="info-item"><div class="info-label">保護者電話番号</div><div class="info-value">${p.parentPhone||'-'}</div></div>`:''}</div></div></div></div>
+  <div id="dt-contact" style="display:none"><div class="card"><div class="card-body"><div class="info-grid"><div class="info-item"><div class="info-label">電話番号</div><div class="info-value">${p.phone||'未登録'}</div></div><div class="info-item"><div class="info-label">緊急連絡先</div><div class="info-value" style="color:var(--text-muted)">未登録 — <a href="#" onclick="nav('forms');return false">フォームで収集する</a></div></div><div class="info-item"><div class="info-label">住所</div><div class="info-value" style="color:var(--text-muted)">未登録</div></div><div class="info-item"><div class="info-label">郵便番号</div><div class="info-value" style="color:var(--text-muted)">未登録</div></div></div></div></div></div>
+  <div id="dt-sensitive" style="display:none"><div class="card"><div class="card-body"><div style="padding:12px;background:var(--warning-bg);border:1px solid #fde68a;border-radius:var(--radius);margin-bottom:16px;font-size:12px;display:flex;align-items:center;gap:8px">${si(IS.alertTriangle,'icon-sm')}<span>このタブの情報は権限により表示が制限されています。あなたの権限: <strong>学年主任</strong></span></div><div class="info-grid"><div class="info-item"><div class="info-label">人物の特徴</div><div class="info-value">${p.role==='生徒'?'<span class="badge badge-neutral">優良生徒</span> <span class="badge badge-warning" style="margin-left:4px">不登校傾向</span>':'<span style="color:var(--text-muted)">対象外</span>'}</div></div><div class="info-item"><div class="info-label">不登校歴</div><div class="info-value">${p.role==='生徒'?'2024年9月〜12月（週1回程度欠席）':'<span style="color:var(--text-muted)">対象外</span>'}</div></div><div class="info-item"><div class="info-label">いじめ記録</div><div class="info-value" style="color:var(--text-muted)">記録なし</div></div><div class="info-item"><div class="info-label">戸籍情報</div><div class="info-value" style="color:var(--text-muted)">アクセス権限がありません</div></div></div></div></div></div>
+  <div id="dt-custom" style="display:none"><div class="card"><div class="card-body"><div class="info-grid"><div class="info-item"><div class="info-label">部活顧問<span style="font-size:10px;color:var(--text-muted)"> (属性項目)</span></div><div class="info-value">${p.role==='教員'?'<span style="color:var(--text-muted)">未設定</span>':'<span style="color:var(--text-muted)">対象外</span>'}</div></div><div class="info-item"><div class="info-label">教員免許番号<span style="font-size:10px;color:var(--text-muted)"> (属性項目)</span></div><div class="info-value">${p.role==='教員'?`<code style="font-size:13px">免許-埼玉-${10000+parseInt(p.id.slice(1))}</code>`:'<span style="color:var(--text-muted)">対象外</span>'}</div></div></div></div></div></div>
+  <div id="dt-history" style="display:none"><div class="card"><div class="card-body"><div class="timeline"><div class="timeline-item"><div class="timeline-date">2026/04/01</div><div class="timeline-title">クラス変更</div><div class="timeline-desc">2年2組 → 3年1組（担任）</div></div><div class="timeline-item"><div class="timeline-date">2025/04/01</div><div class="timeline-title">異動</div><div class="timeline-desc">川口市立北小学校 → さいたま市立大宮小学校</div></div><div class="timeline-item"><div class="timeline-date">2020/04/01</div><div class="timeline-title">採用</div><div class="timeline-desc">川口市立北小学校 着任（新規採用）</div></div></div></div></div></div>`;
+}
+
+function rOrganizations(){
+  function rt(nodes,d=0){return (nodes||[]).map(n=>{const hc=n.children&&n.children.length>0;const tl={tenant:'テナント',municipality:'市町村',board:'教育委員会',dept:'部署',school_type:'学校種',school:'学校'}[n.type]||n.type;return`<div class="tree-node"><div class="tree-node-header" onclick="toggleOrgNode(this)" style="padding-left:${12+d*24}px"><span class="tree-toggle ${hc?'open':''}" style="${hc?'':'visibility:hidden'}">${si(IS.chevronRight,'icon-sm')}</span><span>${n.name}</span><span class="tree-badge">${tl}</span></div>${hc?`<div class="tree-node-children open">${rt(n.children,d+1)}</div>`:''}</div>`}).join('')}
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>組織管理</span></div><div class="page-header-top"><h1 class="page-title">組織管理</h1><button class="btn btn-primary" onclick="openOrgModal()">${si(IS.plus,'icon-sm')}組織追加</button></div><p class="page-subtitle">埼玉県教育委員会の組織階層構造 — 下位組織は上位組織の権限設定を継承します</p></div>
+  <div class="panel-layout"><div class="card" style="max-height:calc(100vh - 220px);overflow-y:auto"><div class="card-header"><span class="card-header-title">組織ツリー</span><div class="search-box" style="width:160px"><svg class="icon icon-sm search-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="${IS.search}"/></svg><input type="text" placeholder="組織を検索..." style="width:160px;font-size:12px;padding:6px 12px 6px 30px"></div></div><div class="card-body">${rt(D.orgs)}</div></div><div class="card" id="orgDetailPanel"><div class="card-header"><span class="card-header-title">組織詳細</span></div><div class="card-body"><div class="empty-state"><div class="empty-state-icon">${si(IS.building,'icon-lg')}</div><div class="empty-state-title">組織を選択してください</div><div class="empty-state-text">左側のツリーから組織をクリックすると、詳細情報が表示されます。</div></div></div></div></div>`;
+}
+
+function rCsvImport(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>CSVインポート</span></div><div class="page-header-top"><h1 class="page-title">CSVインポート</h1><button class="btn btn-secondary" onclick="toast('テンプレートダウンロード（モック）')">${si(IS.download,'icon-sm')}テンプレート</button></div><p class="page-subtitle">CSVファイルから名簿データを一括で登録・更新します。識別設定に基づき既存データと照合されます。</p></div>
+  <div class="steps"><div class="step active" id="csvStep1"><span class="step-number">1</span><span>CSVアップロード</span></div><div class="step" id="csvStep2"><span class="step-number">2</span><span>項目マッピング</span></div><div class="step" id="csvStep3"><span class="step-number">3</span><span>インポート設定</span></div><div class="step" id="csvStep4"><span class="step-number">4</span><span>プレビュー＆実行</span></div></div>
+  <div id="csvContent"><div class="card"><div class="card-body"><div style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:60px 40px;text-align:center;background:var(--surface-alt)"><div style="width:56px;height:56px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">${si(IS.upload,'icon-lg')}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px">CSVファイルをドラッグ＆ドロップ</div><div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">または、クリックしてファイルを選択（最大50MB）</div><button class="btn btn-primary btn-lg" onclick="advanceCsvStep(2)">${si(IS.plus,'icon-sm')}ファイルを選択</button><div style="margin-top:12px;font-size:12px;color:var(--text-muted)">対応フォーマット: CSV（UTF-8, Shift-JIS）</div></div></div></div></div>
+  <div style="margin-top:20px"><div class="card"><div class="card-header"><span class="card-header-title">識別設定</span></div><div class="card-body"><p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">CSVデータと既存データの同一人物を照合するための識別子を設定します。</p><div class="checkbox-wrap" style="margin-bottom:8px"><input type="checkbox" checked><span style="font-size:13px">メールアドレスで照合</span></div><div class="checkbox-wrap" style="margin-bottom:8px"><input type="checkbox" checked><span style="font-size:13px">職員番号 / 生徒番号で照合</span></div><div class="checkbox-wrap"><input type="checkbox"><span style="font-size:13px">氏名＋生年月日で照合</span></div></div></div></div>
+  <div style="margin-top:16px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)"><label class="checkbox-wrap"><input type="checkbox"><span style="font-size:13px;font-weight:500">所属変更の承認を不要とする（教育委員会権限者のみ）</span></label></div>`;
+}
+
+function rApprovals(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>承認管理</span></div><div class="page-header-top"><h1 class="page-title">承認管理</h1></div></div>
+  <div class="tabs"><div class="tab active" onclick="switchApprovalTab(this,'pending')">未承認 <span class="badge-count">3</span></div><div class="tab" onclick="switchApprovalTab(this,'approved')">承認済</div><div class="tab" onclick="switchApprovalTab(this,'rejected')">却下</div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>申請ID</th><th>種別</th><th>申請者</th><th>対象者</th><th>移動元</th><th>移動先</th><th>変更日</th><th>申請日時</th><th>ステータス</th><th>操作</th></tr></thead><tbody id="approvalTableBody">${D.approvals.map(a=>`<tr data-status="${a.status}"><td><code style="font-size:12px">${a.id}</code></td><td><span class="badge badge-info">${a.type}</span></td><td>${a.applicant}</td><td>${a.target}</td><td>${a.from}</td><td>${a.to}</td><td>${a.date}</td><td>${a.at}</td><td>${sb(a.status)}</td><td>${a.status==='pending'?`<button class="btn btn-sm btn-primary" onclick="approveRequest('${a.id}')">承認</button><button class="btn btn-sm btn-secondary" onclick="rejectRequest('${a.id}')" style="margin-left:4px">却下</button>`:`<button class="btn btn-sm btn-ghost" onclick="showApprovalDetail('${a.id}')">詳細</button>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function rForms(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>フォーム管理</span></div><div class="page-header-top"><h1 class="page-title">フォーム一覧</h1><button class="btn btn-primary" onclick="nav('form-builder')">${si(IS.plus,'icon-sm')}新規フォーム作成</button></div><p class="page-subtitle">アンケート・調査フォームの作成と管理。名簿データと連携した情報収集が可能です。</p></div>
+  <div class="tabs"><div class="tab active" onclick="switchFormTab(this,'all')">すべて</div><div class="tab" onclick="switchFormTab(this,'active')">受付中</div><div class="tab" onclick="switchFormTab(this,'closed')">終了</div></div>
+  <div class="form-grid">${D.forms.map(f=>`<div class="form-card" onclick="nav('form-responses','${f.id}')" data-status="${f.status}"><div class="form-card-icon" style="background:${f.status==='active'?'#dbeafe':'#f1f5f9'};color:${f.status==='active'?'#1d4ed8':'#94a3b8'}">${si(IS.formIcon,'icon-lg')}</div><div class="form-card-title">${f.title}</div><div class="form-card-desc">${f.desc}</div><div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap"><span class="badge badge-info">${f.target}</span><span class="badge badge-neutral">${f.scope}</span>${f.status==='active'?'<span class="badge badge-success">受付中</span>':'<span class="badge badge-neutral">終了</span>'}</div><div class="form-card-meta"><span>${si(IS.calendar,'icon-sm')}期限: ${f.deadline}</span><span>回答: ${f.responses}/${f.total} (${Math.round(f.responses/f.total*100)}%)</span></div>${f.status==='active'?`<div style="margin-top:12px;background:var(--bg);border-radius:6px;height:4px;overflow:hidden"><div style="height:100%;background:var(--primary);border-radius:6px;width:${Math.round(f.responses/f.total*100)}%"></div></div>`:''}</div>`).join('')}</div>`;
+}
+
+function rFormBuilder(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><a href="#forms" onclick="nav('forms');return false">フォーム一覧</a><span class="sep">/</span><span>新規フォーム作成</span></div><div class="page-header-top"><h1 class="page-title">新規フォーム作成</h1><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="nav('forms')">下書き保存</button><button class="btn btn-primary" onclick="toast('フォームを公開しました');nav('forms')">公開する</button></div></div></div>
+  <div class="card" style="margin-bottom:20px"><div class="card-body"><div class="form-row"><div class="form-group"><label class="form-label">フォーム名 <span class="required">*</span></label><input class="form-input" value="新規フォーム" placeholder="フォームのタイトルを入力"></div><div class="form-group"><label class="form-label">回答期限</label><input class="form-input" type="date" value="2026-07-15"></div></div><div class="form-group"><label class="form-label">説明</label><textarea class="form-textarea" placeholder="フォームの説明を入力"></textarea></div><div class="form-row"><div class="form-group"><label class="form-label">対象者</label><select class="form-select"><option>教員</option><option>生徒</option><option>全員</option></select></div><div class="form-group"><label class="form-label">対象範囲</label><select class="form-select"><option>埼玉県 全公立学校</option><option>さいたま市</option><option>川口市</option></select></div></div><label class="checkbox-wrap" style="margin-top:12px"><input type="checkbox" id="linkToRoster" onchange="document.getElementById('rosterLink').style.display=this.checked?'block':'none'"><span style="font-size:13px">回答内容を名簿に自動反映する</span></label><div id="rosterLink" style="display:none;margin-top:12px;padding:12px;background:var(--primary-bg);border-radius:var(--radius)"><div class="form-group"><label class="form-label">紐付ける名簿項目</label><select class="form-select"><option>緊急連絡先（自家用携帯）</option><option>住所</option><option>電話番号</option></select></div></div></div></div>
+  <div class="card"><div class="card-header"><span class="card-header-title">質問項目</span><button class="btn btn-sm btn-secondary" onclick="toast('質問を追加（モック）')">${si(IS.plus,'icon-sm')}質問を追加</button></div><div class="card-body"><div style="display:flex;flex-direction:column;gap:16px"><div style="padding:16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-alt)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="badge badge-info">Q1</span><input class="form-input" value="ICT機器の使用頻度を教えてください" style="border:none;background:transparent;font-weight:500;font-size:14px"></div><select class="form-select" style="width:200px"><option>単一選択（ラジオボタン）</option><option>複数選択（チェックボックス）</option><option>自由記述（テキスト）</option></select><div style="margin-top:8px;display:flex;flex-direction:column;gap:4px">${['週5回以上','週3〜4回','週1〜2回','ほとんど使わない'].map((v,i)=>`<div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--text-muted);width:20px">${String.fromCharCode(9312+i)}</span><input class="form-input" value="${v}" style="border:none;background:transparent;flex:1"></div>`).join('')}</div></div><div style="padding:16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-alt)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="badge badge-info">Q2</span><input class="form-input" value="ICT機器は教育活動に役立っていますか？" style="border:none;background:transparent;font-weight:500;font-size:14px"></div><select class="form-select" style="width:200px"><option>単一選択（ラジオボタン）</option><option>複数選択（チェックボックス）</option><option>自由記述（テキスト）</option></select></div></div></div></div>`;
+}
+
+function rFormResponses(fid){
+  const f=D.forms.find(x=>x.id===(fid||'F001'))||D.forms[0];
+  const rs=D.formResponses.filter(r=>r.formId===f.id);const pct=Math.round(f.responses/f.total*100);
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><a href="#forms" onclick="nav('forms');return false">フォーム一覧</a><span class="sep">/</span><span>${f.title}</span></div><div class="page-header-top"><div><h1 class="page-title">${f.title}</h1><p class="page-subtitle">回答数: ${f.responses}/${f.total} (${pct}%) 期限: ${f.deadline}</p></div><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="toast('CSVエクスポート（モック）')">${si(IS.download,'icon-sm')}CSV出力</button><button class="btn btn-primary" onclick="toast('集計画面（モック）')">${si(IS.barChart,'icon-sm')}集計を見る</button></div></div></div>
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)"><div class="stat-card"><div class="stat-card-info"><div class="stat-card-label">回答数</div><div class="stat-card-value">${f.responses}</div><div class="stat-card-change">回答率 ${pct}%</div></div></div><div class="stat-card"><div class="stat-card-info"><div class="stat-card-label">未回答</div><div class="stat-card-value">${f.total-f.responses}</div><div class="stat-card-change down">期限: ${f.deadline}</div></div></div><div class="stat-card"><div class="stat-card-info"><div class="stat-card-label">設問数</div><div class="stat-card-value">3</div><div class="stat-card-change">最終回答: 本日</div></div></div></div>
+  <div class="card" style="margin-bottom:20px"><div class="card-header"><span class="card-header-title">設問別集計</span></div><div class="card-body"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Q1. ICT機器の使用頻度</div><div style="display:flex;flex-direction:column;gap:6px">${[{l:'週5回以上',v:45,c:'var(--primary)'},{l:'週3〜4回',v:30,c:'#3b82f6'},{l:'週1〜2回',v:18,c:'#60a5fa'},{l:'ほとんど使わない',v:7,c:'#93c5fd'}].map(b=>`<div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;width:120px">${b.l}</span><div style="flex:1;background:var(--bg);border-radius:4px;height:8px"><div style="height:100%;background:${b.c};border-radius:4px;width:${b.v}%"></div></div><span style="font-size:12px;width:40px;text-align:right">${b.v}%</span></div>`).join('')}</div></div></div>
+  <div class="card"><div class="card-header"><span class="card-header-title">個別回答一覧</span></div><div class="table-wrap"><table><thead><tr><th>回答者</th><th>所属</th><th>Q1 使用頻度</th><th>Q2 有用性</th><th>Q3 利用ツール</th><th>回答日時</th></tr></thead><tbody>${rs.map(r=>`<tr><td style="font-weight:500">${r.respondent}</td><td>${r.org}</td><td>${r.a.q1}</td><td>${r.a.q2}</td><td>${r.a.q3}</td><td>${r.at}</td></tr>`).join('')}${f.responses>rs.length?`<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px">他 ${f.responses-rs.length}件の回答があります</td></tr>`:''}</tbody></table></div></div>`;
+}
+
+function rAttributes(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>属性項目設定</span></div><div class="page-header-top"><h1 class="page-title">属性項目設定</h1><button class="btn btn-primary" onclick="openAttrModal()">${si(IS.plus,'icon-sm')}属性項目追加</button></div><p class="page-subtitle">テナントごとに自由に保持するデータ項目を定義します。項目ごとにデータ形式やバリデーションを設定できます。</p></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>項目名</th><th>カテゴリ</th><th>データ形式</th><th>コードマスタ</th><th>対象ロール</th><th>履歴</th><th>適用範囲</th><th></th></tr></thead><tbody>${D.attrs.map(a=>`<tr><td style="font-weight:500">${a.name}</td><td><span class="badge badge-info">${a.cat}</span></td><td>${a.type==='code'?'コード選択':'単一文字列'}</td><td>${a.master||'<span style="color:var(--text-muted)">—</span>'}</td><td>${a.target}</td><td>${['ATTR002'].includes(a.id)?'<span class="badge badge-neutral">なし</span>':'<span class="badge badge-success">あり</span>'}</td><td><span class="badge badge-neutral">${['ATTR008'].includes(a.id)?'組織限定':'テナント全体'}</span></td><td><button class="btn-icon" onclick="openAttrModal('${a.id}')">${si(IS.edit,'icon-sm')}</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function rCodes(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>コード管理</span></div><div class="page-header-top"><h1 class="page-title">コード管理</h1><button class="btn btn-primary" onclick="openCodeModal()">${si(IS.plus,'icon-sm')}コードグループ追加</button></div><p class="page-subtitle">属性項目で参照するコードマスタを管理します。各コードごとに権限制限を設定できます。</p></div>
+  <div class="panel-layout"><div class="card"><div class="card-header"><span class="card-header-title">コードグループ</span></div><div class="card-body" style="padding:0">${D.codes.map((cg,i)=>`<div style="padding:14px 20px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:all var(--transition);${i===0?'background:var(--primary-bg);border-left:3px solid var(--primary)':''}" onclick="selectCodeGroup(this,'${cg.id}')"><div style="font-weight:600;font-size:13px">${cg.name}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px">${cg.items.length}件のコード</div></div>`).join('')}</div></div>
+  <div class="card"><div class="card-header"><span class="card-header-title" id="codeGroupDetailTitle">部活動コード</span><button class="btn btn-sm btn-secondary" onclick="toast('コード追加（モック）')">${si(IS.plus,'icon-sm')}コード追加</button></div><div class="table-wrap"><table><thead><tr><th>コード</th><th>名称</th><th>表示権限</th><th></th></tr></thead><tbody>${D.codes[0].items.map(c=>`<tr><td><code style="font-size:12px">${c.code}</code></td><td>${c.name}</td><td><span class="badge badge-neutral">制限なし</span></td><td><button class="btn-icon" onclick="toast('コード編集（モック）')">${si(IS.edit,'icon-sm')}</button></td></tr>`).join('')}</tbody></table></div></div></div>`;
+}
+
+function rPermissions(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>権限設定</span></div><div class="page-header-top"><h1 class="page-title">権限設定</h1><button class="btn btn-primary" onclick="openPermModal()">${si(IS.plus,'icon-sm')}権限ルール追加</button></div><p class="page-subtitle">サブジェクト-オブジェクト関係、属性項目の値、組織スコープを柔軟に組み合わせた権限制御。</p></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>ルール名</th><th>サブジェクト</th><th>オブジェクト</th><th>スコープ</th><th>権限機能</th><th>属性範囲</th><th></th></tr></thead><tbody>${D.perms.map(p=>`<tr><td style="font-weight:500;max-width:200px">${p.name}</td><td><span style="font-size:11px">${p.subject}</span></td><td><span style="font-size:11px">${p.object}</span></td><td><span class="badge badge-neutral">${p.scope}</span></td><td><span style="font-size:11px">${p.features}</span></td><td><span style="font-size:11px">${p.attrScope}</span></td><td><button class="btn-icon" onclick="openPermModal('${p.id}')">${si(IS.edit,'icon-sm')}</button><button class="btn-icon danger" onclick="toast('権限削除（モック）')" style="margin-left:4px">${si(IS.trash,'icon-sm')}</button></td></tr>`).join('')}</tbody></table></div></div>
+  <div style="margin-top:16px;padding:12px 16px;background:var(--info-bg);border:1px solid #bae6fd;border-radius:var(--radius);font-size:13px;display:flex;align-items:center;gap:8px">${si(IS.alertTriangle,'icon-sm')}<span>権限設定は上位組織から継承されます。組織別の上書き設定は各組織の権限設定画面から行ってください。</span></div>`;
+}
+
+function rLogs(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>変更ログ</span></div><div class="page-header-top"><h1 class="page-title">変更ログ</h1></div><p class="page-subtitle">CSVインポート・所属変更などの処理履歴。エラー時は詳細を確認し、管理者に問い合わせてください。</p></div>
+  <div class="page-toolbar"><div class="page-toolbar-left"><div class="search-box"><svg class="icon icon-sm search-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="${IS.search}"/></svg><input type="text" placeholder="ファイル名で検索..." style="width:240px"></div><select class="form-select" style="width:160px"><option value="">すべてのステータス</option><option>成功</option><option>エラー</option><option>一部成功</option></select></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>種別</th><th>ファイル名</th><th>ステータス</th><th>処理件数</th><th>実行者</th><th>開始日時</th><th>終了日時</th><th></th></tr></thead><tbody>${D.logs.map(l=>`<tr><td><code style="font-size:12px">${l.id}</code></td><td><span class="badge badge-neutral">${l.type}</span></td><td>${l.file}</td><td>${sb(l.status)}</td><td><span style="font-size:12px">${l.success}/${l.total} 成功</span>${l.error>0?` <span style="color:var(--danger);font-size:12px">(${l.error}件エラー)</span>`:''}</td><td>${l.user}</td><td>${l.started}</td><td>${l.ended}</td><td><button class="btn btn-sm btn-ghost" onclick="showLogDetail('${l.id}')">詳細</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function rAccounts(){
+  return `<div class="page-header"><div class="breadcrumb"><a href="#dashboard" onclick="nav('dashboard');return false">ホーム</a><span class="sep">/</span><span>アカウント管理</span></div><div class="page-header-top"><h1 class="page-title">アカウント管理</h1><button class="btn btn-primary" onclick="openAccountModal()">${si(IS.plus,'icon-sm')}アカウント発行</button></div><p class="page-subtitle">Google Workspaceと連携したアカウント管理。システム登録内容がWorkspace上のアカウント情報に反映されます。</p></div>
+  <div class="page-toolbar"><div class="page-toolbar-left"><div class="search-box"><svg class="icon icon-sm search-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="${IS.search}"/></svg><input type="text" placeholder="メールアドレス、名前で検索..." style="width:280px"></div></div><div class="page-toolbar-right"><span style="font-size:13px;color:var(--text-muted)">全${D.roster.length}件</span></div></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>名前</th><th>メールアドレス</th><th>Workspace同期</th><th>最終ログイン</th><th>アカウント状態</th><th></th></tr></thead><tbody>${D.roster.map(p=>`<tr><td style="font-weight:500">${p.name}</td><td>${p.email||'<span style="color:var(--text-muted)">未発行</span>'}</td><td>${p.email?'<span class="badge badge-success">同期中</span>':'<span class="badge badge-neutral">未連携</span>'}</td><td>${p.email?'2026-06-12 08:30':'—'}</td><td><span class="status-dot" style="background:${p.status==='在籍'?'var(--success)':'var(--warning)'}"></span>${p.status}</td><td><button class="btn btn-sm btn-ghost" onclick="toast('アカウント詳細（モック）')">詳細</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+// ===== MODAL DIALOGS =====
+function openPersonModal(id){
+  const p=id?D.roster.find(x=>x.id===id):null;
+  const t=p?p.name+' の編集':'新規登録';
+  const b=`<div class="form-row"><div class="form-group"><label class="form-label">氏名 <span class="required">*</span></label><input class="form-input" value="${p?p.name:''}" placeholder="例: 山田 太郎"></div><div class="form-group"><label class="form-label">フリガナ</label><input class="form-input" value="${p?p.kana:''}" placeholder="例: ヤマダ タロウ"></div></div><div class="form-row"><div class="form-group"><label class="form-label">メールアドレス</label><input class="form-input" type="email" value="${p?p.email:''}"></div><div class="form-group"><label class="form-label">職員/生徒番号</label><input class="form-input" value="${p?p.code:''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">所属組織</label><select class="form-select"><option>さいたま市立大宮小学校</option><option>浦和小学校</option><option>青木中学校</option><option>第一小学校</option></select></div><div class="form-group"><label class="form-label">職種</label><select class="form-select"><option>教員</option><option>校長</option><option>教頭</option><option>指導主事</option><option>生徒</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">性別</label><select class="form-select"><option>男性</option><option>女性</option></select></div><div class="form-group"><label class="form-label">生年月日</label><input class="form-input" type="date" value="${p?p.birth:''}"></div></div>`;
+  const f=`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('${p?'更新':'登録'}しました');closeModal()">${p?'更新':'登録'}</button>`;
+  openModal(t,b,f,'modal-lg');
+}
+function openOrgModal(){
+  const b=`<div class="form-group"><label class="form-label">組織名 <span class="required">*</span></label><input class="form-input" placeholder="例: さいたま市立第二小学校"></div><div class="form-row"><div class="form-group"><label class="form-label">組織種別</label><select class="form-select"><option>学校</option><option>市町村</option><option>教育委員会</option><option>部署</option><option>学校種</option></select></div><div class="form-group"><label class="form-label">上位組織</label><select class="form-select"><option>さいたま市 > 小学校</option><option>川口市 > 中学校</option><option>川越市 > 小学校</option></select></div></div>`;
+  const f=`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('組織を追加しました');closeModal()">追加</button>`;
+  openModal('組織追加',b,f);
+}
+function openAttrModal(id){
+  const a=id?D.attrs.find(x=>x.id===id):null;
+  const b=`<div class="form-row"><div class="form-group"><label class="form-label">項目名 <span class="required">*</span></label><input class="form-input" value="${a?a.name:''}" placeholder="例: 部活顧問"></div><div class="form-group"><label class="form-label">カテゴリ</label><select class="form-select"><option>基本情報</option><option>連絡先情報</option><option>機微情報</option><option>カスタム</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">データ形式</label><select class="form-select"><option>単一文字列</option><option>複数文字列</option><option>数値</option><option>日付</option><option>コードマスタ参照</option></select></div><div class="form-group"><label class="form-label">コードマスタ</label><select class="form-select"><option value="">なし</option><option>部活動コード</option><option>人物特徴コード</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">対象ロール</label><select class="form-select"><option>教員</option><option>生徒</option><option>両方</option></select></div><div class="form-group"><label class="form-label">適用範囲</label><select class="form-select"><option>テナント全体</option><option>組織別設定</option></select></div></div><label class="checkbox-wrap" style="margin-top:12px"><input type="checkbox" checked><span style="font-size:13px">変更履歴を保持する</span></label>`;
+  const f=`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('${a?'更新':'追加'}しました');closeModal()">${a?'更新':'追加'}</button>`;
+  openModal(a?a.name+' の編集':'属性項目追加',b,f);
+}
+function openPermModal(id){
+  const p=id?D.perms.find(x=>x.id===id):null;
+  const b=`<div class="form-group"><label class="form-label">ルール名 <span class="required">*</span></label><input class="form-input" value="${p?p.name:''}" placeholder="例: 一般教員_担任クラス_基本情報閲覧"></div><div class="form-group"><label class="form-label">説明</label><textarea class="form-textarea">${p?p.desc:''}</textarea></div><div class="form-row"><div class="form-group"><label class="form-label">サブジェクト種別</label><select class="form-select"><option>職種</option><option>属性項目の値</option><option>特定ユーザー</option></select></div><div class="form-group"><label class="form-label">サブジェクト値</label><select class="form-select"><option>一般教員</option><option>校長</option><option>教頭</option><option>学年主任</option></select></div></div><div class="form-row"><div class="form-group"><label class="form-label">オブジェクト種別</label><select class="form-select"><option>ロール（職種）</option><option>属性項目の値</option><option>属性コード値</option></select></div><div class="form-group"><label class="form-label">対象機能</label><select class="form-select"><option>名簿閲覧・編集</option><option>名簿閲覧のみ</option><option>属性項目表示</option></select></div></div>`;
+  const f=`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('${p?'更新':'追加'}しました');closeModal()">${p?'更新':'追加'}</button>`;
+  openModal(p?p.name+' の編集':'権限ルール追加',b,f,'modal-lg');
+}
+function openCodeModal(){
+  const b=`<div class="form-group"><label class="form-label">コードグループ名 <span class="required">*</span></label><input class="form-input" placeholder="例: 教科コード"></div><div class="form-group"><label class="form-label">説明</label><textarea class="form-textarea" placeholder="コードグループの説明"></textarea></div>`;
+  const f=`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('コードグループを追加しました');closeModal()">追加</button>`;
+  openModal('コードグループ追加',b,f);
+}
+function openAccountModal(){
+  const b=`<div class="form-row"><div class="form-group"><label class="form-label">氏名 <span class="required">*</span></label><input class="form-input" placeholder="例: 山田 太郎"></div><div class="form-group"><label class="form-label">メールアドレス <span class="required">*</span></label><input class="form-input" type="email" placeholder="@saitama-c.ed.jp"></div></div><div class="form-row"><div class="form-group"><label class="form-label">所属組織</label><select class="form-select"><option>さいたま市立大宮小学校</option><option>浦和小学校</option><option>青木中学校</option></select></div><div class="form-group"><label class="form-label">職種</label><select class="form-select"><option>教員</option><option>校長</option><option>教頭</option></select></div></div><div style="padding:12px;background:var(--info-bg);border-radius:var(--radius);font-size:12px;margin-top:16px;display:flex;align-items:center;gap:8px">${si(IS.alertTriangle,'icon-sm')}<span>アカウント発行後、Google Workspaceとの同期が実行されます。</span></div>`;
+  const f=`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('アカウントを発行しました');closeModal()">発行</button>`;
+  openModal('アカウント発行',b,f);
+}
+
+// ===== INTERACTIVE ACTIONS =====
+function switchRosterTab(el,type){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const rows=document.querySelectorAll('#rosterTableBody tr');
+  rows.forEach(r=>{
+    if(type==='all'){r.style.display='';return;}
+    const role=r.dataset.role,status=r.dataset.status;
+    if(type==='staff') r.style.display=role!=='生徒'?'':'none';
+    else if(type==='student') r.style.display=role==='生徒'?'':'none';
+    else if(type==='active') r.style.display=status==='在籍'?'':'none';
+    else if(type==='leave') r.style.display=status!=='在籍'?'':'none';
+  });
+}
+function switchDetailTab(el,id){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['basic','contact','sensitive','custom','history'].forEach(t=>{const e=document.getElementById('dt-'+t);if(e)e.style.display=t===id?'':'none'});
+}
+function switchApprovalTab(el,type){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#approvalTableBody tr').forEach(r=>{r.style.display=type==='all'||r.dataset.status===type?'':'none'});
+}
+function switchFormTab(el,type){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.form-card').forEach(c=>{const s=c.dataset.status;c.style.display=type==='all'||s===type?'':'none'});
+}
+function filterRoster(){
+  const q=(document.getElementById('rosterSearch')?.value||'').toLowerCase();
+  const org=document.getElementById('rosterOrgFilter')?.value||'';
+  document.querySelectorAll('#rosterTableBody tr').forEach(r=>{
+    const matchSearch=!q||(r.dataset.search||'').toLowerCase().includes(q);
+    const matchOrg=!org||(r.dataset.org||'').includes(org);
+    r.style.display=matchSearch&&matchOrg?'':'none';
+  });
+}
+function toggleAll(el){
+  document.querySelectorAll('#rosterTableBody input[type=checkbox]').forEach(cb=>{cb.checked=el.checked});
+}
+function toggleOrgNode(el){
+  const toggle=el.querySelector('.tree-toggle');
+  const children=el.nextElementSibling;
+  if(children&&children.classList.contains('tree-node-children')){
+    children.classList.toggle('open');
+    toggle.classList.toggle('open');
+  }
+}
+function selectCodeGroup(el,id){
+  document.querySelectorAll('.card-body[style*="padding:0"] > div').forEach(d=>d.style.cssText='padding:14px 20px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:all var(--transition)');
+  el.style.cssText='padding:14px 20px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:all var(--transition);background:var(--primary-bg);border-left:3px solid var(--primary)';
+  const cg=D.codes.find(x=>x.id===id);
+  if(cg) document.getElementById('codeGroupDetailTitle').textContent=cg.name;
+}
+function advanceCsvStep(s){
+  ['csvStep1','csvStep2','csvStep3','csvStep4'].forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.classList.remove('active','done');
+    if(i+1<s)el.classList.add('done');else if(i+1===s)el.classList.add('active');
+  });
+  const content=document.getElementById('csvContent');
+  if(s===2&&content) content.innerHTML=`<div class="card"><div class="card-body"><div style="padding:12px 16px;background:var(--success-bg);border:1px solid #a7f3d0;border-radius:var(--radius);margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:8px">${si(IS.check,'icon-sm')}<span><strong>2026年度新入生一括登録.csv</strong> を読み込みました（350行, 15列）</span></div><div class="table-wrap"><table><thead><tr><th>CSV列名</th><th>サンプルデータ</th><th>マッピング先</th></tr></thead><tbody>${[{col:'氏名',sample:'鈴木 一郎',map:'氏名'},{col:'フリガナ',sample:'スズキ イチロウ',map:'フリガナ'},{col:'メールアドレス',sample:'suzuki@saitama-c.ed.jp',map:'メールアドレス'},{col:'所属組織コード',sample:'ORG-001-2-1',map:'所属組織'},{col:'職員番号',sample:'T-10042',map:'職員番号'},{col:'クラス',sample:'3-1',map:'クラス'},{col:'性別',sample:'男性',map:'性別'},{col:'生年月日',sample:'2016-06-20',map:'生年月日'}].map(r=>`<tr><td>${r.col}</td><td><code style="font-size:12px">${r.sample}</code></td><td><select class="form-select" style="width:180px"><option selected>${r.map}</option><option>— マッピングしない —</option><option>氏名</option><option>フリガナ</option><option>メールアドレス</option><option>職員番号</option><option>クラス</option></select></td></tr>`).join('')}<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:8px">他 7列のマッピングが残っています</td></tr></tbody></table></div></div></div>`;
+  if(s===3&&content) content.innerHTML=`<div class="card"><div class="card-body"><div class="checkbox-wrap" style="margin-bottom:12px"><input type="checkbox" checked><span style="font-size:13px">既存データを上書きする</span></div><div class="checkbox-wrap" style="margin-bottom:12px"><input type="checkbox"><span style="font-size:13px">所属変更の承認を不要とする</span></div><div class="form-group"><label class="form-label">エラー時の処理</label><select class="form-select"><option>エラーデータをスキップして続行</option><option>全件ロールバック</option></select></div></div></div>`;
+  if(s===4&&content) content.innerHTML=`<div class="card"><div class="card-body"><div style="padding:12px 16px;background:var(--primary-bg);border:1px solid #bfdbfe;border-radius:var(--radius);margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:8px">${si(IS.alertTriangle,'icon-sm')}<span>インポートを実行すると <strong>350件</strong> のデータが処理されます。識別設定により既存データとの照合が行われます。</span></div><div class="table-wrap"><table><thead><tr><th>処理</th><th>件数</th></tr></thead><tbody><tr><td>新規登録</td><td>320件</td></tr><tr><td>更新</td><td>18件</td></tr><tr><td>スキップ（変更なし）</td><td>12件</td></tr></tbody></table></div></div></div>`;
+}
+function approveRequest(id){
+  toast('申請 '+id+' を承認しました');
+  setTimeout(()=>nav('approvals'),500);
+}
+function rejectRequest(id){
+  toast('申請 '+id+' を却下しました','warning');
+}
+function showApprovalDetail(id){
+  const a=D.approvals.find(x=>x.id===id);if(!a)return;
+  const b=`<div class="info-grid"><div class="info-item"><div class="info-label">申請ID</div><div class="info-value"><code>${a.id}</code></div></div><div class="info-item"><div class="info-label">種別</div><div class="info-value"><span class="badge badge-info">${a.type}</span></div></div><div class="info-item"><div class="info-label">申請者</div><div class="info-value">${a.applicant}</div></div><div class="info-item"><div class="info-label">対象者</div><div class="info-value">${a.target}</div></div><div class="info-item"><div class="info-label">移動元</div><div class="info-value">${a.from}</div></div><div class="info-item"><div class="info-label">移動先</div><div class="info-value">${a.to}</div></div><div class="info-item"><div class="info-label">変更予定日</div><div class="info-value">${a.date}</div></div><div class="info-item"><div class="info-label">申請日時</div><div class="info-value">${a.at}</div></div></div>`;
+  openModal(a.type+' 詳細',b,`<button class="btn btn-secondary" onclick="closeModal()">閉じる</button>`);
+}
+function showLogDetail(id){
+  const l=D.logs.find(x=>x.id===id);if(!l)return;
+  const b=`<div class="info-grid"><div class="info-item"><div class="info-label">処理ID</div><div class="info-value"><code>${l.id}</code></div></div><div class="info-item"><div class="info-label">種別</div><div class="info-value"><span class="badge badge-neutral">${l.type}</span></div></div><div class="info-item"><div class="info-label">ファイル名</div><div class="info-value">${l.file}</div></div><div class="info-item"><div class="info-label">合計件数</div><div class="info-value">${l.total}件</div></div><div class="info-item"><div class="info-label">成功</div><div class="info-value">${l.success}件</div></div><div class="info-item"><div class="info-label">エラー</div><div class="info-value" style="color:${l.error>0?'var(--danger)':'var(--text-muted)'}">${l.error}件</div></div><div class="info-item"><div class="info-label">実行者</div><div class="info-value">${l.user}</div></div><div class="info-item"><div class="info-label">処理時間</div><div class="info-value">${l.started} 〜 ${l.ended}</div></div></div>${l.detail?`<div style="margin-top:16px;padding:12px;background:${l.status==='error'?'var(--danger-bg)':'var(--warning-bg)'};border-radius:var(--radius);font-size:12px">${si(IS.alertTriangle,'icon-sm')} ${l.detail}</div>`:''}`;
+  openModal('処理ログ詳細',b,`<button class="btn btn-secondary" onclick="closeModal()">閉じる</button>${l.error>0?`<button class="btn btn-primary" onclick="toast('管理者に問い合わせ通知を送信しました（モック）');closeModal()" style="margin-left:8px">管理者に問い合わせ</button>`:''}`);
+}
+
+// ===== INIT =====
+window.addEventListener('hashchange',()=>{
+  const h=window.location.hash.replace('#','')||'dashboard';
+  const parts=h.split('/');
+  nav(parts[0],parts[1]);
+});
+window.addEventListener('DOMContentLoaded',()=>{
+  const h=window.location.hash.replace('#','')||'dashboard';
+  const parts=h.split('/');
+  nav(parts[0],parts[1]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名簿一覧 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.roster-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: calc(100vh - 56px - 57px);
+  overflow: hidden;
+}
+.roster-filter-panel {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.roster-main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.roster-toolbar {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.bulk-action-bar {
+  display: none;
+  padding: 8px 16px;
+  background: var(--brand-50);
+  border-bottom: 1px solid var(--brand-100);
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.bulk-count { font-size: 13px; font-weight: 600; color: var(--brand); }
+.table-wrapper { 
+  flex: 1; 
+  overflow-y: auto; 
+  overflow-x: auto;
+}
+.person-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.person-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.person-name { font-weight: 600; font-size: 13px; }
+.person-id { font-size: 11px; color: var(--text-low); font-family: var(--font-mono); }
+
+.filter-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--text-low);
+  margin-bottom: 6px;
+}
+.filter-chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
+.filter-chip {
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-med);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.filter-chip:hover { border-color: var(--brand-300); color: var(--brand); }
+.filter-chip.active { background: var(--brand); border-color: var(--brand); color: white; }
+
+.dropdown-menu {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  z-index: 500;
+  min-width: 160px;
+  padding: 4px 0;
+  display: none;
+}
+.dropdown-menu.open { display: block; }
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text-high);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.dropdown-item:hover { background: var(--n-50); }
+.dropdown-item.danger { color: var(--red-600); }
+.dropdown-divider { border-top: 1px solid var(--border); margin: 4px 0; }
+</style>
+</head>
+<body data-page="roster-list">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <span class="current">名簿一覧</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">名簿一覧</h1>
+        <p class="page-subtitle">12,847 人 登録済み</p>
+      </div>
+      <div class="page-header__actions">
+        <a href="roster-import.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-arrow-up"></i> CSVインポート</a>
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-add-person"><i class="fa-solid fa-user-plus"></i> 人物を追加</button>
+      </div>
+    </div>
+
+    <!-- Data tabs for field grouping -->
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;flex-shrink:0" data-tabs>
+      <div class="tabs" style="margin-bottom:0;border-bottom:none">
+        <button class="tab-btn active" data-tab="basic">基本情報</button>
+        <button class="tab-btn" data-tab="contact">連絡先情報</button>
+        <button class="tab-btn" data-tab="sensitive">機微情報 <i class="fa-solid fa-lock" style="font-size:10px"></i></button>
+        <button class="tab-btn" data-tab="custom">カスタム属性</button>
+        <button class="tab-btn" data-tab="google">Google連携</button>
+      </div>
+    </div>
+
+    <div class="roster-layout">
+      <!-- Filter Panel -->
+      <div class="roster-filter-panel">
+        <div>
+          <p class="filter-section-label">人物種別</p>
+          <div class="filter-chip-group">
+            <button class="filter-chip active" onclick="filterChip(this, 'type')">すべて</button>
+            <button class="filter-chip" onclick="filterChip(this, 'type')">教員</button>
+            <button class="filter-chip" onclick="filterChip(this, 'type')">生徒</button>
+            <button class="filter-chip" onclick="filterChip(this, 'type')">行政職員</button>
+          </div>
+        </div>
+
+        <div>
+          <p class="filter-section-label">組織</p>
+          <div class="form-group" style="margin-bottom:6px">
+            <select class="form-control" style="font-size:12px">
+              <option>県（全体）</option>
+              <option>名古屋市</option>
+              <option>豊橋市</option>
+              <option>岡崎市</option>
+              <option>刈谷市</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:6px">
+            <select class="form-control" style="font-size:12px">
+              <option>すべての学校種</option>
+              <option>小学校</option>
+              <option>中学校</option>
+              <option>高等学校</option>
+              <option>特別支援学校</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <select class="form-control" style="font-size:12px">
+              <option>すべての学校</option>
+              <option>名古屋市立千種小学校</option>
+              <option>名古屋市立西中学校</option>
+              <option>愛知県立千種高等学校</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <p class="filter-section-label">クラス</p>
+          <div class="form-group" style="margin-bottom:0">
+            <select class="form-control" style="font-size:12px">
+              <option>すべてのクラス</option>
+              <option>1年1組</option>
+              <option>1年2組</option>
+              <option>2年1組</option>
+              <option>2年2組</option>
+              <option>3年1組</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <p class="filter-section-label">ステータス</p>
+          <div class="filter-chip-group">
+            <button class="filter-chip active" onclick="filterChip(this, 'status')">すべて</button>
+            <button class="filter-chip" onclick="filterChip(this, 'status')">在籍</button>
+            <button class="filter-chip" onclick="filterChip(this, 'status')">休職</button>
+            <button class="filter-chip" onclick="filterChip(this, 'status')">転出</button>
+          </div>
+        </div>
+
+        <div>
+          <p class="filter-section-label">Google連携</p>
+          <div class="filter-chip-group">
+            <button class="filter-chip active" onclick="filterChip(this, 'sync')">すべて</button>
+            <button class="filter-chip" onclick="filterChip(this, 'sync')">同期済</button>
+            <button class="filter-chip" onclick="filterChip(this, 'sync')">未連携</button>
+          </div>
+        </div>
+
+        <button class="btn btn-ghost btn-sm w-full" style="margin-top:auto;color:var(--text-low)">
+          <i class="fa-solid fa-rotate-left"></i> フィルターをリセット
+        </button>
+      </div>
+
+      <!-- Table Area -->
+      <div class="roster-main">
+        <!-- Toolbar -->
+        <div class="roster-toolbar">
+          <div class="search-input-wrapper" style="max-width:280px">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" placeholder="名前・ID・メールで検索…">
+          </div>
+          <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-arrow-down-short-wide"></i> 並び替え</button>
+          <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-columns"></i> 列設定</button>
+          <span style="flex:1"></span>
+          <span style="font-size:12px;color:var(--text-low)">全 12,847 件中 1-50 件表示</span>
+        </div>
+
+        <!-- Bulk action bar -->
+        <div class="bulk-action-bar" id="bulk-action-bar">
+          <span class="bulk-count">0件を選択中</span>
+          <button class="btn btn-sm btn-secondary"><i class="fa-solid fa-right-left"></i> 所属変更申請</button>
+          <button class="btn btn-sm btn-secondary"><i class="fa-solid fa-download"></i> エクスポート</button>
+          <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> 削除</button>
+          <button class="btn btn-sm btn-ghost" onclick="document.getElementById('select-all').checked=false;document.querySelectorAll('.row-check').forEach(c=>c.checked=false);document.querySelectorAll('tr.selected').forEach(r=>r.classList.remove('selected'));document.getElementById('bulk-action-bar').style.display='none'">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+          <!-- Basic Info Tab (shown by default) -->
+          <div id="tab-basic" class="table-container" style="border-radius:0;border:none;border-bottom:1px solid var(--border)">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-check"><input type="checkbox" id="select-all"></th>
+                  <th class="sortable sort-asc">氏名</th>
+                  <th class="sortable">種別</th>
+                  <th class="sortable">所属組織</th>
+                  <th class="sortable">クラス</th>
+                  <th class="sortable">生年月日</th>
+                  <th class="sortable">性別</th>
+                  <th class="sortable">ステータス</th>
+                  <th class="col-actions"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows -->
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#dbeafe;color:#1d4ed8">山</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">山田 太郎</a></p>
+                        <p class="person-id">TCH-00142</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-sky">教員</span></td>
+                  <td><span style="font-size:12px">名古屋市立千種小学校</span></td>
+                  <td><span class="badge badge-gray">3年1組 担任</span></td>
+                  <td class="td-mono">1982/04/15</td>
+                  <td><span style="font-size:12px">男</span></td>
+                  <td><span class="status-dot active">在籍</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm" title="詳細"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" title="編集" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" title="その他" data-dropdown="dd-row-1"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-1">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger" onclick="showToast('削除するには確認が必要です', 'error')"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#dcfce7;color:#15803d">鈴</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">鈴木 花子</a></p>
+                        <p class="person-id">STU-10284</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">生徒</span></td>
+                  <td><span style="font-size:12px">名古屋市立千種小学校</span></td>
+                  <td><span class="badge badge-gray">3年1組</span></td>
+                  <td class="td-mono">2017/08/23</td>
+                  <td><span style="font-size:12px">女</span></td>
+                  <td><span class="status-dot active">在籍</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm" title="詳細"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" title="編集" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" title="その他" data-dropdown="dd-row-2"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-2">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#fef3c7;color:#b45309">佐</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">佐藤 次郎</a></p>
+                        <p class="person-id">TCH-00298</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-sky">教員</span></td>
+                  <td><span style="font-size:12px">名古屋市立西中学校</span></td>
+                  <td><span class="badge badge-gray">2年2組 担任</span></td>
+                  <td class="td-mono">1975/11/03</td>
+                  <td><span style="font-size:12px">男</span></td>
+                  <td><span class="status-dot pending">育休中</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" data-dropdown="dd-row-3"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-3">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#ede9fe;color:#6d28d9">高</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">高橋 美咲</a></p>
+                        <p class="person-id">STU-10305</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">生徒</span></td>
+                  <td><span style="font-size:12px">名古屋市立西中学校</span></td>
+                  <td><span class="badge badge-gray">2年2組</span></td>
+                  <td class="td-mono">2011/03/14</td>
+                  <td><span style="font-size:12px">女</span></td>
+                  <td><span class="status-dot active">在籍</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" data-dropdown="dd-row-4"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-4">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#fee2e2;color:#b91c1c">伊</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">伊藤 健二</a></p>
+                        <p class="person-id">ADM-00054</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-purple">行政職員</span></td>
+                  <td><span style="font-size:12px">愛知県教育委員会 教職員課</span></td>
+                  <td><span style="font-size:11px;color:var(--text-low)">—</span></td>
+                  <td class="td-mono">1968/07/20</td>
+                  <td><span style="font-size:12px">男</span></td>
+                  <td><span class="status-dot active">在籍</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" data-dropdown="dd-row-5"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-5">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#ccfbf1;color:#0f766e">渡</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">渡辺 春菜</a></p>
+                        <p class="person-id">TCH-00401</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-sky">教員</span></td>
+                  <td><span style="font-size:12px">愛知県立千種高等学校</span></td>
+                  <td><span class="badge badge-gray">1年A組 担任</span></td>
+                  <td class="td-mono">1990/09/08</td>
+                  <td><span style="font-size:12px">女</span></td>
+                  <td><span class="status-dot active">在籍</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" data-dropdown="dd-row-6"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-6">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="row-check"></td>
+                  <td>
+                    <div class="person-cell">
+                      <div class="person-avatar" style="background:#e0f2fe;color:#0369a1">中</div>
+                      <div>
+                        <p class="person-name"><a href="roster-detail.html" style="color:inherit">中村 大輝</a></p>
+                        <p class="person-id">STU-10499</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">生徒</span></td>
+                  <td><span style="font-size:12px">愛知県立千種高等学校</span></td>
+                  <td><span class="badge badge-gray">1年A組</span></td>
+                  <td class="td-mono">2009/12/01</td>
+                  <td><span style="font-size:12px">男</span></td>
+                  <td><span class="status-dot error">不登校</span></td>
+                  <td>
+                    <div style="display:flex;gap:4px;justify-content:flex-end">
+                      <a href="roster-detail.html" class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></a>
+                      <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-person"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-icon btn-sm" data-dropdown="dd-row-7"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="dropdown-menu" id="dd-row-7">
+                      <div class="dropdown-item"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</div>
+                      <div class="dropdown-item"><i class="fa-solid fa-right-left"></i> 所属変更申請</div>
+                      <div class="dropdown-item"><i class="fa-brands fa-google"></i> Google同期</div>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination" style="background:var(--surface)">
+            <span class="pagination-info">全 12,847 件中 1–7 件表示</span>
+            <select class="filter-select" style="font-size:12px;padding:4px 22px 4px 8px">
+              <option>50件/ページ</option>
+              <option>100件/ページ</option>
+              <option>200件/ページ</option>
+            </select>
+            <div class="page-btn" title="前ページ" style="opacity:.35"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="page-btn active">1</div>
+            <div class="page-btn">2</div>
+            <div class="page-btn">3</div>
+            <span style="font-size:12px;color:var(--text-low);padding:0 4px">…</span>
+            <div class="page-btn">257</div>
+            <div class="page-btn" title="次ページ"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Person Modal -->
+<div class="modal-overlay" id="modal-add-person">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <i class="fa-solid fa-user-plus" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">人物を追加</h3>
+        <p class="modal-subtitle">基本情報を入力してください</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-add-person"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">
+        <p class="form-section-title">基本情報</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">種別 <span class="required">*</span></label>
+            <select class="form-control">
+              <option>教員</option>
+              <option>生徒</option>
+              <option>行政職員</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">性別</label>
+            <select class="form-control">
+              <option>男</option><option>女</option><option>その他</option><option>未設定</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">姓 <span class="required">*</span></label>
+            <input type="text" class="form-control" placeholder="山田">
+          </div>
+          <div class="form-group">
+            <label class="form-label">名 <span class="required">*</span></label>
+            <input type="text" class="form-control" placeholder="太郎">
+          </div>
+          <div class="form-group">
+            <label class="form-label">姓（読み）</label>
+            <input type="text" class="form-control" placeholder="やまだ">
+          </div>
+          <div class="form-group">
+            <label class="form-label">名（読み）</label>
+            <input type="text" class="form-control" placeholder="たろう">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">生年月日</label>
+            <input type="date" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" placeholder="yamada@edu.city.nagoya.aichi.jp">
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <p class="form-section-title">所属</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">所属組織 <span class="required">*</span></label>
+            <select class="form-control">
+              <option>名古屋市立千種小学校</option>
+              <option>名古屋市立西中学校</option>
+              <option>愛知県立千種高等学校</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">クラス</label>
+            <select class="form-control">
+              <option>未割り当て</option>
+              <option>1年1組</option><option>1年2組</option><option>2年1組</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">所属開始日</label>
+          <input type="date" class="form-control" style="max-width:200px">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-add-person">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('人物を追加しました', 'success');closeModal('modal-add-person')">
+        <i class="fa-solid fa-check"></i> 追加する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Person Modal (reuse same structure) -->
+<div class="modal-overlay" id="modal-edit-person">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <i class="fa-solid fa-pen" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">山田 太郎 — 編集</h3>
+        <p class="modal-subtitle">TCH-00142 / 名古屋市立千種小学校</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-edit-person"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓</label>
+          <input type="text" class="form-control" value="山田">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名</label>
+          <input type="text" class="form-control" value="太郎">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">生年月日</label>
+          <input type="date" class="form-control" value="1982-04-15">
+        </div>
+        <div class="form-group">
+          <label class="form-label">性別</label>
+          <select class="form-control"><option selected>男</option><option>女</option><option>その他</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" value="yamada.taro@edu.nagoya.jp">
+      </div>
+      <div class="alert alert-blue mt-12">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>変更はGoogle Workspaceのアカウントデータにも自動反映されます。<br>所属・クラス変更は別画面（所属変更申請）で行ってください。</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" style="margin-right:auto"><i class="fa-solid fa-clock-rotate-left"></i> 変更履歴</button>
+      <button class="btn btn-secondary" data-modal-close="modal-edit-person">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('変更を保存しました', 'success');closeModal('modal-edit-person')">
+        <i class="fa-solid fa-check"></i> 保存する
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+function filterChip(el, group) {
+  el.closest('.filter-chip-group').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  initSelectAll();
+  initDropdowns();
+});
+</script>
+</body>
+</html>

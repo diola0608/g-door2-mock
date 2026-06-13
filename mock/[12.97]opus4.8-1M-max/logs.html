@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>処理ログ | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="logs">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">処理ログ</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile info" style="width:38px;height:38px"><i data-ic="history" data-size="20"></i></span> 処理ログ</h1>
+          <p class="page-subtitle">CSVインポートや同期、所属変更バッチなどバックグラウンド処理の状況を確認できます。</p>
+        </div>
+        <div class="page-head__actions"><button class="btn btn--secondary" data-toast="最新の状態に更新しました"><i data-ic="refresh" data-size="16"></i> 更新</button></div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile info"><i data-ic="play"></i></span><span class="stat__label">実行中</span></div><div class="stat__value">1</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile success"><i data-ic="checkCircle"></i></span><span class="stat__label">本日完了</span></div><div class="stat__value">14</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile danger"><i data-ic="alert"></i></span><span class="stat__label">エラー / 一部失敗</span></div><div class="stat__value" style="color:var(--danger)">2</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile violet"><i data-ic="clock"></i></span><span class="stat__label">平均処理時間</span></div><div class="stat__value">48<small>秒</small></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <span class="card__title">ジョブ一覧</span>
+          <div class="spacer flex gap-8">
+            <select class="select btn--sm" style="width:auto;height:34px"><option>すべての種別</option><option>CSVインポート</option><option>同期</option><option>所属変更バッチ</option></select>
+            <select class="select btn--sm" style="width:auto;height:34px"><option>すべての状態</option><option>エラー</option><option>処理中</option><option>完了</option></select>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="tbl tbl-clickable" id="logTable"><thead>
+          <tr><th>ジョブID</th><th>種別</th><th>対象</th><th>実行者</th><th>日時</th><th>進捗 / 結果</th><th>状態</th><th class="col-actions"></th></tr>
+        </thead><tbody id="logBody"></tbody></table></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Job detail drawer -->
+  <div class="overlay drawer-right" id="jobDrawer"><div class="drawer drawer--lg">
+    <div class="drawer__head"><span class="ico-tile danger"><i data-ic="alert"></i></span><div class="grow"><div class="fw-7" style="font-size:16px">CSVインポート ・ 教員名簿_2026.csv</div><div class="text-3 text-sm">J-88213 ・ 井上 管理 ・ 2026-06-13 09:12</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="drawer__body">
+      <div class="grid grid-3 mb-16">
+        <div><div class="text-3 text-sm">対象行</div><div class="fw-7" style="font-size:20px">240</div></div>
+        <div><div class="text-3 text-sm">成功</div><div class="fw-7" style="font-size:20px;color:var(--success)">228</div></div>
+        <div><div class="text-3 text-sm">エラー</div><div class="fw-7" style="font-size:20px;color:var(--danger)">12</div></div>
+      </div>
+      <div class="alert alert--danger mb-16"><span class="alert__ico"><i data-ic="alert" data-size="18"></i></span><div><div class="alert__title">12 行が検証エラーで取り込まれませんでした</div><div class="alert__text">下記のエラー内容を確認し、CSVを修正して再取込するか、管理者に問い合わせてください。</div></div></div>
+      <div class="fw-7 mb-8">エラー詳細</div>
+      <div class="card mb-16"><div class="table-wrap"><table class="tbl tbl--compact"><thead><tr><th>行</th><th>列</th><th>内容</th></tr></thead><tbody>
+        <tr><td class="mono">12</td><td>メールアドレス</td><td class="fw-6" style="color:var(--danger)">形式が不正です（invalid-mail）</td></tr>
+        <tr><td class="mono">18</td><td>所属組織</td><td class="fw-6" style="color:var(--danger)">該当組織が見つかりません</td></tr>
+        <tr><td class="mono">31</td><td>性別</td><td class="fw-6" style="color:var(--danger)">コードGENDERに未定義の値</td></tr>
+        <tr><td class="mono">45</td><td>職員番号</td><td class="fw-6" style="color:var(--danger)">重複（既存P-20044と競合）</td></tr>
+      </tbody></table></div></div>
+      <div class="fw-7 mb-8">処理タイムライン</div>
+      <div class="timeline">
+        <div class="tl-item"><span class="tl-dot success"></span><div class="tl-time">09:12:03</div><div class="tl-title">ジョブ受付</div></div>
+        <div class="tl-item"><span class="tl-dot success"></span><div class="tl-time">09:12:05</div><div class="tl-title">検証完了（228件OK / 12件NG）</div></div>
+        <div class="tl-item"><span class="tl-dot success"></span><div class="tl-time">09:12:41</div><div class="tl-title">228件を反映</div></div>
+        <div class="tl-item"><span class="tl-dot muted"></span><div class="tl-time">09:12:42</div><div class="tl-title">Workspace同期をキューに追加</div></div>
+      </div>
+    </div>
+    <div class="drawer__foot">
+      <button class="btn btn--secondary"><i data-ic="download" data-size="16"></i> エラーCSVを出力</button>
+      <span class="spacer"></span>
+      <button class="btn btn--secondary" data-open="inquiryModal" data-close><i data-ic="mail" data-size="16"></i> 管理者へ問い合わせ</button>
+      <a class="btn btn--primary" href="roster-import.html"><i data-ic="refresh" data-size="16"></i> 再取込</a>
+    </div>
+  </div></div>
+
+  <!-- Inquiry modal -->
+  <div class="overlay modal-center" id="inquiryModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile info"><i data-ic="mail"></i></span><div><div class="modal__title">システム管理者へ問い合わせ</div><div class="modal__desc">ジョブ J-88213 のエラーについて</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">件名</label><input class="input" value="CSVインポートのエラーについて（J-88213）" /></div>
+      <div class="field"><label class="label">問い合わせ内容</label><textarea class="textarea" placeholder="エラーの状況や、対応方法について教えてください…">12行目のメール形式エラーの修正方法を教えてください。</textarea></div>
+      <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> エラーログを添付する</label>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="問い合わせを送信しました（デモ）" data-toast-text="担当者から折り返し連絡があります">送信</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, L = window.DATA.logs, U = window.UI;
+      var typeIc = { 'CSVインポート': ['upload', 'success'], '所属変更バッチ': ['swap', 'warning'], 'Workspace同期': ['google', 'info'], 'フォーム名簿反映': ['forms', 'violet'] };
+      document.getElementById('logBody').innerHTML = L.map(function (l) {
+        var ti = typeIc[l.type] || ['file', 'neutral'];
+        var prog;
+        if (l.status === 'processing') {
+          var pct = Math.round(l.ok / l.total * 100);
+          prog = '<div style="min-width:140px"><div class="progress"><div class="progress__bar" style="width:' + pct + '%"></div></div><div class="text-3 text-xs mt-4">' + l.ok + ' / ' + l.total + '（' + pct + '%）</div></div>';
+        } else {
+          prog = '<span class="text-sm"><b style="color:var(--success)">' + l.ok + '</b> 成功' + (l.ng ? ' ・ <b style="color:var(--danger)">' + l.ng + '</b> 失敗' : '') + '</span>';
+        }
+        var clickable = (l.status === 'error' || l.status === 'partial');
+        return '<tr' + (clickable ? ' onclick="openOverlay(\'jobDrawer\')"' : '') + '>' +
+          '<td class="mono">' + l.id + '</td>' +
+          '<td><span class="flex items-center gap-8"><span class="ico-tile ' + ti[1] + '" style="width:30px;height:30px">' + I(ti[0], { size: 15 }) + '</span>' + l.type + '</span></td>' +
+          '<td>' + (l.file === '—' ? '<span class="text-3">—</span>' : l.file) + '</td>' +
+          '<td class="text-2">' + l.user + '</td><td class="mono text-sm">' + l.at + '</td>' +
+          '<td>' + prog + '</td><td>' + U.statusBadge(l.status) + '</td>' +
+          '<td class="col-actions" onclick="event.stopPropagation()"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item" onclick="openOverlay(\'jobDrawer\')">' + I('eye', { size: 16 }) + '詳細</div><div class="menu__item">' + I('download', { size: 16 }) + '結果を出力</div>' + (clickable ? '<div class="menu__item" onclick="openOverlay(\'inquiryModal\')">' + I('mail', { size: 16 }) + '問い合わせ</div>' : '') + '</div></div></td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('logBody'));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>権限設定 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.perms-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: calc(100vh - 56px - 57px);
+  overflow: hidden;
+}
+.perms-sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.perms-main {
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.policy-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.policy-item:hover { background: var(--n-50); }
+.policy-item.selected { background: var(--brand-50); border-left: 3px solid var(--brand); padding-left: 11px; }
+.policy-item__icon {
+  width: 30px; height: 30px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0; margin-top: 2px;
+}
+.policy-item__name { font-size: 12px; font-weight: 600; color: var(--text-high); }
+.policy-item__sub  { font-size: 11px; color: var(--text-low); margin-top: 2px; }
+
+/* Policy editor */
+.condition-row {
+  display: grid;
+  grid-template-columns: 140px 120px 1fr 32px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.condition-row:last-child { border-bottom: none; }
+.condition-row__label { font-size: 12px; color: var(--text-med); }
+
+/* Permission matrix */
+.perm-matrix-wrap { overflow-x: auto; }
+.perm-matrix {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.perm-matrix th {
+  background: var(--n-50);
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: var(--text-low);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  text-align: center;
+}
+.perm-matrix th:first-child { text-align: left; }
+.perm-matrix td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  text-align: center;
+}
+.perm-matrix td:first-child { text-align: left; font-weight: 500; }
+.perm-matrix tr:last-child td { border-bottom: none; }
+.perm-matrix tr:hover td { background: var(--n-50); }
+
+/* Tag */
+.condition-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: var(--brand-50);
+  color: var(--brand);
+  border: 1px solid var(--brand-200);
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 500;
+}
+.condition-tag .rm {
+  cursor: pointer;
+  color: var(--brand-300);
+  font-size: 10px;
+}
+.condition-tag .rm:hover { color: var(--red-600); }
+</style>
+</head>
+<body data-page="permissions">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <span class="current">権限設定</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">権限設定</h1>
+        <p class="page-subtitle">サブジェクト・オブジェクト関係と機能割당を組み合わせたポリシー管理</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-code-branch"></i> 継承設定を見る</button>
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-add-policy"><i class="fa-solid fa-plus"></i> ポリシーを追加</button>
+      </div>
+    </div>
+
+    <div class="perms-layout">
+      <!-- Policy list sidebar -->
+      <div class="perms-sidebar">
+        <div style="padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0">
+          <div class="search-input-wrapper" style="max-width:100%">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" placeholder="ポリシーを検索…" style="width:100%">
+          </div>
+        </div>
+        <div style="padding:8px 0;overflow-y:auto;flex:1">
+          <div style="padding:4px 14px 4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-low)">名簿閲覧ポリシー</div>
+          <div class="policy-item selected">
+            <div class="policy-item__icon" style="background:var(--brand-50);color:var(--brand)"><i class="fa-solid fa-eye"></i></div>
+            <div>
+              <p class="policy-item__name">担任教員 → 担当クラス生徒</p>
+              <p class="policy-item__sub">基本情報 閲覧・編集</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--sky-100);color:var(--sky-600)"><i class="fa-solid fa-eye"></i></div>
+            <div>
+              <p class="policy-item__name">部活顧問 → 担当部員</p>
+              <p class="policy-item__sub">連絡先情報 閲覧</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--purple-100);color:var(--purple-600)"><i class="fa-solid fa-eye"></i></div>
+            <div>
+              <p class="policy-item__name">校長 → 同市町村同学校種 教員</p>
+              <p class="policy-item__sub">連絡先情報 閲覧</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--red-100);color:var(--red-600)"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+              <p class="policy-item__name">学年主任 → 担当学年生徒</p>
+              <p class="policy-item__sub">機微情報 閲覧（一部制限）</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+
+          <div style="padding:4px 14px 4px;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-low)">名簿編集ポリシー</div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--yellow-100);color:var(--yellow-600)"><i class="fa-solid fa-pen"></i></div>
+            <div>
+              <p class="policy-item__name">教育委員会管理者 → 全教員</p>
+              <p class="policy-item__sub">全フィールド 閲覧・編集</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--teal-100);color:var(--teal-600)"><i class="fa-solid fa-pen"></i></div>
+            <div>
+              <p class="policy-item__name">CSV管理者 → 所属変更承認省略</p>
+              <p class="policy-item__sub">所属変更の承認フロー省略</p>
+            </div>
+            <span class="badge badge-yellow" style="margin-left:auto;flex-shrink:0">限定</span>
+          </div>
+
+          <div style="padding:4px 14px 4px;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-low)">フォームポリシー</div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--purple-100);color:var(--purple-600)"><i class="fa-solid fa-wpforms"></i></div>
+            <div>
+              <p class="policy-item__name">フォーム作成者 → 対象者</p>
+              <p class="policy-item__sub">フォーム配信・結果閲覧</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+
+          <div style="padding:4px 14px 4px;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-low)">属性項目ポリシー</div>
+          <div class="policy-item">
+            <div class="policy-item__icon" style="background:var(--red-100);color:var(--red-600)"><i class="fa-solid fa-tag"></i></div>
+            <div>
+              <p class="policy-item__name">「人物の特徴」項目 閲覧制限</p>
+              <p class="policy-item__sub">担任・学年主任のみ / コードごと制限</p>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto;flex-shrink:0">有効</span>
+          </div>
+        </div>
+        <div style="padding:10px 12px;border-top:1px solid var(--border)">
+          <span style="font-size:11px;color:var(--text-low)">合計 34 ポリシー（テナントレベル）</span>
+        </div>
+      </div>
+
+      <!-- Policy detail -->
+      <div class="perms-main">
+        <!-- Selected Policy: 担任教員 → 担当クラス生徒 -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="width:40px;height:40px;border-radius:var(--r-md);background:var(--brand-50);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <div>
+            <h2 style="font-size:16px;font-weight:700">担任教員 → 担当クラス生徒 — 基本情報 閲覧・編集</h2>
+            <p style="font-size:12px;color:var(--text-low)">テナントレベルポリシー / ID: POL-000042</p>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <span class="badge badge-green">有効</span>
+            <button class="btn btn-sm btn-secondary" data-modal-open="modal-edit-policy"><i class="fa-solid fa-pen"></i> 編集</button>
+            <button class="btn btn-sm btn-secondary" onclick="showToast('ポリシーを無効化しました', 'warning')"><i class="fa-solid fa-power-off"></i> 無効化</button>
+          </div>
+        </div>
+
+        <!-- Subject-Object条件 -->
+        <div class="card mb-16">
+          <div class="card-header">
+            <i class="fa-solid fa-user-tie" style="color:var(--brand)"></i>
+            <span class="card-title">サブジェクト（誰が）</span>
+            <span class="badge badge-blue ml-auto">条件: 3つ</span>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;color:var(--text-low);margin-bottom:10px">以下の条件をすべて満たすユーザーがこのポリシーの対象者（サブジェクト）になります</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-gray">AND</span>
+                <span class="condition-tag"><i class="fa-solid fa-briefcase"></i> 職種 = 一般教員 <span class="rm">×</span></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-gray">AND</span>
+                <span class="condition-tag"><i class="fa-solid fa-door-open"></i> 属性「担任クラス」= 任意の値あり <span class="rm">×</span></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-gray">AND</span>
+                <span class="condition-tag"><i class="fa-solid fa-sitemap"></i> 組織スコープ = 同一学校 <span class="rm">×</span></span>
+              </div>
+              <button class="btn btn-sm btn-ghost" style="width:fit-content" data-modal-open="modal-edit-policy"><i class="fa-solid fa-plus"></i> 条件を追加</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-header">
+            <i class="fa-solid fa-user-graduate" style="color:var(--green-600)"></i>
+            <span class="card-title">オブジェクト（誰の情報に対して）</span>
+            <span class="badge badge-green ml-auto">条件: 2つ</span>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;color:var(--text-low);margin-bottom:10px">サブジェクトがアクセスできるデータ（オブジェクト）の絞り込み条件</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-gray">AND</span>
+                <span class="condition-tag" style="background:var(--green-50);color:var(--green-700);border-color:var(--green-200)"><i class="fa-solid fa-user-graduate"></i> 種別 = 生徒 <span class="rm">×</span></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-gray">AND</span>
+                <span class="condition-tag" style="background:var(--green-50);color:var(--green-700);border-color:var(--green-200)"><i class="fa-solid fa-door-open"></i> 所属クラス = サブジェクトの「担任クラス」と一致 <span class="rm">×</span></span>
+              </div>
+              <button class="btn btn-sm btn-ghost" style="width:fit-content" data-modal-open="modal-edit-policy"><i class="fa-solid fa-plus"></i> 条件を追加</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Permission matrix -->
+        <div class="card mb-16">
+          <div class="card-header">
+            <i class="fa-solid fa-table" style="color:var(--text-med)"></i>
+            <span class="card-title">機能・操作 権限マトリクス</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="perm-matrix-wrap">
+              <table class="perm-matrix" style="border:none">
+                <thead>
+                  <tr>
+                    <th>情報カテゴリ</th>
+                    <th>閲覧</th>
+                    <th>編集</th>
+                    <th>削除</th>
+                    <th>エクスポート</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>基本情報</td>
+                    <td><input type="checkbox" class="perm-check" checked></td>
+                    <td><input type="checkbox" class="perm-check" checked></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                  </tr>
+                  <tr>
+                    <td>連絡先情報</td>
+                    <td><input type="checkbox" class="perm-check" checked></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                  </tr>
+                  <tr>
+                    <td>機微情報</td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                  </tr>
+                  <tr>
+                    <td>カスタム属性</td>
+                    <td><input type="checkbox" class="perm-check" checked></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                  </tr>
+                  <tr>
+                    <td>所属・クラス情報</td>
+                    <td><input type="checkbox" class="perm-check" checked></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                  </tr>
+                  <tr>
+                    <td>変更履歴</td>
+                    <td><input type="checkbox" class="perm-check" checked></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                    <td><input type="checkbox" class="perm-check"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inheritance -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fa-solid fa-code-branch" style="color:var(--text-med)"></i>
+            <span class="card-title">継承・上書き設定</span>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-blue mb-12">
+              <i class="fa-solid fa-circle-info"></i>
+              <div>このポリシーはテナント（愛知県）レベルで設定されています。<br>配下の組織は<strong>このポリシーを継承しつつ、独自に上書き・追加</strong>できます。</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+                <i class="fa-solid fa-exclamation-circle" style="color:var(--yellow-600)"></i>
+                <span><strong>名古屋市立千種小学校</strong> がこのポリシーを上書きしています</span>
+                <button class="btn btn-sm btn-ghost" style="margin-left:auto">上書き内容を確認</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+                <i class="fa-solid fa-check-circle" style="color:var(--green-600)"></i>
+                <span>その他 246 組織は継承のみ（上書き無し）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Policy Modal -->
+<div class="modal-overlay" id="modal-add-policy">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <i class="fa-solid fa-plus" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">ポリシーを追加</h3></div>
+      <button class="modal-close" data-modal-close="modal-add-policy"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ポリシー名 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="例: 担任教員 → 担当クラス生徒 基本情報閲覧">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ポリシー種別</label>
+          <select class="form-control">
+            <option>名簿閲覧</option>
+            <option>名簿編集</option>
+            <option>フォーム</option>
+            <option>属性項目</option>
+            <option>CSV操作</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">適用スコープ</label>
+          <select class="form-control">
+            <option>テナント全体（継承）</option>
+            <option>名古屋市</option>
+            <option>名古屋市立千種小学校</option>
+          </select>
+        </div>
+      </div>
+      <div class="alert alert-info mt-8">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>ポリシー追加後、サブジェクト条件・オブジェクト条件・権限マトリクスを詳細設定画面で設定してください。</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-add-policy">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('ポリシーを追加しました', 'success');closeModal('modal-add-policy')">
+        <i class="fa-solid fa-check"></i> 追加して設定へ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Policy Modal (simplified) -->
+<div class="modal-overlay" id="modal-edit-policy">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <i class="fa-solid fa-pen" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">条件を編集</h3></div>
+      <button class="modal-close" data-modal-close="modal-edit-policy"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">条件種別</label>
+        <select class="form-control">
+          <option>職種（コード）</option>
+          <option>属性項目の値</option>
+          <option>組織スコープ</option>
+          <option>人物種別</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">演算子</label>
+        <select class="form-control">
+          <option>= （等しい）</option>
+          <option>≠ （等しくない）</option>
+          <option>存在する</option>
+          <option>含む</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">値</label>
+        <select class="form-control">
+          <option>一般教員</option>
+          <option>学年主任</option>
+          <option>校長</option>
+          <option>教頭</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-edit-policy">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('条件を保存しました', 'success');closeModal('modal-edit-policy')">
+        <i class="fa-solid fa-check"></i> 保存
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+document.querySelectorAll('.policy-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.policy-item').forEach(i => i.classList.remove('selected'));
+    item.classList.add('selected');
+  });
+});
+</script>
+</body>
+</html>

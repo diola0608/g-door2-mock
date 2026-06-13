@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コードマスター — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.code-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: calc(100vh - 56px - 57px);
+  overflow: hidden;
+}
+.code-sets-panel {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.code-items-panel {
+  overflow-y: auto;
+  background: var(--bg);
+  padding: 20px;
+}
+.code-set-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+  font-size: 13px;
+}
+.code-set-item:hover { background: var(--n-50); }
+.code-set-item.selected { background: var(--brand-50); border-left: 3px solid var(--brand); padding-left: 11px; }
+.code-item-row {
+  display: grid;
+  grid-template-columns: 100px 1fr auto auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.code-item-row:last-child { border-bottom: none; }
+.code-item-row:hover { background: var(--n-50); }
+</style>
+</head>
+<body data-page="code-master">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <span class="current">コードマスター</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">コードマスター</h1>
+        <p class="page-subtitle">属性項目で使用するコードセットを管理します</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-add-codeset"><i class="fa-solid fa-plus"></i> コードセットを追加</button>
+      </div>
+    </div>
+
+    <div class="code-layout">
+      <!-- Code sets list -->
+      <div class="code-sets-panel">
+        <div style="padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0">
+          <div class="search-input-wrapper" style="max-width:100%">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" placeholder="コードセット検索…" style="width:100%">
+          </div>
+        </div>
+        <div style="overflow-y:auto;flex:1">
+          <div class="code-set-item selected">
+            <i class="fa-solid fa-user-tag" style="color:var(--red-600);width:14px"></i>
+            <span style="flex:1">人物の特徴</span>
+            <span class="badge badge-gray">5</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-futbol" style="color:var(--green-600);width:14px"></i>
+            <span style="flex:1">部活動</span>
+            <span class="badge badge-gray">24</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-briefcase" style="color:var(--sky-600);width:14px"></i>
+            <span style="flex:1">職種区分</span>
+            <span class="badge badge-gray">12</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-book" style="color:var(--yellow-600);width:14px"></i>
+            <span style="flex:1">担当教科</span>
+            <span class="badge badge-gray">18</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-graduation-cap" style="color:var(--purple-600);width:14px"></i>
+            <span style="flex:1">在籍区分</span>
+            <span class="badge badge-gray">7</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-heart-pulse" style="color:var(--red-600);width:14px"></i>
+            <span style="flex:1">健康状態区分</span>
+            <span class="badge badge-gray">6</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-school" style="color:var(--teal-600);width:14px"></i>
+            <span style="flex:1">学校種別</span>
+            <span class="badge badge-gray">5</span>
+          </div>
+          <div class="code-set-item">
+            <i class="fa-solid fa-map-marker-alt" style="color:var(--brand);width:14px"></i>
+            <span style="flex:1">都道府県</span>
+            <span class="badge badge-gray">47</span>
+          </div>
+        </div>
+        <div style="padding:10px 12px;border-top:1px solid var(--border)">
+          <span style="font-size:11px;color:var(--text-low)">合計 8 コードセット</span>
+        </div>
+      </div>
+
+      <!-- Code items -->
+      <div class="code-items-panel">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="width:40px;height:40px;border-radius:var(--r-md);background:var(--red-50);color:var(--red-600);display:flex;align-items:center;justify-content:center;font-size:18px">
+            <i class="fa-solid fa-user-tag"></i>
+          </div>
+          <div>
+            <h2 style="font-size:16px;font-weight:700">人物の特徴</h2>
+            <p style="font-size:12px;color:var(--text-low)">コードセットID: CS-0001 / 使用属性項目: 「人物の特徴」</p>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn btn-sm btn-secondary" data-modal-open="modal-add-code"><i class="fa-solid fa-plus"></i> コードを追加</button>
+            <button class="btn btn-sm btn-ghost" data-modal-open="modal-edit-codeset"><i class="fa-solid fa-pen"></i></button>
+          </div>
+        </div>
+
+        <div class="alert alert-warning mb-16">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>このコードセットには<strong>機微なコード</strong>が含まれています。各コードの閲覧権限を適切に設定してください。権限設定は<a href="permissions.html" style="color:var(--yellow-700);font-weight:600">権限設定画面</a>でも確認できます。</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">コード一覧</span>
+            <span class="badge badge-gray ml-auto">5 件</span>
+          </div>
+          <div class="card-body p-0">
+            <div style="padding:8px 12px;background:var(--n-50);border-bottom:1px solid var(--border);display:grid;grid-template-columns:100px 1fr auto auto auto;gap:10px;align-items:center">
+              <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-low);letter-spacing:.4px">コードID</p>
+              <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-low);letter-spacing:.4px">表示名</p>
+              <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-low);letter-spacing:.4px">閲覧権限</p>
+              <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-low);letter-spacing:.4px">ステータス</p>
+              <p></p>
+            </div>
+
+            <div class="code-item-row">
+              <span class="font-mono" style="font-size:12px;color:var(--text-med)">CS0001-001</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge badge-green"><i class="fa-solid fa-star"></i> 優良生徒</span>
+                <span style="font-size:12px;color:var(--text-low)">顕著な活躍が認められる生徒</span>
+              </div>
+              <div>
+                <span class="badge badge-blue"><i class="fa-solid fa-users"></i> 担任・学年主任</span>
+              </div>
+              <span class="status-dot active">有効</span>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-code" title="編集"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-icon btn-sm" title="削除" onclick="showToast('削除するには確認が必要です', 'error')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+              </div>
+            </div>
+
+            <div class="code-item-row">
+              <span class="font-mono" style="font-size:12px;color:var(--text-med)">CS0001-002</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge badge-yellow"><i class="fa-solid fa-exclamation-triangle"></i> 要支援</span>
+                <span style="font-size:12px;color:var(--text-low)">生活支援・学習支援が必要な生徒</span>
+              </div>
+              <div>
+                <span class="badge badge-sky"><i class="fa-solid fa-lock"></i> 担任のみ</span>
+              </div>
+              <span class="status-dot active">有効</span>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-code"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-icon btn-sm" onclick="showToast('削除するには確認が必要です', 'error')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+              </div>
+            </div>
+
+            <div class="code-item-row" style="background:var(--red-50)">
+              <span class="font-mono" style="font-size:12px;color:var(--text-med)">CS0001-003</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge badge-red"><i class="fa-solid fa-exclamation-circle"></i> いじめ加害者</span>
+                <span style="font-size:12px;color:var(--text-low)">いじめ行為が確認されている生徒</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <span class="badge badge-red"><i class="fa-solid fa-lock"></i> 学年主任のみ</span>
+                <span style="font-size:10px;color:var(--red-700)">⚠ 高度機微コード</span>
+              </div>
+              <span class="status-dot active">有効</span>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-code"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-icon btn-sm" onclick="showToast('削除するには確認が必要です', 'error')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+              </div>
+            </div>
+
+            <div class="code-item-row" style="background:var(--red-50)">
+              <span class="font-mono" style="font-size:12px;color:var(--text-med)">CS0001-004</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> いじめ被害者</span>
+                <span style="font-size:12px;color:var(--text-low)">いじめ被害を受けている生徒</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <span class="badge badge-red"><i class="fa-solid fa-lock"></i> 学年主任・担任</span>
+                <span style="font-size:10px;color:var(--red-700)">⚠ 高度機微コード</span>
+              </div>
+              <span class="status-dot active">有効</span>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-code"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-icon btn-sm" onclick="showToast('削除するには確認が必要です', 'error')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+              </div>
+            </div>
+
+            <div class="code-item-row" style="opacity:.6">
+              <span class="font-mono" style="font-size:12px;color:var(--text-med)">CS0001-005</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="badge badge-gray">特記なし</span>
+                <span style="font-size:12px;color:var(--text-low)">デフォルト値（特になし）</span>
+              </div>
+              <div>
+                <span class="badge badge-gray"><i class="fa-solid fa-users"></i> 全教員</span>
+              </div>
+              <span class="status-dot active">有効</span>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-icon btn-sm" data-modal-open="modal-edit-code"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn btn-icon btn-sm" onclick="showToast('削除するには確認が必要です', 'error')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Code Modal -->
+<div class="modal-overlay" id="modal-add-code">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-plus" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">コードを追加</h3><p class="modal-subtitle">コードセット: 人物の特徴</p></div>
+      <button class="modal-close" data-modal-close="modal-add-code"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">表示名 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="例: 優良教員">
+      </div>
+      <div class="form-group">
+        <label class="form-label">説明</label>
+        <textarea class="form-control" rows="2" placeholder="このコードの意味や使い方を説明してください"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">閲覧権限</label>
+        <select class="form-control">
+          <option>全教員</option>
+          <option>担任のみ</option>
+          <option>学年主任のみ</option>
+          <option>学年主任・担任</option>
+          <option>管理職（校長・教頭）</option>
+          <option>教育委員会管理者</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">機微レベル</label>
+        <select class="form-control">
+          <option>通常</option>
+          <option>機微</option>
+          <option>高度機微</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-add-code">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('コードを追加しました', 'success');closeModal('modal-add-code')">
+        <i class="fa-solid fa-check"></i> 追加する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Code Modal -->
+<div class="modal-overlay" id="modal-edit-code">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-pen" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">コードを編集</h3></div>
+      <button class="modal-close" data-modal-close="modal-edit-code"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">表示名</label>
+        <input type="text" class="form-control" value="いじめ加害者">
+      </div>
+      <div class="form-group">
+        <label class="form-label">説明</label>
+        <textarea class="form-control" rows="2">いじめ行為が確認されている生徒</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">閲覧権限</label>
+        <select class="form-control">
+          <option>全教員</option>
+          <option>担任のみ</option>
+          <option selected>学年主任のみ</option>
+          <option>学年主任・担任</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">機微レベル</label>
+        <select class="form-control">
+          <option>通常</option>
+          <option>機微</option>
+          <option selected>高度機微</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ステータス</label>
+        <select class="form-control">
+          <option>有効</option>
+          <option>無効</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-edit-code">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('コードを更新しました', 'success');closeModal('modal-edit-code')">
+        <i class="fa-solid fa-check"></i> 保存する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Code Set Modal -->
+<div class="modal-overlay" id="modal-add-codeset">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <i class="fa-solid fa-plus" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">コードセットを追加</h3></div>
+      <button class="modal-close" data-modal-close="modal-add-codeset"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">コードセット名 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="例: 研修区分">
+      </div>
+      <div class="form-group">
+        <label class="form-label">説明</label>
+        <input type="text" class="form-control" placeholder="このコードセットの用途">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-add-codeset">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('コードセットを追加しました', 'success');closeModal('modal-add-codeset')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+document.querySelectorAll('.code-set-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.code-set-item').forEach(i => i.classList.remove('selected'));
+    item.classList.add('selected');
+    showToast('コードセット「' + item.querySelector('span').textContent.trim() + '」を選択しました', 'info');
+  });
+});
+</script>
+</body>
+</html>

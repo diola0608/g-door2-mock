@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>集計結果 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>.hbar { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; } .hbar__track { flex: 1; height: 26px; border-radius: 6px; background: var(--c-100); overflow: hidden; } .hbar__fill { height: 100%; border-radius: 6px; background: var(--brand-500); display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: #fff; font-size: 11.5px; font-weight: 700; }</style>
+</head>
+<body data-page="forms-list">
+  <main id="main" class="main">
+    <div class="page page--wide" data-tabs>
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><a href="forms-list.html">フォーム</a><span class="sep">/</span><span class="cur">集計結果</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title" style="font-size:21px">ICT活用状況に関する調査 <span class="badge badge--success"><span class="dot-s"></span>受付中</span></h1>
+          <p class="page-subtitle">対象: 青葉市 小中学校 一般教員（418名）・期限 2026-06-20</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-toast="リマインドを送信しました（デモ）"><i data-ic="send" data-size="16"></i> 未回答者へ催促</button>
+          <button class="btn btn--secondary" data-toast="CSVを書き出しました（デモ）"><i data-ic="download" data-size="16"></i> エクスポート</button>
+        </div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="card"><div class="card__body flex items-center gap-16"><div class="donut" style="--val:82;--col:var(--brand-600);width:96px;height:96px"><div class="donut__label"><div class="fw-7" style="font-size:18px">82%</div></div></div><div><div class="text-3 text-sm">回答率</div><div class="fw-7" style="font-size:18px">342 / 418</div></div></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile brand"><i data-ic="listChecks"></i></span><span class="stat__label">回答数</span></div><div class="stat__value">342</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="clock"></i></span><span class="stat__label">未回答</span></div><div class="stat__value" style="color:var(--warning)">76</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile teal"><i data-ic="clock"></i></span><span class="stat__label">平均回答時間</span></div><div class="stat__value">3<small>分12秒</small></div></div>
+      </div>
+
+      <div class="tabs mb-20">
+        <button class="tab active" data-tab="summary"><i data-ic="pieChart" data-size="15"></i> 集計サマリー</button>
+        <button class="tab" data-tab="responses"><i data-ic="list" data-size="15"></i> 回答一覧 <span class="count">342</span></button>
+        <button class="tab" data-tab="perm"><i data-ic="shield" data-size="15"></i> 閲覧権限</button>
+      </div>
+
+      <!-- SUMMARY -->
+      <div data-tab-panel="summary" class="tab-pane active">
+        <div class="grid grid-2">
+          <div class="card"><div class="card__head"><span class="card__title">Q1. ICT機器の活用頻度</span><span class="badge badge--info spacer">単一選択</span></div><div class="card__body">
+            <div class="flex items-end gap-20"><div class="donut" style="--val:46;--col:var(--brand-600)"><div class="donut__label"><div class="fw-7" style="font-size:20px">46%</div><div class="text-3 text-xs">毎日</div></div></div>
+            <div class="grow">
+              <div class="flex items-center justify-between mb-8 text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--brand-600);display:inline-block"></span>毎日</span><b>158</b></div>
+              <div class="flex items-center justify-between mb-8 text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--brand-400);display:inline-block"></span>週に数回</span><b>121</b></div>
+              <div class="flex items-center justify-between mb-8 text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--brand-200);display:inline-block"></span>月に数回</span><b>43</b></div>
+              <div class="flex items-center justify-between text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--c-200);display:inline-block"></span>ほぼ使わない</span><b>20</b></div>
+            </div></div>
+          </div></div>
+
+          <div class="card"><div class="card__head"><span class="card__title">Q2. 授業で課題に感じること</span><span class="badge badge--success spacer">複数選択</span></div><div class="card__body" id="q2"></div></div>
+        </div>
+
+        <div class="card mt-18"><div class="card__head"><span class="card__title">Q3. 月別の研修参加意向</span><span class="badge badge--info spacer">単一選択</span></div><div class="card__body">
+          <div class="bars" id="q3"></div>
+        </div></div>
+      </div>
+
+      <!-- RESPONSES -->
+      <div data-tab-panel="responses" class="tab-pane">
+        <div class="card"><div class="card__head"><span class="card__title">個別回答</span><div class="input-icon spacer" style="width:240px"><i data-ic="search" data-size="16"></i><input class="input btn--sm" style="height:34px" placeholder="回答者を検索" /></div></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>回答者</th><th>所属</th><th>Q1 活用頻度</th><th>Q2 課題</th><th>回答日時</th></tr></thead><tbody id="respBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- PERM -->
+      <div data-tab-panel="perm" class="tab-pane">
+        <div class="card" style="max-width:720px"><div class="card__head"><span class="card__title"><i data-ic="shield" data-size="16"></i> 結果の閲覧権限</span></div><div class="card__body">
+          <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">サブジェクト・オブジェクト関係を含めた柔軟な権限設定が可能です。</div></div>
+          <dl class="def-list" style="grid-template-columns:200px 1fr">
+            <dt>集計結果</dt><dd>作成者（中村 咲）・青葉市教育委員会</dd>
+            <dt>個別回答</dt><dd>作成者のみ</dd>
+            <dt>対象校の管理職</dt><dd>自校分の集計のみ閲覧可</dd>
+            <dt>匿名化</dt><dd><span class="badge badge--neutral">無効</span></dd>
+          </dl>
+          <button class="btn btn--secondary mt-12"><i data-ic="edit" data-size="15"></i> 権限を編集</button>
+        </div></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, U = window.UI;
+      var q2 = [{ l: '端末の不足', v: 41 }, { l: '通信環境', v: 33 }, { l: '教材・コンテンツ', v: 58 }, { l: 'スキル習得の時間', v: 67 }, { l: '校内サポート体制', v: 29 }];
+      document.getElementById('q2').innerHTML = q2.map(function (q) {
+        return '<div class="hbar"><span style="width:130px;font-size:13px" class="text-2">' + q.l + '</span><div class="hbar__track"><div class="hbar__fill" style="width:' + q.v + '%">' + q.v + '%</div></div></div>';
+      }).join('');
+
+      var q3 = [{ l: '6月', v: 40 }, { l: '7月', v: 72 }, { l: '8月', v: 95 }, { l: '9月', v: 55 }, { l: '10月', v: 48 }, { l: '11月', v: 38 }];
+      document.getElementById('q3').innerHTML = q3.map(function (b) {
+        return '<div class="bars__col"><div class="bars__bar" style="height:' + b.v + '%"></div><span class="bars__label">' + b.l + '</span></div>';
+      }).join('');
+
+      var P = window.DATA.people.filter(function (p) { return p.type === '教員'; });
+      var freq = ['毎日', '週に数回', '月に数回', '毎日'];
+      var issues = ['スキル習得の時間', '教材・コンテンツ', '端末の不足', '通信環境'];
+      document.getElementById('respBody').innerHTML = P.concat(P).slice(0, 6).map(function (p, i) {
+        return '<tr><td><div class="cell-person">' + U.avatar(p.name, { size: 'sm', color: p.color }) + '<div class="cell-person__meta"><div class="cell-person__name">' + p.name + '</div><div class="cell-person__sub">' + p.email + '</div></div></div></td><td>' + p.org + '</td><td><span class="badge badge--info">' + freq[i % 4] + '</span></td><td class="text-2 text-sm">' + issues[i % 4] + '</td><td class="mono text-sm">2026-06-1' + (i % 3 + 1) + ' ' + (9 + i) + ':1' + i + '</td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('respBody'));
+    })();
+  </script>
+</body>
+</html>

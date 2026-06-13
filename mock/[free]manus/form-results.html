@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム集計 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .result-chart-bar {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .result-bar-label { font-size: 12px; color: var(--gray-700); min-width: 80px; }
+    .result-bar-wrap { flex: 1; height: 20px; background: var(--gray-100); border-radius: 4px; overflow: hidden; position: relative; }
+    .result-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+    .result-bar-count { font-size: 12px; color: var(--gray-500); min-width: 60px; text-align: right; }
+    .response-row { cursor: pointer; }
+    .response-row:hover td { background: var(--gray-50); }
+    .donut-container { position: relative; width: 120px; height: 120px; }
+    .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item" onclick="navigate('forms.html')">フォーム管理</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">集計結果</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">2024年度 緊急連絡先確認調査</div>
+          <div class="page-subtitle">公開中　2024年6月1日 〜 2024年6月30日　配信対象: 横浜市 全教員 4,521名</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="openModal('reminderModal')">📧 リマインド送信</button>
+          <button class="btn btn-secondary" onclick="showToast('CSVをエクスポートしました', 'info')">📥 CSV出力</button>
+          <button class="btn btn-secondary" onclick="navigate('form-builder.html')">✏️ フォーム編集</button>
+        </div>
+      </div>
+
+      <!-- Overview Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+        <div class="stat-card">
+          <div class="stat-icon blue">📊</div>
+          <div class="stat-info">
+            <div class="stat-value">4,521</div>
+            <div class="stat-label">配信対象</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">3,456</div>
+            <div class="stat-label">回答済み</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value">1,065</div>
+            <div class="stat-label">未回答</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">📈</div>
+          <div class="stat-info">
+            <div class="stat-value">76.4%</div>
+            <div class="stat-label">回答率</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs">
+          <button class="tab-item active">集計結果</button>
+          <button class="tab-item">個別回答一覧</button>
+          <button class="tab-item">未回答者一覧</button>
+        </div>
+
+        <!-- Aggregated Results -->
+        <div class="tab-content active">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+            <!-- Q1: 自宅電話 -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Q1. 自宅電話番号</span>
+                <span class="tag tag-blue">テキスト</span>
+              </div>
+              <div class="card-body">
+                <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px">
+                  回答数: <strong>3,456</strong>　未回答: <strong>1,065</strong>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">入力あり</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:82%;background:var(--primary)"></div>
+                  </div>
+                  <span class="result-bar-count">2,834 (82%)</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">空白</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:18%;background:var(--gray-300)"></div>
+                  </div>
+                  <span class="result-bar-count">622 (18%)</span>
+                </div>
+                <div style="margin-top:12px;padding:10px;background:var(--gray-50);border-radius:6px;font-size:12px;color:var(--gray-500)">
+                  ※ 自宅電話なしの場合は空白で回答可
+                </div>
+              </div>
+            </div>
+
+            <!-- Q2: 携帯 -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Q2. 携帯電話番号</span>
+                <span class="tag tag-blue">テキスト</span>
+              </div>
+              <div class="card-body">
+                <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px">
+                  回答数: <strong>3,456</strong>　未回答: <strong>1,065</strong>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">入力あり</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:97%;background:var(--secondary)"></div>
+                  </div>
+                  <span class="result-bar-count">3,352 (97%)</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">空白</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:3%;background:var(--gray-300)"></div>
+                  </div>
+                  <span class="result-bar-count">104 (3%)</span>
+                </div>
+                <div style="margin-top:12px;font-size:12px;color:var(--secondary)">
+                  ✓ 名簿に自動反映済み: 3,352件
+                </div>
+              </div>
+            </div>
+
+            <!-- Q3: 続柄 -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Q3. 緊急連絡先（続柄）</span>
+                <span class="tag tag-green">単一選択</span>
+              </div>
+              <div class="card-body">
+                <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px">
+                  回答数: <strong>3,456</strong>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">配偶者</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:58%;background:#6366f1"></div>
+                  </div>
+                  <span class="result-bar-count">2,004 (58%)</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">父母</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:28%;background:#8b5cf6"></div>
+                  </div>
+                  <span class="result-bar-count">968 (28%)</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">子</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:8%;background:#a78bfa"></div>
+                  </div>
+                  <span class="result-bar-count">276 (8%)</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">兄弟姉妹</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:4%;background:#c4b5fd"></div>
+                  </div>
+                  <span class="result-bar-count">138 (4%)</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label">その他</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:2%;background:#ddd6fe"></div>
+                  </div>
+                  <span class="result-bar-count">70 (2%)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Response rate by org -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">組織別 回答率</span>
+              </div>
+              <div class="card-body">
+                <div class="result-chart-bar">
+                  <span class="result-bar-label" style="min-width:120px">横浜市立南小学校</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:92%;background:var(--secondary)"></div>
+                  </div>
+                  <span class="result-bar-count">92%</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label" style="min-width:120px">横浜市立北中学校</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:85%;background:var(--secondary)"></div>
+                  </div>
+                  <span class="result-bar-count">85%</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label" style="min-width:120px">横浜市立東小学校</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:71%;background:var(--warning)"></div>
+                  </div>
+                  <span class="result-bar-count">71%</span>
+                </div>
+                <div class="result-chart-bar">
+                  <span class="result-bar-label" style="min-width:120px">横浜市立西中学校</span>
+                  <div class="result-bar-wrap">
+                    <div class="result-bar-fill" style="width:45%;background:var(--danger)"></div>
+                  </div>
+                  <span class="result-bar-count">45%</span>
+                </div>
+                <div style="margin-top:12px">
+                  <button class="btn btn-secondary btn-sm" onclick="openModal('reminderModal')">📧 低回答率組織にリマインド</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Individual Responses -->
+        <div class="tab-content">
+          <div class="filter-bar mb-3">
+            <div style="position:relative;flex:1;max-width:280px">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400)">🔍</span>
+              <input type="text" placeholder="名前で検索..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid var(--gray-300);border-radius:6px;font-size:13px;outline:none">
+            </div>
+            <select class="form-control" style="max-width:180px">
+              <option>すべての組織</option>
+              <option>横浜市立南小学校</option>
+              <option>横浜市立北中学校</option>
+            </select>
+          </div>
+          <div class="card">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>回答者</th>
+                    <th>所属</th>
+                    <th>回答日時</th>
+                    <th>自宅電話</th>
+                    <th>携帯電話</th>
+                    <th>緊急連絡先続柄</th>
+                    <th style="width:80px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="response-row" onclick="openModal('responseDetailModal')">
+                    <td>
+                      <div style="font-size:13px;font-weight:600">山田 花子</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00234</div>
+                    </td>
+                    <td style="font-size:12px">横浜市立南小学校</td>
+                    <td style="font-size:12px;color:var(--gray-400)">2024/06/05 10:23</td>
+                    <td style="font-size:12px">045-123-4567</td>
+                    <td style="font-size:12px">090-1234-5678</td>
+                    <td><span class="tag tag-blue">配偶者</span></td>
+                    <td class="table-actions" onclick="event.stopPropagation()">
+                      <button class="btn btn-ghost btn-sm" onclick="openModal('responseDetailModal')">詳細</button>
+                    </td>
+                  </tr>
+                  <tr class="response-row" onclick="openModal('responseDetailModal')">
+                    <td>
+                      <div style="font-size:13px;font-weight:600">佐藤 次郎</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00189</div>
+                    </td>
+                    <td style="font-size:12px">横浜市立北中学校</td>
+                    <td style="font-size:12px;color:var(--gray-400)">2024/06/06 14:45</td>
+                    <td style="font-size:12px">—</td>
+                    <td style="font-size:12px">080-9876-5432</td>
+                    <td><span class="tag tag-green">父母</span></td>
+                    <td class="table-actions" onclick="event.stopPropagation()">
+                      <button class="btn btn-ghost btn-sm" onclick="openModal('responseDetailModal')">詳細</button>
+                    </td>
+                  </tr>
+                  <tr class="response-row" onclick="openModal('responseDetailModal')">
+                    <td>
+                      <div style="font-size:13px;font-weight:600">田中 義雄</div>
+                      <div style="font-size:11px;color:var(--gray-400)">A-00012</div>
+                    </td>
+                    <td style="font-size:12px">神奈川県教育委員会</td>
+                    <td style="font-size:12px;color:var(--gray-400)">2024/06/01 09:10</td>
+                    <td style="font-size:12px">045-789-0123</td>
+                    <td style="font-size:12px">070-1234-5678</td>
+                    <td><span class="tag tag-blue">配偶者</span></td>
+                    <td class="table-actions" onclick="event.stopPropagation()">
+                      <button class="btn btn-ghost btn-sm" onclick="openModal('responseDetailModal')">詳細</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination">
+              <button class="page-btn">‹</button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <span style="padding:0 8px;color:var(--gray-400);font-size:13px">...</span>
+              <button class="page-btn">69</button>
+              <button class="page-btn">›</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Non-Respondents -->
+        <div class="tab-content">
+          <div class="alert alert-warning mb-3">
+            <span class="alert-icon">⚠️</span>
+            <div>1,065名が未回答です。期限まで残り18日です。</div>
+          </div>
+          <div class="filter-bar mb-3">
+            <div style="position:relative;flex:1;max-width:280px">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400)">🔍</span>
+              <input type="text" placeholder="名前で検索..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid var(--gray-300);border-radius:6px;font-size:13px;outline:none">
+            </div>
+            <select class="form-control" style="max-width:180px">
+              <option>すべての組織</option>
+              <option>横浜市立西中学校（45%）</option>
+              <option>横浜市立東小学校（71%）</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="openModal('reminderModal')">📧 一括リマインド送信</button>
+          </div>
+          <div class="card">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:40px"><input type="checkbox"></th>
+                    <th>氏名</th>
+                    <th>所属</th>
+                    <th>リマインド送信履歴</th>
+                    <th style="width:100px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td>
+                      <div style="font-size:13px;font-weight:600">鈴木 美咲</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00445</div>
+                    </td>
+                    <td style="font-size:12px">横浜市立西中学校</td>
+                    <td style="font-size:12px;color:var(--gray-400)">送信済み（2024/06/08）</td>
+                    <td class="table-actions">
+                      <button class="btn btn-ghost btn-sm" onclick="showToast('リマインドを送信しました')">📧 送信</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox"></td>
+                    <td>
+                      <div style="font-size:13px;font-weight:600">高橋 美穂</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00567</div>
+                    </td>
+                    <td style="font-size:12px">横浜市立東小学校</td>
+                    <td style="font-size:12px;color:var(--gray-400)">未送信</td>
+                    <td class="table-actions">
+                      <button class="btn btn-ghost btn-sm" onclick="showToast('リマインドを送信しました')">📧 送信</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Reminder Modal -->
+<div class="modal-overlay" id="reminderModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">リマインドメール送信</span>
+      <button class="modal-close" onclick="closeModal('reminderModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">送信対象</label>
+        <select class="form-control">
+          <option>未回答者全員（1,065名）</option>
+          <option>特定の組織のみ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メッセージ（任意）</label>
+        <textarea class="form-control" rows="3" placeholder="追加メッセージを入力...">お忙しいところ恐れ入りますが、まだご回答いただけていない方は、期限（6月30日）までにご回答をお願いします。</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('reminderModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('reminderModal');showToast('リマインドメールを送信しました（1,065名）')">📧 送信する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Response Detail Modal -->
+<div class="modal-overlay" id="responseDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">回答詳細 — 山田 花子</span>
+      <button class="modal-close" onclick="closeModal('responseDetailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--gray-400);margin-bottom:16px">回答日時: 2024年6月5日 10:23　/ 横浜市立南小学校</div>
+      <div style="border:1px solid var(--gray-200);border-radius:8px;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--gray-100)">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500)">Q1. 自宅電話番号</div>
+          <div style="font-size:14px;margin-top:4px">045-123-4567</div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--gray-100)">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500)">Q2. 携帯電話番号</div>
+          <div style="font-size:14px;margin-top:4px">090-1234-5678 <span class="tag tag-green" style="font-size:10px">名簿反映済み</span></div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--gray-100)">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500)">Q3. 緊急連絡先（続柄）</div>
+          <div style="font-size:14px;margin-top:4px">配偶者</div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500)">Q4. 緊急連絡先 電話番号</div>
+          <div style="font-size:14px;margin-top:4px">090-9876-5432</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('responseDetailModal')">閉じる</button>
+      <button class="btn btn-primary" onclick="navigate('person-detail.html')">人物詳細を見る →</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('フォーム集計');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('forms.html');
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>システム設定 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .settings-layout { display: flex; gap: 0; height: calc(100vh - var(--header-height) - 48px); overflow: hidden; margin: -24px; }
+    .settings-nav { width: 240px; flex-shrink: 0; border-right: 1px solid var(--gray-200); background: white; overflow-y: auto; padding: 16px 0; }
+    .settings-content { flex: 1; overflow-y: auto; padding: 24px; }
+    .settings-nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; font-size: 13px; color: var(--gray-600);
+      cursor: pointer; transition: var(--transition);
+    }
+    .settings-nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+    .settings-nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .settings-nav-label { padding: 12px 20px 4px; font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; }
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+    .setting-desc { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in" style="padding:0;overflow:hidden">
+      <div class="settings-layout">
+        <!-- Settings Nav -->
+        <div class="settings-nav">
+          <div class="settings-nav-label">全般</div>
+          <div class="settings-nav-item active" onclick="selectNav(this)">⚙️ 基本設定</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🏛 テナント設定</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🌐 言語・地域</div>
+          <div class="settings-nav-label">連携</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🔗 Google Workspace</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">📧 メール設定</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🔌 API・Webhook</div>
+          <div class="settings-nav-label">セキュリティ</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🔐 認証設定</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">📜 監査ログ設定</div>
+          <div class="settings-nav-label">データ管理</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🗂 属性項目管理</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">📋 コードマスター</div>
+          <div class="settings-nav-item" onclick="selectNav(this)">🔄 バックアップ</div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+          <div style="font-size:18px;font-weight:800;color:var(--gray-900);margin-bottom:20px">⚙️ 基本設定</div>
+
+          <div class="card mb-4">
+            <div class="card-header">
+              <span class="card-title">テナント基本情報</span>
+              <button class="btn btn-primary btn-sm" onclick="showToast('設定を保存しました')">💾 保存</button>
+            </div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">テナント名</label>
+                  <input type="text" class="form-control" value="神奈川県教育委員会">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">テナントコード</label>
+                  <input type="text" class="form-control" value="KANAGAWA-EDU" readonly style="background:var(--gray-50)">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">管理者メールアドレス</label>
+                  <input type="email" class="form-control" value="admin@edu.kanagawa.jp">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">タイムゾーン</label>
+                  <select class="form-control">
+                    <option selected>Asia/Tokyo (UTC+9)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header">
+              <span class="card-title">Google Workspace 連携設定</span>
+              <span class="tag tag-green">✓ 連携済み</span>
+            </div>
+            <div class="card-body">
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">GWSドメイン</div>
+                  <div class="setting-desc">edu.kanagawa.jp</div>
+                </div>
+                <button class="btn btn-secondary btn-sm">変更</button>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">自動同期</div>
+                  <div class="setting-desc">毎日 02:00 に自動同期</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">アカウント自動作成</div>
+                  <div class="setting-desc">名簿登録時にGWSアカウントを自動作成する</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">最終同期</div>
+                  <div class="setting-desc">2024年6月12日 02:00（成功）</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('GWSと同期しました', 'success')">🔄 今すぐ同期</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header">
+              <span class="card-title">通知設定</span>
+            </div>
+            <div class="card-body">
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">CSVインポート完了通知</div>
+                  <div class="setting-desc">インポート処理完了時にメール通知</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">所属変更申請通知</div>
+                  <div class="setting-desc">新規申請が届いた際にメール通知</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">承認期限超過アラート</div>
+                  <div class="setting-desc">承認期限を超過した申請がある場合に通知</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">セキュリティ設定</span>
+            </div>
+            <div class="card-body">
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">二要素認証（2FA）</div>
+                  <div class="setting-desc">管理者アカウントに2FAを必須にする</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">セッションタイムアウト</div>
+                  <div class="setting-desc">無操作時のセッション自動切断</div>
+                </div>
+                <select class="form-control" style="max-width:160px">
+                  <option>30分</option>
+                  <option selected>1時間</option>
+                  <option>2時間</option>
+                  <option>8時間</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">IPアドレス制限</div>
+                  <div class="setting-desc">特定のIPアドレスからのみアクセスを許可</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('システム設定');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('settings.html');
+
+  function selectNav(el) {
+    document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>

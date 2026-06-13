@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>佐藤 花子 | 名簿管理 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="roster-list">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><a href="roster-list.html">名簿管理</a><span class="sep">/</span><span class="cur">佐藤 花子</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main flex items-center gap-16">
+          <span class="avatar avatar--lg" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">佐</span>
+          <div>
+            <h1 class="page-title" style="font-size:22px">佐藤 花子 <span class="badge badge--info">生徒</span> <span class="badge badge--success"><span class="dot-s"></span>在籍</span></h1>
+            <p class="page-subtitle">さとう はなこ ・ ID: P-10231 ・ 青葉第一中学校 2年A組</p>
+          </div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-open="transferModal"><i data-ic="swap" data-size="16"></i> 所属変更</button>
+          <button class="btn btn--primary" data-open="editModal"><i data-ic="edit" data-size="16"></i> 編集</button>
+          <div class="dropdown" data-dropdown><button class="btn btn--secondary btn--icon"><i data-ic="moreV" data-size="18"></i></button>
+            <div class="menu right"><div class="menu__item"><i data-ic="copy" data-size="16"></i> IDをコピー</div><div class="menu__item"><i data-ic="download" data-size="16"></i> 個票を出力</div><div class="menu__item"><i data-ic="mail" data-size="16"></i> 連絡する</div><div class="menu__sep"></div><div class="menu__item danger"><i data-ic="trash" data-size="16"></i> 削除</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:340px 1fr;align-items:start">
+        <!-- Left profile -->
+        <div class="flex col gap-18">
+          <div class="card">
+            <div class="card__head"><span class="card__title">基本プロフィール</span></div>
+            <div class="card__body">
+              <dl class="def-list">
+                <dt>かな</dt><dd>さとう はなこ</dd>
+                <dt>生年月日</dt><dd>2012-05-14 <span class="text-3">（13歳）</span></dd>
+                <dt>性別</dt><dd>女</dd>
+                <dt>種別</dt><dd>生徒</dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><span class="card__title"><i data-ic="sitemap" data-size="17"></i> 所属</span></div>
+            <div class="card__body">
+              <div class="flex items-center gap-6 wrap text-sm mb-12">
+                <span class="chip">青葉県</span><i data-ic="chevronRight" data-size="14" data-cls="text-3"></i>
+                <span class="chip">青葉市</span><i data-ic="chevronRight" data-size="14" data-cls="text-3"></i>
+                <span class="chip">中学校</span><i data-ic="chevronRight" data-size="14" data-cls="text-3"></i>
+                <span class="chip" style="background:var(--brand-50);color:var(--brand-700)">青葉第一中学校</span>
+              </div>
+              <dl class="def-list">
+                <dt>クラス</dt><dd>2年A組（出席番号 12）</dd>
+                <dt>担任</dt><dd><a href="roster-detail.html" class="flex items-center gap-8"><span class="avatar avatar--xs" style="background:linear-gradient(135deg,#10b981,#059669)">伊</span>伊藤 学</a></dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><span class="card__title"><i data-ic="google" data-size="17"></i> アカウント</span><span class="badge badge--success spacer"><span class="dot-s"></span>同期済</span></div>
+            <div class="card__body">
+              <dl class="def-list">
+                <dt>メール</dt><dd class="mono" style="font-size:12.5px">h.sato@s.aoba-edu.ed.jp</dd>
+                <dt>最終ログイン</dt><dd>2026-06-12 16:20</dd>
+                <dt>同期状態</dt><dd>Workspaceへ反映済</dd>
+              </dl>
+              <a href="accounts.html" class="muted-link text-sm mt-8" style="display:inline-block">アカウント詳細 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right tabs -->
+        <div class="card" data-tabs>
+          <div class="tabs" style="padding:0 8px">
+            <button class="tab active" data-tab="basic">基本情報</button>
+            <button class="tab" data-tab="contact">連絡先情報</button>
+            <button class="tab" data-tab="school">学校生活</button>
+            <button class="tab" data-tab="sensitive"><i data-ic="lock" data-size="15"></i> 機微情報</button>
+            <button class="tab" data-tab="history"><i data-ic="history" data-size="15"></i> 変更履歴</button>
+            <button class="tab" data-tab="perm"><i data-ic="shield" data-size="15"></i> 権限</button>
+          </div>
+
+          <div class="card__body">
+            <!-- basic -->
+            <div data-tab-panel="basic" class="tab-pane active">
+              <div class="grid grid-2" style="gap:0 32px">
+                <dl class="def-list"><dt>氏名</dt><dd>佐藤 花子</dd><dt>かな</dt><dd>さとう はなこ</dd><dt>生年月日</dt><dd>2012-05-14</dd></dl>
+                <dl class="def-list"><dt>性別</dt><dd>女</dd><dt>学年</dt><dd>2年</dd><dt>入学年月</dt><dd>2025-04</dd></dl>
+              </div>
+            </div>
+            <!-- contact -->
+            <div data-tab-panel="contact" class="tab-pane">
+              <dl class="def-list" style="grid-template-columns:160px 1fr">
+                <dt>住所</dt><dd>〒180-0001 青葉市みどり町2-14-3</dd>
+                <dt>電話番号</dt><dd class="mono">090-1234-5678</dd>
+                <dt>緊急連絡先</dt><dd><div class="flex col gap-4"><span>佐藤 太郎（父）／ 090-0000-1111</span><span>佐藤 桜（母）／ 090-2222-3333</span></div></dd>
+                <dt>保護者メール</dt><dd class="mono">guardian.sato@example.com</dd>
+              </dl>
+              <div class="alert alert--info mt-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">この連絡先情報は「担任・連絡担当」の権限を持つユーザーのみ閲覧できます。</div></div>
+            </div>
+            <!-- school -->
+            <div data-tab-panel="school" class="tab-pane">
+              <dl class="def-list" style="grid-template-columns:160px 1fr">
+                <dt>所属部活</dt><dd><span class="tag tag--brand">サッカー部</span></dd>
+                <dt>委員会</dt><dd><span class="tag">保健委員</span></dd>
+                <dt>係</dt><dd>図書係</dd>
+                <dt>特記事項</dt><dd class="text-2">2026年度 県大会出場（サッカー部）</dd>
+              </dl>
+            </div>
+            <!-- sensitive -->
+            <div data-tab-panel="sensitive" class="tab-pane">
+              <div class="alert alert--warning mb-16"><span class="alert__ico"><i data-ic="shieldAlert" data-size="18"></i></span><div><div class="alert__title">機微情報</div><div class="alert__text">担任・学年主任など、許可された権限でのみ閲覧できます。閲覧操作は監査ログに記録されます。</div></div></div>
+              <dl class="def-list" style="grid-template-columns:160px 1fr">
+                <dt>人物の特徴</dt><dd><span class="badge badge--success">優良生徒</span> <span class="text-3 text-sm">（このコードは所属校教職員が閲覧可）</span></dd>
+                <dt>不登校状況</dt><dd>通常</dd>
+                <dt>いじめ歴</dt><dd class="text-3">記録なし</dd>
+                <dt>配慮事項</dt><dd class="text-3">—</dd>
+              </dl>
+            </div>
+            <!-- history -->
+            <div data-tab-panel="history" class="tab-pane">
+              <div class="flex items-center justify-between mb-16">
+                <div><div class="fw-7" style="font-size:15px">属性値の変更履歴</div><div class="text-3 text-sm">各値が「いつからいつまで有効か」を保持しています</div></div>
+                <select class="select" style="width:auto"><option>すべての項目</option><option>所属クラス</option><option>所属部活</option><option>住所</option></select>
+              </div>
+              <div id="histTimeline"></div>
+            </div>
+            <!-- perm -->
+            <div data-tab-panel="perm" class="tab-pane">
+              <div class="fw-7 mb-4" style="font-size:15px">この人物の情報を閲覧できるユーザー</div>
+              <div class="text-3 text-sm mb-16">サブジェクト・オブジェクト・スコープに基づき自動算出された結果（プレビュー）</div>
+              <div id="permPreview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit modal -->
+  <div class="overlay modal-center" id="editModal">
+    <div class="modal modal--lg">
+      <div class="modal__head"><span class="modal__icon ico-tile brand"><i data-ic="edit"></i></span><div><div class="modal__title">佐藤 花子 を編集</div><div class="modal__desc">変更は有効期間とともに履歴に記録されます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+      <div class="modal__body">
+        <div class="field-row"><div class="field"><label class="label">氏名</label><input class="input" value="佐藤 花子" /></div><div class="field"><label class="label">かな</label><input class="input" value="さとう はなこ" /></div></div>
+        <div class="field-row"><div class="field"><label class="label">クラス</label><select class="select"><option>2年A組</option><option>2年B組</option></select></div><div class="field"><label class="label">所属部活</label><select class="select"><option>サッカー部</option><option>吹奏楽部</option></select></div></div>
+        <div class="field"><label class="label">変更を有効にする日 <span class="opt">（履歴の開始日）</span></label><input class="input" type="date" value="2026-06-13" /></div>
+      </div>
+      <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="変更を保存しました（デモ）" data-toast-text="履歴に記録され、Workspace同期をキューに追加しました">保存</button></div>
+    </div>
+  </div>
+
+  <!-- Transfer modal -->
+  <div class="overlay modal-center" id="transferModal">
+    <div class="modal">
+      <div class="modal__head"><span class="modal__icon ico-tile warning"><i data-ic="swap"></i></span><div><div class="modal__title">所属変更を申請</div><div class="modal__desc">佐藤 花子 さんの異動申請</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+      <div class="modal__body">
+        <div class="field"><label class="label">変更先組織 <span class="req">*</span></label><select class="select"><option>緑川中央中学校</option><option>青葉第二中学校</option></select></div>
+        <div class="field"><label class="label">発効日 <span class="req">*</span></label><input class="input" type="date" value="2026-07-01" /></div>
+        <div class="alert alert--info"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">変更先組織の承認後、発効日にバッチ処理で自動的に反映されます。発効前であれば取り消しが可能です。</div></div>
+      </div>
+      <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="所属変更を申請しました（デモ）" data-toast-text="緑川中央中学校の承認待ちです">申請する</button></div>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon;
+      var hist = [
+        { dot: '', cur: true, item: '所属クラス', val: '2年A組', from: '2025-04-01', to: '現在', by: 'バッチ（進級処理）' },
+        { dot: 'muted', item: '所属クラス', val: '1年A組', from: '2024-04-01', to: '2025-03-31', by: 'CSVインポート（伊藤 学）' },
+        { dot: '', cur: true, item: '所属部活', val: 'サッカー部', from: '2025-04-10', to: '現在', by: 'フォーム反映（部活動希望調査）' },
+        { dot: 'muted', item: '住所', val: '青葉市みどり町2-14-3', from: '2024-08-01', to: '現在', by: 'UI編集（渡辺 由紀）' },
+        { dot: 'muted', item: '住所', val: '青葉市本町5-2-1', from: '2024-04-01', to: '2024-07-31', by: '初期登録' },
+      ];
+      document.getElementById('histTimeline').innerHTML = '<div class="timeline">' + hist.map(function (h) {
+        return '<div class="tl-item"><span class="tl-dot ' + (h.cur ? 'success' : h.dot) + '"></span>' +
+          '<div class="flex items-center gap-8"><span class="badge badge--neutral">' + h.item + '</span>' + (h.cur ? '<span class="badge badge--success" style="height:18px">現在有効</span>' : '') + '</div>' +
+          '<div class="tl-title">' + h.val + '</div>' +
+          '<div class="tl-text"><b>有効期間:</b> ' + h.from + ' 〜 ' + h.to + ' ・ <span class="text-3">更新: ' + h.by + '</span></div></div>';
+      }).join('') + '</div>';
+
+      var perms = [
+        { who: '伊藤 学（担任・一般教員）', scope: '基本情報・連絡先・機微情報すべて', c: 'success' },
+        { who: '渡辺 由紀（学年主任）', scope: '基本情報・連絡先・機微情報すべて', c: 'success' },
+        { who: '山本 一郎（校長）', scope: '基本情報・連絡先（同一校）', c: 'info' },
+        { who: 'サッカー部 顧問', scope: '連絡先情報のみ（同一部活）', c: 'info' },
+        { who: '他クラスの一般教員', scope: '基本情報の一部（氏名・クラスのみ）', c: 'neutral' },
+      ];
+      document.getElementById('permPreview').innerHTML = perms.map(function (p) {
+        return '<div class="flex items-center gap-12" style="padding:12px 0;border-bottom:1px solid var(--border)"><span class="ico-tile ' + p.c + '" style="width:34px;height:34px">' + I('user', { size: 17 }) + '</span><div class="grow"><div class="fw-6">' + p.who + '</div><div class="text-3 text-sm">閲覧可能: ' + p.scope + '</div></div><span class="badge badge--' + p.c + '">' + (p.c === 'neutral' ? '限定' : '可') + '</span></div>';
+      }).join('') + '<a href="permissions.html" class="muted-link text-sm mt-12" style="display:inline-block">権限ポリシーを編集 →</a>';
+    })();
+  </script>
+</body>
+</html>

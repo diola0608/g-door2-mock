@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+/* ── Page-specific ── */
+.launcher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.launcher-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+.launcher-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--lc-color, var(--brand));
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.launcher-card:hover {
+  border-color: var(--lc-color, var(--brand-300));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.launcher-card:hover::before { opacity: 1; }
+
+.launcher-icon {
+  width: 52px; height: 52px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--lc-bg, var(--brand-50));
+  color: var(--lc-color, var(--brand));
+}
+.launcher-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-high);
+}
+.launcher-desc {
+  font-size: 12px;
+  color: var(--text-low);
+  line-height: 1.5;
+}
+.launcher-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-med);
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* Alert panel */
+.alert-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+.alert-panel .card-header { background: var(--n-50); border-radius: var(--r-md) var(--r-md) 0 0; }
+
+.alert-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.alert-row:last-child { border-bottom: none; }
+.alert-row:hover { background: var(--n-50); }
+.alert-row__icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.alert-row__body { flex: 1; }
+.alert-row__title { font-size: 13px; font-weight: 500; color: var(--text-high); }
+.alert-row__sub   { font-size: 11px; color: var(--text-low); margin-top: 1px; }
+.alert-row__action { font-size: 12px; color: var(--brand); white-space: nowrap; }
+
+/* sync status */
+.sync-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.sync-row:last-child { border-bottom: none; }
+
+/* dashboard grid */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+}
+.dash-left { display: flex; flex-direction: column; gap: 16px; }
+.dash-right { display: flex; flex-direction: column; gap: 16px; }
+
+@media (max-width: 1100px) {
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-right { flex-direction: row; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body data-page="dashboard">
+<div class="app-layout">
+  <!-- Header -->
+  <header class="g-header" id="g-header"></header>
+  <!-- Sidebar -->
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <!-- Main -->
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-title-section">
+        <h1 class="page-title"><i class="fa-solid fa-gauge-high" style="color:var(--brand);margin-right:8px"></i>ダッシュボード</h1>
+        <p class="page-subtitle">愛知県教育委員会 — 今日: 2026年6月12日（金）</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-rotate"></i> 同期する</button>
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-quick-add"><i class="fa-solid fa-plus"></i> クイック登録</button>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <!-- KPIs -->
+      <div class="kpi-grid" style="margin-bottom:16px">
+        <div class="kpi-card">
+          <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">総人物数</p>
+            <p class="kpi-value">12,847</p>
+            <p class="kpi-sub"><span class="up">↑ 43</span> 今月追加</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon sky"><i class="fa-solid fa-chalkboard-teacher"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">教員数</p>
+            <p class="kpi-value">3,218</p>
+            <p class="kpi-sub">うち <span class="up">2,891</span> がアクティブ</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon green"><i class="fa-solid fa-user-graduate"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">生徒数</p>
+            <p class="kpi-value">9,124</p>
+            <p class="kpi-sub"><span class="up">↑ 28</span> 今月追加</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon teal"><i class="fa-solid fa-sitemap"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">組織数</p>
+            <p class="kpi-value">247</p>
+            <p class="kpi-sub">市町村 14 / 学校 228 / 委員会 5</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon purple"><i class="fa-solid fa-envelope-open-text"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">アクティブフォーム</p>
+            <p class="kpi-value">8</p>
+            <p class="kpi-sub">回答待ち <span style="color:var(--yellow-600)">3</span> 件</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon yellow"><i class="fa-solid fa-right-left"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">承認待ち所属変更</p>
+            <p class="kpi-value">3</p>
+            <p class="kpi-sub"><a href="transfer.html" style="color:var(--brand)">今すぐ確認 →</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-left">
+          <!-- Launcher -->
+          <div>
+            <h2 style="font-size:13px;font-weight:700;color:var(--text-med);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">
+              <i class="fa-solid fa-grid-2" style="margin-right:6px"></i>サービス
+            </h2>
+            <div class="launcher-grid">
+              <a href="roster-list.html" class="launcher-card" style="--lc-color:#2563eb;--lc-bg:#eff6ff">
+                <div class="launcher-icon"><i class="fa-solid fa-address-book"></i></div>
+                <div>
+                  <p class="launcher-name">名簿管理</p>
+                  <p class="launcher-desc">教員・生徒・職員の人物情報を一元管理。階層別閲覧・属性項目・変更履歴に対応。</p>
+                </div>
+                <div class="launcher-meta">
+                  <i class="fa-solid fa-users"></i> 12,847 人
+                </div>
+              </a>
+              <a href="forms-list.html" class="launcher-card" style="--lc-color:#7c3aed;--lc-bg:#f5f3ff">
+                <div class="launcher-icon"><i class="fa-solid fa-wpforms"></i></div>
+                <div>
+                  <p class="launcher-name">フォーム管理</p>
+                  <p class="launcher-desc">対象者を絞りアンケートを配信。名簿への自動反映機能付き。</p>
+                </div>
+                <div class="launcher-meta">
+                  <i class="fa-solid fa-envelope"></i> 8件 アクティブ
+                </div>
+              </a>
+              <a href="organization.html" class="launcher-card" style="--lc-color:#0d9488;--lc-bg:#ccfbf1">
+                <div class="launcher-icon"><i class="fa-solid fa-sitemap"></i></div>
+                <div>
+                  <p class="launcher-name">組織管理</p>
+                  <p class="launcher-desc">県・市町村・学校の階層構造を管理します。</p>
+                </div>
+                <div class="launcher-meta">
+                  <i class="fa-solid fa-building"></i> 247 組織
+                </div>
+              </a>
+              <a href="accounts.html" class="launcher-card" style="--lc-color:#0284c7;--lc-bg:#e0f2fe">
+                <div class="launcher-icon"><i class="fa-solid fa-id-card"></i></div>
+                <div>
+                  <p class="launcher-name">アカウント管理</p>
+                  <p class="launcher-desc">Google Workspaceとの同期状況確認・アカウント操作。</p>
+                </div>
+                <div class="launcher-meta">
+                  <i class="fa-brands fa-google"></i> 11,203 同期済み
+                </div>
+              </a>
+              <a href="permissions.html" class="launcher-card" style="--lc-color:#dc2626;--lc-bg:#fee2e2">
+                <div class="launcher-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div>
+                  <p class="launcher-name">権限設定</p>
+                  <p class="launcher-desc">職種・属性・組織スコープを組み合わせた柔軟なアクセス制御。</p>
+                </div>
+                <div class="launcher-meta">
+                  <i class="fa-solid fa-lock"></i> 34 ポリシー
+                </div>
+              </a>
+              <a href="settings.html" class="launcher-card" style="--lc-color:#64748b;--lc-bg:#f1f5f9">
+                <div class="launcher-icon"><i class="fa-solid fa-sliders"></i></div>
+                <div>
+                  <p class="launcher-name">システム設定</p>
+                  <p class="launcher-desc">テナント設定・属性項目・コードマスターなどの管理。</p>
+                </div>
+                <div class="launcher-meta">
+                  <i class="fa-solid fa-wrench"></i> 設定
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Alerts -->
+          <div class="alert-panel card">
+            <div class="card-header" style="background:var(--red-50)">
+              <i class="fa-solid fa-triangle-exclamation" style="color:var(--red-600)"></i>
+              <span class="card-title" style="color:var(--red-700)">要対応アラート</span>
+              <span class="badge badge-red ml-auto">4</span>
+            </div>
+            <div class="alert-row">
+              <div class="alert-row__icon" style="background:var(--red-100);color:var(--red-600)">
+                <i class="fa-solid fa-file-circle-exclamation"></i>
+              </div>
+              <div class="alert-row__body">
+                <p class="alert-row__title">CSVインポートエラー — 3件のレコードが処理失敗</p>
+                <p class="alert-row__sub">6月12日 14:03 実行 / 教員名簿一括更新</p>
+              </div>
+              <a href="import-log.html" class="alert-row__action">詳細 →</a>
+            </div>
+            <div class="alert-row">
+              <div class="alert-row__icon" style="background:var(--yellow-100);color:var(--yellow-600)">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <div class="alert-row__body">
+                <p class="alert-row__title">所属変更申請 3件が承認待ちです</p>
+                <p class="alert-row__sub">最古: 6月10日 — 5営業日以内に処理が必要</p>
+              </div>
+              <a href="transfer.html" class="alert-row__action">確認 →</a>
+            </div>
+            <div class="alert-row">
+              <div class="alert-row__icon" style="background:var(--blue-100,var(--brand-100));color:var(--brand)">
+                <i class="fa-solid fa-envelope-circle-check"></i>
+              </div>
+              <div class="alert-row__body">
+                <p class="alert-row__title">フォーム「健康状態調査 2026」の回答期限が明日です</p>
+                <p class="alert-row__sub">未回答: 142件 / 全体 850件</p>
+              </div>
+              <a href="form-results.html" class="alert-row__action">集計 →</a>
+            </div>
+            <div class="alert-row">
+              <div class="alert-row__icon" style="background:var(--purple-100);color:var(--purple-600)">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </div>
+              <div class="alert-row__body">
+                <p class="alert-row__title">Google Workspace同期は昨日から停止中</p>
+                <p class="alert-row__sub">APIエラー: quota exceeded — 管理者への確認が必要</p>
+              </div>
+              <button class="alert-row__action" onclick="showToast('管理者への問い合わせを送信しました', 'success')">問い合わせ</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-right">
+          <!-- Google Sync Status -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-brands fa-google" style="color:#4285f4"></i>
+              <span class="card-title">Workspace 同期状況</span>
+              <button class="btn btn-sm btn-ghost ml-auto" onclick="showToast('同期を開始しました', 'info')">
+                <i class="fa-solid fa-rotate"></i>
+              </button>
+            </div>
+            <div class="card-body" style="padding:14px 16px">
+              <div class="sync-row">
+                <div style="flex:1">
+                  <p style="font-size:12px;font-weight:600;">同期済みアカウント</p>
+                  <p style="font-size:11px;color:var(--text-low)">最終同期: 6/12 12:00</p>
+                </div>
+                <span class="google-sync-badge synced"><i class="fa-solid fa-check-circle"></i> 11,203</span>
+              </div>
+              <div class="sync-row">
+                <div style="flex:1">
+                  <p style="font-size:12px;font-weight:600;">アカウント未連携</p>
+                  <p style="font-size:11px;color:var(--text-low)">メールなし・外部ドメイン等</p>
+                </div>
+                <span class="google-sync-badge no-account"><i class="fa-solid fa-minus-circle"></i> 1,644</span>
+              </div>
+              <div class="sync-row">
+                <div style="flex:1">
+                  <p style="font-size:12px;font-weight:600;">同期保留中</p>
+                  <p style="font-size:11px;color:var(--text-low)">変更適用待ち</p>
+                </div>
+                <span class="google-sync-badge pending"><i class="fa-solid fa-clock"></i> 47</span>
+              </div>
+              <div style="margin-top:12px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-low);margin-bottom:4px">
+                  <span>同期率</span><span>87.2%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:87.2%;background:var(--green-600)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-clock-rotate-left" style="color:var(--text-med)"></i>
+              <span class="card-title">最近の操作</span>
+            </div>
+            <div class="card-body" style="padding: 4px 16px">
+              <div class="activity-list">
+                <div class="activity-item">
+                  <div class="activity-dot blue"><i class="fa-solid fa-file-arrow-up"></i></div>
+                  <div class="activity-body">
+                    <p class="activity-text"><strong>田中教子</strong>がCSVをインポートしました（教員 / 名古屋市立西小学校）</p>
+                    <p class="activity-time">14:03</p>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot green"><i class="fa-solid fa-check"></i></div>
+                  <div class="activity-body">
+                    <p class="activity-text">所属変更申請を<strong>承認</strong>しました（中山 花子 → 刈谷市立雁が音中学校）</p>
+                    <p class="activity-time">11:32</p>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot blue"><i class="fa-solid fa-pen"></i></div>
+                  <div class="activity-body">
+                    <p class="activity-text">フォーム「<strong>職員連絡先更新</strong>」を作成・公開しました</p>
+                    <p class="activity-time">昨日 16:45</p>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot yellow"><i class="fa-solid fa-user-plus"></i></div>
+                  <div class="activity-body">
+                    <p class="activity-text">新規人物<strong>15件</strong>を追加しました（岡崎市 / 3校）</p>
+                    <p class="activity-time">昨日 10:00</p>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot green"><i class="fa-solid fa-rotate"></i></div>
+                  <div class="activity-body">
+                    <p class="activity-text">Google Workspace同期完了 — <strong>847件</strong>更新</p>
+                    <p class="activity-time">昨日 08:00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick stats per type -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-chart-bar" style="color:var(--text-med)"></i>
+              <span class="card-title">人物種別内訳</span>
+            </div>
+            <div class="card-body">
+              <div class="bar-chart">
+                <div class="bar-row">
+                  <span class="bar-label">生徒</span>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width:71%;background:var(--green-600)">
+                      <span class="bar-count">9,124</span>
+                    </div>
+                  </div>
+                  <span class="bar-pct">71%</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">教員</span>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width:25%">
+                      <span class="bar-count">3,218</span>
+                    </div>
+                  </div>
+                  <span class="bar-pct">25%</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">行政職員</span>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width:4%;background:var(--teal-600)">
+                      <span class="bar-count"></span>
+                    </div>
+                  </div>
+                  <span class="bar-pct">4%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Quick Add Modal -->
+<div class="modal-overlay" id="modal-quick-add">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <i class="fa-solid fa-plus" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">クイック登録</h3>
+        <p class="modal-subtitle">どの種別で登録しますか？</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-quick-add"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" style="padding:16px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a href="roster-list.html" class="launcher-card" style="--lc-color:#2563eb;--lc-bg:#eff6ff;flex-direction:row;align-items:center;padding:14px 16px;gap:12px">
+          <div class="launcher-icon" style="width:36px;height:36px;font-size:16px"><i class="fa-solid fa-chalkboard-teacher"></i></div>
+          <div>
+            <p class="launcher-name" style="font-size:13px">教員を登録</p>
+            <p class="launcher-desc" style="font-size:11px">教員免許番号・担当クラスなど</p>
+          </div>
+          <i class="fa-solid fa-chevron-right ml-auto" style="color:var(--text-low);font-size:12px"></i>
+        </a>
+        <a href="roster-list.html" class="launcher-card" style="--lc-color:#059669;--lc-bg:#ecfdf5;flex-direction:row;align-items:center;padding:14px 16px;gap:12px">
+          <div class="launcher-icon" style="width:36px;height:36px;font-size:16px;background:var(--green-50);color:var(--green-600)"><i class="fa-solid fa-user-graduate"></i></div>
+          <div>
+            <p class="launcher-name" style="font-size:13px">生徒を登録</p>
+            <p class="launcher-desc" style="font-size:11px">クラス・在籍情報・保護者情報など</p>
+          </div>
+          <i class="fa-solid fa-chevron-right ml-auto" style="color:var(--text-low);font-size:12px"></i>
+        </a>
+        <a href="roster-import.html" class="launcher-card" style="--lc-color:#7c3aed;--lc-bg:#f5f3ff;flex-direction:row;align-items:center;padding:14px 16px;gap:12px">
+          <div class="launcher-icon" style="width:36px;height:36px;font-size:16px;background:var(--purple-100);color:var(--purple-600)"><i class="fa-solid fa-file-arrow-up"></i></div>
+          <div>
+            <p class="launcher-name" style="font-size:13px">CSVで一括インポート</p>
+            <p class="launcher-desc" style="font-size:11px">複数人を一括登録・更新</p>
+          </div>
+          <i class="fa-solid fa-chevron-right ml-auto" style="color:var(--text-low);font-size:12px"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>所属変更申請 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.transfer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-bottom: 10px;
+  transition: var(--transition);
+}
+.transfer-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-xs); }
+.transfer-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.transfer-person-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
+}
+.transfer-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px 16px;
+  background: var(--n-50);
+  border-top: 1px solid var(--border);
+}
+.transfer-flow .from { color: var(--text-med); }
+.transfer-flow .arrow { color: var(--brand); font-size: 14px; }
+.transfer-flow .to   { color: var(--green-700); font-weight: 600; }
+.transfer-actions {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.transfer-meta { font-size: 11px; color: var(--text-low); margin-top: 3px; }
+
+/* Timeline */
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  position: relative;
+}
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.timeline-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.timeline-body { flex: 1; }
+.timeline-title { font-size: 13px; font-weight: 600; }
+.timeline-time  { font-size: 11px; color: var(--text-low); margin-top: 2px; }
+</style>
+</head>
+<body data-page="transfer">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <span class="current">所属変更申請</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">所属変更申請</h1>
+        <p class="page-subtitle">人物の組織・クラス変更申請と承認フローを管理します</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-new-transfer"><i class="fa-solid fa-plus"></i> 新しい申請を作成</button>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="alert alert-warning mb-16">
+        <i class="fa-solid fa-clock"></i>
+        <div>
+          <strong>あなたの承認が必要な申請が 3件あります。</strong>
+          5営業日以内に処理してください。
+        </div>
+      </div>
+
+      <div data-tabs>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="pending-approval">承認待ち（要対応） <span class="tab-count" style="background:var(--red-100);color:var(--red-600)">3</span></button>
+          <button class="tab-btn" data-tab="my-requests">自分の申請 <span class="tab-count">5</span></button>
+          <button class="tab-btn" data-tab="history">承認済み・完了 <span class="tab-count">24</span></button>
+        </div>
+
+        <!-- Pending approval tab -->
+        <div class="tab-panel active" data-tab-panel="pending-approval">
+          <!-- Transfer Card 1 -->
+          <div class="transfer-card">
+            <div class="transfer-card-header">
+              <div class="transfer-person-avatar" style="background:#dbeafe;color:#1d4ed8">山</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <a href="roster-detail.html" style="font-size:14px;font-weight:700;color:var(--text-high)">山田 太郎</a>
+                  <span class="badge badge-sky">教員</span>
+                </div>
+                <p class="transfer-meta">TCH-00142 / 申請日: 2026/06/10 — 申請者: 名古屋市教育委員会 田中係長</p>
+              </div>
+              <div style="text-align:right">
+                <span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> 承認待ち</span>
+                <p style="font-size:11px;color:var(--red-600);margin-top:4px"><i class="fa-solid fa-exclamation-circle"></i> 5日経過</p>
+              </div>
+            </div>
+            <div class="transfer-flow">
+              <span class="from"><i class="fa-solid fa-school" style="margin-right:4px"></i>名古屋市立千種小学校</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="to"><i class="fa-solid fa-school" style="margin-right:4px"></i>名古屋市立西小学校</span>
+              <span class="badge badge-blue" style="margin-left:8px"><i class="fa-solid fa-calendar"></i> 2026/07/01 実施予定</span>
+            </div>
+            <div style="padding:8px 16px;font-size:12px;color:var(--text-med)">
+              <i class="fa-solid fa-comment" style="margin-right:4px"></i>異動理由: 名古屋市立西小学校の3年担任不足のため、経験豊富な山田教員を転籍させたい。
+            </div>
+            <div class="transfer-actions">
+              <button class="btn btn-success btn-sm" onclick="approveTransfer(this, '山田太郎')"><i class="fa-solid fa-check"></i> 承認する</button>
+              <button class="btn btn-danger btn-sm" data-modal-open="modal-reject"><i class="fa-solid fa-xmark"></i> 却下する</button>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto" data-modal-open="modal-detail-1"><i class="fa-solid fa-eye"></i> 詳細</button>
+            </div>
+          </div>
+
+          <!-- Transfer Card 2 -->
+          <div class="transfer-card">
+            <div class="transfer-card-header">
+              <div class="transfer-person-avatar" style="background:#dcfce7;color:#15803d">鈴</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <a href="roster-detail.html" style="font-size:14px;font-weight:700;color:var(--text-high)">鈴木 史郎</a>
+                  <span class="badge badge-sky">教員</span>
+                </div>
+                <p class="transfer-meta">TCH-00389 / 申請日: 2026/06/11 — 申請者: 豊橋市教育委員会 伊藤管理官</p>
+              </div>
+              <div style="text-align:right">
+                <span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> 承認待ち</span>
+                <p style="font-size:11px;color:var(--yellow-600);margin-top:4px"><i class="fa-solid fa-clock"></i> 4日経過</p>
+              </div>
+            </div>
+            <div class="transfer-flow">
+              <span class="from"><i class="fa-solid fa-school" style="margin-right:4px"></i>豊橋市立南小学校</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="to"><i class="fa-solid fa-school" style="margin-right:4px"></i>豊橋市立北中学校</span>
+              <span class="badge badge-blue" style="margin-left:8px"><i class="fa-solid fa-calendar"></i> 2026/09/01 実施予定</span>
+            </div>
+            <div class="transfer-actions">
+              <button class="btn btn-success btn-sm" onclick="approveTransfer(this, '鈴木史郎')"><i class="fa-solid fa-check"></i> 承認する</button>
+              <button class="btn btn-danger btn-sm" data-modal-open="modal-reject"><i class="fa-solid fa-xmark"></i> 却下する</button>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fa-solid fa-eye"></i> 詳細</button>
+            </div>
+          </div>
+
+          <!-- Transfer Card 3 -->
+          <div class="transfer-card">
+            <div class="transfer-card-header">
+              <div class="transfer-person-avatar" style="background:#fef3c7;color:#b45309">木</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <a href="roster-detail.html" style="font-size:14px;font-weight:700;color:var(--text-high)">木村 美香</a>
+                  <span class="badge badge-sky">教員</span>
+                </div>
+                <p class="transfer-meta">TCH-00621 / 申請日: 2026/06/12 — 申請者: 自己申請</p>
+              </div>
+              <div style="text-align:right">
+                <span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> 承認待ち</span>
+                <p style="font-size:11px;color:var(--text-low);margin-top:4px">本日申請</p>
+              </div>
+            </div>
+            <div class="transfer-flow">
+              <span class="from"><i class="fa-solid fa-school" style="margin-right:4px"></i>名古屋市立東山中学校</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="to"><i class="fa-solid fa-school" style="margin-right:4px"></i>愛知県立千種高等学校</span>
+              <span class="badge badge-blue" style="margin-left:8px"><i class="fa-solid fa-calendar"></i> 2026/04/01 実施予定</span>
+            </div>
+            <div class="transfer-actions">
+              <button class="btn btn-success btn-sm" onclick="approveTransfer(this, '木村美香')"><i class="fa-solid fa-check"></i> 承認する</button>
+              <button class="btn btn-danger btn-sm" data-modal-open="modal-reject"><i class="fa-solid fa-xmark"></i> 却下する</button>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fa-solid fa-eye"></i> 詳細</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- My requests tab -->
+        <div class="tab-panel" data-tab-panel="my-requests">
+          <div class="transfer-card">
+            <div class="transfer-card-header">
+              <div class="transfer-person-avatar" style="background:#ede9fe;color:#6d28d9">中</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <a href="roster-detail.html" style="font-size:14px;font-weight:700;color:var(--text-high)">中山 花子</a>
+                  <span class="badge badge-sky">教員</span>
+                </div>
+                <p class="transfer-meta">TCH-00782 / 申請日: 2026/06/05 — 申請者: 田中 教子（あなた）</p>
+              </div>
+              <div style="text-align:right">
+                <span class="badge badge-green"><i class="fa-solid fa-check-circle"></i> 承認済み</span>
+                <p style="font-size:11px;color:var(--text-low);margin-top:4px">2026/07/01 実施予定</p>
+              </div>
+            </div>
+            <div class="transfer-flow">
+              <span class="from">名古屋市立千種小学校</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="to">刈谷市立雁が音中学校</span>
+              <span class="badge badge-green" style="margin-left:8px"><i class="fa-solid fa-check"></i> 6/11 承認</span>
+            </div>
+            <div class="transfer-actions">
+              <button class="btn btn-danger btn-sm" onclick="showToast('申請を取り消しました', 'warning')">
+                <i class="fa-solid fa-ban"></i> 実施前に取り消す
+              </button>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto" data-modal-open="modal-timeline">
+                <i class="fa-solid fa-timeline"></i> タイムライン
+              </button>
+            </div>
+          </div>
+
+          <div class="transfer-card">
+            <div class="transfer-card-header">
+              <div class="transfer-person-avatar" style="background:#e0f2fe;color:#0369a1">石</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <a href="roster-detail.html" style="font-size:14px;font-weight:700;color:var(--text-high)">石田 浩二</a>
+                  <span class="badge badge-sky">教員</span>
+                </div>
+                <p class="transfer-meta">TCH-01023 / 申請日: 2026/06/01</p>
+              </div>
+              <div style="text-align:right">
+                <span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> 転入先承認待ち</span>
+              </div>
+            </div>
+            <div class="transfer-flow">
+              <span class="from">名古屋市立西小学校</span>
+              <span class="arrow"><i class="fa-solid fa-arrow-right"></i></span>
+              <span class="to">豊橋市立東小学校</span>
+              <span class="badge badge-yellow" style="margin-left:8px"><i class="fa-solid fa-clock"></i> 豊橋市E委承認待ち</span>
+            </div>
+            <div class="transfer-actions">
+              <button class="btn btn-danger btn-sm" onclick="showToast('申請を取り消しました', 'warning')">
+                <i class="fa-solid fa-ban"></i> 申請を取り消す
+              </button>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fa-solid fa-eye"></i> 詳細</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History tab -->
+        <div class="tab-panel" data-tab-panel="history">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>対象者</th>
+                  <th>転出元</th>
+                  <th>転入先</th>
+                  <th>実施日</th>
+                  <th>ステータス</th>
+                  <th>申請者</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:24px;height:24px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">高</div>
+                      高橋 美咲
+                    </div>
+                  </td>
+                  <td class="td-secondary" style="font-size:12px">名古屋市立東山小</td>
+                  <td style="font-size:12px;font-weight:500">名古屋市立千種小</td>
+                  <td class="td-secondary">2026/04/01</td>
+                  <td><span class="badge badge-green">完了</span></td>
+                  <td class="td-secondary">田中 教子</td>
+                  <td><button class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:24px;height:24px;border-radius:50%;background:#dcfce7;color:#15803d;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">伊</div>
+                      伊藤 俊介
+                    </div>
+                  </td>
+                  <td class="td-secondary" style="font-size:12px">名古屋市立西中学校</td>
+                  <td style="font-size:12px;font-weight:500">愛知県立千種高等学校</td>
+                  <td class="td-secondary">2026/04/01</td>
+                  <td><span class="badge badge-green">完了</span></td>
+                  <td class="td-secondary">CSV一括（承認省略）</td>
+                  <td><button class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:24px;height:24px;border-radius:50%;background:#fee2e2;color:#b91c1c;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">松</div>
+                      松本 正雄
+                    </div>
+                  </td>
+                  <td class="td-secondary" style="font-size:12px">岡崎市立明光小</td>
+                  <td style="font-size:12px;color:var(--red-600)">— 却下</td>
+                  <td class="td-secondary">2026/05/01</td>
+                  <td><span class="badge badge-red">却下</span></td>
+                  <td class="td-secondary">岡崎市教育委員会</td>
+                  <td><button class="btn btn-icon btn-sm"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- New Transfer Modal -->
+<div class="modal-overlay" id="modal-new-transfer">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-right-left" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">所属変更申請を作成</h3>
+        <p class="modal-subtitle">承認後、指定日にバッチで実施されます</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-new-transfer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">対象者 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="名前・IDで検索…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">転出元組織</label>
+        <input type="text" class="form-control" value="名古屋市立千種小学校" disabled style="background:var(--n-50)">
+        <p class="form-hint">対象者の現在の所属組織が自動設定されます</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">転入先組織 <span class="required">*</span></label>
+        <select class="form-control">
+          <option>— 転入先を選択 —</option>
+          <option>名古屋市立西小学校</option>
+          <option>名古屋市立東山小学校</option>
+          <option>愛知県立千種高等学校</option>
+          <option>刈谷市立雁が音中学校</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">変更予定日 <span class="required">*</span></label>
+        <input type="date" class="form-control" value="2026-07-01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">理由・備考</label>
+        <textarea class="form-control" rows="3" placeholder="変更理由を入力してください"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-check">
+          <input type="checkbox" id="bypass-approval">
+          <span class="form-check-label">
+            承認フローを省略して即時変更する
+            <span class="badge badge-red" style="margin-left:4px">管理者権限要</span>
+          </span>
+        </label>
+        <p class="form-hint" style="padding-left:22px">チェック時は承認なしで即時変更されます</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-new-transfer">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('所属変更申請を送信しました', 'success');closeModal('modal-new-transfer')">
+        <i class="fa-solid fa-paper-plane"></i> 申請を送信
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="modal-reject">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <i class="fa-solid fa-xmark" style="color:var(--red-600)"></i>
+      <div><h3 class="modal-title">申請を却下する</h3></div>
+      <button class="modal-close" data-modal-close="modal-reject"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">却下理由 <span class="required">*</span></label>
+        <textarea class="form-control" rows="3" placeholder="却下理由を申請者に伝えてください"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-reject">キャンセル</button>
+      <button class="btn btn-danger" onclick="showToast('申請を却下しました', 'warning');closeModal('modal-reject')">
+        <i class="fa-solid fa-xmark"></i> 却下する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Timeline Modal -->
+<div class="modal-overlay" id="modal-timeline">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-timeline" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">申請タイムライン</h3><p class="modal-subtitle">中山 花子 → 刈谷市立雁が音中学校</p></div>
+      <button class="modal-close" data-modal-close="modal-timeline"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--green-100);color:var(--green-600)">
+            <i class="fa-solid fa-check" style="font-size:10px"></i>
+          </div>
+          <div class="timeline-body">
+            <p class="timeline-title">申請が送信されました</p>
+            <p class="timeline-time">2026/06/05 10:22 — 田中 教子</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--green-100);color:var(--green-600)">
+            <i class="fa-solid fa-check" style="font-size:10px"></i>
+          </div>
+          <div class="timeline-body">
+            <p class="timeline-title">刈谷市教育委員会が承認しました</p>
+            <p class="timeline-time">2026/06/11 09:15 — 刈谷市教委 鈴木管理官</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--brand-100);color:var(--brand)">
+            <i class="fa-solid fa-clock" style="font-size:10px"></i>
+          </div>
+          <div class="timeline-body">
+            <p class="timeline-title" style="color:var(--brand)">バッチ実施待ち</p>
+            <p class="timeline-time">2026/07/01 00:00 予定</p>
+          </div>
+        </div>
+        <div class="timeline-item" style="opacity:.4">
+          <div class="timeline-dot" style="background:var(--n-200);color:var(--n-500)">
+            <i class="fa-solid fa-flag" style="font-size:10px"></i>
+          </div>
+          <div class="timeline-body">
+            <p class="timeline-title">所属変更 完了</p>
+            <p class="timeline-time">— 未実施 —</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="showToast('申請を取り消しました', 'warning');closeModal('modal-timeline')">
+        <i class="fa-solid fa-ban"></i> 取り消す
+      </button>
+      <button class="btn btn-secondary" data-modal-close="modal-timeline">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+function approveTransfer(btn, name) {
+  const card = btn.closest('.transfer-card');
+  const statusEl = card.querySelector('.badge.badge-yellow');
+  if (statusEl) {
+    statusEl.className = 'badge badge-green';
+    statusEl.innerHTML = '<i class="fa-solid fa-check-circle"></i> 承認済み';
+  }
+  const actionsEl = card.querySelector('.transfer-actions');
+  if (actionsEl) {
+    actionsEl.innerHTML = `<span style="font-size:12px;color:var(--green-600)"><i class="fa-solid fa-check-circle" style="margin-right:4px"></i>承認済み — バッチ待ちです</span>`;
+  }
+  showToast(name + 'の申請を承認しました', 'success');
+}
+</script>
+</body>
+</html>

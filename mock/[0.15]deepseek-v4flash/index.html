@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNexus — 教育データプラットフォーム</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23d45a3a'/><text x='16' y='22' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>E</text></svg>">
+</head>
+<body>
+  <div id="toast-container" style="position:fixed;top:72px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none"></div>
+
+  <header class="global-header">
+    <div class="header-brand">
+      <div class="header-logo">E</div>
+      <span class="header-title">Edu<span>Nexus</span></span>
+    </div>
+    <div class="header-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="検索... 名前、組織、メールアドレス" />
+    </div>
+    <div class="tenant-badge">
+      <span>🏛</span>
+      <span><strong>埼玉県</strong> 教育委員会</span>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" onclick="App.loadPage('notifications')" title="通知">
+        🔔<span class="badge">3</span>
+      </button>
+      <button class="header-btn" onclick="App.loadPage('settings')" title="設定">⚙️</button>
+      <div class="header-avatar" title="田中 管理者">TM</div>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">メインメニュー</div>
+        <a class="sidebar-item active" data-page="dashboard" href="#"><span class="icon">📊</span><span class="label">ダッシュボード</span></a>
+        <a class="sidebar-item" data-page="roster" href="#"><span class="icon">👥</span><span class="label">名簿管理</span></a>
+        <a class="sidebar-item" data-page="organization" href="#"><span class="icon">🏛</span><span class="label">組織管理</span></a>
+        <a class="sidebar-item" data-page="forms" href="#"><span class="icon">📋</span><span class="label">フォーム / アンケート</span></a>
+        <div class="sidebar-section-label">システム設定</div>
+        <a class="sidebar-item" data-page="permissions" href="#"><span class="icon">🔐</span><span class="label">権限設定</span></a>
+        <a class="sidebar-item" data-page="attributes" href="#"><span class="icon">🏷</span><span class="label">属性項目管理</span></a>
+        <a class="sidebar-item" data-page="csv-import" href="#"><span class="icon">📥</span><span class="label">CSVインポート</span></a>
+        <a class="sidebar-item" data-page="approvals" href="#"><span class="icon">✅</span><span class="label">承認管理</span></a>
+        <div class="sidebar-section-label">運用</div>
+        <a class="sidebar-item" data-page="logs" href="#"><span class="icon">📜</span><span class="label">ログ / 監査</span></a>
+        <a class="sidebar-item" data-page="sync" href="#"><span class="icon">🔄</span><span class="label">Google Workspace 同期</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="sidebar-item" data-page="help" href="#"><span class="icon">❓</span><span class="label">ヘルプ / サポート</span></a>
+      </div>
+    </aside>
+
+    <main class="main-content" id="page-content"></main>
+  </div>
+
+  <script src="js/pages.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フォーム作成 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.builder-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  height: calc(100vh - 56px - 57px);
+  overflow: hidden;
+}
+.builder-questions {
+  border-right: 1px solid var(--border);
+  background: var(--n-50);
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.builder-canvas {
+  overflow-y: auto;
+  background: var(--bg);
+  padding: 24px;
+}
+.builder-settings {
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.builder-settings-section {
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.builder-settings-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text-low);
+  margin-bottom: 10px;
+}
+
+/* Question card in list */
+.q-list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 12px;
+}
+.q-list-item:hover { border-color: var(--brand-300); }
+.q-list-item.selected { border-color: var(--brand); background: var(--brand-50); }
+.q-list-item__title { font-weight: 600; color: var(--text-high); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-list-item__type { color: var(--text-low); }
+
+/* Question editor */
+.question-block {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 18px;
+  margin-bottom: 12px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.question-block:hover { border-color: var(--brand-200); }
+.question-block.active { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-50); }
+.question-block__header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.question-block__num { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.question-block__actions { margin-left: auto; display: flex; gap: 4px; opacity: 0; transition: opacity var(--transition); }
+.question-block:hover .question-block__actions,
+.question-block.active .question-block__actions { opacity: 1; }
+
+.q-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--r-sm);
+  margin-bottom: 4px;
+}
+.q-option:hover { background: var(--n-50); }
+.q-option-del { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--text-low); font-size: 10px; cursor: pointer; }
+.q-option-del:hover { background: var(--red-100); color: var(--red-600); }
+
+/* Add question button */
+.add-question-btn {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-low);
+  font-size: 13px;
+  background: transparent;
+  width: 100%;
+}
+.add-question-btn:hover { border-color: var(--brand-300); color: var(--brand); background: var(--brand-50); }
+</style>
+</head>
+<body data-page="form-builder">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <a href="forms-list.html">フォーム一覧</a>
+        <span class="sep">›</span>
+        <span class="current">フォーム作成</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;margin-left:12px">
+        <input type="text" id="form-title-input" value="部活動顧問希望調査 2026年度" style="font-size:15px;font-weight:700;border:none;outline:none;background:transparent;color:var(--text-high);cursor:text;max-width:360px" onclick="this.focus()">
+        <p style="font-size:12px;color:var(--text-low)">下書き — 最終保存: 2分前</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-eye"></i> プレビュー</button>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('下書きを保存しました', 'success')"><i class="fa-solid fa-floppy-disk"></i> 保存</button>
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-publish">
+          <i class="fa-solid fa-paper-plane"></i> 公開する
+        </button>
+      </div>
+    </div>
+
+    <div class="builder-layout">
+      <!-- Left: Question list -->
+      <div class="builder-questions">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-low);padding:0 2px;margin-bottom:4px">質問リスト</p>
+        <div class="q-list-item selected" onclick="selectQ(this)">
+          <div class="q-list-item__title">Q1. 顧問希望部活動</div>
+          <div class="q-list-item__type"><span class="badge badge-purple">コード選択</span></div>
+        </div>
+        <div class="q-list-item" onclick="selectQ(this)">
+          <div class="q-list-item__title">Q2. 第2希望</div>
+          <div class="q-list-item__type"><span class="badge badge-purple">コード選択</span></div>
+        </div>
+        <div class="q-list-item" onclick="selectQ(this)">
+          <div class="q-list-item__title">Q3. 過去の指導経験</div>
+          <div class="q-list-item__type"><span class="badge badge-sky">単一選択</span></div>
+        </div>
+        <div class="q-list-item" onclick="selectQ(this)">
+          <div class="q-list-item__title">Q4. 経験年数</div>
+          <div class="q-list-item__type"><span class="badge badge-yellow">数値</span></div>
+        </div>
+        <div class="q-list-item" onclick="selectQ(this)">
+          <div class="q-list-item__title">Q5. 備考・補足</div>
+          <div class="q-list-item__type"><span class="badge badge-gray">テキスト</span></div>
+        </div>
+        <button class="add-question-btn" onclick="addQuestion()">
+          <i class="fa-solid fa-plus" style="margin-right:4px"></i> 質問を追加
+        </button>
+      </div>
+
+      <!-- Center: Canvas -->
+      <div class="builder-canvas">
+        <!-- Form title block -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;margin-bottom:16px;border-top:5px solid var(--brand)">
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:6px">部活動顧問希望調査 2026年度</h2>
+          <p style="font-size:13px;color:var(--text-med)">来年度の部活動顧問希望を教員から収集します。回答期限は6月30日です。</p>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <span class="badge badge-sky"><i class="fa-solid fa-school"></i> 愛知県全体</span>
+            <span class="badge badge-gray"><i class="fa-solid fa-chalkboard-teacher"></i> 教員対象</span>
+          </div>
+        </div>
+
+        <!-- Q1 - active -->
+        <div class="question-block active" onclick="selectBlock(this)">
+          <div class="question-block__header">
+            <div class="question-block__num">1</div>
+            <span class="badge badge-purple">コード選択</span>
+            <span style="font-size:12px;font-weight:600;flex:1">顧問希望部活動</span>
+            <div class="question-block__actions">
+              <button class="btn btn-icon btn-sm" title="上へ"><i class="fa-solid fa-arrow-up"></i></button>
+              <button class="btn btn-icon btn-sm" title="下へ"><i class="fa-solid fa-arrow-down"></i></button>
+              <button class="btn btn-icon btn-sm" title="複製"><i class="fa-solid fa-copy"></i></button>
+              <button class="btn btn-icon btn-sm" title="削除" onclick="showToast('質問を削除しました', 'info')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">質問文 <span class="required">*</span></label>
+            <input type="text" class="form-control" value="来年度に担当したい部活動を選択してください">
+          </div>
+          <div class="form-group">
+            <label class="form-label">コードセット</label>
+            <select class="form-control">
+              <option selected>部活動</option>
+              <option>人物の特徴</option>
+              <option>職種区分</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:16px">
+            <label class="form-check">
+              <input type="checkbox" checked>
+              <span class="form-check-label">必須項目</span>
+            </label>
+            <label class="form-check">
+              <input type="checkbox">
+              <span class="form-check-label">複数選択を許可</span>
+            </label>
+          </div>
+          <div style="background:var(--purple-50);border:1px solid var(--purple-100);border-radius:var(--r-sm);padding:8px 10px;margin-top:10px">
+            <p style="font-size:11px;color:var(--purple-600);font-weight:600"><i class="fa-solid fa-link" style="margin-right:4px"></i>名簿連携設定</p>
+            <p style="font-size:11px;color:var(--text-med);margin-top:2px">この質問の回答を → <strong>属性項目「部活顧問」</strong> に反映する</p>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-block" onclick="selectBlock(this)">
+          <div class="question-block__header">
+            <div class="question-block__num" style="background:var(--n-300);color:var(--n-600)">2</div>
+            <span class="badge badge-purple">コード選択</span>
+            <span style="font-size:12px;font-weight:600;flex:1">第2希望の部活動</span>
+            <div class="question-block__actions">
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-arrow-up"></i></button>
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-arrow-down"></i></button>
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-copy"></i></button>
+              <button class="btn btn-icon btn-sm" onclick="showToast('質問を削除しました', 'info')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-med)">第2希望として担当したい部活動を選択してください</p>
+          <div style="font-size:12px;color:var(--text-low);margin-top:8px"><i class="fa-solid fa-code-branch" style="margin-right:4px"></i>任意項目</div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-block" onclick="selectBlock(this)">
+          <div class="question-block__header">
+            <div class="question-block__num" style="background:var(--n-300);color:var(--n-600)">3</div>
+            <span class="badge badge-sky">単一選択</span>
+            <span style="font-size:12px;font-weight:600;flex:1">過去の指導経験</span>
+            <div class="question-block__actions">
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-arrow-up"></i></button>
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-arrow-down"></i></button>
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-copy"></i></button>
+              <button class="btn btn-icon btn-sm" onclick="showToast('質問を削除しました', 'info')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-med)">希望部活の指導経験はありますか？</p>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px">
+            <div class="q-option">
+              <input type="radio" disabled>
+              <span style="font-size:13px">あり（3年以上）</span>
+            </div>
+            <div class="q-option">
+              <input type="radio" disabled>
+              <span style="font-size:13px">あり（3年未満）</span>
+            </div>
+            <div class="q-option">
+              <input type="radio" disabled>
+              <span style="font-size:13px">なし</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-low);margin-top:6px"><i class="fa-solid fa-asterisk" style="margin-right:4px;color:var(--red-600)"></i>必須項目</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question-block" onclick="selectBlock(this)">
+          <div class="question-block__header">
+            <div class="question-block__num" style="background:var(--n-300);color:var(--n-600)">4</div>
+            <span class="badge badge-yellow">数値</span>
+            <span style="font-size:12px;font-weight:600;flex:1">指導経験年数</span>
+            <div class="question-block__actions">
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-arrow-up"></i></button>
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-arrow-down"></i></button>
+              <button class="btn btn-icon btn-sm"><i class="fa-solid fa-copy"></i></button>
+              <button class="btn btn-icon btn-sm" onclick="showToast('質問を削除しました', 'info')"><i class="fa-solid fa-trash" style="color:var(--red-600)"></i></button>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-med)">経験がある場合、何年間の指導経験がありますか？（年数を入力）</p>
+          <input type="number" class="form-control" placeholder="例: 3" style="max-width:120px;margin-top:10px" disabled>
+          <div style="font-size:12px;color:var(--text-low);margin-top:6px"><i class="fa-solid fa-code-branch" style="margin-right:4px"></i>Q3で「あり」を選択した場合のみ表示（条件分岐）</div>
+        </div>
+
+        <!-- Add Q button -->
+        <button class="add-question-btn" onclick="addQuestion()">
+          <i class="fa-solid fa-plus" style="margin-right:4px"></i> 質問を追加
+        </button>
+
+        <!-- Add question type panel (appears when clicked) -->
+        <div id="add-q-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-top:8px">
+          <p style="font-size:12px;font-weight:600;color:var(--text-med);margin-bottom:10px">質問タイプを選択</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('テキスト質問を追加しました', 'success');addedQ()"><i class="fa-solid fa-font"></i> テキスト</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('数値質問を追加しました', 'success');addedQ()"><i class="fa-solid fa-hashtag"></i> 数値</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('単一選択質問を追加しました', 'success');addedQ()"><i class="fa-solid fa-dot-circle"></i> 単一選択</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('複数選択質問を追加しました', 'success');addedQ()"><i class="fa-solid fa-check-square"></i> 複数選択</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('日付質問を追加しました', 'success');addedQ()"><i class="fa-solid fa-calendar"></i> 日付</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('コード選択質問を追加しました', 'success');addedQ()"><i class="fa-solid fa-list"></i> コード選択</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Settings panel -->
+      <div class="builder-settings">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--n-50)">
+          <p style="font-size:12px;font-weight:700;color:var(--text-med)"><i class="fa-solid fa-sliders" style="margin-right:6px"></i>フォーム設定</p>
+        </div>
+
+        <div class="builder-settings-section">
+          <p class="builder-settings-title">配信対象</p>
+          <div class="form-group">
+            <label class="form-label">対象組織</label>
+            <select class="form-control">
+              <option>愛知県（テナント全体）</option>
+              <option>名古屋市</option>
+              <option>豊橋市</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">対象人物種別</label>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label class="form-check"><input type="checkbox" checked> <span class="form-check-label">教員</span></label>
+              <label class="form-check"><input type="checkbox"> <span class="form-check-label">生徒</span></label>
+              <label class="form-check"><input type="checkbox"> <span class="form-check-label">行政職員</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">追加絞り込み</label>
+            <select class="form-control">
+              <option>なし（全対象）</option>
+              <option>担任教員のみ</option>
+              <option>校長・教頭のみ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="builder-settings-section">
+          <p class="builder-settings-title">回答設定</p>
+          <div class="form-group">
+            <label class="form-label">回答期限</label>
+            <input type="date" class="form-control" value="2026-06-30">
+          </div>
+          <label class="form-check mb-8">
+            <input type="checkbox" checked>
+            <span class="form-check-label">1人1回のみ回答可能</span>
+          </label>
+          <label class="form-check mb-8">
+            <input type="checkbox">
+            <span class="form-check-label">期限後も閲覧可能</span>
+          </label>
+          <label class="form-check">
+            <input type="checkbox" checked>
+            <span class="form-check-label">期限前リマインド通知</span>
+          </label>
+        </div>
+
+        <div class="builder-settings-section">
+          <p class="builder-settings-title">名簿連携</p>
+          <label class="form-check mb-8">
+            <input type="checkbox" checked id="roster-link-toggle">
+            <span class="form-check-label"><strong>名簿への自動反映を有効化</strong></span>
+          </label>
+          <div id="roster-link-detail" style="margin-top:8px;padding:10px;background:var(--purple-50);border-radius:var(--r-sm);font-size:12px;color:var(--purple-700)">
+            <i class="fa-solid fa-link" style="margin-right:4px"></i>
+            Q1の回答 → 属性「部活顧問」に反映
+          </div>
+          <button class="btn btn-sm btn-ghost w-full mt-8" data-modal-open="modal-roster-link">
+            <i class="fa-solid fa-cog"></i> 連携項目を設定
+          </button>
+        </div>
+
+        <div class="builder-settings-section">
+          <p class="builder-settings-title">閲覧権限（回答結果）</p>
+          <select class="form-control" style="font-size:12px">
+            <option>作成者のみ</option>
+            <option>テナント管理者</option>
+            <option>学校管理職</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Publish Modal -->
+<div class="modal-overlay" id="modal-publish">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <i class="fa-solid fa-paper-plane" style="color:var(--brand)"></i>
+      <div><h3 class="modal-title">フォームを公開する</h3></div>
+      <button class="modal-close" data-modal-close="modal-publish"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--n-50);border-radius:var(--r);padding:12px;margin-bottom:14px;font-size:12px">
+        <p><strong>フォーム名:</strong> 部活動顧問希望調査 2026年度</p>
+        <p style="margin-top:4px"><strong>対象:</strong> 愛知県全体 / 教員 (3,218名)</p>
+        <p style="margin-top:4px"><strong>回答期限:</strong> 2026年6月30日</p>
+      </div>
+      <label class="form-check mb-8">
+        <input type="checkbox" checked>
+        <span class="form-check-label">対象者に通知メールを送信する</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox">
+        <span class="form-check-label">即時公開（今すぐ回答可能にする）</span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-publish">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('フォームを公開しました', 'success');closeModal('modal-publish')">
+        <i class="fa-solid fa-check"></i> 公開する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Roster Link Modal -->
+<div class="modal-overlay" id="modal-roster-link">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-link" style="color:var(--purple-600)"></i>
+      <div><h3 class="modal-title">名簿連携の設定</h3></div>
+      <button class="modal-close" data-modal-close="modal-roster-link"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-low);margin-bottom:14px">質問の回答を名簿のどの属性項目に反映するかを設定します</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--n-50);border-radius:var(--r);border:1px solid var(--border)">
+          <span style="font-size:12px;font-weight:600;width:80px">Q1 の回答</span>
+          <i class="fa-solid fa-arrow-right" style="color:var(--text-low)"></i>
+          <select class="form-control" style="flex:1;font-size:12px">
+            <option selected>属性「部活顧問」</option>
+            <option>属性「担当教科」</option>
+            <option>（反映しない）</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--n-50);border-radius:var(--r);border:1px solid var(--border)">
+          <span style="font-size:12px;font-weight:600;width:80px">Q2 の回答</span>
+          <i class="fa-solid fa-arrow-right" style="color:var(--text-low)"></i>
+          <select class="form-control" style="flex:1;font-size:12px">
+            <option selected>（反映しない）</option>
+            <option>属性「部活顧問」</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-roster-link">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('連携設定を保存しました', 'success');closeModal('modal-roster-link')">
+        <i class="fa-solid fa-check"></i> 保存する
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+function selectQ(item) {
+  document.querySelectorAll('.q-list-item').forEach(i => i.classList.remove('selected'));
+  item.classList.add('selected');
+}
+function selectBlock(block) {
+  document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+  block.classList.add('active');
+}
+function addQuestion() {
+  const panel = document.getElementById('add-q-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+function addedQ() {
+  document.getElementById('add-q-panel').style.display = 'none';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フォーム集計 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.results-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: calc(100vh - 56px - 57px);
+  overflow: hidden;
+}
+.results-nav {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+}
+.results-main {
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.response-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+  font-size: 12px;
+}
+.response-item:hover { background: var(--n-50); }
+
+.q-result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.q-result-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--n-50);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.q-result-body { padding: 16px; }
+
+/* Donut chart (CSS only) */
+.donut-chart {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body data-page="forms-list">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <a href="forms-list.html">フォーム一覧</a>
+        <span class="sep">›</span>
+        <span class="current">自家用携帯電話番号の登録 — 集計</span>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-secondary btn-sm" onclick="showToast('リマインダーを142名に送信しました', 'success')"><i class="fa-solid fa-paper-plane"></i> 未回答者にリマインド</button>
+        <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-download"></i> CSVエクスポート</button>
+        <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-pdf"></i> PDF出力</button>
+        <a href="form-builder.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen"></i> 編集</a>
+        <button class="btn btn-danger btn-sm" onclick="showToast('フォームを終了しました', 'warning')"><i class="fa-solid fa-stop-circle"></i> 締め切る</button>
+      </div>
+    </div>
+
+    <div class="results-layout">
+      <!-- Left nav: question nav + respondents -->
+      <div class="results-nav">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--n-50)">
+          <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-low)">質問一覧</p>
+        </div>
+        <div style="padding:4px 0">
+          <div class="response-item" style="background:var(--brand-50);border-left:3px solid var(--brand)" onclick="scrollTo('q-summary')">
+            <i class="fa-solid fa-chart-pie" style="color:var(--brand);width:14px"></i>
+            <span style="font-weight:600;color:var(--brand)">回答概要</span>
+          </div>
+          <div class="response-item" onclick="scrollTo('q1')">
+            <span style="font-size:10px;font-weight:700;min-width:18px;color:var(--text-low)">Q1</span>
+            <span style="flex:1">自家用携帯番号</span>
+            <span class="badge badge-gray">850</span>
+          </div>
+        </div>
+
+        <div style="padding:8px 14px 4px;margin-top:4px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-low);border-top:1px solid var(--border)">最近の回答者</div>
+        <div>
+          <div class="response-item">
+            <div style="width:24px;height:24px;border-radius:50%;background:var(--brand-100);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">山</div>
+            <div style="flex:1">
+              <p style="font-weight:600;">山田 太郎</p>
+              <p style="color:var(--text-low);font-size:10px">6/12 14:23</p>
+            </div>
+            <span class="badge badge-green" style="font-size:10px">完了</span>
+          </div>
+          <div class="response-item">
+            <div style="width:24px;height:24px;border-radius:50%;background:var(--green-100);color:var(--green-600);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">渡</div>
+            <div style="flex:1">
+              <p style="font-weight:600;">渡辺 春菜</p>
+              <p style="color:var(--text-low);font-size:10px">6/12 11:05</p>
+            </div>
+            <span class="badge badge-green" style="font-size:10px">完了</span>
+          </div>
+          <div class="response-item">
+            <div style="width:24px;height:24px;border-radius:50%;background:var(--yellow-100);color:var(--yellow-700);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">高</div>
+            <div style="flex:1">
+              <p style="font-weight:600;">高橋 一郎</p>
+              <p style="color:var(--text-low);font-size:10px">6/11 16:42</p>
+            </div>
+            <span class="badge badge-green" style="font-size:10px">完了</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: results -->
+      <div class="results-main">
+        <!-- Summary KPI -->
+        <div id="q-summary">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div>
+              <h2 style="font-size:17px;font-weight:700">自家用携帯電話番号の登録</h2>
+              <p style="font-size:12px;color:var(--text-low);margin-top:2px">公開中 — 回答期限: 2026年6月15日</p>
+            </div>
+            <span class="badge badge-green ml-auto"><i class="fa-solid fa-circle fa-xs"></i> 公開中</span>
+          </div>
+
+          <!-- Response rate -->
+          <div class="card mb-16">
+            <div class="card-body" style="padding:16px">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;text-align:center;align-items:center">
+                <div>
+                  <p style="font-size:32px;font-weight:700;color:var(--text-high)">708</p>
+                  <p style="font-size:11px;color:var(--green-600);font-weight:600">回答済み</p>
+                </div>
+                <div>
+                  <p style="font-size:32px;font-weight:700;color:var(--red-600)">142</p>
+                  <p style="font-size:11px;color:var(--red-600);font-weight:600">未回答</p>
+                </div>
+                <div>
+                  <p style="font-size:32px;font-weight:700;color:var(--text-high)">850</p>
+                  <p style="font-size:11px;color:var(--text-low);font-weight:600">対象者数</p>
+                </div>
+                <div>
+                  <div style="width:64px;height:64px;margin:0 auto;position:relative">
+                    <svg viewBox="0 0 36 36" style="transform:rotate(-90deg)">
+                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
+                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--green-600)" stroke-width="3.5"
+                        stroke-dasharray="83.3 16.7" stroke-linecap="round"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">83%</div>
+                  </div>
+                  <p style="font-size:11px;color:var(--text-low);font-weight:600;text-align:center;margin-top:4px">回答率</p>
+                </div>
+              </div>
+              <div style="margin-top:12px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-low);margin-bottom:3px">
+                  <span>回答率 83.3%</span>
+                  <span>6/15 23:59 締切</span>
+                </div>
+                <div class="progress-bar" style="height:8px">
+                  <div class="progress-fill green" style="width:83.3%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breakdown by org -->
+          <div class="card mb-16">
+            <div class="card-header">
+              <i class="fa-solid fa-sitemap" style="color:var(--text-med)"></i>
+              <span class="card-title">組織別回答状況</span>
+              <button class="btn btn-sm btn-ghost ml-auto"><i class="fa-solid fa-download"></i> エクスポート</button>
+            </div>
+            <div class="card-body p-0">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>組織</th>
+                    <th>対象者</th>
+                    <th>回答済み</th>
+                    <th>未回答</th>
+                    <th>回答率</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>名古屋市 — 小学校</td>
+                    <td>284</td>
+                    <td><span style="color:var(--green-600);font-weight:600">252</span></td>
+                    <td><span style="color:var(--red-600);font-weight:600">32</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="progress-bar" style="width:80px">
+                          <div class="progress-fill green" style="width:88.7%"></div>
+                        </div>
+                        <span style="font-size:12px">88.7%</span>
+                      </div>
+                    </td>
+                    <td><button class="btn btn-sm btn-ghost" onclick="showToast('名古屋市小学校の詳細を表示します', 'info')">詳細</button></td>
+                  </tr>
+                  <tr>
+                    <td>名古屋市 — 中学校</td>
+                    <td>196</td>
+                    <td><span style="color:var(--green-600);font-weight:600">155</span></td>
+                    <td><span style="color:var(--red-600);font-weight:600">41</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="progress-bar" style="width:80px">
+                          <div class="progress-fill yellow" style="width:79.1%"></div>
+                        </div>
+                        <span style="font-size:12px">79.1%</span>
+                      </div>
+                    </td>
+                    <td><button class="btn btn-sm btn-ghost" onclick="showToast('詳細を表示します', 'info')">詳細</button></td>
+                  </tr>
+                  <tr>
+                    <td>愛知県立高等学校</td>
+                    <td>164</td>
+                    <td><span style="color:var(--green-600);font-weight:600">148</span></td>
+                    <td><span style="color:var(--text-low)">16</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="progress-bar" style="width:80px">
+                          <div class="progress-fill green" style="width:90.2%"></div>
+                        </div>
+                        <span style="font-size:12px">90.2%</span>
+                      </div>
+                    </td>
+                    <td><button class="btn btn-sm btn-ghost" onclick="showToast('詳細を表示します', 'info')">詳細</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Q1 result -->
+          <div class="q-result-card" id="q1">
+            <div class="q-result-header">
+              <div style="width:22px;height:22px;border-radius:50%;background:var(--brand);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+              <span style="font-size:13px;font-weight:600;flex:1">自家用携帯電話番号（回答テキスト）</span>
+              <span class="badge badge-purple"><i class="fa-solid fa-link"></i> 名簿連携済</span>
+            </div>
+            <div class="q-result-body">
+              <div class="alert alert-blue mb-12" style="padding:8px 12px">
+                <i class="fa-solid fa-circle-info"></i>
+                <div style="font-size:12px">このフィールドの回答は、名簿の <strong>「自家用電話番号」属性</strong> に自動反映されています（708件反映済み）</div>
+              </div>
+
+              <div style="display:flex;gap:12px;margin-bottom:14px">
+                <div style="text-align:center;background:var(--n-50);border-radius:var(--r);padding:10px 16px;flex:1">
+                  <p style="font-size:20px;font-weight:700;color:var(--text-high)">708</p>
+                  <p style="font-size:11px;color:var(--text-low)">回答数</p>
+                </div>
+                <div style="text-align:center;background:var(--n-50);border-radius:var(--r);padding:10px 16px;flex:1">
+                  <p style="font-size:20px;font-weight:700;color:var(--green-600)">708</p>
+                  <p style="font-size:11px;color:var(--text-low)">名簿反映済み</p>
+                </div>
+                <div style="text-align:center;background:var(--n-50);border-radius:var(--r);padding:10px 16px;flex:1">
+                  <p style="font-size:20px;font-weight:700;color:var(--text-low)">0</p>
+                  <p style="font-size:11px;color:var(--text-low)">反映エラー</p>
+                </div>
+              </div>
+
+              <div style="background:var(--n-50);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)">
+                <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+                  <i class="fa-solid fa-table" style="color:var(--text-low);font-size:12px"></i>
+                  <p style="font-size:12px;font-weight:600;color:var(--text-med)">個別回答一覧（サンプル）</p>
+                  <span class="badge badge-gray ml-auto">権限: 管理者のみ表示</span>
+                </div>
+                <table class="data-table" style="font-size:12px">
+                  <thead>
+                    <tr>
+                      <th>回答者</th>
+                      <th>回答内容</th>
+                      <th>回答日時</th>
+                      <th>名簿反映</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>山田 太郎</td>
+                      <td class="td-mono">090-XXXX-XXXX</td>
+                      <td class="td-secondary">6/12 14:23</td>
+                      <td><span class="status-dot active" style="font-size:11px">反映済み</span></td>
+                    </tr>
+                    <tr>
+                      <td>渡辺 春菜</td>
+                      <td class="td-mono">080-XXXX-XXXX</td>
+                      <td class="td-secondary">6/12 11:05</td>
+                      <td><span class="status-dot active" style="font-size:11px">反映済み</span></td>
+                    </tr>
+                    <tr>
+                      <td>高橋 一郎</td>
+                      <td class="td-mono">070-XXXX-XXXX</td>
+                      <td class="td-secondary">6/11 16:42</td>
+                      <td><span class="status-dot active" style="font-size:11px">反映済み</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unreplied list -->
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-user-clock" style="color:var(--red-600)"></i>
+              <span class="card-title" style="color:var(--red-700)">未回答者一覧 (142名)</span>
+              <button class="btn btn-sm btn-danger ml-auto" onclick="showToast('142名にリマインダーを送信しました', 'success')">
+                <i class="fa-solid fa-paper-plane"></i> リマインドを送信
+              </button>
+            </div>
+            <div class="card-body p-0">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>氏名</th>
+                    <th>所属</th>
+                    <th>メールアドレス</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px">
+                        <div style="width:24px;height:24px;border-radius:50%;background:var(--n-200);color:var(--n-500);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">田</div>
+                        田中 五郎
+                      </div>
+                    </td>
+                    <td class="td-secondary">名古屋市立西小学校</td>
+                    <td class="td-mono" style="font-size:11px">tanaka.g@edu.nagoya.jp</td>
+                    <td>
+                      <button class="btn btn-sm btn-ghost" onclick="showToast('田中五郎にリマインドを送信しました', 'success')">
+                        <i class="fa-solid fa-paper-plane"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px">
+                        <div style="width:24px;height:24px;border-radius:50%;background:var(--n-200);color:var(--n-500);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">木</div>
+                        木村 美香
+                      </div>
+                    </td>
+                    <td class="td-secondary">名古屋市立東山中学校</td>
+                    <td class="td-mono" style="font-size:11px">kimura.m@edu.nagoya.jp</td>
+                    <td>
+                      <button class="btn btn-sm btn-ghost" onclick="showToast('木村美香にリマインドを送信しました', 'success')">
+                        <i class="fa-solid fa-paper-plane"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" style="text-align:center;padding:8px;font-size:12px;color:var(--text-low)">… 他 140名</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>所属変更申請 - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="approve-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>所属変更を承認</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="padding:16px;background:var(--color-gray-50);border-radius:var(--radius);margin-bottom:16px">
+          <div style="margin-bottom:8px"><strong>対象者:</strong> 佐藤 花子（生徒）</div>
+          <div style="margin-bottom:8px"><strong>変更:</strong> A市立第一小学校 → B市立第二小学校</div>
+          <div style="margin-bottom:8px"><strong>適用日:</strong> 2026年7月1日</div>
+          <div><strong>申請者:</strong> 山田 一郎（A市立第一小学校 校長）</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">コメント（任意）</label>
+          <textarea class="form-textarea" placeholder="承認に関するコメント"></textarea>
+        </div>
+        <p class="form-hint">承認後、2026年7月1日のバッチ処理で自動的に所属が変更されます。実行前であれば取り消し可能です。</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" data-modal-close onclick="showToast('申請を却下しました', 'error')">却下</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('所属変更を承認しました')">承認する</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="new-transfer-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>新規所属変更申請</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">対象者</label>
+          <input class="form-input" placeholder="氏名または職員番号で検索">
+        </div>
+        <div class="form-group">
+          <label class="form-label">変更先の組織</label>
+          <select class="form-select"><option>B市立第二小学校</option><option>C市立第三小学校</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">適用日</label>
+          <input class="form-input" type="date" value="2026-07-01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">理由</label>
+          <textarea class="form-textarea"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('所属変更申請を送信しました')">申請する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('roster', 'transfer');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 名簿管理 ${Icons.chevronRight} 所属変更申請</div>
+        <h1>所属変更申請</h1>
+        <p>組織間の所属変更は承認制。申請 → 承認 → 指定日のバッチで自動反映。CSVからの直接変更（承認不要）も権限により可能。</p>
+      </div>
+
+      <div class="tabs" id="transfer-tabs">
+        <button class="tab active" data-tab="pending">承認待ち <span class="badge-tag yellow" style="margin-left:4px">7</span></button>
+        <button class="tab" data-tab="approved">承認済・実行待ち</button>
+        <button class="tab" data-tab="completed">完了</button>
+        <button class="tab" data-tab="cancelled">取消・却下</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-primary btn-sm" data-modal-open="new-transfer-modal">${Icons.plus} 新規申請</button>
+      </div>
+
+      <div class="tab-panel" data-panel="pending">
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>申請日</th>
+                  <th>対象者</th>
+                  <th>変更内容</th>
+                  <th>適用日</th>
+                  <th>申請者</th>
+                  <th>状態</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2026/06/11</td>
+                  <td><strong>佐藤 花子</strong><br><span style="font-size:0.8rem;color:var(--color-gray-400)">生徒 / 5年1組</span></td>
+                  <td>A市立第一小学校 → <strong>B市立第二小学校</strong></td>
+                  <td>2026/07/01</td>
+                  <td>山田 一郎</td>
+                  <td><span class="status-dot pending"></span>承認待ち</td>
+                  <td><button class="btn btn-primary btn-sm" data-modal-open="approve-modal">承認/却下</button></td>
+                </tr>
+                <tr>
+                  <td>2026/06/10</td>
+                  <td><strong>田中 次郎</strong><br><span style="font-size:0.8rem;color:var(--color-gray-400)">教員</span></td>
+                  <td>B市立第二小学校 → <strong>A市立第一小学校</strong></td>
+                  <td>2026/08/01</td>
+                  <td>鈴木 一郎</td>
+                  <td><span class="status-dot pending"></span>承認待ち</td>
+                  <td><button class="btn btn-primary btn-sm" data-modal-open="approve-modal">承認/却下</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="approved" style="display:none">
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>対象者</th><th>変更内容</th><th>適用日</th><th>承認者</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>高橋 美咲</strong></td>
+                  <td>A市立第一小学校 → C市立第三小学校</td>
+                  <td>2026/07/01</td>
+                  <td>小林 四郎</td>
+                  <td><button class="btn btn-secondary btn-sm" onclick="showToast('申請を取り消しました', 'info')">取り消し</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="completed" style="display:none">
+        <div class="card"><div class="card-body"><p style="color:var(--color-gray-500);font-size:0.9rem">完了した所属変更の履歴がここに表示されます。</p></div></div>
+      </div>
+
+      <div class="tab-panel" data-panel="cancelled" style="display:none">
+        <div class="card"><div class="card-body"><p style="color:var(--color-gray-500);font-size:0.9rem">取消・却下された申請の履歴がここに表示されます。</p></div></div>
+      </div>
+    `);
+    initTabs(document.getElementById('transfer-tabs'));
+  </script>
+</body>
+</html>

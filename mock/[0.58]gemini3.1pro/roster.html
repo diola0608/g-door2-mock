@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名簿管理 - EduSync Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        secondary: '#3b82f6',
+                        sidebar: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden" x-data="{ userDrawerOpen: false, selectedTab: 'basic' }">
+
+    <!-- Global Header -->
+    <header class="bg-primary text-white h-14 flex items-center justify-between px-6 shrink-0 z-20 shadow-md">
+        <div class="flex items-center gap-4">
+            <div class="font-bold text-xl tracking-tight flex items-center gap-2">
+                <i class="ph ph-books text-2xl"></i>
+                EduSync
+            </div>
+            <div class="h-6 w-px bg-blue-700 mx-2"></div>
+            <div class="text-sm font-medium bg-blue-800 px-3 py-1 rounded-full border border-blue-700">
+                <i class="ph ph-buildings mr-1"></i> 神奈川県教育委員会
+            </div>
+        </div>
+        <div class="flex items-center gap-5">
+            <button class="relative hover:text-blue-200 transition">
+                <i class="ph ph-bell text-xl"></i>
+            </button>
+            <div class="flex items-center gap-2 cursor-pointer hover:bg-blue-800 p-1.5 rounded transition">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold border border-blue-500">田</div>
+                <div class="text-sm">
+                    <div class="font-bold leading-tight">山田 太郎</div>
+                    <div class="text-xs text-blue-300">システム管理者</div>
+                </div>
+                <i class="ph ph-caret-down text-sm ml-1 text-blue-300"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-sidebar text-slate-300 flex flex-col border-r border-slate-800 z-10 shrink-0">
+            <nav class="flex-1 py-4 space-y-1 overflow-y-auto px-3">
+                <a href="index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                    <i class="ph ph-squares-four text-lg"></i>
+                    ダッシュボード
+                </a>
+                <a href="roster.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-600/20 text-white font-medium">
+                    <i class="ph ph-users text-lg text-blue-400"></i>
+                    名簿管理
+                </a>
+                <a href="forms.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                    <i class="ph ph-list-dashes text-lg"></i>
+                    フォーム管理
+                </a>
+                <a href="import.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                    <i class="ph ph-file-csv text-lg"></i>
+                    CSVインポート・ログ
+                </a>
+                <a href="settings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition">
+                    <i class="ph ph-gear text-lg"></i>
+                    設定・権限
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content (2 Panes) -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- Left Pane: Organization Tree -->
+            <div class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0">
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h2 class="font-bold text-slate-800 text-sm">組織ツリー</h2>
+                    <button class="text-slate-500 hover:text-primary"><i class="ph ph-funnel"></i></button>
+                </div>
+                <div class="p-2 overflow-y-auto flex-1">
+                    <div class="space-y-1 text-sm">
+                        <!-- Tree Item: Root -->
+                        <div>
+                            <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer">
+                                <i class="ph-fill ph-caret-down text-slate-400 text-xs"></i>
+                                <i class="ph-fill ph-buildings text-blue-500"></i>
+                                <span class="font-medium">神奈川県</span>
+                            </div>
+                            <div class="ml-4 border-l border-slate-200 pl-2 space-y-1">
+                                <!-- Node -->
+                                <div>
+                                    <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer">
+                                        <i class="ph-fill ph-caret-right text-slate-400 text-xs"></i>
+                                        <i class="ph-fill ph-building text-blue-400"></i>
+                                        <span>横浜市</span>
+                                    </div>
+                                </div>
+                                <!-- Node (Expanded) -->
+                                <div>
+                                    <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer bg-blue-50 text-blue-700 font-medium">
+                                        <i class="ph-fill ph-caret-down text-blue-500 text-xs"></i>
+                                        <i class="ph-fill ph-building text-blue-500"></i>
+                                        <span>川崎市</span>
+                                    </div>
+                                    <div class="ml-4 border-l border-slate-200 pl-2 space-y-1">
+                                        <div>
+                                            <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer">
+                                                <i class="ph-fill ph-caret-down text-slate-400 text-xs"></i>
+                                                <i class="ph-fill ph-folder text-amber-500"></i>
+                                                <span>小学校</span>
+                                            </div>
+                                            <div class="ml-4 border-l border-slate-200 pl-2 space-y-1">
+                                                <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer bg-slate-100">
+                                                    <i class="ph-fill ph-graduation-cap text-emerald-500"></i>
+                                                    <span>中央小学校</span>
+                                                </div>
+                                                <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer">
+                                                    <i class="ph-fill ph-graduation-cap text-emerald-500"></i>
+                                                    <span>南小学校</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded cursor-pointer">
+                                                <i class="ph-fill ph-caret-right text-slate-400 text-xs"></i>
+                                                <i class="ph-fill ph-folder text-amber-500"></i>
+                                                <span>中学校</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Pane: List & Data -->
+            <div class="flex-1 flex flex-col bg-slate-50">
+                <div class="p-6 pb-4 flex justify-between items-center border-b border-slate-200 bg-white">
+                    <div>
+                        <div class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+                            <span>神奈川県</span> <i class="ph ph-caret-right"></i> <span>川崎市</span> <i class="ph ph-caret-right"></i> <span>小学校</span>
+                        </div>
+                        <h1 class="text-2xl font-bold text-slate-900">中央小学校 名簿</h1>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="relative">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="名前やメールで検索..." class="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm w-64 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        </div>
+                        <button class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
+                            <i class="ph ph-funnel"></i> 絞り込み
+                        </button>
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 flex items-center gap-2 transition shadow-sm">
+                            <i class="ph ph-plus-circle"></i> 新規登録
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters / Tabs -->
+                <div class="px-6 py-3 border-b border-slate-200 bg-white flex gap-6 text-sm font-medium">
+                    <button class="text-primary border-b-2 border-primary pb-3 -mb-3">すべて表示 (452)</button>
+                    <button class="text-slate-500 hover:text-slate-800 pb-3 -mb-3">教職員 (32)</button>
+                    <button class="text-slate-500 hover:text-slate-800 pb-3 -mb-3">児童 (420)</button>
+                </div>
+
+                <!-- Table -->
+                <div class="flex-1 overflow-auto p-6">
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr>
+                                    <th class="py-3 px-4 font-medium w-10"><input type="checkbox" class="rounded border-slate-300"></th>
+                                    <th class="py-3 px-4 font-medium">氏名</th>
+                                    <th class="py-3 px-4 font-medium">種別</th>
+                                    <th class="py-3 px-4 font-medium">クラス / 所属</th>
+                                    <th class="py-3 px-4 font-medium">メールアドレス</th>
+                                    <th class="py-3 px-4 font-medium text-right">アクション</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <!-- Row 1 (Student) -->
+                                <tr class="hover:bg-slate-50 cursor-pointer group transition" @click="userDrawerOpen = true; selectedTab = 'basic'">
+                                    <td class="py-3 px-4" @click.stop><input type="checkbox" class="rounded border-slate-300"></td>
+                                    <td class="py-3 px-4">
+                                        <div class="font-medium text-slate-900">伊藤 翔太</div>
+                                        <div class="text-xs text-slate-500">イトウ ショウタ</div>
+                                    </td>
+                                    <td class="py-3 px-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-medium">児童</span></td>
+                                    <td class="py-3 px-4 text-slate-600">6年1組</td>
+                                    <td class="py-3 px-4 text-slate-600">s.ito@student.edu.city.kawasaki.jp</td>
+                                    <td class="py-3 px-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary"><i class="ph ph-dots-three text-xl"></i></button>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 (Teacher) -->
+                                <tr class="hover:bg-slate-50 cursor-pointer group transition" @click="userDrawerOpen = true; selectedTab = 'basic'">
+                                    <td class="py-3 px-4" @click.stop><input type="checkbox" class="rounded border-slate-300"></td>
+                                    <td class="py-3 px-4">
+                                        <div class="font-medium text-slate-900">高橋 真理子</div>
+                                        <div class="text-xs text-slate-500">タカハシ マリコ</div>
+                                    </td>
+                                    <td class="py-3 px-4"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">教職員</span></td>
+                                    <td class="py-3 px-4 text-slate-600">一般教員 (6年1組担任)</td>
+                                    <td class="py-3 px-4 text-slate-600">m.takahashi@edu.city.kawasaki.jp</td>
+                                    <td class="py-3 px-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary"><i class="ph ph-dots-three text-xl"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Detail Drawer / Modal Overlay -->
+        <div x-show="userDrawerOpen" x-cloak class="absolute inset-0 bg-slate-900/20 z-30 transition-opacity" @click="userDrawerOpen = false" x-transition.opacity></div>
+        
+        <!-- Drawer Content -->
+        <div x-show="userDrawerOpen" x-cloak 
+             class="absolute right-0 top-0 bottom-0 w-[500px] bg-white shadow-2xl z-40 border-l border-slate-200 flex flex-col transform transition-transform"
+             x-transition:enter="duration-300 ease-out"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="duration-200 ease-in"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full">
+            
+            <!-- Drawer Header -->
+            <div class="p-6 border-b border-slate-200 bg-slate-50 flex justify-between items-start">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl font-bold">
+                        伊
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 leading-tight">伊藤 翔太</h2>
+                        <div class="text-sm text-slate-500 mt-1">川崎市立中央小学校 / 6年1組</div>
+                    </div>
+                </div>
+                <button @click="userDrawerOpen = false" class="text-slate-400 hover:text-slate-700 p-1">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Drawer Tabs -->
+            <div class="flex border-b border-slate-200 px-6">
+                <button @click="selectedTab = 'basic'" :class="selectedTab === 'basic' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'" class="py-3 border-b-2 px-2 mr-4 font-medium text-sm transition">基本情報</button>
+                <button @click="selectedTab = 'contact'" :class="selectedTab === 'contact' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700'" class="py-3 border-b-2 px-2 mr-4 font-medium text-sm transition">連絡先情報</button>
+                <button @click="selectedTab = 'sensitive'" :class="selectedTab === 'sensitive' ? 'border-red-500 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-700'" class="py-3 border-b-2 px-2 font-medium text-sm transition flex items-center gap-1">
+                    <i class="ph-fill ph-lock-key" x-show="selectedTab !== 'sensitive'"></i> 機微情報
+                </button>
+            </div>
+
+            <!-- Drawer Body -->
+            <div class="flex-1 overflow-y-auto p-6">
+                
+                <!-- Basic Info Tab -->
+                <div x-show="selectedTab === 'basic'" class="space-y-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-800">基本プロファイル</h3>
+                        <button class="text-primary text-sm font-medium hover:underline"><i class="ph ph-pencil-simple"></i> 編集</button>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 text-sm">
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">氏名カナ</div>
+                            <div class="col-span-2 font-medium">イトウ ショウタ</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">性別</div>
+                            <div class="col-span-2 font-medium">男性</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">生年月日</div>
+                            <div class="col-span-2 font-medium">2014年5月12日 (12歳)</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">Workspace連携</div>
+                            <div class="col-span-2 text-emerald-600 flex items-center gap-1 font-medium"><i class="ph-fill ph-check-circle"></i> s.ito@student.edu.city.kawasaki.jp</div>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-slate-800 mb-2 mt-6">テナント独自属性 (カスタム)</h3>
+                    <div class="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 text-sm">
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">所属部活 (リスト)</div>
+                            <div class="col-span-2 font-medium">サッカー部</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">特記事項 (文字列)</div>
+                            <div class="col-span-2 font-medium text-slate-400">未設定</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Info Tab -->
+                <div x-show="selectedTab === 'contact'" style="display: none;" class="space-y-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-800">保護者・連絡先</h3>
+                        <button class="text-primary text-sm font-medium hover:underline"><i class="ph ph-pencil-simple"></i> 編集</button>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 text-sm">
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">保護者氏名</div>
+                            <div class="col-span-2 font-medium">伊藤 大輔</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">続柄</div>
+                            <div class="col-span-2 font-medium">父</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">電話番号</div>
+                            <div class="col-span-2 font-medium">090-XXXX-XXXX</div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">現住所</div>
+                            <div class="col-span-2 font-medium">川崎市XX区YY町 1-2-3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensitive Info Tab -->
+                <div x-show="selectedTab === 'sensitive'" style="display: none;" class="space-y-6">
+                    <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-sm flex gap-3 items-start">
+                        <i class="ph-fill ph-warning-circle text-lg shrink-0 mt-0.5"></i>
+                        <p>このタブの情報は、設定された<strong>ロール（担任、学年主任など）</strong>を持つユーザーのみが閲覧・編集可能です。アクセスログは全て記録されます。</p>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-2 mt-4">
+                        <h3 class="font-bold text-slate-800">機微属性・配慮事項</h3>
+                        <button class="text-primary text-sm font-medium hover:underline"><i class="ph ph-plus"></i> 追加</button>
+                    </div>
+                    
+                    <div class="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 text-sm">
+                        <div class="grid grid-cols-3 p-3 items-center">
+                            <div class="text-slate-500 flex flex-col">
+                                人物の特徴 (タグ)
+                                <span class="text-[10px] text-slate-400">※コードマスタ管理</span>
+                            </div>
+                            <div class="col-span-2">
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium mr-1">優良生徒</span>
+                                <!-- Note: 'いじめ加害者' tag might be hidden based on roles in real app, showing concept here -->
+                                <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-medium border border-slate-200 border-dashed" title="権限により他の選択肢も存在します">+ 他のタグを追加</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 p-3">
+                            <div class="text-slate-500">配慮事項メモ</div>
+                            <div class="col-span-2 font-medium">特になし</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Drawer Footer Action -->
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex gap-2 justify-end">
+                <button class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition">所属変更を申請</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

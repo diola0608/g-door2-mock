@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定・権限 - EduSync Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { primary: '#1e3a8a', secondary: '#3b82f6', sidebar: '#0f172a' } }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden" x-data="{ currentTab: 'attributes' }">
+
+    <header class="bg-primary text-white h-14 flex items-center justify-between px-6 shrink-0 z-20 shadow-md">
+        <!-- Header Content -->
+        <div class="flex items-center gap-4">
+            <div class="font-bold text-xl tracking-tight flex items-center gap-2"><i class="ph ph-books text-2xl"></i>EduSync</div>
+            <div class="h-6 w-px bg-blue-700 mx-2"></div>
+            <div class="text-sm font-medium bg-blue-800 px-3 py-1 rounded-full border border-blue-700"><i class="ph ph-buildings mr-1"></i> 神奈川県教育委員会</div>
+        </div>
+        <div class="flex items-center gap-5">
+            <div class="flex items-center gap-2 cursor-pointer hover:bg-blue-800 p-1.5 rounded transition">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold border border-blue-500">田</div>
+                <div class="text-sm"><div class="font-bold leading-tight">山田 太郎</div></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-64 bg-sidebar text-slate-300 flex flex-col border-r border-slate-800 z-10 shrink-0">
+            <nav class="flex-1 py-4 space-y-1 overflow-y-auto px-3">
+                <a href="index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition"><i class="ph ph-squares-four text-lg"></i>ダッシュボード</a>
+                <a href="roster.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition"><i class="ph ph-users text-lg"></i>名簿管理</a>
+                <a href="forms.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition"><i class="ph ph-list-dashes text-lg"></i>フォーム管理</a>
+                <a href="import.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition"><i class="ph ph-file-csv text-lg"></i>CSVインポート・ログ</a>
+                <a href="settings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-600/20 text-white font-medium"><i class="ph ph-gear text-lg text-blue-400"></i>設定・権限</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <div class="bg-white border-b border-slate-200 px-8 py-6 shrink-0">
+                <h1 class="text-2xl font-bold text-slate-900">システム設定・権限管理</h1>
+                <p class="text-slate-500 mt-1">属性項目のカスタマイズ、コードマスタの管理、およびアクセス権限の設定を行います。</p>
+                
+                <div class="flex gap-6 mt-6 border-b border-slate-200">
+                    <button @click="currentTab = 'attributes'" :class="currentTab === 'attributes' ? 'text-primary border-primary border-b-2 font-bold' : 'text-slate-500 hover:text-slate-800 border-transparent border-b-2'" class="pb-3 px-1 -mb-[1px]">属性項目・タブ設定</button>
+                    <button @click="currentTab = 'permissions'" :class="currentTab === 'permissions' ? 'text-primary border-primary border-b-2 font-bold' : 'text-slate-500 hover:text-slate-800 border-transparent border-b-2'" class="pb-3 px-1 -mb-[1px]">権限・ロール設定</button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto bg-slate-50 p-8">
+                <div class="max-w-6xl mx-auto">
+                    
+                    <!-- 属性項目設定 -->
+                    <div x-show="currentTab === 'attributes'" class="space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-slate-800">名簿の属性項目定義</h2>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 flex items-center gap-2"><i class="ph ph-plus"></i> 新規項目を追加</button>
+                        </div>
+                        
+                        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg text-sm flex gap-3">
+                            <i class="ph-fill ph-info text-lg shrink-0 mt-0.5"></i>
+                            <p>ここで設定した項目は<strong>神奈川県全体（テナントルート）</strong>に適用されます。各市町村・学校では、これらの項目を継承しつつ独自に上書き・追加設定が可能です。</p>
+                        </div>
+
+                        <!-- 機微情報タブの設定例 -->
+                        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mt-6">
+                            <div class="bg-slate-100 border-b border-slate-200 p-4 flex justify-between items-center">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-folder text-amber-500"></i> タブグループ: 機微情報</h3>
+                                <div class="flex gap-2 text-sm">
+                                    <button class="text-slate-500 hover:text-primary"><i class="ph ph-pencil-simple"></i></button>
+                                </div>
+                            </div>
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500">
+                                    <tr>
+                                        <th class="py-3 px-4 font-medium">項目名</th>
+                                        <th class="py-3 px-4 font-medium">データ形式</th>
+                                        <th class="py-3 px-4 font-medium">コードマスタ</th>
+                                        <th class="py-3 px-4 font-medium">履歴管理</th>
+                                        <th class="py-3 px-4 font-medium">アクセス制限</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr>
+                                        <td class="py-3 px-4 font-medium">人物の特徴</td>
+                                        <td class="py-3 px-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs">複数選択 (タグ)</span></td>
+                                        <td class="py-3 px-4 text-blue-600 hover:underline cursor-pointer">人物特徴マスタ</td>
+                                        <td class="py-3 px-4 text-emerald-600"><i class="ph ph-check"></i> 有効</td>
+                                        <td class="py-3 px-4"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium"><i class="ph-fill ph-lock-key"></i> 制限あり</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3 px-4 font-medium">配慮事項メモ</td>
+                                        <td class="py-3 px-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs">長文テキスト</span></td>
+                                        <td class="py-3 px-4 text-slate-400">-</td>
+                                        <td class="py-3 px-4 text-slate-400">-</td>
+                                        <td class="py-3 px-4"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium"><i class="ph-fill ph-lock-key"></i> 制限あり</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 権限設定 -->
+                    <div x-show="currentTab === 'permissions'" style="display: none;" class="space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-slate-800">ロールベースのアクセス制御 (RBAC)</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- ロールリスト -->
+                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[500px]">
+                                <div class="bg-slate-50 border-b border-slate-200 p-4 font-bold text-slate-800">定義済みロール</div>
+                                <div class="flex-1 overflow-y-auto divide-y divide-slate-100 text-sm">
+                                    <div class="p-4 cursor-pointer hover:bg-slate-50 bg-blue-50 border-l-4 border-primary">
+                                        <div class="font-bold text-primary mb-1">一般教員 (担任)</div>
+                                        <div class="text-slate-500 text-xs">自身の担任するクラスの生徒情報を閲覧・編集</div>
+                                    </div>
+                                    <div class="p-4 cursor-pointer hover:bg-slate-50">
+                                        <div class="font-bold text-slate-800 mb-1">部活動顧問</div>
+                                        <div class="text-slate-500 text-xs">担当する部活動に所属する生徒の連絡先のみ閲覧</div>
+                                    </div>
+                                    <div class="p-4 cursor-pointer hover:bg-slate-50">
+                                        <div class="font-bold text-slate-800 mb-1">学年主任</div>
+                                        <div class="text-slate-500 text-xs">担当学年全生徒の機微情報を含む全データを閲覧</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ロール詳細 -->
+                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[500px]">
+                                <div class="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+                                    <div class="font-bold text-slate-800">「一般教員 (担任)」の詳細設定</div>
+                                    <button class="text-primary text-sm hover:underline font-medium">編集</button>
+                                </div>
+                                <div class="p-6 overflow-y-auto space-y-6">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">スコープ条件 (Subject-Object)</h4>
+                                        <div class="bg-slate-100 p-3 rounded-lg text-sm font-medium text-slate-700">
+                                            [閲覧者の所属組織] と [対象者の所属組織] が <span class="text-primary">完全一致</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">属性グループ (タブ) ごとの権限</h4>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                                <span>基本情報</span>
+                                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">閲覧 / 編集可</span>
+                                            </div>
+                                            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                                <span>連絡先情報</span>
+                                                <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-medium">閲覧のみ</span>
+                                            </div>
+                                            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                                <span>機微情報</span>
+                                                <span class="bg-slate-200 text-slate-500 px-2 py-0.5 rounded text-xs font-medium">アクセス不可</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                                        ※「人物の特徴：いじめ加害者」タグなどは、機微情報へのアクセス権がないため、このロールのユーザーには画面上に一切表示されません。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

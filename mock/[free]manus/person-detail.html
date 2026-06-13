@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山田 花子 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .person-header-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .person-big-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a56db, #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 28px; font-weight: 700; flex-shrink: 0;
+    }
+    .person-meta { flex: 1; }
+    .person-full-name { font-size: 22px; font-weight: 800; color: var(--gray-900); }
+    .person-kana { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+    .person-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .person-quick-info {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-top: 16px;
+    }
+    .pqi-item { }
+    .pqi-label { font-size: 11px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pqi-value { font-size: 13px; color: var(--gray-800); font-weight: 600; margin-top: 2px; }
+    .attr-section { margin-bottom: 20px; }
+    .attr-section-title {
+      font-size: 13px; font-weight: 700; color: var(--gray-700);
+      padding: 8px 0; border-bottom: 2px solid var(--gray-200);
+      margin-bottom: 12px;
+    }
+    .attr-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .attr-row:last-child { border-bottom: none; }
+    .attr-label { font-size: 12px; color: var(--gray-500); width: 160px; flex-shrink: 0; padding-top: 2px; }
+    .attr-value { flex: 1; font-size: 13px; color: var(--gray-800); }
+    .attr-edit-btn {
+      opacity: 0; transition: var(--transition);
+      width: 24px; height: 24px; border-radius: 4px; border: none;
+      background: var(--gray-100); color: var(--gray-500); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 12px;
+    }
+    .attr-row:hover .attr-edit-btn { opacity: 1; }
+    .history-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 6px; border-radius: 4px; font-size: 10px;
+      background: var(--gray-100); color: var(--gray-500); margin-left: 6px;
+    }
+    .org-path {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 13px; color: var(--gray-600);
+    }
+    .org-path-sep { color: var(--gray-300); }
+    .org-path-item { cursor: pointer; }
+    .org-path-item:hover { color: var(--primary); text-decoration: underline; }
+    .history-table { font-size: 12px; }
+    .history-table td { padding: 8px 12px; }
+    .account-status-card {
+      background: var(--secondary-light); border: 1px solid #6ee7b7;
+      border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;
+    }
+    .account-status-title { font-size: 13px; font-weight: 700; color: #064e3b; }
+    .account-status-detail { font-size: 12px; color: #065f46; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item" onclick="navigate('roster.html')">人物一覧</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">山田 花子</span>
+      </div>
+
+      <!-- Person Header -->
+      <div class="person-header-card">
+        <div class="person-big-avatar">山</div>
+        <div class="person-meta">
+          <div class="person-full-name">山田 花子</div>
+          <div class="person-kana">やまだ はなこ</div>
+          <div class="person-tags">
+            <span class="tag tag-blue">教員</span>
+            <span class="tag tag-green">担任</span>
+            <span class="tag tag-indigo">学年主任</span>
+            <span class="tag tag-gray">Google Workspace 同期済</span>
+          </div>
+          <div class="person-quick-info">
+            <div class="pqi-item">
+              <div class="pqi-label">職員番号</div>
+              <div class="pqi-value">T-00234</div>
+            </div>
+            <div class="pqi-item">
+              <div class="pqi-label">所属組織</div>
+              <div class="pqi-value">横浜市立北中学校</div>
+            </div>
+            <div class="pqi-item">
+              <div class="pqi-label">メールアドレス</div>
+              <div class="pqi-value">h.yamada@edu.kanagawa.jp</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2" style="flex-shrink:0">
+          <button class="btn btn-secondary btn-sm" onclick="openModal('transferModal')">🔄 所属変更申請</button>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('editPersonModal')">✏️ 編集</button>
+          <div class="dropdown">
+            <button class="btn btn-secondary btn-sm" onclick="toggleDropdown('personMenu')">⋮</button>
+            <div class="dropdown-menu" id="personMenu">
+              <div class="dropdown-item">📧 メール送信</div>
+              <div class="dropdown-item">📤 エクスポート</div>
+              <div class="dropdown-item">🔑 アカウント管理</div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item danger">🗑 削除</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs">
+          <button class="tab-item active">基本情報</button>
+          <button class="tab-item">所属・クラス</button>
+          <button class="tab-item">属性情報</button>
+          <button class="tab-item">アカウント</button>
+          <button class="tab-item">変更履歴</button>
+        </div>
+
+        <!-- Tab: 基本情報 -->
+        <div class="tab-content active">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">基本情報</span>
+              <button class="btn btn-secondary btn-sm" onclick="openModal('editPersonModal')">✏️ 編集</button>
+            </div>
+            <div class="card-body">
+              <div class="attr-section">
+                <div class="attr-section-title">個人情報</div>
+                <div class="attr-row">
+                  <span class="attr-label">氏名（漢字）</span>
+                  <span class="attr-value">山田 花子</span>
+                  <button class="attr-edit-btn" onclick="openModal('editPersonModal')">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">氏名（かな）</span>
+                  <span class="attr-value">やまだ はなこ</span>
+                  <button class="attr-edit-btn" onclick="openModal('editPersonModal')">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">生年月日</span>
+                  <span class="attr-value">1985年3月15日 <span class="history-tag">🕐 履歴あり</span></span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">性別</span>
+                  <span class="attr-value">女性</span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">メールアドレス</span>
+                  <span class="attr-value">h.yamada@edu.kanagawa.jp</span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+              </div>
+              <div class="attr-section">
+                <div class="attr-section-title">職務情報</div>
+                <div class="attr-row">
+                  <span class="attr-label">人物種別</span>
+                  <span class="attr-value"><span class="tag tag-blue">教員</span></span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">職種</span>
+                  <span class="attr-value">一般教員</span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">職員番号</span>
+                  <span class="attr-value">T-00234</span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">教員免許番号</span>
+                  <span class="attr-value">神奈川県-中-第12345号 <span class="history-tag">🕐 履歴あり</span></span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: 所属・クラス -->
+        <div class="tab-content">
+          <div class="card mb-4">
+            <div class="card-header">
+              <span class="card-title">所属組織</span>
+              <button class="btn btn-secondary btn-sm" onclick="openModal('transferModal')">🔄 所属変更申請</button>
+            </div>
+            <div class="card-body">
+              <div class="org-path" style="margin-bottom:16px">
+                <span class="org-path-item" onclick="navigate('organizations.html')">神奈川県</span>
+                <span class="org-path-sep">›</span>
+                <span class="org-path-item" onclick="navigate('organizations.html')">横浜市</span>
+                <span class="org-path-sep">›</span>
+                <span class="org-path-item" onclick="navigate('organizations.html')">中学校</span>
+                <span class="org-path-sep">›</span>
+                <span class="org-path-item" onclick="navigate('organizations.html')" style="color:var(--primary);font-weight:600">横浜市立北中学校</span>
+              </div>
+              <div class="attr-row">
+                <span class="attr-label">所属開始日</span>
+                <span class="attr-value">2020年4月1日</span>
+              </div>
+              <div class="attr-row">
+                <span class="attr-label">所属状態</span>
+                <span class="attr-value"><span class="flex items-center gap-1"><span class="status-dot active"></span>在籍中</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">クラス・担当</span>
+            </div>
+            <div class="card-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>クラス</th>
+                    <th>役割</th>
+                    <th>担当科目</th>
+                    <th>期間</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>3年A組</td>
+                    <td><span class="tag tag-green">担任</span></td>
+                    <td>数学</td>
+                    <td>2024年4月〜現在</td>
+                  </tr>
+                  <tr>
+                    <td>3年全体</td>
+                    <td><span class="tag tag-indigo">学年主任</span></td>
+                    <td>—</td>
+                    <td>2023年4月〜現在</td>
+                  </tr>
+                  <tr>
+                    <td>2年A組</td>
+                    <td><span class="tag tag-gray">担任（過去）</span></td>
+                    <td>数学</td>
+                    <td>2023年4月〜2024年3月</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: 属性情報 -->
+        <div class="tab-content">
+          <div class="card mb-4">
+            <div class="card-header">
+              <span class="card-title">属性情報</span>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary btn-sm" onclick="openModal('attrHistoryModal')">🕐 変更履歴</button>
+                <button class="btn btn-primary btn-sm" onclick="openModal('editAttrModal')">✏️ 編集</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="attr-section">
+                <div class="attr-section-title">部活動・課外活動</div>
+                <div class="attr-row">
+                  <span class="attr-label">部活動顧問</span>
+                  <span class="attr-value">
+                    <span class="tag tag-blue">サッカー部</span>
+                    <span class="history-tag">🕐 2024/04/01〜</span>
+                  </span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">部活動顧問（過去）</span>
+                  <span class="attr-value">
+                    <span class="tag tag-gray">バスケットボール部</span>
+                    <span class="history-tag">2022/04/01〜2024/03/31</span>
+                  </span>
+                </div>
+              </div>
+              <div class="attr-section">
+                <div class="attr-section-title">人物の特徴 <span style="font-size:11px;color:var(--gray-400);font-weight:400">（担任・学年主任のみ閲覧可）</span></div>
+                <div class="attr-row">
+                  <span class="attr-label">特徴タグ</span>
+                  <span class="attr-value">
+                    <span class="tag tag-green">優良生徒指導実績</span>
+                  </span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+              </div>
+              <div class="attr-section">
+                <div class="attr-section-title">その他</div>
+                <div class="attr-row">
+                  <span class="attr-label">自家用携帯番号</span>
+                  <span class="attr-value">090-XXXX-XXXX <span class="history-tag">🕐 2024/05/15〜</span></span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+                <div class="attr-row">
+                  <span class="attr-label">緊急連絡先</span>
+                  <span class="attr-value">山田 太郎（夫）/ 090-YYYY-YYYY</span>
+                  <button class="attr-edit-btn">✏</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: アカウント -->
+        <div class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">アカウント情報</span>
+            </div>
+            <div class="card-body">
+              <div class="account-status-card">
+                <div class="account-status-title">✅ Google Workspace アカウント 連携済み</div>
+                <div class="account-status-detail">h.yamada@edu.kanagawa.jp　最終同期: 2024年6月12日 08:30</div>
+              </div>
+              <div class="attr-row">
+                <span class="attr-label">ログインメール</span>
+                <span class="attr-value">h.yamada@edu.kanagawa.jp</span>
+              </div>
+              <div class="attr-row">
+                <span class="attr-label">アカウント状態</span>
+                <span class="attr-value"><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></span>
+              </div>
+              <div class="attr-row">
+                <span class="attr-label">権限グループ</span>
+                <span class="attr-value">
+                  <span class="tag tag-blue">一般教員</span>
+                  <span class="tag tag-indigo">学年主任</span>
+                </span>
+              </div>
+              <div class="attr-row">
+                <span class="attr-label">最終ログイン</span>
+                <span class="attr-value">2024年6月12日 07:45</span>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:8px">
+                <button class="btn btn-secondary btn-sm" onclick="navigate('accounts.html')">🔑 アカウント詳細</button>
+                <button class="btn btn-secondary btn-sm" onclick="showToast('パスワードリセットメールを送信しました', 'info')">🔒 パスワードリセット</button>
+                <button class="btn btn-danger btn-sm" onclick="showToast('アカウントを停止しました', 'warning')">🚫 アカウント停止</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: 変更履歴 -->
+        <div class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">変更履歴</span>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot">✏</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">属性情報を更新</div>
+                    <div class="timeline-desc">「自家用携帯番号」を更新（フォーム回答から自動反映）</div>
+                    <div class="timeline-time">2024年5月15日 14:30　操作者: システム（フォーム自動反映）</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot">🔄</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">クラス担当を更新</div>
+                    <div class="timeline-desc">2年A組担任 → 3年A組担任（2024年度新学期）</div>
+                    <div class="timeline-time">2024年4月1日 00:00　操作者: バッチ処理（CSVインポート）</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot">🏅</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">役職を更新</div>
+                    <div class="timeline-desc">学年主任に任命（3年学年主任）</div>
+                    <div class="timeline-time">2023年4月1日 00:00　操作者: 田中 義雄</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot">🏫</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">所属変更</div>
+                    <div class="timeline-desc">横浜市立南中学校 → 横浜市立北中学校</div>
+                    <div class="timeline-time">2020年4月1日 00:00　操作者: バッチ処理（承認済み申請）</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div class="modal-overlay" id="transferModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">所属変更申請</span>
+      <button class="modal-close" onclick="closeModal('transferModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div>所属変更は承認制です。変更先の組織管理者が承認した後、指定日にバッチ処理で変更されます。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">変更先組織 <span class="required">*</span></label>
+        <select class="form-control">
+          <option>選択してください</option>
+          <option>横浜市立南高校</option>
+          <option>横浜市立東中学校</option>
+          <option>川崎市立北中学校</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">変更予定日 <span class="required">*</span></label>
+        <input type="date" class="form-control" value="2024-07-01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">変更理由</label>
+        <textarea class="form-control" rows="3" placeholder="変更理由を入力してください"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('transferModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('transferModal');showToast('所属変更申請を送信しました')">申請する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Person Modal -->
+<div class="modal-overlay" id="editPersonModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">基本情報を編集</span>
+      <button class="modal-close" onclick="closeModal('editPersonModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓</label>
+          <input type="text" class="form-control" value="山田">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名</label>
+          <input type="text" class="form-control" value="花子">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓（かな）</label>
+          <input type="text" class="form-control" value="やまだ">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名（かな）</label>
+          <input type="text" class="form-control" value="はなこ">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" value="h.yamada@edu.kanagawa.jp">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">生年月日</label>
+          <input type="date" class="form-control" value="1985-03-15">
+        </div>
+        <div class="form-group">
+          <label class="form-label">性別</label>
+          <select class="form-control">
+            <option>女性</option>
+            <option>男性</option>
+            <option>その他</option>
+            <option>未設定</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('editPersonModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('editPersonModal');showToast('情報を更新しました')">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attr History Modal -->
+<div class="modal-overlay" id="attrHistoryModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">属性変更履歴</span>
+      <button class="modal-close" onclick="closeModal('attrHistoryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <table>
+        <thead>
+          <tr>
+            <th>項目名</th>
+            <th>変更前</th>
+            <th>変更後</th>
+            <th>有効期間</th>
+            <th>操作者</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>自家用携帯番号</td>
+            <td style="color:var(--gray-400)">—</td>
+            <td>090-XXXX-XXXX</td>
+            <td>2024/05/15〜</td>
+            <td>システム（フォーム）</td>
+          </tr>
+          <tr>
+            <td>部活動顧問</td>
+            <td>バスケットボール部</td>
+            <td>サッカー部</td>
+            <td>2024/04/01〜</td>
+            <td>田中 義雄</td>
+          </tr>
+          <tr>
+            <td>部活動顧問</td>
+            <td style="color:var(--gray-400)">—</td>
+            <td>バスケットボール部</td>
+            <td>2022/04/01〜2024/03/31</td>
+            <td>田中 義雄</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('attrHistoryModal')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('山田 花子');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('roster.html');
+</script>
+</body>
+</html>

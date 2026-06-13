@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSVインポート - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .step-indicator { display:flex; gap:0; margin-bottom:28px; }
+    .step { flex:1; text-align:center; padding:12px; position:relative; }
+    .step::after { content:''; position:absolute; top:20px; right:-50%; width:100%; height:2px; background:var(--color-gray-200); z-index:0; }
+    .step:last-child::after { display:none; }
+    .step-num { width:28px; height:28px; border-radius:50%; background:var(--color-gray-200); color:var(--color-gray-500); display:inline-flex; align-items:center; justify-content:center; font-weight:600; font-size:0.8rem; margin-bottom:6px; position:relative; z-index:1; }
+    .step.active .step-num { background:var(--color-primary); color:#fff; }
+    .step.done .step-num { background:var(--color-success); color:#fff; }
+    .step-label { font-size:0.8rem; color:var(--color-gray-500); }
+    .step.active .step-label { color:var(--color-primary); font-weight:600; }
+    .upload-zone { border:2px dashed var(--color-gray-300); border-radius:var(--radius); padding:48px; text-align:center; cursor:pointer; transition:all .2s; }
+    .upload-zone:hover { border-color:var(--color-primary); background:var(--color-primary-light); }
+    .mapping-row { display:grid; grid-template-columns:1fr 40px 1fr; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--color-gray-100); }
+    .mapping-arrow { text-align:center; color:var(--color-gray-400); }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('roster', 'import');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 名簿管理 ${Icons.chevronRight} CSVインポート</div>
+        <h1>CSVインポート</h1>
+        <p>CSVファイルをアップロードし、名簿項目へのマッピング・識別子設定を行って一括取込します。</p>
+      </div>
+
+      <div class="step-indicator" id="import-steps">
+        <div class="step active" data-step="1"><div class="step-num">1</div><div class="step-label">ファイル選択</div></div>
+        <div class="step" data-step="2"><div class="step-num">2</div><div class="step-label">マッピング</div></div>
+        <div class="step" data-step="3"><div class="step-num">3</div><div class="step-label">識別・確認</div></div>
+        <div class="step" data-step="4"><div class="step-num">4</div><div class="step-label">実行</div></div>
+      </div>
+
+      <div id="step-1" class="import-step-panel">
+        <div class="card">
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:20px">
+              <div class="form-group">
+                <label class="form-label">インポート種別</label>
+                <select class="form-select"><option>教員名簿</option><option>生徒名簿</option><option>関係者名簿</option><option>所属変更</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">マッピングテンプレート</label>
+                <select class="form-select"><option>教員名簿_標準（2026版）</option><option>新規作成...</option></select>
+              </div>
+            </div>
+            <div class="upload-zone" id="upload-zone">
+              ${Icons.upload}
+              <p style="margin-top:12px;font-weight:500">CSVファイルをドラッグ＆ドロップ</p>
+              <p style="font-size:0.85rem;color:var(--color-gray-400);margin-top:4px">またはクリックしてファイルを選択</p>
+              <p style="font-size:0.8rem;color:var(--color-gray-400);margin-top:12px">UTF-8 / Shift_JIS 対応 · 最大 50MB</p>
+            </div>
+            <div style="margin-top:16px;display:flex;justify-content:flex-end">
+              <button class="btn btn-primary" id="btn-to-step2">次へ: マッピング設定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-2" class="import-step-panel" style="display:none">
+        <div class="card">
+          <div class="card-header"><h3>項目マッピング — 教員名簿_2026年4月.csv</h3></div>
+          <div class="card-body">
+            <div class="mapping-row">
+              <div><strong>CSV列: 職員番号</strong><br><span style="font-size:0.8rem;color:var(--color-gray-400)">例: T-2015-0042</span></div>
+              <div class="mapping-arrow">→</div>
+              <div><select class="form-select"><option selected>職員番号（識別子）</option><option>— マッピングしない —</option></select></div>
+            </div>
+            <div class="mapping-row">
+              <div><strong>CSV列: 氏名</strong></div>
+              <div class="mapping-arrow">→</div>
+              <div><select class="form-select"><option selected>氏名</option></select></div>
+            </div>
+            <div class="mapping-row">
+              <div><strong>CSV列: メール</strong></div>
+              <div class="mapping-arrow">→</div>
+              <div><select class="form-select"><option selected>メールアドレス（識別子）</option></select></div>
+            </div>
+            <div class="mapping-row">
+              <div><strong>CSV列: 所属校コード</strong></div>
+              <div class="mapping-arrow">→</div>
+              <div><select class="form-select"><option selected>所属組織</option></select></div>
+            </div>
+            <div class="mapping-row">
+              <div><strong>CSV列: 免許番号</strong></div>
+              <div class="mapping-arrow">→</div>
+              <div><select class="form-select"><option selected>教員免許番号</option></select></div>
+            </div>
+            <div style="margin-top:20px;display:flex;justify-content:space-between">
+              <button class="btn btn-secondary" id="btn-back-step1">戻る</button>
+              <button class="btn btn-primary" id="btn-to-step3">次へ: 識別・確認</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-3" class="import-step-panel" style="display:none">
+        <div class="card">
+          <div class="card-header"><h3>同一人物の識別設定</h3></div>
+          <div class="card-body">
+            <p style="font-size:0.9rem;color:var(--color-gray-600);margin-bottom:16px">以下の識別子がすべて一致する場合、同一人物として扱い、CSVデータが本人のものかを検証します。</p>
+            <div style="padding:16px;background:var(--color-gray-50);border-radius:var(--radius);margin-bottom:16px">
+              <div class="form-check"><input type="checkbox" checked disabled> 職員番号</div>
+              <div class="form-check"><input type="checkbox" checked> メールアドレス</div>
+              <div class="form-check"><input type="checkbox"> 氏名 + 生年月日</div>
+            </div>
+            <div class="form-check" style="margin-bottom:16px">
+              <input type="checkbox" id="skip-approval">
+              <label for="skip-approval"><strong>所属変更の承認を不要にする</strong>（教育委員会の強い権限を持つユーザーのみ）</label>
+            </div>
+            <div class="alert-banner warning">
+              ${Icons.alert}
+              <div>プレビュー: 186件中 174件は更新、8件は新規、4件はエラー見込み（識別子不一致）</div>
+            </div>
+            <div style="margin-top:20px;display:flex;justify-content:space-between">
+              <button class="btn btn-secondary" id="btn-back-step2">戻る</button>
+              <button class="btn btn-primary" id="btn-to-step4">次へ: 実行確認</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-4" class="import-step-panel" style="display:none">
+        <div class="card">
+          <div class="card-body" style="text-align:center;padding:40px">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--color-primary-light);color:var(--color-primary);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">${Icons.upload}</div>
+            <h3 style="margin-bottom:8px">インポートの実行確認</h3>
+            <p style="color:var(--color-gray-500);margin-bottom:20px">教員名簿_2026年4月.csv（186件）をバックグラウンドで処理します。</p>
+            <div style="max-width:400px;margin:0 auto 24px;text-align:left;padding:16px;background:var(--color-gray-50);border-radius:var(--radius);font-size:0.85rem">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>ファイル</span><strong>教員名簿_2026年4月.csv</strong></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>処理件数</span><strong>186件</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>処理方式</span><strong>バッチ（数分以内）</strong></div>
+            </div>
+            <button class="btn btn-primary" id="btn-execute" style="margin-right:8px">インポートを実行</button>
+            <button class="btn btn-secondary" id="btn-back-step3">戻る</button>
+          </div>
+        </div>
+      </div>
+    `);
+
+    function goToStep(n) {
+      document.querySelectorAll('.import-step-panel').forEach(p => p.style.display = 'none');
+      document.getElementById('step-' + n).style.display = 'block';
+      document.querySelectorAll('.step').forEach(s => {
+        const sn = +s.dataset.step;
+        s.classList.remove('active', 'done');
+        if (sn < n) s.classList.add('done');
+        if (sn === n) s.classList.add('active');
+      });
+    }
+
+    document.getElementById('btn-to-step2')?.addEventListener('click', () => goToStep(2));
+    document.getElementById('btn-to-step3')?.addEventListener('click', () => goToStep(3));
+    document.getElementById('btn-to-step4')?.addEventListener('click', () => goToStep(4));
+    document.getElementById('btn-back-step1')?.addEventListener('click', () => goToStep(1));
+    document.getElementById('btn-back-step2')?.addEventListener('click', () => goToStep(2));
+    document.getElementById('btn-back-step3')?.addEventListener('click', () => goToStep(3));
+    document.getElementById('btn-execute')?.addEventListener('click', () => {
+      showToast('インポートを開始しました。ログページで進捗を確認できます。');
+      setTimeout(() => location.href = 'import-logs.html', 1500);
+    });
+    document.getElementById('upload-zone')?.addEventListener('click', () => showToast('ファイル選択（モック）'));
+  </script>
+</body>
+</html>

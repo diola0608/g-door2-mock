@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>インポートログ — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.log-row {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.log-row:hover { border-color: var(--border-strong); box-shadow: var(--shadow-xs); }
+.log-row-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.log-row-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.log-row-info { flex: 1; }
+.log-row-title { font-size: 13px; font-weight: 600; color: var(--text-high); }
+.log-row-meta  { font-size: 11px; color: var(--text-low); margin-top: 2px; }
+.log-row-status { display: flex; align-items: center; gap: 8px; }
+
+.log-detail {
+  display: none;
+  border-top: 1px solid var(--border);
+  background: var(--n-50);
+  padding: 14px 16px;
+}
+.log-detail.open { display: block; }
+
+.error-item {
+  display: flex;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  background: var(--red-50);
+  border: 1px solid var(--red-100);
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.error-item i { color: var(--red-600); flex-shrink: 0; }
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 12px;
+}
+.progress-step .step-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body data-page="import-log">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <a href="roster-list.html">名簿一覧</a>
+        <span class="sep">›</span>
+        <span class="current">インポートログ</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">インポートログ</h1>
+        <p class="page-subtitle">CSVインポートの実行履歴・エラー詳細を確認できます</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-rotate"></i> 更新</button>
+        <a href="roster-import.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> 新しいインポート</a>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <!-- Alert: 要対応 -->
+      <div class="alert alert-error mb-16">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div>
+          <strong>1件のインポートでエラーが発生しています。</strong>
+          エラー内容を確認し、修正後に再実行するか、管理者に問い合わせてください。
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar mb-12" style="padding:0">
+        <div class="search-input-wrapper" style="max-width:260px">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="search-input" placeholder="ファイル名・実行者で検索">
+        </div>
+        <select class="filter-select">
+          <option>すべてのステータス</option>
+          <option>完了</option>
+          <option>エラーあり</option>
+          <option>処理中</option>
+          <option>キャンセル</option>
+        </select>
+        <select class="filter-select">
+          <option>すべての期間</option>
+          <option>今日</option>
+          <option>過去7日</option>
+          <option>過去30日</option>
+        </select>
+        <select class="filter-select">
+          <option>すべての種別</option>
+          <option>教員</option>
+          <option>生徒</option>
+          <option>行政職員</option>
+        </select>
+      </div>
+
+      <!-- Log rows -->
+
+      <!-- Error log -->
+      <div class="log-row">
+        <div class="log-row-header" onclick="toggleLog(this)">
+          <div class="log-row-icon" style="background:var(--red-100);color:var(--red-600)">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+          <div class="log-row-info">
+            <p class="log-row-title">teachers_june_2026.csv — 教員（名古屋市立千種小学校）</p>
+            <p class="log-row-meta">
+              <i class="fa-solid fa-calendar" style="margin-right:4px"></i>2026/06/12 14:03 —
+              <i class="fa-solid fa-user" style="margin-left:6px;margin-right:4px"></i>田中 教子 —
+              <i class="fa-solid fa-database" style="margin-left:6px;margin-right:4px"></i>1,248 行
+            </p>
+          </div>
+          <div class="log-row-status">
+            <div style="text-align:right">
+              <span class="badge badge-green" style="margin-bottom:3px">成功: 1,245</span><br>
+              <span class="badge badge-red">エラー: 3</span>
+            </div>
+            <span class="badge badge-yellow" style="margin-left:4px">処理済（一部失敗）</span>
+            <i class="fa-solid fa-chevron-down" style="color:var(--text-low);font-size:11px;margin-left:4px;transition:transform var(--transition)" class="log-chevron"></i>
+          </div>
+        </div>
+        <div class="log-detail open">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+            <div>
+              <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-low);margin-bottom:8px">処理結果</p>
+              <div class="progress-step"><div class="step-dot" style="background:var(--green-600)"></div>新規登録: <strong>847件</strong></div>
+              <div class="progress-step"><div class="step-dot" style="background:var(--brand)"></div>更新: <strong>398件</strong></div>
+              <div class="progress-step"><div class="step-dot" style="background:var(--red-600)"></div>スキップ（エラー）: <strong>3件</strong></div>
+            </div>
+            <div>
+              <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-low);margin-bottom:8px">ジョブ情報</p>
+              <div class="progress-step"><i class="fa-solid fa-hashtag" style="color:var(--text-low);width:14px"></i>ジョブID: <span class="font-mono" style="font-size:11px">JOB-2026061214033821</span></div>
+              <div class="progress-step"><i class="fa-solid fa-clock" style="color:var(--text-low);width:14px"></i>処理時間: 1分42秒</div>
+              <div class="progress-step"><i class="fa-solid fa-file-csv" style="color:var(--text-low);width:14px"></i>ファイルサイズ: 238 KB</div>
+            </div>
+          </div>
+
+          <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--red-700);margin-bottom:8px">
+            <i class="fa-solid fa-circle-xmark" style="margin-right:4px"></i>エラー詳細
+          </p>
+          <div>
+            <div class="error-item">
+              <i class="fa-solid fa-circle-xmark"></i>
+              <div>
+                <p><strong>行 2</strong> — 学校コード「9999999」が存在しません</p>
+                <p style="color:var(--text-low);margin-top:2px">列: 学校コード / 値: 9999999 / 対象者: 鈴木 三郎</p>
+              </div>
+            </div>
+            <div class="error-item">
+              <i class="fa-solid fa-circle-xmark"></i>
+              <div>
+                <p><strong>行 7</strong> — メールアドレスの形式が不正です</p>
+                <p style="color:var(--text-low);margin-top:2px">列: メール / 値: tanaka@@edu.jp / 対象者: 田中 四郎</p>
+              </div>
+            </div>
+            <div class="error-item">
+              <i class="fa-solid fa-circle-xmark"></i>
+              <div>
+                <p><strong>行 22</strong> — 必須項目「姓」が空白です</p>
+                <p style="color:var(--text-low);margin-top:2px">列: 姓 / 値:（空）</p>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="btn btn-sm btn-secondary"><i class="fa-solid fa-download"></i> エラーのみCSVダウンロード</button>
+            <a href="roster-import.html" class="btn btn-sm btn-primary"><i class="fa-solid fa-rotate-right"></i> 修正して再インポート</a>
+            <button class="btn btn-sm btn-ghost" style="margin-left:auto" data-modal-open="modal-contact-admin"><i class="fa-solid fa-headset"></i> 管理者に問い合わせ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processing log -->
+      <div class="log-row">
+        <div class="log-row-header" onclick="toggleLog(this)">
+          <div class="log-row-icon" style="background:var(--brand-100);color:var(--brand)">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+          <div class="log-row-info">
+            <p class="log-row-title">students_batch_20260612.csv — 生徒（愛知県全体）</p>
+            <p class="log-row-meta">
+              <i class="fa-solid fa-calendar" style="margin-right:4px"></i>2026/06/12 15:30 —
+              <i class="fa-solid fa-user" style="margin-left:6px;margin-right:4px"></i>田中 教子 —
+              <i class="fa-solid fa-database" style="margin-left:6px;margin-right:4px"></i>3,420 行
+            </p>
+          </div>
+          <div class="log-row-status">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-right:8px">
+              <p style="font-size:11px;color:var(--text-low)">進捗: 1,024 / 3,420</p>
+              <div class="progress-bar" style="width:140px"><div class="progress-fill" style="width:30%"></div></div>
+            </div>
+            <span class="badge badge-sky">処理中</span>
+            <i class="fa-solid fa-chevron-down" style="color:var(--text-low);font-size:11px;margin-left:4px"></i>
+          </div>
+        </div>
+        <div class="log-detail">
+          <p style="font-size:13px;color:var(--text-med)">現在バックグラウンドで処理中です。完了時にメールで通知されます。</p>
+          <button class="btn btn-sm btn-danger" style="margin-top:10px" onclick="showToast('処理をキャンセルしました', 'info')">
+            <i class="fa-solid fa-stop"></i> 処理をキャンセル
+          </button>
+        </div>
+      </div>
+
+      <!-- Success log -->
+      <div class="log-row">
+        <div class="log-row-header" onclick="toggleLog(this)">
+          <div class="log-row-icon" style="background:var(--green-100);color:var(--green-600)">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="log-row-info">
+            <p class="log-row-title">admin_staff_20260610.csv — 行政職員（愛知県教育委員会）</p>
+            <p class="log-row-meta">
+              <i class="fa-solid fa-calendar" style="margin-right:4px"></i>2026/06/10 09:00 —
+              <i class="fa-solid fa-user" style="margin-left:6px;margin-right:4px"></i>伊藤 健二 —
+              <i class="fa-solid fa-database" style="margin-left:6px;margin-right:4px"></i>85 行
+            </p>
+          </div>
+          <div class="log-row-status">
+            <span class="badge badge-green">成功: 85</span>
+            <span class="badge badge-green ml-auto">完了</span>
+            <i class="fa-solid fa-chevron-down" style="color:var(--text-low);font-size:11px;margin-left:4px"></i>
+          </div>
+        </div>
+        <div class="log-detail">
+          <div class="progress-step"><div class="step-dot" style="background:var(--green-600)"></div>新規登録: <strong>12件</strong></div>
+          <div class="progress-step"><div class="step-dot" style="background:var(--brand)"></div>更新: <strong>73件</strong></div>
+          <div class="progress-step"><div class="step-dot" style="background:var(--n-400)"></div>変更なし: <strong>0件</strong></div>
+          <button class="btn btn-sm btn-secondary" style="margin-top:10px"><i class="fa-solid fa-download"></i> 結果レポートをダウンロード</button>
+        </div>
+      </div>
+
+      <!-- Another success log -->
+      <div class="log-row">
+        <div class="log-row-header" onclick="toggleLog(this)">
+          <div class="log-row-icon" style="background:var(--green-100);color:var(--green-600)">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="log-row-info">
+            <p class="log-row-title">teachers_spring_20260401.csv — 教員（名古屋市全体）</p>
+            <p class="log-row-meta">
+              <i class="fa-solid fa-calendar" style="margin-right:4px"></i>2026/04/01 07:00 —
+              <i class="fa-solid fa-robot" style="margin-left:6px;margin-right:4px"></i>スケジュール実行 —
+              <i class="fa-solid fa-database" style="margin-left:6px;margin-right:4px"></i>2,104 行
+            </p>
+          </div>
+          <div class="log-row-status">
+            <span class="badge badge-green">成功: 2,097</span>
+            <span class="badge badge-yellow" style="margin-left:4px">警告: 7</span>
+            <span class="badge badge-green ml-auto">完了</span>
+            <i class="fa-solid fa-chevron-down" style="color:var(--text-low);font-size:11px;margin-left:4px"></i>
+          </div>
+        </div>
+        <div class="log-detail">
+          <div class="progress-step"><div class="step-dot" style="background:var(--green-600)"></div>新規登録: <strong>42件</strong></div>
+          <div class="progress-step"><div class="step-dot" style="background:var(--brand)"></div>更新: <strong>2,055件</strong></div>
+          <div class="progress-step"><div class="step-dot" style="background:var(--yellow-600)"></div>警告（処理済）: <strong>7件</strong> — 生年月日が入力値と既存で不一致のため既存を優先しました</div>
+          <button class="btn btn-sm btn-secondary" style="margin-top:10px"><i class="fa-solid fa-download"></i> 結果レポートダウンロード</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Contact Admin Modal -->
+<div class="modal-overlay" id="modal-contact-admin">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-headset" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">システム管理者への問い合わせ</h3>
+        <p class="modal-subtitle">エラーについて管理者に連絡します</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-contact-admin"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-blue mb-12">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>ジョブID <strong class="font-mono">JOB-2026061214033821</strong> の情報が自動添付されます</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">問い合わせ種別</label>
+        <select class="form-control">
+          <option>CSVインポートのエラー</option>
+          <option>データが正しく反映されない</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">詳細・補足</label>
+        <textarea class="form-control" rows="4" placeholder="エラーの状況や、試みた対処法などを記入してください"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">優先度</label>
+        <select class="form-control">
+          <option>通常</option>
+          <option>高（業務への影響が大きい）</option>
+          <option>緊急</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-contact-admin">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('問い合わせを送信しました。管理者から返信があります。', 'success');closeModal('modal-contact-admin')">
+        <i class="fa-solid fa-paper-plane"></i> 送信する
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+function toggleLog(header) {
+  const detail = header.nextElementSibling;
+  const chevron = header.querySelector('.fa-chevron-down');
+  detail.classList.toggle('open');
+  if(chevron) chevron.style.transform = detail.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSVインポート — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.import-container { max-width: 900px; margin: 0 auto; }
+
+/* Mapping table */
+.mapping-table th, .mapping-table td { 
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.mapping-table th { 
+  background: var(--n-50);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: var(--text-low);
+  border-bottom: 1px solid var(--border-strong);
+}
+.mapping-table tr:last-child td { border-bottom: none; }
+.csv-header-preview {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--n-50);
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  color: var(--text-med);
+}
+.mapping-arrow { color: var(--text-low); font-size: 14px; text-align: center; }
+
+/* Validation results */
+.validation-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.validation-row:last-child { border-bottom: none; }
+.validation-row.ok   { background: transparent; }
+.validation-row.warn { background: var(--yellow-50); }
+.validation-row.err  { background: var(--red-50); }
+.vrow-line { font-family: var(--font-mono); font-size: 11px; width: 28px; color: var(--text-low); flex-shrink: 0; padding-top: 2px; }
+.vrow-icon { font-size: 14px; width: 16px; flex-shrink: 0; }
+.vrow-msg { flex: 1; }
+.vrow-field { color: var(--text-low); font-size: 11px; }
+
+/* Options panel */
+.option-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.option-card:hover { border-color: var(--brand-300); }
+.option-card.selected { border-color: var(--brand); background: var(--brand-50); }
+.option-radio { 
+  width: 18px; height: 18px; 
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+  transition: var(--transition);
+}
+.option-card.selected .option-radio { border-color: var(--brand); }
+.option-card.selected .option-radio::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/* Step panels */
+.step-panel { display: none; }
+.step-panel.active { display: block; }
+</style>
+</head>
+<body data-page="roster-import">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <a href="roster-list.html">名簿一覧</a>
+        <span class="sep">›</span>
+        <span class="current">CSVインポート</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">CSVインポート</h1>
+        <p class="page-subtitle">CSVファイルから人物情報を一括登録・更新します</p>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="import-container">
+        <!-- Wizard Steps -->
+        <div class="wizard-steps" id="wizard-steps">
+          <div class="wizard-step active" id="step-ind-0">
+            <div class="wizard-step__num">1</div>
+            <div class="wizard-step__info">
+              <p class="wizard-step__label">ファイル選択</p>
+            </div>
+          </div>
+          <div class="wizard-step" id="step-ind-1">
+            <div class="wizard-step__num">2</div>
+            <div class="wizard-step__info">
+              <p class="wizard-step__label">列マッピング</p>
+            </div>
+          </div>
+          <div class="wizard-step" id="step-ind-2">
+            <div class="wizard-step__num">3</div>
+            <div class="wizard-step__info">
+              <p class="wizard-step__label">検証・確認</p>
+            </div>
+          </div>
+          <div class="wizard-step" id="step-ind-3">
+            <div class="wizard-step__num">4</div>
+            <div class="wizard-step__info">
+              <p class="wizard-step__label">実行設定</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1: Upload -->
+        <div class="step-panel active" id="panel-0">
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-file-arrow-up" style="color:var(--brand)"></i>
+              <span class="card-title">インポート対象の設定</span>
+            </div>
+            <div class="card-body">
+              <div class="form-row" style="margin-bottom:20px">
+                <div class="form-group">
+                  <label class="form-label">インポート種別 <span class="required">*</span></label>
+                  <select class="form-control">
+                    <option>教員</option>
+                    <option>生徒</option>
+                    <option>行政職員</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">対象組織 <span class="required">*</span></label>
+                  <select class="form-control">
+                    <option>愛知県（テナント全体）</option>
+                    <option>名古屋市立千種小学校</option>
+                    <option>名古屋市立西中学校</option>
+                    <option>愛知県立千種高等学校</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="dropzone" id="dropzone"
+                ondragover="event.preventDefault();this.classList.add('dragover')"
+                ondragleave="this.classList.remove('dragover')"
+                ondrop="event.preventDefault();this.classList.remove('dragover');handleDrop(event)"
+                onclick="document.getElementById('file-input').click()">
+                <div class="dropzone__icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <p class="dropzone__title">CSVファイルをドラッグ＆ドロップ</p>
+                <p class="dropzone__sub">または <a>クリックしてファイルを選択</a>（最大 50MB、UTF-8）</p>
+                <input type="file" id="file-input" accept=".csv" style="display:none" onchange="handleFile(this)">
+              </div>
+
+              <div id="file-preview" style="display:none;margin-top:16px">
+                <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--green-50);border:1px solid var(--green-600);border-radius:var(--r);color:var(--green-700)">
+                  <i class="fa-solid fa-file-csv" style="font-size:20px"></i>
+                  <div style="flex:1">
+                    <p style="font-weight:600;font-size:13px" id="filename">teachers_2026.csv</p>
+                    <p style="font-size:11px">1,248 行 / 24 列 / 238 KB</p>
+                  </div>
+                  <button class="btn btn-sm btn-ghost" style="color:var(--green-700)" onclick="document.getElementById('file-preview').style.display='none';document.getElementById('dropzone').style.display='flex'">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <div style="margin-top:10px">
+                  <p style="font-size:12px;font-weight:600;color:var(--text-med);margin-bottom:6px">プレビュー（先頭3行）</p>
+                  <div style="overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)">
+                    <table style="font-size:11px;font-family:var(--font-mono);white-space:nowrap;width:100%">
+                      <thead>
+                        <tr style="background:var(--n-100)">
+                          <th style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-med)">職員番号</th>
+                          <th style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-med)">姓</th>
+                          <th style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-med)">名</th>
+                          <th style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-med)">メール</th>
+                          <th style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-med)">学校コード</th>
+                          <th style="padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text-med)">…</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td style="padding:5px 10px;border-bottom:1px solid var(--border)">E20091432</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">山田</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">太郎</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">yamada.taro@edu.nagoya.jp</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">2301001</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">…</td></tr>
+                        <tr><td style="padding:5px 10px;border-bottom:1px solid var(--border)">E20130288</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">渡辺</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">春菜</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">watanabe.h@edu.aichi.jp</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">2301005</td><td style="padding:5px 10px;border-bottom:1px solid var(--border)">…</td></tr>
+                        <tr><td style="padding:5px 10px">E19980104</td><td style="padding:5px 10px">佐藤</td><td style="padding:5px 10px">次郎</td><td style="padding:5px 10px">sato.j@edu.nagoya.jp</td><td style="padding:5px 10px">2301012</td><td style="padding:5px 10px">…</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer" style="justify-content:flex-end">
+              <button class="btn btn-primary" onclick="goStep(1)">次へ: 列マッピング <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Column Mapping -->
+        <div class="step-panel" id="panel-1">
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-table-columns" style="color:var(--brand)"></i>
+              <span class="card-title">列マッピング</span>
+              <span class="card-actions">
+                <button class="btn btn-sm btn-secondary"><i class="fa-solid fa-floppy-disk"></i> テンプレートとして保存</button>
+              </span>
+            </div>
+            <div class="card-body p-0">
+              <div class="alert alert-blue" style="margin:14px 16px;margin-bottom:0">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>識別子（職員番号またはメールアドレス）が一致するレコードは更新されます。一致しない場合は新規登録になります。</div>
+              </div>
+              <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+                <p style="font-size:12px;font-weight:600;color:var(--text-med);margin-bottom:8px">識別子設定（同一人物の判定）</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <label class="form-check"><input type="checkbox" checked> <span class="form-check-label">職員番号</span></label>
+                  <label class="form-check"><input type="checkbox" checked> <span class="form-check-label">メールアドレス</span></label>
+                  <label class="form-check"><input type="checkbox"> <span class="form-check-label">生年月日+氏名</span></label>
+                </div>
+              </div>
+              <table class="data-table mapping-table">
+                <thead>
+                  <tr>
+                    <th>CSVの列名</th>
+                    <th class="mapping-arrow" style="width:30px"></th>
+                    <th>マッピング先（システム項目）</th>
+                    <th>データ形式</th>
+                    <th>必須</th>
+                    <th>ステータス</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="csv-header-preview">職員番号</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px">
+                        <option selected>職員番号</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-gray">テキスト</span></td>
+                    <td><i class="fa-solid fa-asterisk" style="color:var(--red-600);font-size:10px"></i></td>
+                    <td><span class="status-dot active">OK</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="csv-header-preview">姓</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px">
+                        <option selected>姓</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-gray">テキスト</span></td>
+                    <td><i class="fa-solid fa-asterisk" style="color:var(--red-600);font-size:10px"></i></td>
+                    <td><span class="status-dot active">OK</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="csv-header-preview">名</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px">
+                        <option selected>名</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-gray">テキスト</span></td>
+                    <td><i class="fa-solid fa-asterisk" style="color:var(--red-600);font-size:10px"></i></td>
+                    <td><span class="status-dot active">OK</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="csv-header-preview">メール</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px">
+                        <option selected>メールアドレス</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-sky">メール</span></td>
+                    <td></td>
+                    <td><span class="status-dot active">OK</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="csv-header-preview">学校コード</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px">
+                        <option selected>学校コード</option>
+                        <option>所属組織ID</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-purple">コード</span></td>
+                    <td><i class="fa-solid fa-asterisk" style="color:var(--red-600);font-size:10px"></i></td>
+                    <td><span class="status-dot active">OK</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="csv-header-preview">club_code</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px;border-color:var(--yellow-600)">
+                        <option>— マッピング未設定 —</option>
+                        <option>部活顧問コード</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-purple">コード</span></td>
+                    <td></td>
+                    <td><span class="status-dot pending">未設定</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="csv-header-preview">birthday</span></td>
+                    <td class="mapping-arrow"><i class="fa-solid fa-arrow-right"></i></td>
+                    <td>
+                      <select class="form-control" style="font-size:12px">
+                        <option selected>生年月日</option>
+                        <option>— スキップ —</option>
+                      </select>
+                    </td>
+                    <td><span class="badge badge-yellow">日付</span></td>
+                    <td></td>
+                    <td><span class="status-dot active">OK</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-secondary" onclick="goStep(0)"><i class="fa-solid fa-chevron-left"></i> 戻る</button>
+              <span style="flex:1"></span>
+              <button class="btn btn-primary" onclick="goStep(2)">次へ: 検証 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Validation -->
+        <div class="step-panel" id="panel-2">
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-list-check" style="color:var(--brand)"></i>
+              <span class="card-title">検証結果</span>
+              <span style="flex:1"></span>
+              <span class="badge badge-green">新規: 847件</span>
+              <span class="badge badge-blue" style="margin-left:4px">更新: 398件</span>
+              <span class="badge badge-red" style="margin-left:4px">エラー: 3件</span>
+              <span class="badge badge-yellow" style="margin-left:4px">警告: 2件</span>
+            </div>
+            <div class="card-body p-0">
+              <div style="padding:10px 12px;background:var(--n-50);border-bottom:1px solid var(--border);display:flex;gap:8px">
+                <button class="filter-chip active" onclick="filterChip(this,'valid')">すべて (1250)</button>
+                <button class="filter-chip" onclick="filterChip(this,'valid')">エラーのみ (3)</button>
+                <button class="filter-chip" onclick="filterChip(this,'valid')">警告のみ (2)</button>
+              </div>
+              <div>
+                <div class="validation-row err">
+                  <span class="vrow-line">行2</span>
+                  <i class="fa-solid fa-circle-xmark vrow-icon" style="color:var(--red-600)"></i>
+                  <div class="vrow-msg">
+                    <p><strong>学校コード「9999999」</strong>が存在しないコードです</p>
+                    <p class="vrow-field">列: 学校コード / 値: 9999999</p>
+                  </div>
+                </div>
+                <div class="validation-row warn">
+                  <span class="vrow-line">行4</span>
+                  <i class="fa-solid fa-triangle-exclamation vrow-icon" style="color:var(--yellow-600)"></i>
+                  <div class="vrow-msg">
+                    <p><strong>生年月日が未来の日付</strong>です — 確認してください</p>
+                    <p class="vrow-field">列: birthday / 値: 2028/01/01</p>
+                  </div>
+                </div>
+                <div class="validation-row err">
+                  <span class="vrow-line">行7</span>
+                  <i class="fa-solid fa-circle-xmark vrow-icon" style="color:var(--red-600)"></i>
+                  <div class="vrow-msg">
+                    <p><strong>メールアドレスの形式が不正</strong>です</p>
+                    <p class="vrow-field">列: メール / 値: tanaka@@edu.jp</p>
+                  </div>
+                </div>
+                <div class="validation-row warn">
+                  <span class="vrow-line">行15</span>
+                  <i class="fa-solid fa-triangle-exclamation vrow-icon" style="color:var(--yellow-600)"></i>
+                  <div class="vrow-msg">
+                    <p><strong>職員番号が既存レコードと重複</strong>（更新として処理されます）</p>
+                    <p class="vrow-field">列: 職員番号 / 値: E20091432 — 山田 太郎</p>
+                  </div>
+                </div>
+                <div class="validation-row err">
+                  <span class="vrow-line">行22</span>
+                  <i class="fa-solid fa-circle-xmark vrow-icon" style="color:var(--red-600)"></i>
+                  <div class="vrow-msg">
+                    <p><strong>必須項目「姓」が空白</strong>です</p>
+                    <p class="vrow-field">列: 姓 / 値: （空）</p>
+                  </div>
+                </div>
+                <div class="validation-row ok" style="padding:10px 12px;background:var(--n-50);font-size:12px;color:var(--text-low);text-align:center">
+                  残り 1,245 件は正常です
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-secondary" onclick="goStep(1)"><i class="fa-solid fa-chevron-left"></i> 戻る</button>
+              <div class="alert alert-warning" style="margin:0;flex:1;padding:6px 10px">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                3件のエラー行はスキップされます
+              </div>
+              <button class="btn btn-primary" onclick="goStep(3)">次へ: 実行設定 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Execute Options -->
+        <div class="step-panel" id="panel-3">
+          <div class="card">
+            <div class="card-header">
+              <i class="fa-solid fa-rocket" style="color:var(--brand)"></i>
+              <span class="card-title">実行設定・確認</span>
+            </div>
+            <div class="card-body">
+              <!-- Summary -->
+              <div style="background:var(--n-50);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px">
+                <p style="font-size:12px;font-weight:700;color:var(--text-med);margin-bottom:10px">インポート概要</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px">
+                  <div style="text-align:center">
+                    <p style="font-size:24px;font-weight:700;color:var(--text-high)">847</p>
+                    <p style="font-size:11px;color:var(--green-600);font-weight:600">新規登録</p>
+                  </div>
+                  <div style="text-align:center">
+                    <p style="font-size:24px;font-weight:700;color:var(--text-high)">398</p>
+                    <p style="font-size:11px;color:var(--brand);font-weight:600">更新</p>
+                  </div>
+                  <div style="text-align:center">
+                    <p style="font-size:24px;font-weight:700;color:var(--red-600)">3</p>
+                    <p style="font-size:11px;color:var(--red-600);font-weight:600">スキップ</p>
+                  </div>
+                  <div style="text-align:center">
+                    <p style="font-size:24px;font-weight:700;color:var(--text-high)">1,245</p>
+                    <p style="font-size:11px;color:var(--text-low);font-weight:600">合計処理</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <p class="form-section-title">実行オプション</p>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+                  <div class="option-card selected" onclick="selectOption(this)">
+                    <div class="option-radio"></div>
+                    <div>
+                      <p style="font-size:13px;font-weight:600">バックグラウンドで処理（推奨）</p>
+                      <p style="font-size:12px;color:var(--text-low)">バッチキューに追加されます。完了時にメール通知されます。インポートログで進捗を確認できます。</p>
+                    </div>
+                  </div>
+                  <div class="option-card" onclick="selectOption(this)">
+                    <div class="option-radio"></div>
+                    <div>
+                      <p style="font-size:13px;font-weight:600">即時処理</p>
+                      <p style="font-size:12px;color:var(--text-low)">件数が多い場合は時間がかかります。ブラウザを閉じないでください。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <label class="form-check">
+                    <input type="checkbox" id="opt-transfer">
+                    <span class="form-check-label">
+                      <strong>所属変更の承認フローを省略する</strong>
+                      <span class="badge badge-red" style="margin-left:4px">権限要</span>
+                    </span>
+                  </label>
+                  <p class="form-hint" style="padding-left:22px">チェックを入れると、所属変更が即時反映されます。この設定は管理者権限が必要です。</p>
+
+                  <label class="form-check">
+                    <input type="checkbox" id="opt-dry">
+                    <span class="form-check-label">ドライラン（実際には書き込まない）</span>
+                  </label>
+                  <p class="form-hint" style="padding-left:22px">動作確認のみ行い、実際のデータは変更しません。</p>
+
+                  <label class="form-check">
+                    <input type="checkbox" id="opt-notify" checked>
+                    <span class="form-check-label">完了時にメール通知する</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-secondary" onclick="goStep(2)"><i class="fa-solid fa-chevron-left"></i> 戻る</button>
+              <span style="flex:1"></span>
+              <button class="btn btn-primary btn-lg" onclick="executeImport()">
+                <i class="fa-solid fa-rocket"></i> インポートを実行する
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Success modal -->
+<div class="modal-overlay" id="modal-success">
+  <div class="modal-box sm">
+    <div class="modal-body" style="text-align:center;padding:32px 24px">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--green-100);color:var(--green-600);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:8px">インポートをキューに追加しました</h3>
+      <p style="font-size:13px;color:var(--text-med);margin-bottom:20px">バックグラウンドで処理が始まります。完了時にメール通知されます。</p>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <a href="import-log.html" class="btn btn-primary"><i class="fa-solid fa-list-check"></i> インポートログを確認</a>
+        <a href="roster-list.html" class="btn btn-secondary">名簿一覧へ</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+let currentStep = 0;
+
+function goStep(n) {
+  document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active', i===n));
+  document.querySelectorAll('[id^="step-ind-"]').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i<n) s.classList.add('done');
+    if(i===n) s.classList.add('active');
+  });
+  currentStep = n;
+  // simulate file selected on step 1
+  if(n>=1) {
+    document.getElementById('dropzone').style.display='none';
+    document.getElementById('file-preview').style.display='block';
+  }
+}
+
+function handleDrop(e) {
+  const f = e.dataTransfer.files[0];
+  if(f) { document.getElementById('file-preview').style.display='block'; document.getElementById('dropzone').style.display='none'; document.getElementById('filename').textContent=f.name; }
+}
+function handleFile(input) {
+  if(input.files[0]) { document.getElementById('file-preview').style.display='block'; document.getElementById('dropzone').style.display='none'; document.getElementById('filename').textContent=input.files[0].name; }
+}
+
+function selectOption(card) {
+  document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+function executeImport() {
+  openModal('modal-success');
+}
+
+function filterChip(el, group) {
+  el.closest('div').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

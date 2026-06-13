@@ -1,0 +1,317 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>CSVインポート</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>CSVインポート</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-primary btn-sm" data-modal="import-modal">📥 新規インポート</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="mapping">マッピング設定</button>
+  <button class="tab" data-tab="history">インポート履歴</button>
+  <button class="tab" data-tab="identifiers">識別子設定</button>
+</div>
+
+<div class="tab-content active" data-tab="mapping">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <span class="card-title">保存済みマッピング設定</span>
+      <button class="btn btn-secondary btn-sm" data-modal="new-mapping-modal">＋ 新規マッピング</button>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>マッピング名</th>
+            <th>対象</th>
+            <th>識別子</th>
+            <th>最終使用</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">新任教員インポート</span></td>
+            <td>教員</td>
+            <td>職員番号</td>
+            <td>2026/06/10</td>
+            <td>
+              <button class="btn btn-ghost btn-sm">使用</button>
+              <button class="btn btn-ghost btn-sm">✏️</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">新入生インポート</span></td>
+            <td>生徒</td>
+            <td>Eメール</td>
+            <td>2026/04/01</td>
+            <td>
+              <button class="btn btn-ghost btn-sm">使用</button>
+              <button class="btn btn-ghost btn-sm">✏️</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-primary);font-weight:500;">保護者連絡先更新</span></td>
+            <td>保護者</td>
+            <td>Eメール</td>
+            <td>2026/06/12</td>
+            <td>
+              <button class="btn btn-ghost btn-sm">使用</button>
+              <button class="btn btn-ghost btn-sm">✏️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">マッピング詳細: 新任教員インポート</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>CSV項目</th>
+            <th>→</th>
+            <th>システム項目</th>
+            <th>データ形式</th>
+            <th>変換ルール</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-blue">職員番号</span></td>
+            <td>→</td>
+            <td><span style="color:var(--text-primary);">職員番号（識別子）</span></td>
+            <td><span class="tag tag-gray">文字列</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">氏名</span></td>
+            <td>→</td>
+            <td><span style="color:var(--text-primary);">氏名</span></td>
+            <td><span class="tag tag-gray">文字列</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">メールアドレス</span></td>
+            <td>→</td>
+            <td><span style="color:var(--text-primary);">メールアドレス</span></td>
+            <td><span class="tag tag-gray">文字列</span></td>
+            <td>小文字に変換</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">生年月日</span></td>
+            <td>→</td>
+            <td><span style="color:var(--text-primary);">生年月日</span></td>
+            <td><span class="tag tag-gray">日付</span></td>
+            <td>YYYY/MM/DD 形式</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">所属学校コード</span></td>
+            <td>→</td>
+            <td><span style="color:var(--text-primary);">所属組織</span></td>
+            <td><span class="tag tag-gray">コード</span></td>
+            <td>組織マスター参照</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">教員免許番号</span></td>
+            <td>→</td>
+            <td><span style="color:var(--text-primary);">属性: 教員免許番号</span></td>
+            <td><span class="tag tag-gray">文字列</span></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="history">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ファイル名</th>
+          <th>インポート日時</th>
+          <th>種別</th>
+          <th>総件数</th>
+          <th>成功</th>
+          <th>エラー</th>
+          <th>ステータス</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-primary);">2026年度_新入生名簿.csv</span></td>
+          <td>2026/06/11 14:23</td>
+          <td><span class="tag tag-blue">新規登録</span></td>
+          <td>1,284</td>
+          <td>1,284</td>
+          <td>0</td>
+          <td><span class="tag tag-green">完了</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-primary);">2026年度_新任教員一覧.csv</span></td>
+          <td>2026/06/12 11:23</td>
+          <td><span class="tag tag-blue">新規登録</span></td>
+          <td>156</td>
+          <td>133</td>
+          <td>23</td>
+          <td><span class="tag tag-red">エラー</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-primary);">保護者連絡先一覧.csv</span></td>
+          <td>2026/06/12 13:00</td>
+          <td><span class="tag tag-green">更新</span></td>
+          <td>2,100</td>
+          <td>342</td>
+          <td>0</td>
+          <td><span class="tag tag-amber">処理中</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-primary);">2025年度_教員異動一覧.csv</span></td>
+          <td>2026/03/31 09:00</td>
+          <td><span class="tag tag-orange">所属変更</span></td>
+          <td>847</td>
+          <td>832</td>
+          <td>15</td>
+          <td><span class="tag tag-green">完了</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="identifiers">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">識別子設定</span>
+      <button class="btn btn-secondary btn-sm">✏️ 編集</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="padding:12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border);">
+        <div style="font-size:0.85rem;color:var(--text-primary);font-weight:500;">同一人物の識別に使用する項目</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">CSVインポート時に同一人物を特定するための基準です。以下の項目がすべて一致する場合、同一人物とみなします。</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <input type="checkbox" checked style="accent-color:var(--terracotta);"> 職員番号
+          <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px;">（教員・職員の場合）</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <input type="checkbox" checked style="accent-color:var(--terracotta);"> Eメールアドレス
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <input type="checkbox" style="accent-color:var(--terracotta);"> 氏名 + 生年月日
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);padding:8px 0;">
+          <input type="checkbox" style="accent-color:var(--terracotta);"> 外部ID（連携システム用）
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h2>CSVインポート</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">マッピング設定</label>
+        <select class="form-select">
+          <option>新任教員インポート</option>
+          <option>新入生インポート</option>
+          <option>保護者連絡先更新</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">CSVファイル</label>
+        <div style="border:2px dashed var(--border);border-radius:var(--radius-md);padding:32px;text-align:center;cursor:pointer;transition:all var(--transition-fast);">
+          <div style="font-size:2rem;margin-bottom:8px;">📁</div>
+          <div style="font-size:0.85rem;color:var(--text-secondary);">クリックしてファイルを選択</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">またはドラッグ＆ドロップ</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" style="accent-color:var(--terracotta);"> 所属変更の承認をスキップする
+        </label>
+        <div class="form-hint">権限設定で許可されている場合、所属変更が即時反映されます。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">インポート種別</label>
+        <select class="form-select">
+          <option>新規登録 + 更新</option>
+          <option>新規のみ（重複スキップ）</option>
+          <option>更新のみ（存在しない場合はスキップ）</option>
+          <option>所属変更のみ</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">インポート開始</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Mapping Modal -->
+<div class="modal-overlay" id="new-mapping-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h2>新規マッピング設定</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">マッピング名</label>
+        <input class="form-input" placeholder="例: 非常勤講師インポート">
+      </div>
+      <div class="form-group">
+        <label class="form-label">対象種別</label>
+        <select class="form-select">
+          <option>教員</option>
+          <option>生徒</option>
+          <option>保護者</option>
+          <option>職員</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">識別子</label>
+        <select class="form-select">
+          <option>職員番号</option>
+          <option>Eメールアドレス</option>
+          <option>外部ID</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">CSVヘッダー行サンプル</label>
+        <textarea class="form-textarea" rows="3" placeholder="職員番号,氏名,メールアドレス,生年月日,所属学校コード,教員免許番号"></textarea>
+        <div class="form-hint">1行目を貼り付けると自動で項目マッピングを提案します</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">マッピングを作成</button>
+    </div>
+  </div>
+</div>

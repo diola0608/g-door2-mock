@@ -1,0 +1,272 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>ログ / 監査</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>ログ / 監査</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm">📥 エクスポート</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="import-logs">インポートログ</button>
+  <button class="tab" data-tab="audit">監査証跡</button>
+  <button class="tab" data-tab="errors">エラー一覧</button>
+  <button class="tab" data-tab="access">アクセスログ</button>
+</div>
+
+<div class="tab-content active" data-tab="import-logs">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>日時</th>
+          <th>ファイル名</th>
+          <th>種別</th>
+          <th>総件数</th>
+          <th>成功</th>
+          <th>エラー</th>
+          <th>実行ユーザー</th>
+          <th>ステータス</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/12 13:00</span></td>
+          <td>保護者連絡先一覧.csv</td>
+          <td><span class="tag tag-green">更新</span></td>
+          <td>2,100</td>
+          <td>342</td>
+          <td>0</td>
+          <td>田中 管理者</td>
+          <td><span class="tag tag-amber">処理中</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/12 11:23</span></td>
+          <td>2026年度_新任教員一覧.csv</td>
+          <td><span class="tag tag-blue">新規登録</span></td>
+          <td>156</td>
+          <td>133</td>
+          <td>23</td>
+          <td>田中 管理者</td>
+          <td><span class="tag tag-red">エラー</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/11 14:23</span></td>
+          <td>2026年度_新入生名簿.csv</td>
+          <td><span class="tag tag-blue">新規登録</span></td>
+          <td>1,284</td>
+          <td>1,284</td>
+          <td>0</td>
+          <td>システム (バッチ)</td>
+          <td><span class="tag tag-green">完了</span></td>
+          <td><button class="btn btn-ghost btn-sm">詳細</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="audit">
+  <div class="card" style="margin-bottom:20px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:150px;">
+        <label class="form-label">期間</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" type="date" style="flex:1;">
+          <input class="form-input" type="date" style="flex:1;">
+        </div>
+      </div>
+      <div style="width:180px;">
+        <label class="form-label">操作種別</label>
+        <select class="form-select">
+          <option>すべて</option>
+          <option>作成</option>
+          <option>更新</option>
+          <option>削除</option>
+          <option>閲覧</option>
+        </select>
+      </div>
+      <div style="width:180px;">
+        <label class="form-label">ユーザー</label>
+        <input class="form-input" placeholder="ユーザー名">
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button class="btn btn-primary btn-sm">検索</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>日時</th>
+          <th>ユーザー</th>
+          <th>操作</th>
+          <th>対象</th>
+          <th>詳細</th>
+          <th>IPアドレス</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/12 14:32:15</span></td>
+          <td>田中 管理者</td>
+          <td><span class="tag tag-blue">更新</span></td>
+          <td>人物: 佐藤 美咲</td>
+          <td>担当クラスを変更</td>
+          <td style="font-size:0.8rem;color:var(--text-muted);">192.168.1.100</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/12 11:23:00</span></td>
+          <td>田中 管理者</td>
+          <td><span class="tag tag-blue">作成</span></td>
+          <td>CSVインポート</td>
+          <td>新任教員一覧.csv (156件)</td>
+          <td style="font-size:0.8rem;color:var(--text-muted);">192.168.1.100</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/12 09:15:42</span></td>
+          <td>高橋 校長</td>
+          <td><span class="tag tag-orange">閲覧</span></td>
+          <td>機微情報: 佐藤 美咲</td>
+          <td>機微情報タブを閲覧</td>
+          <td style="font-size:0.8rem;color:var(--text-muted);">192.168.1.50</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/11 15:00:00</span></td>
+          <td>システム (バッチ)</td>
+          <td><span class="tag tag-green">更新</span></td>
+          <td>Google Workspace 同期</td>
+          <td>1,284件のアカウントを同期</td>
+          <td style="font-size:0.8rem;color:var(--text-muted);">内部</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/11 08:30:00</span></td>
+          <td>佐藤 美咲</td>
+          <td><span class="tag tag-orange">閲覧</span></td>
+          <td>フォーム: 研修希望調査</td>
+          <td>フォームを閲覧・回答</td>
+          <td style="font-size:0.8rem;color:var(--text-muted);">192.168.5.200</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="errors">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <span class="card-title">エラー詳細: 2026年度_新任教員一覧.csv</span>
+      <button class="btn btn-secondary btn-sm">システム管理者に問い合わせ</button>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>行</th>
+            <th>識別子</th>
+            <th>項目</th>
+            <th>エラー内容</th>
+            <th>対処</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-muted);">12</span></td>
+            <td>TCH-48301</td>
+            <td>メールアドレス</td>
+            <td><span style="color:var(--terracotta-light);">既存のメールアドレスと重複</span></td>
+            <td>CSVのメールアドレスを確認</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);">23</span></td>
+            <td>TCH-48312</td>
+            <td>生年月日</td>
+            <td><span style="color:var(--terracotta-light);">日付形式が不正</span></td>
+            <td>YYYY/MM/DD形式に修正</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);">45</span></td>
+            <td>TCH-48334</td>
+            <td>所属学校コード</td>
+            <td><span style="color:var(--terracotta-light);">組織マスターに存在しないコード</span></td>
+            <td>コード値を確認</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);">67</span></td>
+            <td>TCH-48356</td>
+            <td>教員免許番号</td>
+            <td><span style="color:var(--terracotta-light);">バリデーションエラー（形式違反）</span></td>
+            <td>免許番号の形式を確認</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">💡</span>
+    <div>
+      エラーが解決できない場合は、システム管理者に問い合わせてください。
+      <button class="btn btn-secondary btn-sm" style="margin-left:12px;">📧 問い合わせフォーム</button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="access">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">機微情報アクセスログ</span>
+    </div>
+    <div class="table-container" style="border:none;margin:-8px -24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>日時</th>
+            <th>ユーザー</th>
+            <th>役職</th>
+            <th>対象人物</th>
+            <th>アクセス種別</th>
+            <th>所要時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/12 14:32</span></td>
+            <td>田中 管理者</td>
+            <td>システム管理者</td>
+            <td>佐藤 美咲</td>
+            <td><span class="tag tag-orange">機微情報閲覧</span></td>
+            <td>2分34秒</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/08 09:15</span></td>
+            <td>高橋 校長</td>
+            <td>校長</td>
+            <td>佐藤 美咲</td>
+            <td><span class="tag tag-orange">機微情報閲覧</span></td>
+            <td>45秒</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);font-size:0.8rem;">2026/06/01 03:00</span></td>
+            <td>システム監査</td>
+            <td>自動監査</td>
+            <td>一括スキャン</td>
+            <td><span class="tag tag-gray">定期監査</span></td>
+            <td>12分00秒</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

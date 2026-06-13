@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>権限設定 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .perm-layout { display: flex; gap: 0; height: calc(100vh - var(--header-height) - 48px); overflow: hidden; margin: -24px; }
+    .perm-left { width: 280px; flex-shrink: 0; border-right: 1px solid var(--gray-200); background: white; overflow-y: auto; }
+    .perm-right { flex: 1; overflow-y: auto; padding: 24px; }
+    .group-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; cursor: pointer; transition: var(--transition);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .group-item:hover { background: var(--gray-50); }
+    .group-item.selected { background: var(--primary-light); }
+    .group-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .perm-matrix { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .perm-matrix th { padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); }
+    .perm-matrix td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    .perm-matrix tr:hover td { background: var(--gray-50); }
+    .perm-check { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+    .condition-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+      background: var(--primary-light); color: var(--primary-dark); cursor: pointer;
+    }
+    .condition-badge:hover { background: #c7d7fb; }
+    .scope-select {
+      padding: 4px 8px; border: 1px solid var(--gray-300); border-radius: 4px;
+      font-size: 12px; outline: none; background: white;
+    }
+    .inheritance-note {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px; background: var(--info-light); border-radius: 6px;
+      font-size: 12px; color: #0c4a6e; margin-bottom: 16px;
+    }
+    .attr-perm-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .attr-perm-row:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in" style="padding:0;overflow:hidden">
+      <div class="perm-layout">
+        <!-- Left: Group List -->
+        <div class="perm-left">
+          <div style="padding:16px;border-bottom:1px solid var(--gray-100)">
+            <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:10px">権限グループ</div>
+            <button class="btn btn-primary btn-sm w-full" onclick="openModal('addGroupModal')">＋ グループ追加</button>
+          </div>
+          <div>
+            <div class="group-item selected" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#fde8e8">🔴</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">システム管理者</div>
+                <div style="font-size:11px;color:var(--gray-400)">2名</div>
+              </div>
+              <span class="tag tag-red" style="font-size:10px">最高権限</span>
+            </div>
+            <div class="group-item" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#fdf6b2">🟡</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">教育委員会職員</div>
+                <div style="font-size:11px;color:var(--gray-400)">234名</div>
+              </div>
+            </div>
+            <div class="group-item" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#fdf6b2">🟡</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">校長</div>
+                <div style="font-size:11px;color:var(--gray-400)">342名</div>
+              </div>
+            </div>
+            <div class="group-item" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#e8f0fe">🔵</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">学年主任</div>
+                <div style="font-size:11px;color:var(--gray-400)">678名</div>
+              </div>
+            </div>
+            <div class="group-item" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#e8f0fe">🔵</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">一般教員（担任）</div>
+                <div style="font-size:11px;color:var(--gray-400)">3,456名</div>
+              </div>
+            </div>
+            <div class="group-item" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#def7ec">🟢</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">一般教員</div>
+                <div style="font-size:11px;color:var(--gray-400)">4,234名</div>
+              </div>
+            </div>
+            <div class="group-item" onclick="selectGroup(this)">
+              <div class="group-icon" style="background:#f3f4f6">⚪</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">部活動顧問</div>
+                <div style="font-size:11px;color:var(--gray-400)">890名</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Permission Detail -->
+        <div class="perm-right">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div>
+              <div style="font-size:18px;font-weight:800;color:var(--gray-900)">🔴 システム管理者</div>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:2px">テナント全体の最高権限グループ</div>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-secondary btn-sm" onclick="openModal('editGroupModal')">✏️ 編集</button>
+              <button class="btn btn-secondary btn-sm" onclick="openModal('orgOverrideModal')">🏫 組織別上書き</button>
+            </div>
+          </div>
+
+          <div class="inheritance-note">
+            <span>ℹ️</span>
+            <span>この設定はテナント全体に適用されます。各組織は独自の設定を追加・上書きできます。</span>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs-container">
+            <div class="tabs">
+              <button class="tab-item active">機能権限</button>
+              <button class="tab-item">データアクセス範囲</button>
+              <button class="tab-item">属性項目権限</button>
+              <button class="tab-item">条件設定</button>
+            </div>
+
+            <!-- Feature Permissions -->
+            <div class="tab-content active">
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">機能権限マトリクス</span>
+                  <button class="btn btn-primary btn-sm" onclick="showToast('権限設定を保存しました')">💾 保存</button>
+                </div>
+                <div class="table-container">
+                  <table class="perm-matrix">
+                    <thead>
+                      <tr>
+                        <th>機能</th>
+                        <th>閲覧</th>
+                        <th>作成</th>
+                        <th>編集</th>
+                        <th>削除</th>
+                        <th>エクスポート</th>
+                        <th>スコープ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="font-weight:600">名簿（人物情報）</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:600">組織管理</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:600">所属変更申請</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:600">アカウント管理</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:600">CSVインポート</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:600">フォーム管理</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight:600">権限設定</td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><input type="checkbox" class="perm-check" checked></td>
+                        <td><select class="scope-select"><option>テナント全体</option></select></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data Access -->
+            <div class="tab-content">
+              <div class="card mb-3">
+                <div class="card-header">
+                  <span class="card-title">サブジェクト・オブジェクト関係設定</span>
+                  <button class="btn btn-primary btn-sm" onclick="openModal('addConditionModal')">＋ 条件追加</button>
+                </div>
+                <div class="card-body">
+                  <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">
+                    「誰が（サブジェクト）」「誰の情報を（オブジェクト）」閲覧・操作できるかを定義します。
+                  </p>
+                  <div style="padding:14px;background:var(--gray-50);border-radius:8px;margin-bottom:12px;border:1px solid var(--gray-200)">
+                    <div style="font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:8px">
+                      ルール 1: テナント全体の人物情報閲覧
+                    </div>
+                    <div style="font-size:12px;color:var(--gray-600);line-height:1.8">
+                      <strong>サブジェクト:</strong> システム管理者グループのメンバー<br>
+                      <strong>オブジェクト:</strong> テナント全体のすべての人物<br>
+                      <strong>操作:</strong> 閲覧・編集・削除<br>
+                      <strong>スコープ:</strong> テナント全体
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                      <button class="btn btn-secondary btn-sm">✏️ 編集</button>
+                      <button class="btn btn-danger btn-sm">🗑 削除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Attribute Permissions -->
+            <div class="tab-content">
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">属性項目ごとの権限設定</span>
+                </div>
+                <div class="card-body">
+                  <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">
+                    各属性項目の閲覧・編集権限を設定します。コードマスターの選択肢ごとに権限を制限することも可能です。
+                  </p>
+                  <div class="attr-perm-row">
+                    <div style="flex:1">
+                      <div style="font-size:13px;font-weight:600">自家用携帯番号</div>
+                      <div style="font-size:12px;color:var(--gray-500)">文字列型</div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                      <span style="font-size:12px;color:var(--gray-500)">閲覧:</span>
+                      <select class="scope-select"><option>すべての権限グループ</option></select>
+                      <span style="font-size:12px;color:var(--gray-500)">編集:</span>
+                      <select class="scope-select"><option>システム管理者・本人</option></select>
+                    </div>
+                  </div>
+                  <div class="attr-perm-row">
+                    <div style="flex:1">
+                      <div style="font-size:13px;font-weight:600">人物の特徴</div>
+                      <div style="font-size:12px;color:var(--gray-500)">コードマスター型（複数選択）</div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                      <span style="font-size:12px;color:var(--gray-500)">閲覧:</span>
+                      <select class="scope-select"><option>担任・学年主任のみ</option></select>
+                      <button class="condition-badge" onclick="openModal('codePermModal')">⚙ コード別設定</button>
+                    </div>
+                  </div>
+                  <div class="attr-perm-row">
+                    <div style="flex:1">
+                      <div style="font-size:13px;font-weight:600">教員免許番号</div>
+                      <div style="font-size:12px;color:var(--gray-500)">文字列型</div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                      <span style="font-size:12px;color:var(--gray-500)">閲覧:</span>
+                      <select class="scope-select"><option>管理者・校長のみ</option></select>
+                      <span style="font-size:12px;color:var(--gray-500)">編集:</span>
+                      <select class="scope-select"><option>システム管理者のみ</option></select>
+                    </div>
+                  </div>
+                  <div class="attr-perm-row">
+                    <div style="flex:1">
+                      <div style="font-size:13px;font-weight:600">部活動顧問</div>
+                      <div style="font-size:12px;color:var(--gray-500)">コードマスター型</div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                      <span style="font-size:12px;color:var(--gray-500)">閲覧:</span>
+                      <select class="scope-select"><option>すべての権限グループ</option></select>
+                      <span style="font-size:12px;color:var(--gray-500)">編集:</span>
+                      <select class="scope-select"><option>管理者・校長のみ</option></select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conditions -->
+            <div class="tab-content">
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">条件設定（サブジェクト・オブジェクト詳細）</span>
+                  <button class="btn btn-primary btn-sm" onclick="openModal('addConditionModal')">＋ 条件追加</button>
+                </div>
+                <div class="card-body">
+                  <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">
+                    属性値・組織スコープ・職種などを組み合わせた柔軟な条件を設定できます。
+                  </p>
+                  <div style="padding:14px;background:var(--gray-50);border-radius:8px;margin-bottom:12px;border:1px solid var(--gray-200)">
+                    <div style="font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:6px">
+                      条件例: 部活動顧問による生徒連絡先閲覧
+                    </div>
+                    <div style="font-size:12px;color:var(--gray-600);line-height:1.8">
+                      <strong>サブジェクト条件:</strong> 属性「部活動顧問」に値が設定されている教員<br>
+                      <strong>オブジェクト条件:</strong> 同一学校に所属し、同一部活動に所属している生徒<br>
+                      <strong>許可操作:</strong> 連絡先情報の閲覧のみ<br>
+                      <strong>スコープ:</strong> 担当学校
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                      <button class="btn btn-secondary btn-sm">✏️ 編集</button>
+                      <button class="btn btn-danger btn-sm">🗑 削除</button>
+                    </div>
+                  </div>
+                  <div style="padding:14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+                    <div style="font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:6px">
+                      条件例: 校長による同一市町村教員連絡先閲覧
+                    </div>
+                    <div style="font-size:12px;color:var(--gray-600);line-height:1.8">
+                      <strong>サブジェクト条件:</strong> 職種が「校長」の教員<br>
+                      <strong>オブジェクト条件:</strong> 同一市町村・同一学校種の一般教員<br>
+                      <strong>許可操作:</strong> 連絡先情報の閲覧のみ<br>
+                      <strong>スコープ:</strong> 同一市町村
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                      <button class="btn btn-secondary btn-sm">✏️ 編集</button>
+                      <button class="btn btn-danger btn-sm">🗑 削除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add Group Modal -->
+<div class="modal-overlay" id="addGroupModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">権限グループを追加</span>
+      <button class="modal-close" onclick="closeModal('addGroupModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">グループ名 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="例: 特別支援学級担任">
+      </div>
+      <div class="form-group">
+        <label class="form-label">説明</label>
+        <textarea class="form-control" rows="2" placeholder="このグループの説明..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ベースグループ（継承元）</label>
+        <select class="form-control">
+          <option>なし（新規作成）</option>
+          <option>一般教員</option>
+          <option>一般教員（担任）</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addGroupModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('addGroupModal');showToast('権限グループを追加しました')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Code Permission Modal -->
+<div class="modal-overlay" id="codePermModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">「人物の特徴」コード別権限設定</span>
+      <button class="modal-close" onclick="closeModal('codePermModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">各コード（選択肢）ごとに閲覧できる権限グループを設定します。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>コード</th>
+            <th>表示名</th>
+            <th>閲覧可能グループ</th>
+            <th>編集可能グループ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>CHAR_001</code></td>
+            <td><span class="tag tag-green">優良生徒指導実績</span></td>
+            <td><select class="scope-select"><option>担任・学年主任</option></select></td>
+            <td><select class="scope-select"><option>学年主任のみ</option></select></td>
+          </tr>
+          <tr>
+            <td><code>CHAR_002</code></td>
+            <td><span class="tag tag-red">いじめ加害者</span></td>
+            <td><select class="scope-select"><option>学年主任のみ</option></select></td>
+            <td><select class="scope-select"><option>学年主任のみ</option></select></td>
+          </tr>
+          <tr>
+            <td><code>CHAR_003</code></td>
+            <td><span class="tag tag-yellow">要配慮生徒</span></td>
+            <td><select class="scope-select"><option>担任・学年主任</option></select></td>
+            <td><select class="scope-select"><option>担任・学年主任</option></select></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('codePermModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('codePermModal');showToast('コード別権限設定を保存しました')">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Condition Modal -->
+<div class="modal-overlay" id="addConditionModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">条件を追加</span>
+      <button class="modal-close" onclick="closeModal('addConditionModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">条件名</label>
+        <input type="text" class="form-control" placeholder="例: 部活動顧問による生徒連絡先閲覧">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:10px">サブジェクト条件（誰が）</div>
+          <div class="form-group">
+            <label class="form-label">グループ</label>
+            <select class="form-control">
+              <option>一般教員</option>
+              <option>担任</option>
+              <option>学年主任</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">追加条件（属性値）</label>
+            <select class="form-control">
+              <option>なし</option>
+              <option>部活動顧問に値が設定されている</option>
+              <option>職種が校長</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:10px">オブジェクト条件（誰の情報）</div>
+          <div class="form-group">
+            <label class="form-label">対象種別</label>
+            <select class="form-control">
+              <option>生徒</option>
+              <option>教員</option>
+              <option>すべて</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">組織スコープ</label>
+            <select class="form-control">
+              <option>同一学校</option>
+              <option>同一市町村</option>
+              <option>テナント全体</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">許可する操作</label>
+        <div class="flex gap-3 mt-1">
+          <label class="checkbox-group"><input type="checkbox" checked> 閲覧</label>
+          <label class="checkbox-group"><input type="checkbox"> 編集</label>
+          <label class="checkbox-group"><input type="checkbox"> 削除</label>
+          <label class="checkbox-group"><input type="checkbox"> エクスポート</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addConditionModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('addConditionModal');showToast('条件を追加しました')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Org Override Modal -->
+<div class="modal-overlay" id="orgOverrideModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">組織別権限上書き設定</span>
+      <button class="modal-close" onclick="closeModal('orgOverrideModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">
+        特定の組織に対して、テナント全体の設定を上書き・追加できます。下位組織の設定が優先されます。
+      </p>
+      <div class="form-group">
+        <label class="form-label">対象組織</label>
+        <select class="form-control">
+          <option>選択してください</option>
+          <option>横浜市</option>
+          <option>横浜市立北中学校</option>
+          <option>川崎市</option>
+        </select>
+      </div>
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div>組織を選択すると、その組織の現在の設定が表示されます。</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('orgOverrideModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('orgOverrideModal');showToast('組織別設定を開きます', 'info')">設定を開く</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('権限設定');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('permissions.html');
+
+  function selectGroup(el) {
+    document.querySelectorAll('.group-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+</script>
+</body>
+</html>

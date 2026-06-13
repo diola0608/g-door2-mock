@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>インポートログ | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .log-row { cursor: pointer; }
+    .log-row:hover td { background: var(--gray-50); }
+    .progress-bar-wrap {
+      height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; width: 120px;
+    }
+    .progress-bar-fill { height: 100%; border-radius: 3px; }
+    .log-status-running {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      background: #e8f0fe; color: #1a56db;
+    }
+    .spinning { animation: spin 1s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item" onclick="navigate('csv-import.html')">CSVインポート</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">インポートログ</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">インポートログ</div>
+          <div class="page-subtitle">過去のインポート処理の実行履歴</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="navigate('csv-import.html')">＋ 新規インポート</button>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-bar mb-3">
+        <div style="position:relative;flex:1;max-width:280px">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400)">🔍</span>
+          <input type="text" placeholder="ファイル名・実行者で検索..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid var(--gray-300);border-radius:6px;font-size:13px;outline:none">
+        </div>
+        <select class="form-control" style="max-width:160px">
+          <option>ステータス: すべて</option>
+          <option>完了</option>
+          <option>処理中</option>
+          <option>エラー</option>
+          <option>警告あり</option>
+        </select>
+        <select class="form-control" style="max-width:180px">
+          <option>対象: すべて</option>
+          <option>人物情報（教員）</option>
+          <option>人物情報（生徒）</option>
+          <option>組織情報</option>
+        </select>
+        <input type="date" class="form-control" style="max-width:160px" value="2024-06-01">
+        <span style="font-size:13px;color:var(--gray-400)">〜</span>
+        <input type="date" class="form-control" style="max-width:160px" value="2024-06-12">
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>実行日時</th>
+                <th>ファイル名</th>
+                <th>対象</th>
+                <th>組織</th>
+                <th>ステータス</th>
+                <th>結果</th>
+                <th>進捗</th>
+                <th>実行者</th>
+                <th style="width:80px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Running -->
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td><span style="font-size:12px">2024/06/12 09:45</span></td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">teachers_2024_yokohama_minami.csv</div>
+                  <div style="font-size:11px;color:var(--gray-400)">234 KB</div>
+                </td>
+                <td><span class="tag tag-blue">教員</span></td>
+                <td style="font-size:12px">横浜市立南小学校</td>
+                <td>
+                  <span class="log-status-running">
+                    <span class="spinning">⟳</span> 処理中
+                  </span>
+                </td>
+                <td>
+                  <div style="font-size:12px;color:var(--gray-600)">
+                    <span style="color:var(--secondary)">✓ 892</span> /
+                    <span style="color:var(--warning)">⚠ 12</span> /
+                    <span style="color:var(--danger)">✕ 0</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:72%;background:var(--primary)"></div>
+                  </div>
+                  <div style="font-size:11px;color:var(--gray-400);margin-top:2px">72% (892/1,234)</div>
+                </td>
+                <td style="font-size:12px">田中 義雄</td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('logDetailModal')">詳細</button>
+                </td>
+              </tr>
+
+              <!-- Success -->
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td><span style="font-size:12px">2024/06/11 14:30</span></td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">students_2024_kawasaki.csv</div>
+                  <div style="font-size:11px;color:var(--gray-400)">1.2 MB</div>
+                </td>
+                <td><span class="tag tag-green">生徒</span></td>
+                <td style="font-size:12px">川崎市立東小学校</td>
+                <td><span class="tag tag-green">✓ 完了</span></td>
+                <td>
+                  <div style="font-size:12px;color:var(--gray-600)">
+                    <span style="color:var(--secondary)">✓ 3,456</span> /
+                    <span style="color:var(--warning)">⚠ 23</span> /
+                    <span style="color:var(--danger)">✕ 0</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:100%;background:var(--secondary)"></div>
+                  </div>
+                  <div style="font-size:11px;color:var(--gray-400);margin-top:2px">100% 完了</div>
+                </td>
+                <td style="font-size:12px">山田 花子</td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('logDetailModal')">詳細</button>
+                </td>
+              </tr>
+
+              <!-- Warning -->
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td><span style="font-size:12px">2024/06/10 09:15</span></td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">teachers_2024_sagamihara.csv</div>
+                  <div style="font-size:11px;color:var(--gray-400)">456 KB</div>
+                </td>
+                <td><span class="tag tag-blue">教員</span></td>
+                <td style="font-size:12px">相模原市立第一中学校</td>
+                <td><span class="tag tag-yellow">⚠ 警告あり</span></td>
+                <td>
+                  <div style="font-size:12px;color:var(--gray-600)">
+                    <span style="color:var(--secondary)">✓ 1,198</span> /
+                    <span style="color:var(--warning)">⚠ 33</span> /
+                    <span style="color:var(--danger)">✕ 3</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:100%;background:var(--warning)"></div>
+                  </div>
+                  <div style="font-size:11px;color:var(--gray-400);margin-top:2px">100% 完了（エラー3件スキップ）</div>
+                </td>
+                <td style="font-size:12px">田中 義雄</td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('logDetailModal')">詳細</button>
+                </td>
+              </tr>
+
+              <!-- Error -->
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td><span style="font-size:12px">2024/06/08 16:00</span></td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">org_update_all.csv</div>
+                  <div style="font-size:11px;color:var(--gray-400)">89 KB</div>
+                </td>
+                <td><span class="tag tag-purple">組織情報</span></td>
+                <td style="font-size:12px">神奈川県（全体）</td>
+                <td><span class="tag tag-red">✕ エラー中止</span></td>
+                <td>
+                  <div style="font-size:12px;color:var(--gray-600)">
+                    <span style="color:var(--secondary)">✓ 0</span> /
+                    <span style="color:var(--warning)">⚠ 0</span> /
+                    <span style="color:var(--danger)">✕ 12</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:8%;background:var(--danger)"></div>
+                  </div>
+                  <div style="font-size:11px;color:var(--danger);margin-top:2px">エラーにより中止</div>
+                </td>
+                <td style="font-size:12px">佐藤 次郎</td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('logDetailModal')">詳細</button>
+                </td>
+              </tr>
+
+              <!-- Success 2 -->
+              <tr class="log-row" onclick="openModal('logDetailModal')">
+                <td><span style="font-size:12px">2024/06/05 10:00</span></td>
+                <td>
+                  <div style="font-size:13px;font-weight:600">students_2024_yokohama_kita.csv</div>
+                  <div style="font-size:11px;color:var(--gray-400)">892 KB</div>
+                </td>
+                <td><span class="tag tag-green">生徒</span></td>
+                <td style="font-size:12px">横浜市立北中学校</td>
+                <td><span class="tag tag-green">✓ 完了</span></td>
+                <td>
+                  <div style="font-size:12px;color:var(--gray-600)">
+                    <span style="color:var(--secondary)">✓ 2,345</span> /
+                    <span style="color:var(--warning)">⚠ 5</span> /
+                    <span style="color:var(--danger)">✕ 0</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:100%;background:var(--secondary)"></div>
+                  </div>
+                  <div style="font-size:11px;color:var(--gray-400);margin-top:2px">100% 完了</div>
+                </td>
+                <td style="font-size:12px">山田 花子</td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('logDetailModal')">詳細</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">›</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Log Detail Modal -->
+<div class="modal-overlay" id="logDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">インポート詳細 — teachers_2024_sagamihara.csv</span>
+      <button class="modal-close" onclick="closeModal('logDetailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+        <div style="text-align:center;padding:12px;background:var(--gray-50);border-radius:8px">
+          <div style="font-size:20px;font-weight:800">1,234</div>
+          <div style="font-size:11px;color:var(--gray-500)">総レコード</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:var(--secondary-light);border-radius:8px">
+          <div style="font-size:20px;font-weight:800;color:#064e3b">1,198</div>
+          <div style="font-size:11px;color:#065f46">成功</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:var(--warning-light);border-radius:8px">
+          <div style="font-size:20px;font-weight:800;color:#78350f">33</div>
+          <div style="font-size:11px;color:#92400e">警告</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:var(--danger-light);border-radius:8px">
+          <div style="font-size:20px;font-weight:800;color:#9b1c1c">3</div>
+          <div style="font-size:11px;color:#c81e1e">エラー</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">実行情報</div>
+        <div style="font-size:13px;color:var(--gray-700);line-height:2">
+          実行者: 田中 義雄　|　実行日時: 2024年6月10日 09:15〜09:28　|　処理時間: 13分<br>
+          対象組織: 相模原市立第一中学校　|　インポート種別: 人物情報（教員）
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px">エラー・警告ログ（抜粋）</div>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid var(--gray-200);border-radius:8px;padding:12px;font-family:monospace;font-size:12px;background:var(--gray-50)">
+        <div style="color:var(--danger)">[ERROR] 行6: 識別子なし — 職員番号・メールアドレスが両方空 (高橋 美子)</div>
+        <div style="color:var(--danger)">[ERROR] 行15: 識別子不一致 — T-00245のメールが既存データと不一致</div>
+        <div style="color:var(--danger)">[ERROR] 行89: 必須項目なし — 氏名が空</div>
+        <div style="color:var(--warning)">[WARN] 行7: メールアドレスなし — スキップして続行 (田中 一郎)</div>
+        <div style="color:var(--warning)">[WARN] 行12: 所属組織コード不明 — デフォルト組織を使用 (鈴木 恵子)</div>
+        <div style="color:var(--gray-400)">[INFO] 行2: 更新 — 山田 花子 (T-00234)</div>
+        <div style="color:var(--gray-400)">[INFO] 行3: 新規登録 — 佐藤 太郎 (T-00235)</div>
+        <div style="color:var(--gray-400)">[INFO] 行4: 更新 — 鈴木 恵子 (T-00236)</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('logDetailModal')">閉じる</button>
+      <button class="btn btn-secondary" onclick="showToast('エラーCSVをダウンロードしました', 'info')">📥 エラーCSVをDL</button>
+      <button class="btn btn-primary" onclick="navigate('csv-import.html')">🔄 再インポート</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('インポートログ');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('import-log.html');
+</script>
+</body>
+</html>

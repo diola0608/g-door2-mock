@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アカウント管理 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.dropdown-menu {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  z-index: 500;
+  min-width: 180px;
+  padding: 4px 0;
+  display: none;
+}
+.dropdown-menu.open { display: block; }
+.dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text-high);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.dropdown-item:hover { background: var(--n-50); }
+.dropdown-item.danger { color: var(--red-600); }
+.dropdown-divider { border-top: 1px solid var(--border); margin: 4px 0; }
+
+.sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+}
+.sync-ok      { background: #e8f5e9; color: #2e7d32; }
+.sync-pending { background: var(--yellow-100); color: var(--yellow-700); }
+.sync-none    { background: var(--n-100); color: var(--n-500); }
+.sync-error   { background: var(--red-100); color: var(--red-700); }
+</style>
+</head>
+<body data-page="accounts">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <span class="current">アカウント管理</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">アカウント管理</h1>
+        <p class="page-subtitle">Google Workspace との連携・同期状況を管理します</p>
+      </div>
+      <div class="page-header__actions">
+        <button class="btn btn-secondary btn-sm" onclick="showToast('Google Workspace同期を開始しました', 'info')">
+          <i class="fa-brands fa-google"></i> 全体同期を実行
+        </button>
+        <button class="btn btn-primary btn-sm" data-modal-open="modal-provision"><i class="fa-solid fa-user-plus"></i> アカウントを発行</button>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <!-- KPI summary -->
+      <div class="kpi-grid" style="margin-bottom:16px">
+        <div class="kpi-card">
+          <div class="kpi-icon blue"><i class="fa-brands fa-google"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">同期済みアカウント</p>
+            <p class="kpi-value">11,203</p>
+            <p class="kpi-sub">最終同期: 6/12 12:00</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon yellow"><i class="fa-solid fa-clock"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">同期保留中</p>
+            <p class="kpi-value">47</p>
+            <p class="kpi-sub">変更適用待ち</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">エラー</p>
+            <p class="kpi-value">2</p>
+            <p class="kpi-sub"><a onclick="filterByError()" style="color:var(--brand);cursor:pointer">確認する →</a></p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon sky"><i class="fa-solid fa-user-slash"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">無効化済み</p>
+            <p class="kpi-value">214</p>
+            <p class="kpi-sub">停止中アカウント</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon teal"><i class="fa-solid fa-minus-circle"></i></div>
+          <div class="kpi-info">
+            <p class="kpi-label">アカウント未連携</p>
+            <p class="kpi-value">1,644</p>
+            <p class="kpi-sub">メールなし・外部ドメイン等</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar" style="padding:0;margin-bottom:10px">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="search-input" placeholder="名前・メール・IDで検索…">
+        </div>
+        <select class="filter-select">
+          <option>すべてのステータス</option>
+          <option>同期済み</option>
+          <option>保留中</option>
+          <option>エラー</option>
+          <option>無効化</option>
+          <option>未連携</option>
+        </select>
+        <select class="filter-select">
+          <option>すべての種別</option>
+          <option>教員</option>
+          <option>生徒</option>
+          <option>行政職員</option>
+        </select>
+        <select class="filter-select">
+          <option>すべての組織</option>
+          <option>名古屋市立千種小学校</option>
+          <option>名古屋市立西中学校</option>
+          <option>愛知県立千種高等学校</option>
+        </select>
+        <span class="ml-auto" style="font-size:12px;color:var(--text-low)">12,847件中 7件表示</span>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="select-all"></th>
+              <th class="sortable">氏名</th>
+              <th>種別</th>
+              <th>メールアドレス</th>
+              <th>Google同期ステータス</th>
+              <th>最終同期</th>
+              <th>OU パス</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" class="row-check"></td>
+              <td>
+                <div class="person-cell" style="display:flex;align-items:center;gap:8px">
+                  <div class="person-avatar" style="width:28px;height:28px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">山</div>
+                  <div>
+                    <a href="roster-detail.html" style="font-weight:600;font-size:13px;color:var(--text-high)">山田 太郎</a>
+                    <p class="td-secondary">TCH-00142</p>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-sky">教員</span></td>
+              <td class="td-mono" style="font-size:12px">yamada.taro@edu.nagoya.jp</td>
+              <td>
+                <span class="sync-indicator sync-ok"><i class="fa-solid fa-check-circle"></i> 同期済み</span>
+              </td>
+              <td class="td-secondary">2026/06/12 12:00</td>
+              <td class="td-mono" style="font-size:11px">/愛知県/名古屋市/小学校/教員</td>
+              <td>
+                <div style="display:flex;gap:4px;justify-content:flex-end">
+                  <button class="btn btn-icon btn-sm" onclick="showToast('山田太郎の同期を実行しました', 'info')" title="今すぐ同期"><i class="fa-solid fa-rotate"></i></button>
+                  <button class="btn btn-icon btn-sm" data-modal-open="modal-account-detail" title="アカウント詳細"><i class="fa-solid fa-eye"></i></button>
+                  <button class="btn btn-icon btn-sm" data-dropdown="dd-acc-1" title="その他"><i class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <div class="dropdown-menu" id="dd-acc-1">
+                  <div class="dropdown-item"><i class="fa-solid fa-rotate"></i> 今すぐ同期</div>
+                  <div class="dropdown-item"><i class="fa-solid fa-key"></i> パスワードリセット送信</div>
+                  <div class="dropdown-item"><i class="fa-solid fa-user-lock"></i> アカウントを一時停止</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-user-slash"></i> アカウントを無効化</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="row-check"></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:28px;height:28px;border-radius:50%;background:#dcfce7;color:#15803d;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">鈴</div>
+                  <div>
+                    <a href="roster-detail.html" style="font-weight:600;font-size:13px;color:var(--text-high)">鈴木 花子</a>
+                    <p class="td-secondary">STU-10284</p>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-green">生徒</span></td>
+              <td class="td-mono" style="font-size:12px">suzuki.h@edu.nagoya.jp</td>
+              <td>
+                <span class="sync-indicator sync-ok"><i class="fa-solid fa-check-circle"></i> 同期済み</span>
+              </td>
+              <td class="td-secondary">2026/06/12 12:00</td>
+              <td class="td-mono" style="font-size:11px">/愛知県/名古屋市/小学校/生徒</td>
+              <td>
+                <div style="display:flex;gap:4px;justify-content:flex-end">
+                  <button class="btn btn-icon btn-sm" onclick="showToast('同期を実行しました', 'info')"><i class="fa-solid fa-rotate"></i></button>
+                  <button class="btn btn-icon btn-sm" data-modal-open="modal-account-detail"><i class="fa-solid fa-eye"></i></button>
+                  <button class="btn btn-icon btn-sm" data-dropdown="dd-acc-2"><i class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <div class="dropdown-menu" id="dd-acc-2">
+                  <div class="dropdown-item"><i class="fa-solid fa-rotate"></i> 今すぐ同期</div>
+                  <div class="dropdown-item"><i class="fa-solid fa-key"></i> パスワードリセット送信</div>
+                  <div class="dropdown-item"><i class="fa-solid fa-user-lock"></i> アカウントを一時停止</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-user-slash"></i> アカウントを無効化</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="row-check"></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:28px;height:28px;border-radius:50%;background:#fef3c7;color:#b45309;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">佐</div>
+                  <div>
+                    <a href="roster-detail.html" style="font-weight:600;font-size:13px;color:var(--text-high)">佐藤 次郎</a>
+                    <p class="td-secondary">TCH-00298</p>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-sky">教員</span></td>
+              <td class="td-mono" style="font-size:12px">sato.j@edu.nagoya.jp</td>
+              <td>
+                <span class="sync-indicator sync-pending"><i class="fa-solid fa-clock"></i> 保留中</span>
+              </td>
+              <td class="td-secondary">2026/06/10 08:00</td>
+              <td class="td-mono" style="font-size:11px">/愛知県/名古屋市/中学校/教員</td>
+              <td>
+                <div style="display:flex;gap:4px;justify-content:flex-end">
+                  <button class="btn btn-icon btn-sm" onclick="showToast('同期を優先実行します', 'info')"><i class="fa-solid fa-rotate"></i></button>
+                  <button class="btn btn-icon btn-sm" data-modal-open="modal-account-detail"><i class="fa-solid fa-eye"></i></button>
+                  <button class="btn btn-icon btn-sm" data-dropdown="dd-acc-3"><i class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <div class="dropdown-menu" id="dd-acc-3">
+                  <div class="dropdown-item"><i class="fa-solid fa-rotate"></i> 今すぐ同期</div>
+                  <div class="dropdown-item"><i class="fa-solid fa-key"></i> パスワードリセット送信</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-user-slash"></i> アカウントを無効化</div>
+                </div>
+              </td>
+            </tr>
+            <tr style="background:var(--red-50)">
+              <td><input type="checkbox" class="row-check"></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:28px;height:28px;border-radius:50%;background:#fee2e2;color:#b91c1c;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">伊</div>
+                  <div>
+                    <a href="roster-detail.html" style="font-weight:600;font-size:13px;color:var(--text-high)">伊藤 健二</a>
+                    <p class="td-secondary">ADM-00054</p>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-purple">行政職員</span></td>
+              <td class="td-mono" style="font-size:12px">ito.k@edu.aichi.jp</td>
+              <td>
+                <span class="sync-indicator sync-error"><i class="fa-solid fa-circle-xmark"></i> エラー</span>
+              </td>
+              <td class="td-secondary">2026/06/08 09:00</td>
+              <td class="td-mono" style="font-size:11px">/愛知県/教育委員会/行政</td>
+              <td>
+                <div style="display:flex;gap:4px;justify-content:flex-end">
+                  <button class="btn btn-icon btn-sm" onclick="showToast('再同期を試みます', 'info')"><i class="fa-solid fa-rotate"></i></button>
+                  <button class="btn btn-icon btn-sm" data-modal-open="modal-sync-error"><i class="fa-solid fa-triangle-exclamation" style="color:var(--red-600)"></i></button>
+                  <button class="btn btn-icon btn-sm" data-dropdown="dd-acc-4"><i class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <div class="dropdown-menu" id="dd-acc-4">
+                  <div class="dropdown-item"><i class="fa-solid fa-rotate"></i> 再同期を試みる</div>
+                  <div class="dropdown-item"><i class="fa-solid fa-eye"></i> エラー詳細</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-user-slash"></i> アカウントを無効化</div>
+                </div>
+              </td>
+            </tr>
+            <tr style="background:var(--n-50);opacity:.7">
+              <td><input type="checkbox" class="row-check"></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:28px;height:28px;border-radius:50%;background:var(--n-200);color:var(--n-500);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">中</div>
+                  <div>
+                    <a href="roster-detail.html" style="font-weight:600;font-size:13px;color:var(--text-high)">中村 大輝</a>
+                    <p class="td-secondary">STU-10499</p>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-green">生徒</span></td>
+              <td class="td-secondary" style="font-size:12px;font-style:italic">（メールアドレスなし）</td>
+              <td>
+                <span class="sync-indicator sync-none"><i class="fa-solid fa-minus-circle"></i> 未連携</span>
+              </td>
+              <td class="td-secondary">—</td>
+              <td class="td-secondary">—</td>
+              <td>
+                <div style="display:flex;gap:4px;justify-content:flex-end">
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('アカウント発行ダイアログを開きます', 'info')">
+                    <i class="fa-solid fa-plus"></i> 発行
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pagination-info">全 12,847件 中 1–5件表示</span>
+          <div class="page-btn" style="opacity:.35"><i class="fa-solid fa-chevron-left"></i></div>
+          <div class="page-btn active">1</div>
+          <div class="page-btn">2</div>
+          <div class="page-btn">…</div>
+          <div class="page-btn">257</div>
+          <div class="page-btn"><i class="fa-solid fa-chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Account detail modal -->
+<div class="modal-overlay" id="modal-account-detail">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <i class="fa-brands fa-google" style="color:#4285f4"></i>
+      <div>
+        <h3 class="modal-title">Googleアカウント詳細 — 山田 太郎</h3>
+        <p class="modal-subtitle">yamada.taro@edu.nagoya.jp</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-account-detail"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">プライマリメール</label>
+          <p style="font-size:13px;font-family:var(--font-mono)">yamada.taro@edu.nagoya.jp</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Google ユーザーID</label>
+          <p style="font-size:12px;font-family:var(--font-mono);color:var(--text-med)">109234567890123456789</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">組織ユニットパス（OU）</label>
+          <p style="font-size:12px;font-family:var(--font-mono)">/愛知県/名古屋市/小学校/教員</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ステータス</label>
+          <span class="sync-indicator sync-ok"><i class="fa-solid fa-check-circle"></i> アクティブ</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">最終ログイン</label>
+          <p style="font-size:13px">2026/06/12 08:42</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">最終同期</label>
+          <p style="font-size:13px">2026/06/12 12:00</p>
+        </div>
+      </div>
+      <div class="form-section" style="margin-top:16px">
+        <p class="form-section-title">同期済みフィールド</p>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          <span class="badge badge-green">姓名</span>
+          <span class="badge badge-green">メール</span>
+          <span class="badge badge-green">組織OU</span>
+          <span class="badge badge-green">電話番号</span>
+          <span class="badge badge-green">部署</span>
+          <span class="badge badge-gray">プロフィール画像（未設定）</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="showToast('パスワードリセットメールを送信しました', 'success')">
+        <i class="fa-solid fa-key"></i> パスワードリセット
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="showToast('今すぐ同期を実行します', 'info')">
+        <i class="fa-solid fa-rotate"></i> 今すぐ同期
+      </button>
+      <button class="btn btn-secondary" data-modal-close="modal-account-detail">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- Provision modal -->
+<div class="modal-overlay" id="modal-provision">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="fa-solid fa-user-plus" style="color:var(--brand)"></i>
+      <div>
+        <h3 class="modal-title">アカウントを発行</h3>
+        <p class="modal-subtitle">Google Workspaceにアカウントを新規作成します</p>
+      </div>
+      <button class="modal-close" data-modal-close="modal-provision"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">人物を選択 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="名前・IDで検索">
+      </div>
+      <div class="form-group">
+        <label class="form-label">プライマリメール <span class="required">*</span></label>
+        <input type="email" class="form-control" placeholder="yamada.taro@edu.nagoya.jp">
+      </div>
+      <div class="form-group">
+        <label class="form-label">組織ユニット (OU)</label>
+        <select class="form-control">
+          <option>/愛知県/名古屋市/小学校/教員</option>
+          <option>/愛知県/名古屋市/小学校/生徒</option>
+          <option>/愛知県/名古屋市/中学校/教員</option>
+        </select>
+      </div>
+      <label class="form-check mt-12">
+        <input type="checkbox" checked>
+        <span class="form-check-label">発行後すぐに同期を実行する</span>
+      </label>
+      <label class="form-check mt-8">
+        <input type="checkbox">
+        <span class="form-check-label">初回ログイン時にパスワード変更を強制する</span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-provision">キャンセル</button>
+      <button class="btn btn-primary" onclick="showToast('アカウントを発行しました', 'success');closeModal('modal-provision')">
+        <i class="fa-solid fa-check"></i> 発行する
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync error modal -->
+<div class="modal-overlay" id="modal-sync-error">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <i class="fa-solid fa-triangle-exclamation" style="color:var(--red-600)"></i>
+      <div><h3 class="modal-title">同期エラー詳細</h3></div>
+      <button class="modal-close" data-modal-close="modal-sync-error"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error mb-12">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <div><strong>API エラー: RESOURCE_NOT_FOUND</strong><br>指定されたOUパスが存在しません。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">エラーコード</label>
+        <p class="font-mono" style="font-size:12px">GOOGLE_API_404_OU_NOT_FOUND</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">発生日時</label>
+        <p style="font-size:13px">2026/06/08 09:01</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">試みたOU</label>
+        <p class="font-mono" style="font-size:12px">/愛知県/教育委員会/行政（存在しない）</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-sync-error">閉じる</button>
+      <button class="btn btn-primary" onclick="showToast('管理者に問い合わせを送信しました', 'success');closeModal('modal-sync-error')">
+        <i class="fa-solid fa-headset"></i> 管理者に問い合わせ
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+function filterByError() { showToast('エラーアカウントでフィルタリングしました', 'info'); }
+document.addEventListener('DOMContentLoaded', () => { initSelectAll(); initDropdowns(); });
+</script>
+</body>
+</html>

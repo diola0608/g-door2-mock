@@ -1,0 +1,193 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>属性項目管理</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>属性項目管理</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-primary btn-sm" data-modal="add-attr-def-modal">＋ 新規属性項目</button>
+  </div>
+</div>
+
+<div class="grid-2-1">
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">属性項目一覧</span>
+      </div>
+      <div class="table-container" style="border:none;margin:-8px -24px;">
+        <table>
+          <thead>
+            <tr>
+              <th>項目名</th>
+              <th>データ形式</th>
+              <th>コード管理</th>
+              <th>履歴</th>
+              <th>権限制御</th>
+              <th>状態</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="color:var(--text-primary);font-weight:500;">教員免許番号</span></td>
+              <td><span class="tag tag-gray">文字列</span></td>
+              <td><span class="tag tag-gray">—</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+              <td><span class="tag tag-orange">要設定</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+            </tr>
+            <tr>
+              <td><span style="color:var(--text-primary);font-weight:500;">担当部活</span></td>
+              <td><span class="tag tag-gray">複数文字列</span></td>
+              <td><span class="tag tag-green">部活マスター</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+              <td><span class="tag tag-green">設定済</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+            </tr>
+            <tr>
+              <td><span style="color:var(--text-primary);font-weight:500;">人物の特徴</span></td>
+              <td><span class="tag tag-gray">コード</span></td>
+              <td><span class="tag tag-green">人物特徴コード</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+              <td><span class="tag tag-green">設定済</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+            </tr>
+            <tr>
+              <td><span style="color:var(--text-primary);font-weight:500;">勤務評価点</span></td>
+              <td><span class="tag tag-gray">数値</span></td>
+              <td><span class="tag tag-gray">—</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+              <td><span class="tag tag-orange">要設定</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+            </tr>
+            <tr>
+              <td><span style="color:var(--text-primary);font-weight:500;">所有資格</span></td>
+              <td><span class="tag tag-gray">複数文字列</span></td>
+              <td><span class="tag tag-amber">資格マスター</span></td>
+              <td><span class="tag tag-green">有効</span></td>
+              <td><span class="tag tag-gray">未設定</span></td>
+              <td><span class="tag tag-amber">下書き</span></td>
+            </tr>
+            <tr>
+              <td><span style="color:var(--text-primary);font-weight:500;">戸籍情報</span></td>
+              <td><span class="tag tag-gray">文字列</span></td>
+              <td><span class="tag tag-gray">—</span></td>
+              <td><span class="tag tag-red">無効</span></td>
+              <td><span class="tag tag-red">要設定</span></td>
+              <td><span class="tag tag-red">無効</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <span class="card-title">コードマスター一覧</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <div>
+            <div style="font-size:0.85rem;color:var(--text-primary);">部活マスター</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">12 コード</div>
+          </div>
+          <button class="btn btn-ghost btn-sm">管理</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <div>
+            <div style="font-size:0.85rem;color:var(--text-primary);">人物特徴コード</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">8 コード</div>
+          </div>
+          <button class="btn btn-ghost btn-sm">管理</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+          <div>
+            <div style="font-size:0.85rem;color:var(--text-primary);">職種コード</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">24 コード</div>
+          </div>
+          <button class="btn btn-ghost btn-sm">管理</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">コード詳細: 人物特徴コード</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.85rem;color:var(--text-primary);">優良生徒</span>
+          <span class="tag tag-green">担任以上</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.85rem;color:var(--text-primary);">要支援</span>
+          <span class="tag tag-orange">担任以上</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <span style="font-size:0.85rem;color:var(--text-primary);">いじめ加害者</span>
+          <span class="tag tag-red">学年主任のみ</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span style="font-size:0.85rem;color:var(--text-primary);">いじめ被害者</span>
+          <span class="tag tag-red">学年主任のみ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Attribute Definition Modal -->
+<div class="modal-overlay" id="add-attr-def-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>新規属性項目</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">項目名</label>
+        <input class="form-input" placeholder="例: 出身中学校">
+      </div>
+      <div class="form-group">
+        <label class="form-label">データ形式</label>
+        <select class="form-select">
+          <option>文字列（単一）</option>
+          <option>文字列（複数）</option>
+          <option>数値</option>
+          <option>日付</option>
+          <option>コード（マスター参照）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">履歴管理</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);">
+          <input type="checkbox" checked style="accent-color:var(--terracotta);"> 変更履歴を有効にする
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label">バリデーション設定</label>
+        <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);">
+            <input type="checkbox" style="accent-color:var(--terracotta);"> 必須項目
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);">
+            <input type="checkbox" style="accent-color:var(--terracotta);"> 重複禁止
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);">
+            <input type="checkbox" style="accent-color:var(--terracotta);"> 最大文字数制限
+            <input class="form-input" style="width:80px;" placeholder="255">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">作成する</button>
+    </div>
+  </div>
+</div>

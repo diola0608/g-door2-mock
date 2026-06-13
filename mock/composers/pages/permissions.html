@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>権限ルール - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="add-rule-modal">
+    <div class="modal modal-xl">
+      <div class="modal-header">
+        <h2>権限ルールを追加</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">ルール名</label>
+          <input class="form-input" placeholder="例: 担任の基本情報閲覧">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">適用スコープ（組織）</label>
+            <select class="form-select"><option>テナント全体</option><option>△△市</option><option>A市立第一小学校</option></select>
+            <p class="form-hint">下位組織に継承されます。下位で上書き可能です。</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">対象機能</label>
+            <select class="form-select"><option>名簿 — 基本情報</option><option>名簿 — 連絡先情報</option><option>名簿 — 機微情報</option><option>フォーム結果</option></select>
+          </div>
+        </div>
+        <h3 style="font-size:0.9rem;font-weight:600;margin:16px 0 8px">サブジェクト条件（誰が）</h3>
+        <div style="padding:12px;background:var(--color-gray-50);border-radius:var(--radius);margin-bottom:12px">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">職種</label><select class="form-select"><option>一般教員</option><option>校長</option><option>学年主任</option></select></div>
+            <div class="form-group"><label class="form-label">属性条件</label><select class="form-select"><option>—</option><option>部活顧問 = サッカー部</option><option>担任を持つ</option></select></div>
+          </div>
+          <div class="form-group"><label class="form-label">組織スコープ</label><select class="form-select"><option>同一学校</option><option>同一市町村・同一学校種</option><option>配下のすべて</option></select></div>
+        </div>
+        <h3 style="font-size:0.9rem;font-weight:600;margin:16px 0 8px">オブジェクト条件（何を）</h3>
+        <div style="padding:12px;background:var(--color-gray-50);border-radius:var(--radius);margin-bottom:12px">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">対象人物</label><select class="form-select"><option>担任クラスの生徒</option><option>同一部活の生徒</option><option>同一学校の教員</option></select></div>
+            <div class="form-group"><label class="form-label">操作</label><select class="form-select"><option>閲覧</option><option>編集</option><option>閲覧・編集</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('権限ルールを追加しました')">追加</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('permissions', 'permissions');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 権限設定</div>
+        <h1>権限ルール</h1>
+        <p>サブジェクト・オブジェクト・属性項目・組織スコープを組み合わせた柔軟な権限設定。テナント全体または組織単位で管理。</p>
+      </div>
+
+      <div class="two-pane">
+        <div class="pane-left">
+          <div class="pane-header">適用スコープ</div>
+          <div class="tree-item active" data-selectable>〇〇県（テナント全体）</div>
+          <div class="tree-item" data-selectable>△△市</div>
+          <div class="tree-item" data-selectable style="padding-left:36px">A市立第一小学校</div>
+          <div class="tree-item" data-selectable style="padding-left:36px">B市立第二小学校</div>
+        </div>
+        <div class="pane-right">
+          <div class="pane-header" style="display:flex;justify-content:space-between;align-items:center">
+            テナント全体のルール（8件）
+            <button class="btn btn-primary btn-sm" data-modal-open="add-rule-modal">${Icons.plus} ルール追加</button>
+          </div>
+          <div class="card-body">
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <h4>担任の基本情報 閲覧・編集</h4>
+                <span class="badge-tag green">有効</span>
+              </div>
+              <div class="rule-meta">
+                <span class="badge-tag blue">一般教員</span>
+                <span class="badge-tag gray">担任を持つ</span>
+                <span>→</span>
+                <span class="badge-tag gray">担任クラスの生徒</span>
+                <span class="badge-tag blue">基本情報</span>
+                <span class="badge-tag purple">閲覧・編集</span>
+              </div>
+            </div>
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <h4>部活顧問の連絡先閲覧</h4>
+                <span class="badge-tag green">有効</span>
+              </div>
+              <div class="rule-meta">
+                <span class="badge-tag blue">属性: 部活顧問</span>
+                <span class="badge-tag gray">同一学校</span>
+                <span>→</span>
+                <span class="badge-tag gray">同一部活の生徒</span>
+                <span class="badge-tag yellow">連絡先情報</span>
+                <span class="badge-tag blue">閲覧のみ</span>
+              </div>
+            </div>
+            <div class="rule-card">
+              <div class="rule-card-header">
+                <h4>校長の教員連絡先閲覧</h4>
+                <span class="badge-tag green">有効</span>
+              </div>
+              <div class="rule-meta">
+                <span class="badge-tag purple">校長</span>
+                <span class="badge-tag gray">同一市町村・同一学校種</span>
+                <span>→</span>
+                <span class="badge-tag gray">一般教員</span>
+                <span class="badge-tag yellow">連絡先情報</span>
+                <span class="badge-tag blue">閲覧のみ</span>
+              </div>
+            </div>
+            <div class="rule-card" style="border-color:var(--color-warning)">
+              <div class="rule-card-header">
+                <h4>人物の特徴 — いじめ加害者の表示制限</h4>
+                <span class="badge-tag yellow">コード別制限</span>
+              </div>
+              <div class="rule-meta">
+                <span class="badge-tag blue">学年主任</span>
+                <span>→</span>
+                <span class="badge-tag red">コード: いじめ加害者</span>
+                <span class="badge-tag red">機微情報</span>
+                <span class="badge-tag blue">閲覧のみ</span>
+              </div>
+              <p style="font-size:0.8rem;color:var(--color-gray-500);margin-top:8px">※「優良生徒」は担任・学年主任が閲覧可。このコードのみ学年主任限定。</p>
+            </div>
+            <div class="rule-card" style="border-style:dashed">
+              <div class="rule-card-header">
+                <h4>A市立第一小学校 — 独自ルール（上書き）</h4>
+                <span class="badge-tag purple">組織上書き</span>
+              </div>
+              <div class="rule-meta">
+                <span class="badge-tag blue">一般教員</span>
+                <span>→</span>
+                <span class="badge-tag gray">全生徒の基本情報</span>
+                <span class="badge-tag blue">閲覧のみ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+    initTreeToggle();
+  </script>
+</body>
+</html>

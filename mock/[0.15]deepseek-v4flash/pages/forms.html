@@ -1,0 +1,240 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>フォーム / アンケート</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>フォーム / アンケート</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-primary btn-sm" data-modal="create-form-modal">＋ 新規フォーム作成</button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card animate-in">
+    <div class="stat-icon blue">📋</div>
+    <div class="stat-value">23</div>
+    <div class="stat-label">アクティブなフォーム</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon green">✅</div>
+    <div class="stat-value">1,847</div>
+    <div class="stat-label">今月の回答数</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon orange">⏳</div>
+    <div class="stat-value">342</div>
+    <div class="stat-label">未回答</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon amber">📊</div>
+    <div class="stat-value">68.4%</div>
+    <div class="stat-label">平均回答率</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="active">配信中のフォーム</button>
+  <button class="tab" data-tab="draft">下書き</button>
+  <button class="tab" data-tab="closed">終了したフォーム</button>
+  <button class="tab" data-tab="templates">テンプレート</button>
+</div>
+
+<div class="tab-content active" data-tab="active">
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="card card-hover" style="cursor:pointer;" onclick="App.loadPage('form-detail')">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:rgba(42,157,143,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📋</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.95rem;color:var(--text-primary);font-weight:500;">2026年度 教員携帯電話番号登録</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">
+            対象: 埼玉県内 全小中学校 一般教諭 • 回答期限: 2026/07/15
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.85rem;color:var(--text-primary);">1,284 / 2,100</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">回答済</div>
+        </div>
+        <div style="width:120px;">
+          <div style="height:6px;background:var(--surface-alt);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:61%;background:var(--emerald);border-radius:3px;"></div>
+          </div>
+        </div>
+        <span class="tag tag-green">名簿連携</span>
+        <button class="btn btn-ghost btn-sm">→</button>
+      </div>
+    </div>
+
+    <div class="card card-hover" style="cursor:pointer;" onclick="App.loadPage('form-detail')">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:rgba(90,122,170,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📋</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.95rem;color:var(--text-primary);font-weight:500;">校内ICT環境に関するアンケート</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">
+            対象: 川口市立中学校 全教職員 • 回答期限: 2026/06/30
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.85rem;color:var(--text-primary);">38 / 52</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">回答済</div>
+        </div>
+        <div style="width:120px;">
+          <div style="height:6px;background:var(--surface-alt);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:73%;background:var(--terracotta);border-radius:3px;"></div>
+          </div>
+        </div>
+        <span class="tag tag-gray">通常</span>
+        <button class="btn btn-ghost btn-sm">→</button>
+      </div>
+    </div>
+
+    <div class="card card-hover" style="cursor:pointer;" onclick="App.loadPage('form-detail')">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:rgba(233,196,106,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📋</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.95rem;color:var(--text-primary);font-weight:500;">2026年度 研修希望調査</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">
+            対象: 埼玉県教育委員会 所属職員 • 回答期限: 2026/07/31
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.85rem;color:var(--text-primary);">89 / 342</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">回答済</div>
+        </div>
+        <div style="width:120px;">
+          <div style="height:6px;background:var(--surface-alt);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:26%;background:var(--amber);border-radius:3px;"></div>
+          </div>
+        </div>
+        <span class="tag tag-gray">通常</span>
+        <button class="btn btn-ghost btn-sm">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="draft">
+  <div class="empty-state">
+    <div class="empty-icon">📝</div>
+    <h3>下書きフォーム</h3>
+    <p>現在下書き中のフォームはありません。「新規フォーム作成」から新しいフォームを作成できます。</p>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="closed">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>フォーム名</th>
+          <th>期間</th>
+          <th>回答数</th>
+          <th>回答率</th>
+          <th>集計</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--text-primary);">2025年度 教員満足度調査</span></td>
+          <td>2025/11/01 - 2025/11/30</td>
+          <td>1,892</td>
+          <td>78.3%</td>
+          <td><button class="btn btn-ghost btn-sm">📊 集計を見る</button></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--text-primary);">2025年度 保護者アンケート</span></td>
+          <td>2025/09/01 - 2025/09/30</td>
+          <td>8,234</td>
+          <td>45.2%</td>
+          <td><button class="btn btn-ghost btn-sm">📊 集計を見る</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="templates">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+    <div class="card card-hover" style="cursor:pointer;">
+      <div style="font-size:2rem;margin-bottom:12px;">📞</div>
+      <div style="font-size:0.9rem;color:var(--text-primary);font-weight:500;">連絡先更新フォーム</div>
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">名簿連携対応。電話番号・住所の一斉更新に。</div>
+    </div>
+    <div class="card card-hover" style="cursor:pointer;">
+      <div style="font-size:2rem;margin-bottom:12px;">📊</div>
+      <div style="font-size:0.9rem;color:var(--text-primary);font-weight:500;">満足度調査</div>
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">5段階評価＋自由記述の標準テンプレート。</div>
+    </div>
+    <div class="card card-hover" style="cursor:pointer;">
+      <div style="font-size:2rem;margin-bottom:12px;">📅</div>
+      <div style="font-size:0.9rem;color:var(--text-primary);font-weight:500;">研修希望調査</div>
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">研修日程・テーマの希望を収集。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Form Modal -->
+<div class="modal-overlay" id="create-form-modal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <h2>新規フォーム作成</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">フォームタイトル</label>
+        <input class="form-input" placeholder="例: 2026年度 教員携帯電話番号登録">
+      </div>
+      <div class="form-group">
+        <label class="form-label">説明</label>
+        <textarea class="form-textarea" placeholder="フォームの説明や注意事項を入力"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">対象者</label>
+        <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);">
+            <input type="checkbox" checked style="accent-color:var(--terracotta);"> 組織で指定
+            <select class="form-select" style="width:auto;flex:1;margin-left:8px;">
+              <option>埼玉県内 全小中学校</option>
+              <option>さいたま市 全学校</option>
+              <option>川口市立中学校</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);">
+            <input type="checkbox" checked style="accent-color:var(--terracotta);"> 職種で絞り込み
+            <select class="form-select" style="width:auto;flex:1;margin-left:8px;">
+              <option>一般教諭</option>
+              <option>全教職員</option>
+              <option>管理職のみ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" style="accent-color:var(--terracotta);"> 名簿連携を有効にする
+        </label>
+        <div class="form-hint">回答内容を名簿の属性項目に自動反映します。連携先の項目マッピングは後から設定できます。</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">回答開始日</label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">回答期限</label>
+          <input class="form-input" type="date">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-secondary modal-close">下書き保存</button>
+      <button class="btn btn-primary modal-close">作成して配信</button>
+    </div>
+  </div>
+</div>

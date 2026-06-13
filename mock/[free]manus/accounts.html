@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アカウント管理 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .account-row { cursor: pointer; }
+    .account-row:hover td { background: var(--gray-50); }
+    .person-cell { display: flex; align-items: center; gap: 10px; }
+    .person-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .gws-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;
+      background: #e8f0fe; color: #1a56db;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">アカウント管理</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">アカウント管理</div>
+          <div class="page-subtitle">登録アカウント 9,234件 / 有効 9,012件 / 停止中 222件</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="navigate('permissions.html')">🛡️ 権限設定</button>
+          <button class="btn btn-primary" onclick="openModal('addAccountModal')">＋ アカウント追加</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+        <div class="stat-card">
+          <div class="stat-icon blue">🔐</div>
+          <div class="stat-info">
+            <div class="stat-value">9,234</div>
+            <div class="stat-label">総アカウント数</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">9,012</div>
+            <div class="stat-label">有効</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">⏸</div>
+          <div class="stat-info">
+            <div class="stat-value">222</div>
+            <div class="stat-label">停止中</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">🔗</div>
+          <div class="stat-info">
+            <div class="stat-value">8,901</div>
+            <div class="stat-label">GWS連携済み</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-bar mb-3">
+        <div style="position:relative;flex:1;max-width:320px">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray-400)">🔍</span>
+          <input type="text" placeholder="名前・メールで検索..." style="width:100%;padding:8px 12px 8px 34px;border:1px solid var(--gray-300);border-radius:6px;font-size:13px;outline:none">
+        </div>
+        <select class="form-control" style="max-width:160px">
+          <option>ステータス: すべて</option>
+          <option>有効</option>
+          <option>停止中</option>
+        </select>
+        <select class="form-control" style="max-width:200px">
+          <option>権限グループ: すべて</option>
+          <option>システム管理者</option>
+          <option>一般教員</option>
+          <option>学年主任</option>
+          <option>校長</option>
+          <option>教育委員会職員</option>
+        </select>
+        <select class="form-control" style="max-width:160px">
+          <option>GWS連携: すべて</option>
+          <option>連携済み</option>
+          <option>未連携</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox"></th>
+                <th>氏名</th>
+                <th>メールアドレス</th>
+                <th>権限グループ</th>
+                <th>所属組織</th>
+                <th>GWS連携</th>
+                <th>ステータス</th>
+                <th>最終ログイン</th>
+                <th style="width:100px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="account-row" onclick="openModal('accountDetailModal')">
+                <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-av" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">田</div>
+                    <div>
+                      <div style="font-weight:600">田中 義雄</div>
+                      <div style="font-size:11px;color:var(--gray-400)">A-00012</div>
+                    </div>
+                  </div>
+                </td>
+                <td>y.tanaka@edu.kanagawa.jp</td>
+                <td>
+                  <span class="tag tag-red">システム管理者</span>
+                </td>
+                <td>神奈川県教育委員会 情報課</td>
+                <td><span class="gws-badge">🔗 連携済み</span></td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/12 07:45</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('accountDetailModal')">詳細</button>
+                </td>
+              </tr>
+              <tr class="account-row" onclick="openModal('accountDetailModal')">
+                <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-av" style="background:linear-gradient(135deg,#1a56db,#6366f1)">山</div>
+                    <div>
+                      <div style="font-weight:600">山田 花子</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00234</div>
+                    </div>
+                  </div>
+                </td>
+                <td>h.yamada@edu.kanagawa.jp</td>
+                <td>
+                  <span class="tag tag-blue">一般教員</span>
+                  <span class="tag tag-indigo">学年主任</span>
+                </td>
+                <td>横浜市立北中学校</td>
+                <td><span class="gws-badge">🔗 連携済み</span></td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/12 08:10</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('accountDetailModal')">詳細</button>
+                </td>
+              </tr>
+              <tr class="account-row" onclick="openModal('accountDetailModal')">
+                <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-av" style="background:linear-gradient(135deg,#0e9f6e,#059669)">佐</div>
+                    <div>
+                      <div style="font-weight:600">佐藤 次郎</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00189</div>
+                    </div>
+                  </div>
+                </td>
+                <td>j.sato@edu.kanagawa.jp</td>
+                <td><span class="tag tag-blue">一般教員</span></td>
+                <td>川崎市立東小学校</td>
+                <td><span class="gws-badge">🔗 連携済み</span></td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/11 16:30</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('accountDetailModal')">詳細</button>
+                </td>
+              </tr>
+              <tr class="account-row" onclick="openModal('accountDetailModal')">
+                <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-av" style="background:linear-gradient(135deg,#e02424,#dc2626)">高</div>
+                    <div>
+                      <div style="font-weight:600">高橋 美穂</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00567</div>
+                    </div>
+                  </div>
+                </td>
+                <td>m.takahashi@edu.kanagawa.jp</td>
+                <td><span class="tag tag-yellow">校長</span></td>
+                <td>横浜市立南小学校</td>
+                <td><span class="gws-badge">🔗 連携済み</span></td>
+                <td><span class="flex items-center gap-1"><span class="status-dot active"></span>有効</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/06/12 09:00</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('accountDetailModal')">詳細</button>
+                </td>
+              </tr>
+              <tr class="account-row" onclick="openModal('accountDetailModal')">
+                <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-av" style="background:linear-gradient(135deg,#0694a2,#0891b2)">伊</div>
+                    <div>
+                      <div style="font-weight:600">伊藤 拓也</div>
+                      <div style="font-size:11px;color:var(--gray-400)">T-00891</div>
+                    </div>
+                  </div>
+                </td>
+                <td>t.ito@edu.kanagawa.jp</td>
+                <td><span class="tag tag-blue">一般教員</span></td>
+                <td>横浜市立西中学校</td>
+                <td><span class="gws-badge">🔗 連携済み</span></td>
+                <td><span class="flex items-center gap-1"><span class="status-dot pending"></span>停止中</span></td>
+                <td><span style="font-size:12px;color:var(--gray-400)">2024/05/20 11:00</span></td>
+                <td class="table-actions" onclick="event.stopPropagation()">
+                  <button class="btn btn-ghost btn-sm" onclick="openModal('accountDetailModal')">詳細</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="padding:0 8px;color:var(--gray-400);font-size:13px">...</span>
+          <button class="page-btn">185</button>
+          <button class="page-btn">›</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Account Detail Modal -->
+<div class="modal-overlay" id="accountDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">アカウント詳細 — 田中 義雄</span>
+      <button class="modal-close" onclick="closeModal('accountDetailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="account-status-card" style="background:var(--secondary-light);border:1px solid #6ee7b7;border-radius:8px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:#064e3b">✅ Google Workspace アカウント 連携済み</div>
+        <div style="font-size:12px;color:#065f46;margin-top:4px">y.tanaka@edu.kanagawa.jp　最終同期: 2024年6月12日 08:30</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div>
+          <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;margin-bottom:6px">基本情報</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">田中 義雄</div>
+          <div style="font-size:12px;color:var(--gray-500)">y.tanaka@edu.kanagawa.jp</div>
+          <div style="font-size:12px;color:var(--gray-500)">神奈川県教育委員会 情報課 課長</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;margin-bottom:6px">ステータス</div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="status-dot active"></span>
+            <span style="font-size:13px;font-weight:600">有効</span>
+          </div>
+          <div style="font-size:12px;color:var(--gray-500)">最終ログイン: 2024年6月12日 07:45</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;margin-bottom:8px">権限グループ</div>
+      <div class="flex gap-2 mb-4">
+        <span class="tag tag-red">システム管理者</span>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('権限グループを変更するには権限設定ページへ', 'info')">＋ グループ追加</button>
+      </div>
+      <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;margin-bottom:8px">操作</div>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary btn-sm" onclick="showToast('パスワードリセットメールを送信しました', 'info')">🔒 パスワードリセット</button>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('GWSと同期しました', 'success')">🔄 GWS同期</button>
+        <button class="btn btn-danger btn-sm" onclick="closeModal('accountDetailModal');showToast('アカウントを停止しました', 'warning')">🚫 アカウント停止</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('accountDetailModal')">閉じる</button>
+      <button class="btn btn-primary" onclick="navigate('person-detail.html')">人物詳細を見る →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Account Modal -->
+<div class="modal-overlay" id="addAccountModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">アカウントを追加</span>
+      <button class="modal-close" onclick="closeModal('addAccountModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">対象人物 <span class="required">*</span></label>
+        <input type="text" class="form-control" placeholder="名前またはIDで検索...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス <span class="required">*</span></label>
+        <input type="email" class="form-control" placeholder="example@edu.kanagawa.jp">
+      </div>
+      <div class="form-group">
+        <label class="form-label">権限グループ</label>
+        <select class="form-control">
+          <option>選択してください</option>
+          <option>システム管理者</option>
+          <option>一般教員</option>
+          <option>学年主任</option>
+          <option>校長</option>
+          <option>教育委員会職員</option>
+        </select>
+      </div>
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div>Google Workspaceアカウントが存在する場合、自動的に連携されます。</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addAccountModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('addAccountModal');showToast('アカウントを追加しました')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('アカウント管理');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('accounts.html');
+</script>
+</body>
+</html>

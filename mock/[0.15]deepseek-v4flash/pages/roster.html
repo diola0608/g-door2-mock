@@ -1,0 +1,306 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>名簿管理</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>名簿管理</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" data-modal="filter-modal">
+      🔽 フィルター
+    </button>
+    <button class="btn btn-secondary btn-sm" onclick="App.loadPage('csv-import')">
+      📥 CSVインポート
+    </button>
+    <button class="btn btn-primary btn-sm" data-modal="add-person-modal">
+      ＋ 新規登録
+    </button>
+  </div>
+</div>
+
+<!-- Filter Bar -->
+<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.8rem;color:var(--text-secondary);cursor:pointer;">
+    🏛 組織 <span style="color:var(--text-muted);margin-left:4px;">▼</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.8rem;color:var(--text-secondary);cursor:pointer;">
+    🏫 学校種 <span style="color:var(--text-muted);margin-left:4px;">▼</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.8rem;color:var(--text-secondary);cursor:pointer;">
+    👤 職種 <span style="color:var(--text-muted);margin-left:4px;">▼</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.8rem;color:var(--text-secondary);cursor:pointer;">
+    📅 ステータス <span style="color:var(--text-muted);margin-left:4px;">▼</span>
+  </div>
+  <div style="flex:1;"></div>
+  <span style="font-size:0.8rem;color:var(--text-muted);padding:6px 0;">全 48,392 件中 1-25 件表示</span>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:30px;"><input type="checkbox" style="accent-color:var(--terracotta);"></th>
+        <th>氏名</th>
+        <th>メールアドレス</th>
+        <th>職種</th>
+        <th>所属組織</th>
+        <th>ステータス</th>
+        <th>最終更新</th>
+        <th style="width:60px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-row-link" onclick="App.loadPage('person-detail')">
+        <td><input type="checkbox" style="accent-color:var(--terracotta);" onclick="event.stopPropagation();"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--navy-500),var(--navy-400));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--text-primary);flex-shrink:0;">SM</div>
+            <div>
+              <div style="color:var(--text-primary);font-weight:500;">佐藤 美咲</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">サトウ ミサキ</div>
+            </div>
+          </div>
+        </td>
+        <td>misaki.sato@edu-saitama.jp</td>
+        <td><span class="tag tag-blue">教諭</span></td>
+        <td>川口市立中学校</td>
+        <td><span class="tag tag-green">在籍</span></td>
+        <td>2026/06/10</td>
+        <td><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();App.loadPage('person-detail')">→</button></td>
+      </tr>
+      <tr class="table-row-link" onclick="App.loadPage('person-detail')">
+        <td><input type="checkbox" style="accent-color:var(--terracotta);" onclick="event.stopPropagation();"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:white;flex-shrink:0;">YT</div>
+            <div>
+              <div style="color:var(--text-primary);font-weight:500;">山田 太郎</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">ヤマダ タロウ</div>
+            </div>
+          </div>
+        </td>
+        <td>taro.yamada@edu-saitama.jp</td>
+        <td><span class="tag tag-blue">教諭</span></td>
+        <td>さいたま市立中央小学校</td>
+        <td><span class="tag tag-green">在籍</span></td>
+        <td>2026/06/09</td>
+        <td><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();App.loadPage('person-detail')">→</button></td>
+      </tr>
+      <tr class="table-row-link" onclick="App.loadPage('person-detail')">
+        <td><input type="checkbox" style="accent-color:var(--terracotta);" onclick="event.stopPropagation();"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--terracotta),var(--terracotta-dark));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:white;flex-shrink:0;">KS</div>
+            <div>
+              <div style="color:var(--text-primary);font-weight:500;">鈴木 一郎</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">スズキ イチロウ</div>
+            </div>
+          </div>
+        </td>
+        <td>ichiro.suzuki@edu-saitama.jp</td>
+        <td><span class="tag tag-orange">指導主事</span></td>
+        <td>埼玉県教育委員会</td>
+        <td><span class="tag tag-green">在籍</span></td>
+        <td>2026/06/08</td>
+        <td><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();App.loadPage('person-detail')">→</button></td>
+      </tr>
+      <tr class="table-row-link" onclick="App.loadPage('person-detail')">
+        <td><input type="checkbox" style="accent-color:var(--terracotta);" onclick="event.stopPropagation();"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--navy-300),var(--navy-200));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--text-inverse);flex-shrink:0;">HT</div>
+            <div>
+              <div style="color:var(--text-primary);font-weight:500;">濱田 太郎</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">ハマダ タロウ</div>
+            </div>
+          </div>
+        </td>
+        <td>taro.hamada@edu-saitama.jp</td>
+        <td><span class="tag tag-blue">教諭</span></td>
+        <td>浦和高校</td>
+        <td><span class="tag tag-amber">休職中</span></td>
+        <td>2026/06/07</td>
+        <td><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();App.loadPage('person-detail')">→</button></td>
+      </tr>
+      <tr class="table-row-link" onclick="App.loadPage('person-detail')">
+        <td><input type="checkbox" style="accent-color:var(--terracotta);" onclick="event.stopPropagation();"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5a3a7a,#7a5aaa);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:white;flex-shrink:0;">KT</div>
+            <div>
+              <div style="color:var(--text-primary);font-weight:500;">木下 栞</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">キノシタ シオリ</div>
+            </div>
+          </div>
+        </td>
+        <td>shiori.kinoshita@edu-saitama.jp</td>
+        <td><span class="tag tag-blue">教諭</span></td>
+        <td>大宮高校</td>
+        <td><span class="tag tag-green">在籍</span></td>
+        <td>2026/06/06</td>
+        <td><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();App.loadPage('person-detail')">→</button></td>
+      </tr>
+      <tr class="table-row-link" onclick="App.loadPage('person-detail')">
+        <td><input type="checkbox" style="accent-color:var(--terracotta);" onclick="event.stopPropagation();"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--emerald-light),var(--emerald));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:white;flex-shrink:0;">MT</div>
+            <div>
+              <div style="color:var(--text-primary);font-weight:500;">村田 翼</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">ムラタ ツバサ</div>
+            </div>
+          </div>
+        </td>
+        <td>tsubasa.murata@edu-saitama.jp</td>
+        <td><span class="tag tag-blue">教諭</span></td>
+        <td>川越市立東中学校</td>
+        <td><span class="tag tag-green">在籍</span></td>
+        <td>2026/06/05</td>
+        <td><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();App.loadPage('person-detail')">→</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+  <span style="font-size:0.8rem;color:var(--text-muted);">1-25 / 48,392 件</span>
+  <div style="display:flex;gap:4px;">
+    <button class="btn btn-ghost btn-sm btn-icon" disabled>‹</button>
+    <button class="btn btn-secondary btn-sm" style="min-width:36px;justify-content:center;">1</button>
+    <button class="btn btn-ghost btn-sm" style="min-width:36px;justify-content:center;">2</button>
+    <button class="btn btn-ghost btn-sm" style="min-width:36px;justify-content:center;">3</button>
+    <button class="btn btn-ghost btn-sm" style="min-width:36px;justify-content:center;">…</button>
+    <button class="btn btn-ghost btn-sm" style="min-width:36px;justify-content:center;">1,936</button>
+    <button class="btn btn-ghost btn-sm btn-icon">›</button>
+  </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>フィルター設定</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">組織</label>
+        <select class="form-select">
+          <option>すべての組織</option>
+          <option>埼玉県教育委員会</option>
+          <option>さいたま市</option>
+          <option>川口市</option>
+          <option>川越市</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">学校種</label>
+          <select class="form-select">
+            <option>すべて</option>
+            <option>小学校</option>
+            <option>中学校</option>
+            <option>高等学校</option>
+            <option>特別支援学校</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">職種</label>
+          <select class="form-select">
+            <option>すべて</option>
+            <option>教諭</option>
+            <option>指導主事</option>
+            <option>管理主事</option>
+            <option>校長</option>
+            <option>事務職員</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ステータス</label>
+          <select class="form-select">
+            <option>すべて</option>
+            <option>在籍</option>
+            <option>休職中</option>
+            <option>退職</option>
+            <option>転出</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">所属クラス</label>
+          <input class="form-input" placeholder="例: 3年A組">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">クリア</button>
+      <button class="btn btn-primary modal-close">適用</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Person Modal -->
+<div class="modal-overlay" id="add-person-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>新規人物登録</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓</label>
+          <input class="form-input" placeholder="例: 埼玉">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名</label>
+          <input class="form-input" placeholder="例: 花子">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓（かな）</label>
+          <input class="form-input" placeholder="さいたま">
+        </div>
+        <div class="form-group">
+          <label class="form-label">名（かな）</label>
+          <input class="form-input" placeholder="はなこ">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input class="form-input" type="email" placeholder="hanako.saitama@edu-saitama.jp">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">職種</label>
+          <select class="form-select">
+            <option>教諭</option>
+            <option>指導主事</option>
+            <option>管理主事</option>
+            <option>校長</option>
+            <option>事務職員</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">所属組織</label>
+          <select class="form-select">
+            <option>埼玉県教育委員会</option>
+            <option>さいたま市教育委員会</option>
+            <option>川口市教育委員会</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost modal-close">キャンセル</button>
+      <button class="btn btn-primary modal-close">登録する</button>
+    </div>
+  </div>
+</div>

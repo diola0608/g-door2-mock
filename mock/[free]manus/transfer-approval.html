@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>所属変更申請 | CODEX EDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .approval-card {
+      background: white; border: 1px solid var(--gray-200); border-radius: 10px;
+      margin-bottom: 12px; overflow: hidden; transition: var(--transition);
+    }
+    .approval-card:hover { box-shadow: var(--shadow-md); }
+    .approval-card-header {
+      padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .approval-card-body { padding: 14px 20px; }
+    .approval-card-footer {
+      padding: 12px 20px; background: var(--gray-50);
+      border-top: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .transfer-arrow {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--gray-700);
+    }
+    .transfer-org {
+      padding: 6px 12px; background: var(--gray-100); border-radius: 6px;
+      font-weight: 600;
+    }
+    .transfer-org.from { background: var(--danger-light); color: #9b1c1c; }
+    .transfer-org.to { background: var(--secondary-light); color: #064e3b; }
+    .transfer-arrow-icon { font-size: 18px; color: var(--gray-400); }
+    .overdue-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      background: var(--danger-light); color: var(--danger);
+    }
+    .person-mini {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .person-mini-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 14px; font-weight: 700; flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content fade-in">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigate('index.html')">ダッシュボード</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">所属変更申請</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">所属変更申請</div>
+          <div class="page-subtitle">承認待ち 7件 / 期限超過 2件</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="navigate('import-log.html')">📜 変更ログ</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs">
+          <button class="tab-item active">承認待ち <span style="background:var(--danger);color:white;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px">7</span></button>
+          <button class="tab-item">承認済み</button>
+          <button class="tab-item">却下済み</button>
+          <button class="tab-item">取消済み</button>
+        </div>
+
+        <!-- Pending -->
+        <div class="tab-content active">
+          <div class="alert alert-warning mb-4">
+            <span class="alert-icon">⚠️</span>
+            <div>2件の申請が承認期限を超過しています。早急に対応してください。</div>
+          </div>
+
+          <!-- Card 1 - Overdue -->
+          <div class="approval-card">
+            <div class="approval-card-header">
+              <div class="person-mini">
+                <div class="person-mini-avatar" style="background:linear-gradient(135deg,#1a56db,#6366f1)">山</div>
+                <div>
+                  <div style="font-size:14px;font-weight:700">山田 花子</div>
+                  <div style="font-size:12px;color:var(--gray-500)">教員 / T-00234</div>
+                </div>
+              </div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+                <span class="overdue-badge">⚠ 期限超過</span>
+                <span class="tag tag-yellow">承認待ち</span>
+              </div>
+            </div>
+            <div class="approval-card-body">
+              <div class="transfer-arrow">
+                <div class="transfer-org from">横浜市立北中学校</div>
+                <span class="transfer-arrow-icon">→</span>
+                <div class="transfer-org to">横浜市立南高校</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">実施予定日</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--danger)">2024年7月1日</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">申請者</div>
+                  <div style="font-size:13px;font-weight:600">高橋 美穂（横浜市立北中学校）</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">申請日</div>
+                  <div style="font-size:13px;font-weight:600">2024年5月20日</div>
+                </div>
+              </div>
+              <div style="margin-top:12px;font-size:13px;color:var(--gray-600)">
+                <strong>変更理由:</strong> 2024年度人事異動に伴う転勤
+              </div>
+            </div>
+            <div class="approval-card-footer">
+              <div style="font-size:12px;color:var(--gray-400)">申請ID: REQ-2024-0234　承認期限: 2024年6月10日（超過）</div>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary btn-sm" onclick="openModal('detailModal')">詳細</button>
+                <button class="btn btn-danger btn-sm" onclick="openModal('rejectModal')">✕ 却下</button>
+                <button class="btn btn-success btn-sm" onclick="openModal('approveModal')">✓ 承認</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 - Overdue -->
+          <div class="approval-card">
+            <div class="approval-card-header">
+              <div class="person-mini">
+                <div class="person-mini-avatar" style="background:linear-gradient(135deg,#0e9f6e,#059669)">佐</div>
+                <div>
+                  <div style="font-size:14px;font-weight:700">佐藤 次郎</div>
+                  <div style="font-size:12px;color:var(--gray-500)">教員 / T-00189</div>
+                </div>
+              </div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+                <span class="overdue-badge">⚠ 期限超過</span>
+                <span class="tag tag-yellow">承認待ち</span>
+              </div>
+            </div>
+            <div class="approval-card-body">
+              <div class="transfer-arrow">
+                <div class="transfer-org from">川崎市立東小学校</div>
+                <span class="transfer-arrow-icon">→</span>
+                <div class="transfer-org to">川崎市立西小学校</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">実施予定日</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--danger)">2024年7月1日</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">申請者</div>
+                  <div style="font-size:13px;font-weight:600">中村 恵子（川崎市立東小学校）</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">申請日</div>
+                  <div style="font-size:13px;font-weight:600">2024年5月25日</div>
+                </div>
+              </div>
+            </div>
+            <div class="approval-card-footer">
+              <div style="font-size:12px;color:var(--gray-400)">申請ID: REQ-2024-0235　承認期限: 2024年6月11日（超過）</div>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary btn-sm" onclick="openModal('detailModal')">詳細</button>
+                <button class="btn btn-danger btn-sm" onclick="openModal('rejectModal')">✕ 却下</button>
+                <button class="btn btn-success btn-sm" onclick="openModal('approveModal')">✓ 承認</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="approval-card">
+            <div class="approval-card-header">
+              <div class="person-mini">
+                <div class="person-mini-avatar" style="background:linear-gradient(135deg,#c27803,#d97706)">鈴</div>
+                <div>
+                  <div style="font-size:14px;font-weight:700">鈴木 美咲</div>
+                  <div style="font-size:12px;color:var(--gray-500)">教員 / T-00445</div>
+                </div>
+              </div>
+              <div style="margin-left:auto">
+                <span class="tag tag-yellow">承認待ち</span>
+              </div>
+            </div>
+            <div class="approval-card-body">
+              <div class="transfer-arrow">
+                <div class="transfer-org from">相模原市立第一中学校</div>
+                <span class="transfer-arrow-icon">→</span>
+                <div class="transfer-org to">相模原市立第三中学校</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">実施予定日</div>
+                  <div style="font-size:13px;font-weight:600">2024年8月1日</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">申請者</div>
+                  <div style="font-size:13px;font-weight:600">木村 健太（相模原市立第一中学校）</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase">申請日</div>
+                  <div style="font-size:13px;font-weight:600">2024年6月10日</div>
+                </div>
+              </div>
+            </div>
+            <div class="approval-card-footer">
+              <div style="font-size:12px;color:var(--gray-400)">申請ID: REQ-2024-0289　承認期限: 2024年7月20日</div>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary btn-sm" onclick="openModal('detailModal')">詳細</button>
+                <button class="btn btn-secondary btn-sm" onclick="openModal('cancelModal')">取消</button>
+                <button class="btn btn-danger btn-sm" onclick="openModal('rejectModal')">✕ 却下</button>
+                <button class="btn btn-success btn-sm" onclick="openModal('approveModal')">✓ 承認</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approved -->
+        <div class="tab-content">
+          <div class="approval-card">
+            <div class="approval-card-header">
+              <div class="person-mini">
+                <div class="person-mini-avatar" style="background:linear-gradient(135deg,#0694a2,#0891b2)">鈴</div>
+                <div>
+                  <div style="font-size:14px;font-weight:700">鈴木 一郎</div>
+                  <div style="font-size:12px;color:var(--gray-500)">教員 / T-00123</div>
+                </div>
+              </div>
+              <div style="margin-left:auto">
+                <span class="tag tag-green">承認済み・完了</span>
+              </div>
+            </div>
+            <div class="approval-card-body">
+              <div class="transfer-arrow">
+                <div class="transfer-org from">横浜市立南中学校</div>
+                <span class="transfer-arrow-icon">→</span>
+                <div class="transfer-org to">横浜市立東小学校</div>
+              </div>
+              <div style="margin-top:12px;font-size:12px;color:var(--gray-500)">
+                承認者: 田中 義雄　承認日: 2024年5月30日　実施日: 2024年6月1日
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rejected -->
+        <div class="tab-content">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">却下済み申請はありません</div>
+          </div>
+        </div>
+
+        <!-- Cancelled -->
+        <div class="tab-content">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">取消済み申請はありません</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal-overlay" id="approveModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">申請を承認</span>
+      <button class="modal-close" onclick="closeModal('approveModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-success">
+        <span class="alert-icon">✅</span>
+        <div>承認すると、<strong>2024年7月1日</strong>にバッチ処理で所属が自動変更されます。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">承認コメント（任意）</label>
+        <textarea class="form-control" rows="3" placeholder="コメントを入力..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('approveModal')">キャンセル</button>
+      <button class="btn btn-success" onclick="closeModal('approveModal');showToast('申請を承認しました')">✓ 承認する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">申請を却下</span>
+      <button class="modal-close" onclick="closeModal('rejectModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">却下理由 <span class="required">*</span></label>
+        <textarea class="form-control" rows="3" placeholder="却下理由を入力してください（申請者に通知されます）"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('rejectModal')">キャンセル</button>
+      <button class="btn btn-danger" onclick="closeModal('rejectModal');showToast('申請を却下しました', 'warning')">✕ 却下する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Modal -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">申請を取消</span>
+      <button class="modal-close" onclick="closeModal('cancelModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray-600)">この申請を取り消しますか？取り消した後は元に戻せません。</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('cancelModal')">キャンセル</button>
+      <button class="btn btn-danger" onclick="closeModal('cancelModal');showToast('申請を取り消しました', 'warning')">取り消す</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">申請詳細 REQ-2024-0234</span>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;margin-bottom:4px">対象者</div>
+          <div class="person-mini">
+            <div class="person-mini-avatar" style="background:linear-gradient(135deg,#1a56db,#6366f1)">山</div>
+            <div>
+              <div style="font-size:13px;font-weight:600">山田 花子</div>
+              <div style="font-size:12px;color:var(--gray-500)">T-00234</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;margin-bottom:4px">申請者</div>
+          <div style="font-size:13px;font-weight:600">高橋 美穂</div>
+          <div style="font-size:12px;color:var(--gray-500)">横浜市立北中学校 校長</div>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="transfer-arrow" style="justify-content:center">
+          <div class="transfer-org from" style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px">変更元</div>
+            横浜市立北中学校
+          </div>
+          <span class="transfer-arrow-icon">→</span>
+          <div class="transfer-org to" style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px">変更先</div>
+            横浜市立南高校
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:13px;color:var(--gray-700)">
+        <strong>変更理由:</strong> 2024年度人事異動に伴う転勤。本人の希望および教育委員会の判断による。
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--gray-500)">
+        申請日: 2024年5月20日　実施予定日: 2024年7月1日　承認期限: 2024年6月10日（超過）
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('detailModal')">閉じる</button>
+      <button class="btn btn-danger btn-sm" onclick="closeModal('detailModal');openModal('rejectModal')">✕ 却下</button>
+      <button class="btn btn-success" onclick="closeModal('detailModal');openModal('approveModal')">✓ 承認</button>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('所属変更申請');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('transfer-approval.html');
+</script>
+</body>
+</html>

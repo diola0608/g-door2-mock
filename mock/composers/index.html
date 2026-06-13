@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduConnect - ダッシュボード</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    initLayout('dashboard', 'home');
+    setPageContent(`
+      <div class="dashboard-greeting">
+        <h1>おはようございます、田中 太郎 さん</h1>
+        <p>〇〇県教育委員会 システム管理センター — 2026年6月12日（金）</p>
+      </div>
+
+      <div class="alert-banner danger">
+        ${Icons.alert}
+        <div>
+          <strong>CSVインポートで12件のエラーが発生しています</strong>
+          <p style="margin-top:2px;font-size:0.85rem">教員名簿_2026年4月.csv の処理中にエラーが検出されました。内容を確認し、修正後に再インポートしてください。</p>
+        </div>
+        <a href="pages/import-logs.html" class="alert-action">ログを確認 →</a>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon blue">${Icons.users}</div>
+          <div>
+            <div class="stat-value">24,831</div>
+            <div class="stat-label">登録人物数</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">${Icons.building}</div>
+          <div>
+            <div class="stat-value">342</div>
+            <div class="stat-label">組織数</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">${Icons.clipboard}</div>
+          <div>
+            <div class="stat-value">18</div>
+            <div class="stat-label">公開中フォーム</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">${Icons.transfer}</div>
+          <div>
+            <div class="stat-value">7</div>
+            <div class="stat-label">承認待ち申請</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:16px;color:var(--color-gray-800)">サービス</h2>
+      <div class="service-grid">
+        <a href="pages/roster-list.html" class="service-card">
+          <div class="service-card-icon" style="background:var(--color-primary-light);color:var(--color-primary)">${Icons.users}</div>
+          <h3>名簿管理</h3>
+          <p>教員・生徒・関係者の名簿を管理。属性項目の設定、CSVインポート、所属変更申請を行います。</p>
+        </a>
+        <a href="pages/org-tree.html" class="service-card">
+          <div class="service-card-icon" style="background:#ede9fe;color:var(--color-accent)">${Icons.building}</div>
+          <h3>組織管理</h3>
+          <p>県・市町村・学校種・学校の階層構造を管理。組織ごとの設定の継承・上書きを行います。</p>
+        </a>
+        <a href="pages/accounts.html" class="service-card">
+          <div class="service-card-icon" style="background:var(--color-success-light);color:var(--color-success)">${Icons.mail}</div>
+          <h3>アカウント管理</h3>
+          <p>Google Workspace との同期状態を管理。メールアカウントの発行・停止を行います。</p>
+        </a>
+        <a href="pages/forms-list.html" class="service-card">
+          <div class="service-card-icon" style="background:#fef3c7;color:var(--color-warning)">${Icons.clipboard}</div>
+          <h3>フォーム</h3>
+          <p>アンケート・情報収集フォームの作成・配信。名簿への自動反映設定が可能です。</p>
+          <span class="service-badge pending">回答期限 3日後</span>
+        </a>
+        <a href="pages/permissions.html" class="service-card">
+          <div class="service-card-icon" style="background:#fce7f3;color:#be185d">${Icons.shield}</div>
+          <h3>権限設定</h3>
+          <p>職種・属性・組織スコープに基づく柔軟な権限ルールを設定。テナント・組織レベルで管理。</p>
+        </a>
+        <a href="pages/import.html" class="service-card">
+          <div class="service-card-icon" style="background:var(--color-danger-light);color:var(--color-danger)">${Icons.upload}</div>
+          <h3>CSVインポート</h3>
+          <p>名簿データの一括取込。項目マッピング・識別子設定・バッチ処理ログの確認。</p>
+          <span class="service-badge alert">エラー 12件</span>
+        </a>
+      </div>
+
+      <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:16px;color:var(--color-gray-800)">最近のアクティビティ</h2>
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>日時</th>
+                <th>種別</th>
+                <th>内容</th>
+                <th>実行者</th>
+                <th>状態</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2026/06/12 09:15</td>
+                <td><span class="badge-tag red">エラー</span></td>
+                <td>教員名簿_2026年4月.csv インポート失敗（12件）</td>
+                <td>田中 太郎</td>
+                <td><span class="status-dot error"></span>要対応</td>
+              </tr>
+              <tr>
+                <td>2026/06/11 16:42</td>
+                <td><span class="badge-tag yellow">申請</span></td>
+                <td>佐藤 花子 — A小学校 → B小学校 転入申請</td>
+                <td>山田 一郎</td>
+                <td><span class="status-dot pending"></span>承認待ち</td>
+              </tr>
+              <tr>
+                <td>2026/06/11 14:20</td>
+                <td><span class="badge-tag green">完了</span></td>
+                <td>生徒名簿_新1年_2026.csv インポート完了（186件）</td>
+                <td>鈴木 次郎</td>
+                <td><span class="status-dot active"></span>成功</td>
+              </tr>
+              <tr>
+                <td>2026/06/10 11:05</td>
+                <td><span class="badge-tag blue">フォーム</span></td>
+                <td>「自家用携帯番号登録」フォーム配信開始</td>
+                <td>田中 太郎</td>
+                <td><span class="status-dot active"></span>回答率 68%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  </script>
+</body>
+</html>

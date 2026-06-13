@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>組織ツリー - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="org-detail-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2>組織詳細 — A市立第一小学校</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">組織名</label><input class="form-input" value="A市立第一小学校"></div>
+          <div class="form-group"><label class="form-label">組織種別</label><select class="form-select"><option selected>学校</option><option>市町村</option><option>教育委員会</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">学校種</label><select class="form-select"><option selected>小学校</option><option>中学校</option><option>高等学校</option></select></div>
+          <div class="form-group"><label class="form-label">所属市町村</label><input class="form-input" value="△△市" disabled></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">独自設定</label>
+          <div class="form-check"><input type="checkbox" checked> 上位組織の権限設定を継承する</div>
+          <p class="form-hint">チェックを外すと、この組織独自の権限設定のみが適用されます</p>
+        </div>
+        <div style="margin-top:12px;padding:12px;background:var(--color-gray-50);border-radius:var(--radius);font-size:0.85rem">
+          <strong>統計:</strong> 教員 28名 / 生徒 412名 / クラス 18
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>閉じる</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('組織情報を保存しました')">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('organization', 'org-tree');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb"><a href="../index.html">ホーム</a> ${Icons.chevronRight} 組織管理 ${Icons.chevronRight} 組織ツリー</div>
+        <h1>組織ツリー</h1>
+        <p>テナント全体をルートとした階層構造。組織を選択して詳細・設定を確認できます。</p>
+      </div>
+
+      <div class="two-pane">
+        <div class="pane-left">
+          <div class="pane-header" style="display:flex;justify-content:space-between;align-items:center">
+            組織階層
+            <button class="btn btn-ghost btn-sm">${Icons.plus}</button>
+          </div>
+          <div class="tree-item active" data-selectable>
+            <span class="tree-toggle">${Icons.chevronDown}</span>
+            〇〇県（テナント全体）
+          </div>
+          <div class="tree-children">
+            <div class="tree-item" data-selectable>
+              <span class="tree-toggle">${Icons.chevronDown}</span>
+              △△市
+            </div>
+            <div class="tree-children">
+              <div class="tree-item" data-selectable>
+                <span class="tree-toggle">${Icons.chevronDown}</span>
+                △△市教育委員会
+              </div>
+              <div class="tree-children">
+                <div class="tree-item" data-selectable>総務課</div>
+                <div class="tree-item" data-selectable>学務課</div>
+              </div>
+              <div class="tree-item" data-selectable>
+                <span class="tree-toggle">${Icons.chevronDown}</span>
+                小学校
+              </div>
+              <div class="tree-children">
+                <div class="tree-item active" data-selectable onclick="openModal('org-detail-modal')">A市立第一小学校</div>
+                <div class="tree-item" data-selectable>B市立第二小学校</div>
+                <div class="tree-item" data-selectable>C市立第三小学校</div>
+              </div>
+              <div class="tree-item" data-selectable>
+                <span class="tree-toggle">${Icons.chevronRight}</span>
+                中学校
+              </div>
+              <div class="tree-children" style="display:none">
+                <div class="tree-item" data-selectable>△△市立第一中学校</div>
+              </div>
+            </div>
+            <div class="tree-item" data-selectable>
+              <span class="tree-toggle">${Icons.chevronRight}</span>
+              □□市
+            </div>
+            <div class="tree-children" style="display:none">
+              <div class="tree-item" data-selectable>□□市教育委員会</div>
+            </div>
+          </div>
+        </div>
+        <div class="pane-right">
+          <div class="pane-header">A市立第一小学校 — 概要</div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+              <div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:1.2rem">28</div><div class="stat-label">教員</div></div>
+              <div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:1.2rem">412</div><div class="stat-label">生徒</div></div>
+              <div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:1.2rem">18</div><div class="stat-label">クラス</div></div>
+            </div>
+            <h3 style="font-size:0.9rem;font-weight:600;margin-bottom:12px">クラス一覧</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>学年</th><th>組</th><th>担任</th><th>生徒数</th></tr></thead>
+                <tbody>
+                  <tr><td>1年</td><td>1組</td><td>田中 次郎</td><td>28</td></tr>
+                  <tr><td>1年</td><td>2組</td><td>中村 三郎</td><td>27</td></tr>
+                  <tr><td>3年</td><td>2組</td><td>山田 太郎</td><td>24</td></tr>
+                  <tr><td>5年</td><td>1組</td><td>小林 四郎</td><td>26</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:20px">
+              <button class="btn btn-secondary btn-sm" data-modal-open="org-detail-modal">${Icons.edit} 組織設定を編集</button>
+              <button class="btn btn-secondary btn-sm" onclick="location.href='permissions.html'">${Icons.shield} この組織の権限設定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+    initTreeToggle();
+  </script>
+</body>
+</html>

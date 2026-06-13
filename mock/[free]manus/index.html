@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダッシュボード | CODEX EDU</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .launcher-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .launcher-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .launcher-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(26,86,219,0.12);
+      transform: translateY(-2px);
+    }
+    .launcher-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .launcher-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    .launcher-desc {
+      font-size: 11px;
+      color: var(--gray-400);
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .dashboard-grid .card.full { grid-column: 1 / -1; }
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .activity-content { flex: 1; }
+    .activity-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+    .activity-time { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+    .error-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--danger-light);
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .error-item:hover { background: #fbd5d5; }
+    .error-item-icon { font-size: 18px; }
+    .error-item-content { flex: 1; }
+    .error-item-title { font-size: 13px; font-weight: 600; color: #9b1c1c; }
+    .error-item-desc { font-size: 12px; color: #c81e1e; margin-top: 2px; }
+    .pending-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+      cursor: pointer;
+    }
+    .pending-item:last-child { border-bottom: none; }
+    .pending-item:hover { background: var(--gray-50); margin: 0 -4px; padding: 10px 4px; border-radius: 6px; }
+    .pending-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--warning-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--gray-200);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .quick-stat {
+      background: white;
+      padding: 16px;
+      text-align: center;
+    }
+    .quick-stat-value { font-size: 22px; font-weight: 800; color: var(--gray-900); }
+    .quick-stat-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--secondary-light);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #03543f;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="header-placeholder"></div>
+
+  <div class="app-body">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content fade-in">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">ダッシュボード</div>
+          <div class="page-subtitle">神奈川県教育委員会 システム管理ポータル</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm">📅 2024年度</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('レポートを生成しています...', 'info')">📊 レポート生成</button>
+        </div>
+      </div>
+
+      <!-- Sync Status -->
+      <div class="sync-status">
+        <span>🔄</span>
+        <span>Google Workspace 最終同期: <strong>2024年6月12日 08:30</strong>　対象: 1,234件　ステータス: 正常</span>
+        <button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="showToast('同期を開始しました', 'info')">今すぐ同期</button>
+      </div>
+
+      <!-- Error Alerts -->
+      <div class="alert alert-danger" style="cursor:pointer" onclick="navigate('import-log.html')">
+        <span class="alert-icon">⚠️</span>
+        <div>
+          <strong>3件のCSVインポートエラーが発生しています。</strong>
+          <span style="margin-left:8px;text-decoration:underline;cursor:pointer">インポートログを確認する →</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div class="stat-info">
+            <div class="stat-value">12,847</div>
+            <div class="stat-label">登録人物数</div>
+            <div class="stat-change up">▲ 234 今月追加</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🏫</div>
+          <div class="stat-info">
+            <div class="stat-value">342</div>
+            <div class="stat-label">登録組織数</div>
+            <div class="stat-change up">▲ 3 今月追加</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">📋</div>
+          <div class="stat-info">
+            <div class="stat-value">7</div>
+            <div class="stat-label">承認待ち申請</div>
+            <div class="stat-change down">うち期限超過 2件</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">📝</div>
+          <div class="stat-info">
+            <div class="stat-value">18</div>
+            <div class="stat-label">公開中フォーム</div>
+            <div class="stat-change up">回答率 平均 72%</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">🔐</div>
+          <div class="stat-info">
+            <div class="stat-value">9,234</div>
+            <div class="stat-label">アクティブアカウント</div>
+            <div class="stat-change">全体の 71.9%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Launcher -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <span class="card-title">🚀 クイックアクセス</span>
+        </div>
+        <div class="card-body">
+          <div class="launcher-grid">
+            <div class="launcher-card" onclick="navigate('roster.html')">
+              <div class="launcher-icon" style="background:#e8f0fe">👥</div>
+              <div class="launcher-label">人物一覧</div>
+              <div class="launcher-desc">名簿の検索・閲覧</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('organizations.html')">
+              <div class="launcher-icon" style="background:#def7ec">🏫</div>
+              <div class="launcher-label">組織管理</div>
+              <div class="launcher-desc">学校・部署の管理</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('transfer-approval.html')">
+              <div class="launcher-icon" style="background:#fdf6b2">📋</div>
+              <div class="launcher-label">所属変更申請</div>
+              <div class="launcher-desc">承認・却下処理</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('accounts.html')">
+              <div class="launcher-icon" style="background:#fde8e8">🔐</div>
+              <div class="launcher-label">アカウント管理</div>
+              <div class="launcher-desc">ユーザー・権限</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('permissions.html')">
+              <div class="launcher-icon" style="background:#ede9fe">🛡️</div>
+              <div class="launcher-label">権限設定</div>
+              <div class="launcher-desc">アクセス制御</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('csv-import.html')">
+              <div class="launcher-icon" style="background:#e0f2fe">📤</div>
+              <div class="launcher-label">CSVインポート</div>
+              <div class="launcher-desc">一括データ登録</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('forms.html')">
+              <div class="launcher-icon" style="background:#fce7f3">📝</div>
+              <div class="launcher-label">フォーム管理</div>
+              <div class="launcher-desc">アンケート作成</div>
+            </div>
+            <div class="launcher-card" onclick="navigate('settings.html')">
+              <div class="launcher-icon" style="background:#f3f4f6">⚙️</div>
+              <div class="launcher-label">システム設定</div>
+              <div class="launcher-desc">テナント設定</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Grid -->
+      <div class="dashboard-grid">
+        <!-- Errors -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚠️ 要対応アイテム</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('import-log.html')">すべて見る →</button>
+          </div>
+          <div class="card-body">
+            <div class="error-item" onclick="navigate('import-log.html')">
+              <span class="error-item-icon">📤</span>
+              <div class="error-item-content">
+                <div class="error-item-title">CSVインポートエラー（横浜市立南小学校）</div>
+                <div class="error-item-desc">3件のレコードで識別子不一致エラー</div>
+              </div>
+              <span class="tag tag-red">エラー</span>
+            </div>
+            <div class="error-item" onclick="navigate('transfer-approval.html')">
+              <span class="error-item-icon">📋</span>
+              <div class="error-item-content">
+                <div class="error-item-title">所属変更申請 期限超過</div>
+                <div class="error-item-desc">2件の申請が承認期限を超過しています</div>
+              </div>
+              <span class="tag tag-yellow">期限超過</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📋 承認待ち所属変更申請</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('transfer-approval.html')">すべて見る →</button>
+          </div>
+          <div class="card-body">
+            <div class="pending-item" onclick="navigate('transfer-approval.html')">
+              <div class="pending-avatar">👩</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">山田 花子</div>
+                <div style="font-size:12px;color:var(--gray-500)">横浜市立北中学校 → 横浜市立南高校</div>
+                <div style="font-size:11px;color:var(--gray-400)">実施予定: 2024年7月1日</div>
+              </div>
+              <span class="tag tag-yellow">承認待ち</span>
+            </div>
+            <div class="pending-item" onclick="navigate('transfer-approval.html')">
+              <div class="pending-avatar">👨</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">佐藤 次郎</div>
+                <div style="font-size:12px;color:var(--gray-500)">川崎市立東小学校 → 川崎市立西小学校</div>
+                <div style="font-size:11px;color:var(--gray-400)">実施予定: 2024年7月1日</div>
+              </div>
+              <span class="tag tag-yellow">承認待ち</span>
+            </div>
+            <div class="pending-item" onclick="navigate('transfer-approval.html')">
+              <div class="pending-avatar">👩</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">鈴木 美咲</div>
+                <div style="font-size:12px;color:var(--gray-500)">相模原市立第一中学校 → 相模原市立第三中学校</div>
+                <div style="font-size:11px;color:var(--gray-400)">実施予定: 2024年8月1日</div>
+              </div>
+              <span class="tag tag-yellow">承認待ち</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📜 最近のアクティビティ</span>
+          </div>
+          <div class="card-body">
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:linear-gradient(135deg,#1a56db,#6366f1)">田</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>田中 義雄</strong>が横浜市立東小学校のCSVをインポートしました（234件）</div>
+                <div class="activity-time">10分前</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:linear-gradient(135deg,#0e9f6e,#059669)">中</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>中村 恵子</strong>が「2024年度 教員研修アンケート」を作成しました</div>
+                <div class="activity-time">1時間前</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:linear-gradient(135deg,#c27803,#d97706)">木</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>木村 健太</strong>が権限設定を更新しました（小学校教員グループ）</div>
+                <div class="activity-time">3時間前</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:linear-gradient(135deg,#e02424,#dc2626)">高</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>高橋 美穂</strong>が山田 花子さんの所属変更申請を承認しました</div>
+                <div class="activity-time">昨日 14:30</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">伊</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>伊藤 拓也</strong>が新しい属性項目「部活動顧問」を追加しました</div>
+                <div class="activity-time">昨日 11:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Status -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📝 フォーム回答状況</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('forms.html')">すべて見る →</button>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom:16px">
+              <div class="flex justify-between mb-1">
+                <span style="font-size:13px;font-weight:600">2024年度 教員研修アンケート</span>
+                <span style="font-size:12px;color:var(--gray-500)">68%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:68%;background:var(--primary)"></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:4px">回答 340 / 500件 　締切: 2024年6月30日</div>
+            </div>
+            <div style="margin-bottom:16px">
+              <div class="flex justify-between mb-1">
+                <span style="font-size:13px;font-weight:600">緊急連絡先確認フォーム</span>
+                <span style="font-size:12px;color:var(--gray-500)">91%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:91%;background:var(--secondary)"></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:4px">回答 1,820 / 2,000件 　締切: 2024年6月15日</div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1">
+                <span style="font-size:13px;font-weight:600">自家用携帯番号登録フォーム</span>
+                <span style="font-size:12px;color:var(--gray-500)">45%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:45%;background:var(--warning)"></div>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:4px">回答 540 / 1,200件 　締切: 2024年7月31日</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('header-placeholder').innerHTML = renderHeader('ダッシュボード');
+  document.getElementById('sidebar-placeholder').innerHTML = renderSidebar('index.html');
+</script>
+</body>
+</html>

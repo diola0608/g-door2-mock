@@ -1,0 +1,202 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>ダッシュボード</h1>
+    <div class="breadcrumb">
+      <a href="#" data-page="dashboard">ホーム</a>
+      <span class="sep">/</span>
+      <span>ダッシュボード</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary btn-sm" onclick="App.loadPage('logs')">
+      📜 最近の処理
+    </button>
+    <button class="btn btn-primary btn-sm" onclick="App.loadPage('csv-import')">
+      📥 CSVインポート
+    </button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card animate-in">
+    <div class="stat-icon blue">👥</div>
+    <div class="stat-value">48,392</div>
+    <div class="stat-label">登録人物総数</div>
+    <div class="stat-trend up">↑ 124 (今月)</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon green">🏫</div>
+    <div class="stat-value">847</div>
+    <div class="stat-label">組織数</div>
+    <div class="stat-trend up">↑ 3 (今月)</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon orange">📋</div>
+    <div class="stat-value">23</div>
+    <div class="stat-label">アクティブなフォーム</div>
+    <div class="stat-trend up">↑ 5 (今週)</div>
+  </div>
+  <div class="stat-card animate-in">
+    <div class="stat-icon amber">⏳</div>
+    <div class="stat-value">12</div>
+    <div class="stat-label">承認待ち申請</div>
+    <div class="stat-trend down">↑ 4 (要対応)</div>
+  </div>
+</div>
+
+<!-- Main Grid -->
+<div class="grid-2-1">
+  <!-- Left: Recent Activity & Alerts -->
+  <div>
+    <!-- Alerts -->
+    <div class="alert alert-error animate-in">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong>CSVインポートでエラーが発生しました</strong><br>
+        2026/06/12 11:23 — 「2026年度_新任教員一覧.csv」の処理中に 23 件のエラーが検出されました。
+        <a href="#" data-page="logs" style="margin-left:8px;">詳細を見る →</a>
+      </div>
+    </div>
+
+    <div class="alert alert-warning animate-in">
+      <span class="alert-icon">🔔</span>
+      <div>
+        <strong>Google Workspace 同期が保留中です</strong><br>
+        前回の同期から 72 時間が経過しています。手動同期を推奨します。
+        <a href="#" data-page="sync" style="margin-left:8px;">同期を実行 →</a>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <span class="card-title">クイックアクション</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <button class="btn btn-secondary" onclick="App.loadPage('roster')" style="justify-content:flex-start;">
+          <span>👤</span> 人物を検索
+        </button>
+        <button class="btn btn-secondary" onclick="App.loadPage('csv-import')" style="justify-content:flex-start;">
+          <span>📥</span> CSVをインポート
+        </button>
+        <button class="btn btn-secondary" onclick="App.loadPage('forms')" style="justify-content:flex-start;">
+          <span>📋</span> フォームを作成
+        </button>
+        <button class="btn btn-secondary" onclick="App.loadPage('organization')" style="justify-content:flex-start;">
+          <span>🏛</span> 組織を管理
+        </button>
+      </div>
+    </div>
+
+    <!-- Pending Approvals -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">承認待ち申請</span>
+        <a href="#" data-page="approvals" style="font-size:0.8rem;">すべて見る →</a>
+      </div>
+      <div class="table-container" style="border:none;margin:-8px -24px;">
+        <table>
+          <thead>
+            <tr>
+              <th>申請者</th>
+              <th>種類</th>
+              <th>対象</th>
+              <th>希望日</th>
+              <th>ステータス</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-row-link" onclick="App.loadPage('approvals')">
+              <td><strong style="color:var(--text-primary)">佐藤 美咲</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">川口市立中学校</span></td>
+              <td><span class="tag tag-blue">所属変更</span></td>
+              <td>川口市立高校 → 浦和高校</td>
+              <td>2026/07/01</td>
+              <td><span class="tag tag-amber">承認待ち</span></td>
+            </tr>
+            <tr class="table-row-link" onclick="App.loadPage('approvals')">
+              <td><strong style="color:var(--text-primary)">山田 太郎</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">さいたま市立小学校</span></td>
+              <td><span class="tag tag-blue">所属変更</span></td>
+              <td>さいたま市立中央小 → さいたま市立北小</td>
+              <td>2026/06/15</td>
+              <td><span class="tag tag-amber">承認待ち</span></td>
+            </tr>
+            <tr class="table-row-link" onclick="App.loadPage('approvals')">
+              <td><strong style="color:var(--text-primary)">鈴木 一郎</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">埼玉県教育委員会</span></td>
+              <td><span class="tag tag-green">属性変更</span></td>
+              <td>職種: 指導主事 → 管理主事</td>
+              <td>2026/06/20</td>
+              <td><span class="tag tag-amber">承認待ち</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Recent Imports & System Status -->
+  <div>
+    <!-- Recent Imports -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <span class="card-title">最近のインポート</span>
+        <a href="#" data-page="csv-import" style="font-size:0.8rem;">詳細 →</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:rgba(42,157,143,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">✅</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;color:var(--text-primary);">2026年度_新入生名簿.csv</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">1,284 件処理済み • 完了</div>
+          </div>
+          <span class="tag tag-green">成功</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(42,64,112,0.3);">
+          <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:rgba(212,90,58,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">❌</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;color:var(--text-primary);">2026年度_新任教員一覧.csv</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">23 件エラー • 要確認</div>
+          </div>
+          <span class="tag tag-red">エラー</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 0;">
+          <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:rgba(233,196,106,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏳</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;color:var(--text-primary);">保護者連絡先一覧.csv</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">処理中... 342/2,100 件</div>
+          </div>
+          <span class="tag tag-amber">処理中</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">システムステータス</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span style="font-size:0.85rem;color:var(--text-secondary);">Google Workspace 同期</span>
+          <span class="tag tag-green">正常</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span style="font-size:0.85rem;color:var(--text-secondary);">データベース接続</span>
+          <span class="tag tag-green">正常</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span style="font-size:0.85rem;color:var(--text-secondary);">バッチ処理キュー</span>
+          <span class="tag tag-amber">12 件待機中</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span style="font-size:0.85rem;color:var(--text-secondary);">最終バックアップ</span>
+          <span class="tag tag-green">2026/06/12 03:00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span style="font-size:0.85rem;color:var(--text-secondary);">テナント</span>
+          <span style="font-size:0.85rem;color:var(--text-primary);">埼玉県 (prod-saitama)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

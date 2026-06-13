@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フォーム一覧 — EduPlatform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: all 200ms ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+.form-card:hover { border-color: var(--brand-300); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.form-card-top {
+  height: 6px;
+}
+.form-card-body { padding: 16px; flex: 1; }
+.form-card-title { font-size: 14px; font-weight: 700; color: var(--text-high); margin-bottom: 6px; }
+.form-card-desc  { font-size: 12px; color: var(--text-low); line-height: 1.5; margin-bottom: 12px; }
+.form-card-meta  { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.form-card-stats {
+  display: flex;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-med);
+}
+.form-stat { display: flex; align-items: center; gap: 4px; }
+.form-card-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--n-50);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.forms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.dropdown-menu {
+  position: fixed; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); box-shadow: var(--shadow-md); z-index: 500;
+  min-width: 160px; padding: 4px 0; display: none;
+}
+.dropdown-menu.open { display: block; }
+.dropdown-item { display: flex; align-items: center; gap: 8px; padding: 7px 14px; font-size: 13px; color: var(--text-high); cursor: pointer; transition: background var(--transition); }
+.dropdown-item:hover { background: var(--n-50); }
+.dropdown-item.danger { color: var(--red-600); }
+.dropdown-divider { border-top: 1px solid var(--border); margin: 4px 0; }
+
+/* Response view section */
+.my-response-panel {
+  background: var(--brand-50);
+  border: 1px solid var(--brand-200);
+  border-radius: var(--r-md);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body data-page="forms-list">
+<div class="app-layout">
+  <header class="g-header" id="g-header"></header>
+  <nav class="g-sidebar" id="g-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__breadcrumb">
+        <a href="index.html">ホーム</a>
+        <span class="sep">›</span>
+        <span class="current">フォーム管理</span>
+      </div>
+      <div class="page-title-section" style="margin-left:12px">
+        <h1 class="page-title">フォーム一覧</h1>
+        <p class="page-subtitle">アンケート・データ収集フォームを管理します</p>
+      </div>
+      <div class="page-header__actions">
+        <a href="form-builder.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> フォームを作成</a>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <!-- My pending responses -->
+      <div class="my-response-panel">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <i class="fa-solid fa-envelope-open-text" style="color:var(--brand)"></i>
+          <p style="font-size:13px;font-weight:700;color:var(--brand)">回答が必要なフォームがあります</p>
+          <span class="badge badge-blue">3件</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border-radius:var(--r-sm);font-size:12px">
+            <i class="fa-solid fa-clock" style="color:var(--red-600)"></i>
+            <span style="flex:1"><strong>自家用携帯電話番号の登録</strong> — 期限: 6月15日（3日後）</span>
+            <button class="btn btn-sm btn-primary" onclick="showToast('フォームを開きます', 'info')">回答する</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border-radius:var(--r-sm);font-size:12px">
+            <i class="fa-solid fa-clock" style="color:var(--yellow-600)"></i>
+            <span style="flex:1"><strong>健康状態調査 2026</strong> — 期限: 6月20日</span>
+            <button class="btn btn-sm btn-secondary" onclick="showToast('フォームを開きます', 'info')">回答する</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs: 管理中 / 自分が回答者 -->
+      <div data-tabs>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="managed">管理中のフォーム <span class="tab-count">8</span></button>
+          <button class="tab-btn" data-tab="responding">回答対象のフォーム <span class="tab-count">3</span></button>
+          <button class="tab-btn" data-tab="closed">終了済み <span class="tab-count">12</span></button>
+        </div>
+
+        <!-- Managed forms -->
+        <div class="tab-panel active" data-tab-panel="managed">
+          <div class="filter-bar" style="padding:0 0 10px 0">
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" class="search-input" placeholder="フォーム検索…">
+            </div>
+            <select class="filter-select">
+              <option>すべてのステータス</option>
+              <option>下書き</option>
+              <option>公開中</option>
+              <option>回答締切</option>
+            </select>
+          </div>
+
+          <div class="forms-grid">
+            <!-- Form 1: Active -->
+            <div class="form-card" onclick="location.href='form-results.html'">
+              <div class="form-card-top" style="background:var(--brand)"></div>
+              <div class="form-card-body">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                  <span class="badge badge-green"><i class="fa-solid fa-circle fa-xs"></i> 公開中</span>
+                  <span class="badge badge-purple"><i class="fa-solid fa-link"></i> 名簿連携</span>
+                </div>
+                <p class="form-card-title">自家用携帯電話番号の登録</p>
+                <p class="form-card-desc">全教員の自家用携帯番号を収集し、名簿に自動反映します。回答はシステムに直接連携されます。</p>
+                <div class="form-card-meta">
+                  <span class="badge badge-sky"><i class="fa-solid fa-school"></i> 愛知県全体</span>
+                  <span class="badge badge-gray"><i class="fa-solid fa-user-tie"></i> 教員対象</span>
+                </div>
+                <div class="form-card-stats">
+                  <span class="form-stat"><i class="fa-solid fa-check-circle" style="color:var(--green-600)"></i> 708 / 850</span>
+                  <span class="form-stat"><i class="fa-solid fa-clock" style="color:var(--yellow-600)"></i> 残142件</span>
+                  <span class="form-stat" style="margin-left:auto;color:var(--red-600)"><i class="fa-solid fa-calendar-xmark"></i> 6/15締切</span>
+                </div>
+              </div>
+              <div class="form-card-footer" onclick="event.stopPropagation()">
+                <a href="form-results.html" class="btn btn-sm btn-primary" onclick="event.stopPropagation()"><i class="fa-solid fa-chart-bar"></i> 集計を見る</a>
+                <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();showToast('リマインダーを送信しました', 'success')"><i class="fa-solid fa-paper-plane"></i> リマインド</button>
+                <button class="btn btn-icon btn-sm" data-dropdown="dd-form-1" onclick="event.stopPropagation()"><i class="fa-solid fa-ellipsis"></i></button>
+                <div class="dropdown-menu" id="dd-form-1">
+                  <a href="form-builder.html" class="dropdown-item"><i class="fa-solid fa-pen"></i> 編集</a>
+                  <div class="dropdown-item" onclick="showToast('フォームを複製しました', 'success')"><i class="fa-solid fa-copy"></i> 複製</div>
+                  <div class="dropdown-item" onclick="showToast('フォームを終了しました', 'warning')"><i class="fa-solid fa-stop-circle"></i> 回答を締め切る</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form 2: Active -->
+            <div class="form-card" onclick="location.href='form-results.html'">
+              <div class="form-card-top" style="background:var(--green-600)"></div>
+              <div class="form-card-body">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                  <span class="badge badge-green"><i class="fa-solid fa-circle fa-xs"></i> 公開中</span>
+                </div>
+                <p class="form-card-title">健康状態調査 2026</p>
+                <p class="form-card-desc">教員・生徒の年次健康状態確認アンケートです。回答内容は学校単位で集計されます。</p>
+                <div class="form-card-meta">
+                  <span class="badge badge-sky"><i class="fa-solid fa-school"></i> 名古屋市</span>
+                  <span class="badge badge-gray"><i class="fa-solid fa-users"></i> 全員対象</span>
+                </div>
+                <div class="form-card-stats">
+                  <span class="form-stat"><i class="fa-solid fa-check-circle" style="color:var(--green-600)"></i> 3,142 / 5,204</span>
+                  <span class="form-stat"><i class="fa-solid fa-clock" style="color:var(--yellow-600)"></i> 残2,062件</span>
+                  <span class="form-stat" style="margin-left:auto"><i class="fa-solid fa-calendar-xmark"></i> 6/20締切</span>
+                </div>
+              </div>
+              <div class="form-card-footer" onclick="event.stopPropagation()">
+                <a href="form-results.html" class="btn btn-sm btn-primary" onclick="event.stopPropagation()"><i class="fa-solid fa-chart-bar"></i> 集計を見る</a>
+                <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();showToast('リマインダーを送信しました', 'success')"><i class="fa-solid fa-paper-plane"></i> リマインド</button>
+                <button class="btn btn-icon btn-sm" data-dropdown="dd-form-2" onclick="event.stopPropagation()"><i class="fa-solid fa-ellipsis"></i></button>
+                <div class="dropdown-menu" id="dd-form-2">
+                  <a href="form-builder.html" class="dropdown-item"><i class="fa-solid fa-pen"></i> 編集</a>
+                  <div class="dropdown-item" onclick="showToast('フォームを複製しました', 'success')"><i class="fa-solid fa-copy"></i> 複製</div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form 3: Draft -->
+            <div class="form-card" onclick="location.href='form-builder.html'" style="opacity:.8">
+              <div class="form-card-top" style="background:var(--n-300)"></div>
+              <div class="form-card-body">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                  <span class="badge badge-gray"><i class="fa-solid fa-pen fa-xs"></i> 下書き</span>
+                </div>
+                <p class="form-card-title">部活動顧問希望調査 2026年度</p>
+                <p class="form-card-desc">来年度の部活動顧問希望を教員から収集します。（作成中）</p>
+                <div class="form-card-meta">
+                  <span class="badge badge-sky"><i class="fa-solid fa-school"></i> 愛知県全体</span>
+                  <span class="badge badge-sky"><i class="fa-solid fa-chalkboard-teacher"></i> 教員対象</span>
+                </div>
+                <div class="form-card-stats">
+                  <span class="form-stat" style="color:var(--text-low)"><i class="fa-solid fa-question-circle"></i> 未公開</span>
+                </div>
+              </div>
+              <div class="form-card-footer" onclick="event.stopPropagation()">
+                <a href="form-builder.html" class="btn btn-sm btn-primary" onclick="event.stopPropagation()"><i class="fa-solid fa-pen"></i> 編集</a>
+                <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();showToast('フォームを公開しました', 'success')"><i class="fa-solid fa-paper-plane"></i> 公開する</button>
+                <button class="btn btn-icon btn-sm" data-dropdown="dd-form-3" onclick="event.stopPropagation()"><i class="fa-solid fa-ellipsis"></i></button>
+                <div class="dropdown-menu" id="dd-form-3">
+                  <div class="dropdown-item" onclick="showToast('フォームを複製しました', 'success')"><i class="fa-solid fa-copy"></i> 複製</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form 4: Active with roster link -->
+            <div class="form-card" onclick="location.href='form-results.html'">
+              <div class="form-card-top" style="background:var(--purple-600)"></div>
+              <div class="form-card-body">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                  <span class="badge badge-green"><i class="fa-solid fa-circle fa-xs"></i> 公開中</span>
+                  <span class="badge badge-purple"><i class="fa-solid fa-link"></i> 名簿連携</span>
+                </div>
+                <p class="form-card-title">教員プロフィール更新依頼</p>
+                <p class="form-card-desc">勤務校・担当教科・免許情報などの確認と更新。回答内容が直接名簿に反映されます。</p>
+                <div class="form-card-meta">
+                  <span class="badge badge-sky"><i class="fa-solid fa-school"></i> 愛知県全体</span>
+                  <span class="badge badge-gray"><i class="fa-solid fa-chalkboard-teacher"></i> 教員対象</span>
+                </div>
+                <div class="form-card-stats">
+                  <span class="form-stat"><i class="fa-solid fa-check-circle" style="color:var(--green-600)"></i> 2,891 / 3,218</span>
+                  <span class="form-stat"><i class="fa-solid fa-clock" style="color:var(--yellow-600)"></i> 残327件</span>
+                  <span class="form-stat" style="margin-left:auto"><i class="fa-solid fa-calendar-xmark"></i> 7/31締切</span>
+                </div>
+              </div>
+              <div class="form-card-footer" onclick="event.stopPropagation()">
+                <a href="form-results.html" class="btn btn-sm btn-primary" onclick="event.stopPropagation()"><i class="fa-solid fa-chart-bar"></i> 集計を見る</a>
+                <button class="btn btn-icon btn-sm" data-dropdown="dd-form-4" onclick="event.stopPropagation()"><i class="fa-solid fa-ellipsis"></i></button>
+                <div class="dropdown-menu" id="dd-form-4">
+                  <a href="form-builder.html" class="dropdown-item"><i class="fa-solid fa-pen"></i> 編集</a>
+                  <div class="dropdown-item" onclick="showToast('複製しました', 'success')"><i class="fa-solid fa-copy"></i> 複製</div>
+                  <div class="dropdown-item" onclick="showToast('締め切りました', 'warning')"><i class="fa-solid fa-stop-circle"></i> 締め切る</div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item danger"><i class="fa-solid fa-trash"></i> 削除</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Responding tab -->
+        <div class="tab-panel" data-tab-panel="responding">
+          <div class="forms-grid">
+            <div class="form-card">
+              <div class="form-card-top" style="background:var(--brand)"></div>
+              <div class="form-card-body">
+                <div style="display:flex;gap:6px;margin-bottom:8px">
+                  <span class="badge badge-red"><i class="fa-solid fa-exclamation-circle"></i> 未回答</span>
+                  <span class="badge badge-red" style="padding:2px 6px;font-size:10px">期限 3日後</span>
+                </div>
+                <p class="form-card-title">自家用携帯電話番号の登録</p>
+                <p class="form-card-desc">携帯番号を登録すると、名簿に自動的に反映されます。</p>
+                <div class="form-card-stats">
+                  <span class="form-stat"><i class="fa-solid fa-calendar-xmark" style="color:var(--red-600)"></i> 6月15日 23:59 締切</span>
+                </div>
+              </div>
+              <div class="form-card-footer">
+                <button class="btn btn-sm btn-primary w-full" onclick="showToast('フォームへ移動します', 'info')">
+                  <i class="fa-solid fa-pen"></i> 今すぐ回答する
+                </button>
+              </div>
+            </div>
+            <div class="form-card">
+              <div class="form-card-top" style="background:var(--green-600)"></div>
+              <div class="form-card-body">
+                <div style="display:flex;gap:6px;margin-bottom:8px">
+                  <span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> 未回答</span>
+                </div>
+                <p class="form-card-title">健康状態調査 2026</p>
+                <p class="form-card-desc">年次の健康状態に関するアンケートです。</p>
+                <div class="form-card-stats">
+                  <span class="form-stat"><i class="fa-solid fa-calendar-xmark"></i> 6月20日締切</span>
+                </div>
+              </div>
+              <div class="form-card-footer">
+                <button class="btn btn-sm btn-secondary w-full" onclick="showToast('フォームへ移動します', 'info')">
+                  <i class="fa-solid fa-pen"></i> 回答する
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Closed tab -->
+        <div class="tab-panel" data-tab-panel="closed">
+          <div style="text-align:center;padding:48px 24px;color:var(--text-low)">
+            <i class="fa-solid fa-archive" style="font-size:32px;opacity:.4;margin-bottom:12px;display:block"></i>
+            <p style="font-size:14px;font-weight:600;color:var(--text-med)">終了済みフォームは12件あります</p>
+            <p style="font-size:12px;margin-top:4px">最新の終了済みフォーム: 学年末アンケート 2025（2026/03/31 終了）</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => { initDropdowns(); });
+</script>
+</body>
+</html>

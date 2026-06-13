@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山田 太郎 - 人物詳細 - EduConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>変更履歴 — 所属組織</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2024/04/01 〜 現在</div>
+            <div class="timeline-value">A市立第一小学校</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2020/04/01 〜 2024/03/31</div>
+            <div class="timeline-value">B市立第二小学校</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2015/04/01 〜 2020/03/31</div>
+            <div class="timeline-value">C市立第三小学校</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="transfer-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>所属変更を申請</h2>
+        <button class="modal-close" data-modal-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">現在の所属</label>
+          <input class="form-input" value="A市立第一小学校" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">変更先の組織</label>
+          <select class="form-select"><option>B市立第二小学校</option><option>D市立第四小学校</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">適用日</label>
+          <input class="form-input" type="date" value="2026-07-01">
+          <p class="form-hint">指定日のバッチ処理で所属が変更されます</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">理由</label>
+          <textarea class="form-textarea" placeholder="転勤の理由を入力"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+        <button class="btn btn-primary" data-modal-close onclick="showToast('所属変更申請を送信しました')">申請する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/icons.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    initLayout('roster', 'roster-list');
+    setPageContent(`
+      <div class="page-header">
+        <div class="breadcrumb">
+          <a href="../index.html">ホーム</a> ${Icons.chevronRight}
+          <a href="roster-list.html">人物ディレクトリ</a> ${Icons.chevronRight}
+          山田 太郎
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <h1>山田 太郎 <span style="font-size:0.9rem;font-weight:400;color:var(--color-gray-400)">（ヤマダ タロウ）</span></h1>
+            <p>一般教員 — A市立第一小学校 3年2組 担任</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" data-modal-open="transfer-modal">${Icons.transfer} 所属変更申請</button>
+            <button class="btn btn-primary" onclick="showToast('変更を保存しました（モック）')">保存</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-pane">
+        <div class="pane-left">
+          <div class="pane-header">カテゴリー</div>
+          <div class="tree-item active" data-selectable>基本情報</div>
+          <div class="tree-item" data-selectable>連絡先情報</div>
+          <div class="tree-item" data-selectable>機微情報</div>
+          <div class="tree-item" data-selectable>カスタム属性</div>
+          <div class="tree-item" data-selectable>所属・クラス</div>
+          <div class="tree-item" data-selectable>アカウント</div>
+        </div>
+        <div class="pane-right">
+          <div class="pane-header" style="display:flex;justify-content:space-between;align-items:center">
+            <span>基本情報</span>
+            <span class="sync-badge synced">${Icons.google} Workspace同期済</span>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">氏名</label>
+                <input class="form-input" value="山田 太郎">
+              </div>
+              <div class="form-group">
+                <label class="form-label">フリガナ</label>
+                <input class="form-input" value="ヤマダ タロウ">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">生年月日</label>
+                <input class="form-input" type="date" value="1985-04-12">
+              </div>
+              <div class="form-group">
+                <label class="form-label">性別</label>
+                <select class="form-select"><option selected>男性</option><option>女性</option><option>その他</option></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">職種</label>
+                <select class="form-select"><option selected>一般教員</option><option>校長</option><option>教頭</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">職員番号</label>
+                <input class="form-input" value="T-2015-0042">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">所属組織
+                <button class="btn btn-ghost btn-sm" style="float:right;font-size:0.75rem" data-modal-open="history-modal">${Icons.clock} 履歴を見る</button>
+              </label>
+              <input class="form-input" value="A市立第一小学校" disabled>
+            </div>
+            <div class="form-group">
+              <label class="form-label">担当クラス</label>
+              <input class="form-input" value="3年2組（担任）">
+            </div>
+            <hr style="border:none;border-top:1px solid var(--color-gray-100);margin:20px 0">
+            <h3 style="font-size:0.9rem;font-weight:600;margin-bottom:12px">カスタム属性</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">部活動</label>
+                <input class="form-input" value="サッカー部（顧問）">
+              </div>
+              <div class="form-group">
+                <label class="form-label">教員免許番号</label>
+                <input class="form-input" value="1234567890">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+    initTreeToggle();
+  </script>
+</body>
+</html>
