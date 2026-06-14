@@ -40,6 +40,12 @@
       ],
     },
     {
+      section: "監査・セキュリティ",
+      items: [
+        { id: "audit", icon: "policy", label: "監査ログ", href: "audit-log.html", count: 3 },
+      ],
+    },
+    {
       section: "テナント設定",
       items: [
         { id: "attributes", icon: "tune", label: "属性項目定義", href: "attributes.html" },
