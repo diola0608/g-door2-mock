@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>所属変更申請 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="roster_transfer">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <a href="roster_list.html">名簿一覧</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>所属変更申請</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">所属変更申請</h1>
+        <p class="page-subtitle">組織間の所属変更を申請・承認します。実行日はバッチ処理で適用されます</p>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="git-compare"></span></span>新規申請</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">対象者 <span class="required">*</span></label>
+            <select class="form-select" id="transfer-person">
+              <option value="">選択してください</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">現在の所属</label>
+              <input type="text" class="form-input" id="current-org" readonly value="--">
+            </div>
+            <div class="form-group">
+              <label class="form-label">変更先組織 <span class="required">*</span></label>
+              <select class="form-select" id="target-org"></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">有効日 <span class="required">*</span></label>
+              <input type="date" class="form-input" id="transfer-date" value="2026-07-01">
+            </div>
+            <div class="form-group">
+              <label class="form-label">申請者</label>
+              <input type="text" class="form-input" value="山田 太郎" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">変更理由</label>
+            <textarea class="form-textarea" rows="3" placeholder="例：令和8年度異動による"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox"> 承認不要で即時反映する（強い権限が必要です）</label>
+          </div>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" onclick="submitTransfer()"><span class="icon" data-icon="send"></span> 申請する</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="file-text"></span></span>申請状況</h3>
+        </div>
+        <div class="card-body" id="transfer-list"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <div class="card-header">
+        <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="refresh-cw"></span></span>自動実行スケジュール</h3>
+      </div>
+      <div class="card-body">
+        <p style="margin:0 0 12px;font-size:.9rem;color:var(--color-text-secondary)">承認済みの所属変更は、毎日 午前5:00 のバッチ処理で反映されます。変更前日 23:59 までに取り消しが可能です。</p>
+        <div class="definition-list">
+          <div class="definition-row"><div class="definition-label">次回実行予定</div><div class="definition-value">2026年7月1日 05:00</div></div>
+          <div class="definition-row"><div class="definition-label">保留件数</div><div class="definition-value">3件</div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    window.init_roster_transfer = function() {
+      const personSelect = document.getElementById('transfer-person');
+      MOCK_DATA.people.forEach(p => {
+        personSelect.insertAdjacentHTML('beforeend', `<option value="${p.id}">${escapeHtml(p.name)}（${escapeHtml(getOrgName(p.orgId))}）</option>`);
+      });
+
+      const targetSelect = document.getElementById('target-org');
+      MOCK_DATA.organizations.filter(o => o.type === 'school' || o.type === 'department').forEach(o => {
+        targetSelect.insertAdjacentHTML('beforeend', `<option value="${o.id}">${escapeHtml(o.name)}</option>`);
+      });
+
+      function updateCurrent() {
+        const pid = personSelect.value;
+        const p = MOCK_DATA.people.find(x => x.id === pid);
+        document.getElementById('current-org').value = p ? getOrgPath(p.orgId) : '--';
+      }
+      personSelect.addEventListener('change', updateCurrent);
+
+      // URLパラメータで対象者指定
+      const params = new URLSearchParams(location.search);
+      const prefill = params.get('person');
+      if (prefill) {
+        personSelect.value = prefill;
+        updateCurrent();
+      } else {
+        personSelect.value = MOCK_DATA.people[0].id;
+        updateCurrent();
+      }
+
+      function renderTransfers() {
+        const container = document.getElementById('transfer-list');
+        container.innerHTML = '';
+        MOCK_DATA.transfers.forEach(t => {
+          container.insertAdjacentHTML('beforeend', `
+            <div class="transfer-card card" style="margin-bottom:12px">
+              <div class="card-body" style="padding:16px 18px">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <div class="roster-name" style="font-size:1rem">${escapeHtml(t.personName)}</div>
+                    <div class="transfer-status-row" style="font-size:.85rem;color:var(--color-text-secondary)">
+                      ${escapeHtml(getOrgName(t.fromOrgId))}
+                      <span class="icon" data-icon="chevron-right"></span>
+                      ${escapeHtml(getOrgName(t.toOrgId))}
+                      <span style="margin-left:8px"><span class="icon" data-icon="calendar"></span> ${escapeHtml(t.date)}</span>
+                    </div>
+                  </div>
+                  <span class="status-badge ${statusClass(t.status)}">${escapeHtml(t.status)}</span>
+                </div>
+                <div style="margin-top:10px;font-size:.82rem;color:var(--color-text-muted)">申請者：${escapeHtml(t.requestedBy)} / 承認者：${escapeHtml(t.approvedBy || '未承認')}</div>
+                ${t.status === '承認待ち' ? `<div style="margin-top:10px"><button class="btn btn-danger btn-sm" onclick="showToast('申請を取り消しました（モック）','warning')">取り消し</button></div>` : ''}
+              </div>
+            </div>
+          `);
+        });
+        replaceIcons();
+      }
+      renderTransfers();
+
+      window.submitTransfer = function() {
+        if (!personSelect.value || !targetSelect.value) {
+          showToast('対象者と変更先を入力してください', 'warning');
+          return;
+        }
+        showToast('所属変更申請を送信しました。承認待ちになります。', 'success');
+      };
+    };
+  </script>
+</body>
+</html>

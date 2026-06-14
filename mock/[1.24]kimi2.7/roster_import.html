@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSVインポート | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="roster_import">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <a href="roster_list.html">名簿一覧</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>CSVインポート</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">CSVインポート</h1>
+        <p class="page-subtitle">CSVファイルをアップロードし、名簿項目との紐づけ・識別設定を行います</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="import-stepper" id="import-stepper">
+          <div class="import-step active" data-step="1"><div class="import-step-number">1</div><div class="import-step-label">CSVアップロード</div></div>
+          <div class="import-step" data-step="2"><div class="import-step-number">2</div><div class="import-step-label">項目紐づけ</div></div>
+          <div class="import-step" data-step="3"><div class="import-step-number">3</div><div class="import-step-label">識別設定</div></div>
+          <div class="import-step" data-step="4"><div class="import-step-number">4</div><div class="import-step-label">確認・実行</div></div>
+        </div>
+
+        <div id="step-1">
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-zone-icon"><span class="icon" data-icon="upload" style="font-size:56px"></span></div>
+            <div class="upload-zone-title">CSVファイルをドラッグ＆ドロップ、またはクリックして選択</div>
+            <div class="upload-zone-hint">対応形式：UTF-8（BOM付き可）の .csv / 最大 50MB</div>
+          </div>
+          <input type="file" id="csv-file" accept=".csv" style="display:none">
+          <div id="file-info" style="margin-top:16px;display:none">
+            <div class="card" style="background:#f8fafc">
+              <div class="card-body" style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
+                <div><strong id="file-name">sample.csv</strong><span style="color:var(--color-text-muted);font-size:.82rem;margin-left:10px">24 KB / 120行</span></div>
+                <button class="btn btn-danger btn-sm" onclick="clearFile()"><span class="icon" data-icon="trash"></span> 削除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="step-2" style="display:none">
+          <p class="form-hint" style="margin-bottom:14px">CSVの列（左）を、名簿の属性項目（右）に紐づけてください。未使用の列は「マッピングしない」を選択できます。</p>
+          <div id="mapping-list"></div>
+        </div>
+
+        <div id="step-3" style="display:none">
+          <div class="card" style="border-left:4px solid var(--color-primary-700);margin-bottom:20px">
+            <div class="card-body">
+              <h4 style="margin:0 0 8px">識別子の設定</h4>
+              <p style="margin:0;font-size:.88rem;color:var(--color-text-muted)">同一人物を判定するための項目を1つ以上選択してください。値が一致した場合、既存データを更新します。</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">プライマリ識別子</label>
+            <select class="form-select" id="primary-id">
+              <option>職員番号 / 児童生徒番号</option>
+              <option>メールアドレス（Workspaceアカウント）</option>
+              <option>氏名＋生年月日</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">サブ識別子（オプション）</label>
+            <select class="form-select">
+              <option>なし</option>
+              <option>メールアドレス</option>
+              <option>氏名（カナ）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox" id="skip-approval"> 所属変更の承認フローをスキップする（権限が必要です）</label>
+          </div>
+        </div>
+
+        <div id="step-4" style="display:none">
+          <div class="card" style="background:var(--color-success-light);border-color:#bbf7d0;margin-bottom:20px">
+            <div class="card-body" style="padding:14px 18px">
+              <strong style="color:#166534"><span class="icon" data-icon="check"></span> インポート設定の確認</strong>
+              <p style="margin:6px 0 0;font-size:.85rem;color:#166534">ファイル： <span id="confirm-file">sample.csv</span> / 更新対象 120件 / 識別子：職員番号</p>
+            </div>
+          </div>
+          <div class="definition-list" style="margin-bottom:20px">
+            <div class="definition-row"><div class="definition-label">マッピング数</div><div class="definition-value">12列中 10列</div></div>
+            <div class="definition-row"><div class="definition-label">所属変更</div><div class="definition-value">承認フローあり</div></div>
+            <div class="definition-row"><div class="definition-label">実行方式</div><div class="definition-value">バッチ処理（登録後ログで確認）</div></div>
+          </div>
+        </div>
+
+        <div class="form-actions" id="step-actions">
+          <button class="btn btn-secondary" id="btn-prev" style="display:none" onclick="prevStep()">前へ</button>
+          <button class="btn btn-primary" id="btn-next" onclick="nextStep()">次へ</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    window.init_roster_import = function() {
+      let step = 1;
+      const mappings = [
+        { csv: '職員番号', attr: 'attr_name' },
+        { csv: '氏名', attr: 'attr_name' },
+        { csv: '氏名（カナ）', attr: '' },
+        { csv: 'メールアドレス', attr: '' },
+        { csv: '性別', attr: 'attr_sex' },
+        { csv: '生年月日', attr: 'attr_birth' },
+        { csv: '所属学校コード', attr: '' },
+        { csv: 'クラス', attr: '' },
+        { csv: '電話番号', attr: 'attr_phone' },
+        { csv: '住所', attr: 'attr_address' },
+        { csv: '教員免許番号', attr: 'attr_license' },
+        { csv: '部活動', attr: 'attr_club' }
+      ];
+
+      const mappingList = document.getElementById('mapping-list');
+      mappings.forEach((m, i) => {
+        const options = MOCK_DATA.attributes.map(a => `<option value="${a.id}" ${a.id === m.attr ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
+        mappingList.insertAdjacentHTML('beforeend', `
+          <div class="mapping-grid">
+            <input type="text" class="form-input" value="${escapeHtml(m.csv)}" readonly>
+            <span class="mapping-arrow"><span class="icon" data-icon="chevron-right"></span></span>
+            <select class="form-select">${options}<option value="" ${!m.attr ? 'selected' : ''}>マッピングしない</option></select>
+          </div>
+        `);
+      });
+
+      const uploadZone = document.getElementById('upload-zone');
+      const fileInput = document.getElementById('csv-file');
+      uploadZone.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          document.getElementById('file-info').style.display = 'block';
+          document.getElementById('file-name').textContent = fileInput.files[0].name;
+          document.getElementById('upload-zone').style.display = 'none';
+          document.getElementById('confirm-file').textContent = fileInput.files[0].name;
+        }
+      });
+
+      window.clearFile = function() {
+        fileInput.value = '';
+        document.getElementById('file-info').style.display = 'none';
+        document.getElementById('upload-zone').style.display = 'block';
+      };
+
+      function updateStepper() {
+        document.querySelectorAll('.import-step').forEach(s => {
+          const n = parseInt(s.dataset.step);
+          s.classList.remove('active', 'done');
+          if (n < step) s.classList.add('done');
+          if (n === step) s.classList.add('active');
+        });
+        [1,2,3,4].forEach(n => document.getElementById('step-' + n).style.display = n === step ? 'block' : 'none');
+        document.getElementById('btn-prev').style.display = step === 1 ? 'none' : 'inline-flex';
+        document.getElementById('btn-next').textContent = step === 4 ? '実行' : '次へ';
+      }
+
+      window.nextStep = function() {
+        if (step < 4) { step++; updateStepper(); }
+        else {
+          showToast('CSVインポートを受け付けました。処理結果はログで確認できます。', 'success');
+          setTimeout(() => location.href = 'logs.html', 1500);
+        }
+      };
+      window.prevStep = function() { if (step > 1) { step--; updateStepper(); } };
+      updateStepper();
+    };
+  </script>
+</body>
+</html>

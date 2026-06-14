@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>処理ログ | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="logs">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>処理ログ</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">処理ログ</h1>
+        <p class="page-subtitle">CSVインポート、同期、所属変更、属性更新などの処理履歴を確認します</p>
+      </div>
+      <button class="btn btn-secondary" onclick="showToast('ログをエクスポートしました（モック）','info')"><span class="icon" data-icon="download"></span> エクスポート</button>
+    </div>
+
+    <div class="roster-filter-bar">
+      <input type="text" id="log-search" class="form-input" placeholder="タイトル・メッセージで検索" style="flex:1;max-width:320px">
+      <select class="form-select" id="log-type" style="min-width:150px">
+        <option value="">すべての種別</option>
+        <option>CSVインポート</option>
+        <option>Google Workspace同期</option>
+        <option>所属変更</option>
+        <option>属性項目更新</option>
+        <option>フォーム連携</option>
+      </select>
+      <select class="form-select" id="log-status" style="min-width:140px">
+        <option value="">すべての状態</option>
+        <option>成功</option>
+        <option>処理中</option>
+        <option>エラー</option>
+        <option>承認待ち</option>
+        <option>承認済み</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="file-text"></span></span>ログ一覧</h3>
+        <span class="tag tag-primary" id="log-count">0件</span>
+      </div>
+      <div class="card-body table-wrap">
+        <table class="table" id="log-table">
+          <thead>
+            <tr>
+              <th>日時</th>
+              <th>種別</th>
+              <th>タイトル</th>
+              <th>申請者</th>
+              <th>状態</th>
+              <th>概要</th>
+              <th style="text-align:right">操作</th>
+            </tr>
+          </thead>
+          <tbody><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-log-detail">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="file-text"></span> ログ詳細</h3>
+        <button class="modal-close" onclick="closeModal('modal-log-detail')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body" id="log-detail-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-log-detail')">閉じる</button>
+        <a href="contact.html" class="btn btn-primary" id="log-contact-link">問い合わせ</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_logs = function() {
+      const tbody = document.querySelector('#log-table tbody');
+      function render() {
+        const q = document.getElementById('log-search').value.toLowerCase();
+        const t = document.getElementById('log-type').value;
+        const s = document.getElementById('log-status').value;
+        tbody.innerHTML = '';
+        const filtered = MOCK_DATA.logs.filter(l => {
+          if (t && l.type !== t) return false;
+          if (s && l.status !== s) return false;
+          if (q && !(l.title + l.message + l.requester).toLowerCase().includes(q)) return false;
+          return true;
+        });
+        document.getElementById('log-count').textContent = filtered.length + '件';
+        filtered.forEach(l => {
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td>${escapeHtml(l.date)}</td>
+              <td>${escapeHtml(l.type)}</td>
+              <td>${escapeHtml(l.title)}</td>
+              <td>${escapeHtml(l.requester)}</td>
+              <td><span class="status-badge ${statusClass(l.status)}">${escapeHtml(l.status)}</span></td>
+              <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.message)}</td>
+              <td style="text-align:right">
+                <button class="btn btn-ghost btn-sm" onclick="showLogDetail('${l.id}')">詳細</button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+
+      document.getElementById('log-search').addEventListener('input', render);
+      document.getElementById('log-type').addEventListener('change', render);
+      document.getElementById('log-status').addEventListener('change', render);
+
+      window.showLogDetail = function(id) {
+        const l = MOCK_DATA.logs.find(x => x.id === id);
+        const body = document.getElementById('log-detail-body');
+        body.innerHTML = `
+          <div class="definition-list">
+            <div class="definition-row"><div class="definition-label">種別</div><div class="definition-value">${escapeHtml(l.type)}</div></div>
+            <div class="definition-row"><div class="definition-label">タイトル</div><div class="definition-value">${escapeHtml(l.title)}</div></div>
+            <div class="definition-row"><div class="definition-label">状態</div><div class="definition-value"><span class="status-badge ${statusClass(l.status)}">${escapeHtml(l.status)}</span></div></div>
+            <div class="definition-row"><div class="definition-label">日時</div><div class="definition-value">${escapeHtml(l.date)}</div></div>
+            <div class="definition-row"><div class="definition-label">申請者</div><div class="definition-value">${escapeHtml(l.requester)}</div></div>
+            <div class="definition-row"><div class="definition-label">メッセージ</div><div class="definition-value">${escapeHtml(l.message)}</div></div>
+          </div>
+        `;
+        const link = document.getElementById('log-contact-link');
+        link.href = 'contact.html?log=' + l.id;
+        link.textContent = l.status === 'エラー' ? 'このエラーを問い合わせ' : '問い合わせ';
+        openModal('modal-log-detail');
+      };
+
+      render();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アカウント管理 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="accounts">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>アカウント管理</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">アカウント管理</h1>
+        <p class="page-subtitle">システム利用者のGoogle Workspaceアカウントとの同期状況を確認します</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-sync-all')"><span class="icon" data-icon="refresh-cw"></span> 全アカウント同期</button>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card stat-card">
+        <div><div class="stat-label">Workspaceアカウント</div><div class="stat-value">1,240</div></div>
+        <div class="stat-icon primary"><span class="icon" data-icon="mail"></span></div>
+      </div>
+      <div class="card stat-card">
+        <div><div class="stat-label">同期保留</div><div class="stat-value">3</div></div>
+        <div class="stat-icon accent"><span class="icon" data-icon="refresh-cw"></span></div>
+      </div>
+      <div class="card stat-card">
+        <div><div class="stat-label">メール未所持者</div><div class="stat-value">28</div></div>
+        <div class="stat-icon" style="background:#f1f5f9;color:#475569"><span class="icon" data-icon="users"></span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <div class="card-header">
+        <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="user-check"></span></span>アカウント一覧</h3>
+        <input type="text" id="account-search" class="form-input" placeholder="検索" style="width:220px">
+      </div>
+      <div class="card-body table-wrap">
+        <table class="table" id="account-table">
+          <thead>
+            <tr>
+              <th>氏名</th>
+              <th>メールアドレス</th>
+              <th>所属</th>
+              <th>種別</th>
+              <th>同期状態</th>
+              <th style="text-align:right">操作</th>
+            </tr>
+          </thead>
+          <tbody><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-sync-all">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="refresh-cw"></span> 全アカウント同期</h3>
+        <button class="modal-close" onclick="closeModal('modal-sync-all')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <p>すべてのアカウントをGoogle Workspaceと同期します。処理には数分かかる場合があります。</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-sync-all')">キャンセル</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-sync-all'); showToast('同期を開始しました（モック）','info')">開始</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_accounts = function() {
+      const tbody = document.querySelector('#account-table tbody');
+      function render() {
+        const q = document.getElementById('account-search').value.toLowerCase();
+        tbody.innerHTML = '';
+        MOCK_DATA.people.slice(0, 8).forEach(p => {
+          if (q && !(p.name + p.email).toLowerCase().includes(q)) return;
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td><a href="roster_detail.html?id=${p.id}">${escapeHtml(p.name)}</a></td>
+              <td>${p.email ? escapeHtml(p.email) : '<span class="tag">未登録</span>'}</td>
+              <td>${escapeHtml(getOrgName(p.orgId))}</td>
+              <td>${escapeHtml({teacher:'教員',student:'生徒',guardian:'保護者',staff:'職員'}[p.type] || p.type)}</td>
+              <td><span class="status-badge status-success">同期済み</span></td>
+              <td style="text-align:right">
+                <button class="btn btn-secondary btn-sm" onclick="showToast('1件の同期を開始しました（モック）','info')">同期</button>
+                <button class="btn btn-ghost btn-sm" onclick="showToast('パスワードリセットメールを送信しました（モック）','success')">リセット</button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+      document.getElementById('account-search').addEventListener('input', render);
+      render();
+    };
+  </script>
+</body>
+</html>

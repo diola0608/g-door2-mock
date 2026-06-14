@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>属性項目設定 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="attributes">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>属性項目設定</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">属性項目設定</h1>
+        <p class="page-subtitle">テナントごとに保持する名簿項目をカテゴリー別に管理します。履歴管理やバリデーションも設定できます</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-attr-create')"><span class="icon" data-icon="plus"></span> 属性追加</button>
+    </div>
+
+    <div class="tabs" id="attr-tabs">
+      <button class="tab active" data-tab="all">すべて</button>
+      <button class="tab" data-tab="cat_basic">基本情報</button>
+      <button class="tab" data-tab="cat_contact">連絡先情報</button>
+      <button class="tab" data-tab="cat_sensitive">機微情報</button>
+      <button class="tab" data-tab="cat_qual">資格・所属</button>
+      <button class="tab" data-tab="cat_custom">カスタム</button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="table-wrap">
+          <table class="table" id="attr-table">
+            <thead>
+              <tr>
+                <th>属性名</th>
+                <th>カテゴリー</th>
+                <th>データ形式</th>
+                <th>必須</th>
+                <th>履歴管理</th>
+                <th>備考</th>
+                <th style="text-align:right">操作</th>
+              </tr>
+            </thead>
+            <tbody><!-- JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-attr-create">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="plus"></span> 属性項目追加</h3>
+        <button class="modal-close" onclick="closeModal('modal-attr-create')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">属性名</label>
+            <input type="text" class="form-input" placeholder="例：緊急連絡先2">
+          </div>
+          <div class="form-group">
+            <label class="form-label">カテゴリー</label>
+            <select class="form-select">
+              <option>基本情報</option>
+              <option>連絡先情報</option>
+              <option>機微情報</option>
+              <option>資格・所属</option>
+              <option>カスタム</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">データ形式</label>
+            <select class="form-select">
+              <option>単一の文字列</option>
+              <option>複数の文字列</option>
+              <option>数値</option>
+              <option>日付</option>
+              <option>コードマスター</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">コードグループ</label>
+            <select class="form-select"><option>なし</option><option>部活動</option><option>人物の特徴</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="checkbox"><input type="checkbox"> 必須項目にする</label>
+        </div>
+        <div class="form-group">
+          <label class="checkbox"><input type="checkbox"> 履歴を保持する</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-attr-create')">キャンセル</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-attr-create'); showToast('属性を追加しました（モック）','success')">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_attributes = function() {
+      const tbody = document.querySelector('#attr-table tbody');
+      const dataTypeJp = { string: '文字列', strings: '複数文字列', number: '数値', date: '日付', code: 'コードマスター' };
+      function render(catId) {
+        tbody.innerHTML = '';
+        MOCK_DATA.attributes.forEach(a => {
+          if (catId !== 'all' && a.categoryId !== catId) return;
+          const cat = MOCK_DATA.attributeCategories.find(c => c.id === a.categoryId);
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td><strong>${escapeHtml(a.name)}</strong></td>
+              <td><span class="tag" style="background:${cat ? 'var(--color-' + (cat.color === 'danger' ? 'danger-light' : cat.color === 'amber' ? 'accent-50' : cat.color === 'teal' ? 'teal-50' : 'primary-50') + ')' : ''}">${escapeHtml(cat ? cat.name : '-')}</span></td>
+              <td>${escapeHtml(dataTypeJp[a.dataType] || a.dataType)}${a.refCode ? '<br><span style="font-size:.78rem;color:var(--color-text-muted)">参照：' + escapeHtml(a.refCode) + '</span>' : ''}</td>
+              <td>${a.required ? '<span class="status-badge status-success">必須</span>' : '<span class="status-badge status-neutral">任意</span>'}</td>
+              <td>${a.note.includes('履歴') ? '<span class="status-badge status-info">対象</span>' : '<span class="status-badge status-neutral">-</span>'}</td>
+              <td style="font-size:.85rem;color:var(--color-text-secondary)">${escapeHtml(a.note)}</td>
+              <td style="text-align:right">
+                <button class="btn btn-ghost btn-sm" onclick="openModal('modal-attr-create')">編集</button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+      document.getElementById('attr-tabs').addEventListener('click', e => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
+        document.querySelectorAll('#attr-tabs .tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        render(btn.dataset.tab);
+      });
+      render('all');
+    };
+  </script>
+</body>
+</html>

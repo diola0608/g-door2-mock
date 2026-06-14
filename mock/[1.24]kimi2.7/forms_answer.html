@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム回答 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="forms_answer">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <a href="forms_list.html">フォーム一覧</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>回答</span>
+    </div>
+
+    <div class="grid grid-3" style="align-items:start">
+      <div class="card" style="grid-column:span 2">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title" id="form-title">--</h3>
+            <p style="margin:4px 0 0;font-size:.85rem;color:var(--color-text-muted)" id="form-desc"></p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">回答者</label>
+            <input type="text" class="form-input" value="佐藤 花子（yamada.t@pref.shizuoka.jp として代理回答）" readonly>
+          </div>
+
+          <div id="answer-fields">
+            <!-- JS -->
+          </div>
+
+          <div class="form-actions" style="border:none;padding:0;margin-top:24px">
+            <a href="forms_list.html" class="btn btn-secondary">キャンセル</a>
+            <button class="btn btn-primary" onclick="submitAnswer()"><span class="icon" data-icon="send"></span> 回答を送信</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="align-self:start">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="shield"></span></span>アンケート情報</h3>
+        </div>
+        <div class="card-body">
+          <div class="definition-list">
+            <div class="definition-row"><div class="definition-label">対象</div><div class="definition-value" id="form-target">--</div></div>
+            <div class="definition-row"><div class="definition-label">締切</div><div class="definition-value" id="form-deadline">--</div></div>
+            <div class="definition-row"><div class="definition-label">名簿連携</div><div class="definition-value" id="form-mapping">--</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    window.init_forms_answer = function() {
+      const params = new URLSearchParams(location.search);
+      const fid = params.get('id') || 'f001';
+      const f = MOCK_DATA.forms.find(x => x.id === fid) || MOCK_DATA.forms[0];
+      document.getElementById('form-title').textContent = f.title;
+      document.getElementById('form-desc').textContent = f.description;
+      document.getElementById('form-target').textContent = f.target;
+      document.getElementById('form-deadline').textContent = f.deadline || 'なし';
+      document.getElementById('form-mapping').innerHTML = f.canMapToRoster ? '<span class="tag tag-primary">あり</span>' : '<span class="tag">なし</span>';
+
+      const container = document.getElementById('answer-fields');
+      container.innerHTML = '';
+      const questions = [
+        { label: '自家用携帯番号', type: 'text', placeholder: '090-1234-5678' }
+      ];
+      if (fid === 'f002') {
+        questions.length = 0;
+        questions.push({ label: '児童1人あたりのPC台数', type: 'text', placeholder: '1.2' });
+        questions.push({ label: '校舎全体のAP設置数', type: 'text', placeholder: '12' });
+      } else if (fid === 'f003') {
+        questions.length = 0;
+        questions.push({ label: '不登校の主な要因（選択）', type: 'select' });
+      }
+
+      questions.forEach((q, i) => {
+        if (q.type === 'select') {
+          container.insertAdjacentHTML('beforeend', `
+            <div class="form-group">
+              <label class="form-label">${escapeHtml(q.label)}</label>
+              <select class="form-select"><option>学業不振</option><option>対人関係</option><option>体調不良</option><option>家庭の事情</option><option>その他</option></select>
+            </div>
+          `);
+        } else {
+          container.insertAdjacentHTML('beforeend', `
+            <div class="form-group">
+              <label class="form-label">${escapeHtml(q.label)}</label>
+              <input type="${q.type}" class="form-input" placeholder="${escapeHtml(q.placeholder)}">
+            </div>
+          `);
+        }
+      });
+
+      window.submitAnswer = function() {
+        showToast('回答を送信しました。名簿連携が行われます。', 'success');
+        setTimeout(() => location.href = 'forms_summary.html?id=' + f.id, 1200);
+      };
+    };
+  </script>
+</body>
+</html>

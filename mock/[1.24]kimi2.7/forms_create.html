@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム作成 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="forms_create">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <a href="forms_list.html">フォーム一覧</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>フォーム作成</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">フォーム作成</h1>
+        <p class="page-subtitle">対象者、設問、名簿連携を設定してアンケートを作成します</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" onclick="openModal('modal-preview')"><span class="icon" data-icon="eye"></span> プレビュー</button>
+        <button class="btn btn-primary" onclick="saveForm()"><span class="icon" data-icon="check"></span> 保存</button>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="align-items:start">
+      <div class="card" style="grid-column:span 2">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="edit"></span></span>基本設定</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">タイトル <span class="required">*</span></label>
+            <input type="text" class="form-input" placeholder="例：教員自家用携帯番号登録">
+          </div>
+          <div class="form-group">
+            <label class="form-label">説明</label>
+            <textarea class="form-textarea" rows="3" placeholder="回答者向けの説明文"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">対象者の選択</label>
+              <select class="form-select">
+                <option>職種 = 一般教員</option>
+                <option>職種 = 校長</option>
+                <option>属性「部活顧問」が設定されている先生</option>
+                <option>児童生徒の保護者</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">締切日</label>
+              <input type="date" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox" checked> 回答を名簿に自動反映する</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="align-self:start">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="shield"></span></span>権限設定</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">回答閲覧者</label>
+            <select class="form-select">
+              <option>作成者のみ</option>
+              <option>同一学校の管理者</option>
+              <option>同一市町村の教育委員会職員</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">集計閲覧者</label>
+            <select class="form-select">
+              <option>作成者と校長</option>
+              <option>学年主任以上</option>
+            </select>
+          </div>
+          <p class="form-hint">対象者や閲覧者は、サブジェクト・オブジェクト・組織スコープを自由に組み合わせて設定できます。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <div class="card-header">
+        <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="layout"></span></span>設問と名簿連携</h3>
+        <button class="btn btn-secondary btn-sm" onclick="addField()"><span class="icon" data-icon="plus"></span> 設問追加</button>
+      </div>
+      <div class="card-body" id="builder-fields">
+        <div class="form-builder-field">
+          <div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">設問1：自家用携帯番号</label>
+              <input type="text" class="form-input" placeholder="設問文">
+            </div>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">回答形式</label>
+                <select class="form-select"><option>単一行テキスト</option><option>段落</option><option>選択肢</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">名簿属性への反映</label>
+                <select class="form-select">
+                  <option value="attr_phone">電話番号</option>
+                  <option value="">反映しない</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="this.closest('.form-builder-field').remove()"><span class="icon" data-icon="trash"></span></button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-preview">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">回答プレビュー</h3>
+        <button class="modal-close" onclick="closeModal('modal-preview')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">自家用携帯番号</label><input type="text" class="form-input" placeholder="090-1234-5678"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-preview')">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_forms_create = function() {
+      let fieldCount = 1;
+      window.addField = function() {
+        fieldCount++;
+        const opts = MOCK_DATA.attributes.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+        document.getElementById('builder-fields').insertAdjacentHTML('beforeend', `
+          <div class="form-builder-field">
+            <div>
+              <div class="form-group" style="margin-bottom:10px">
+                <label class="form-label">設問${fieldCount}</label>
+                <input type="text" class="form-input" placeholder="設問文">
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">回答形式</label>
+                  <select class="form-select"><option>単一行テキスト</option><option>段落</option><option>選択肢</option><option>日付</option></select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">名簿属性への反映</label>
+                  <select class="form-select"><option value="">反映しない</option>${opts}</select>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="this.closest('.form-builder-field').remove()"><span class="icon" data-icon="trash"></span></button>
+          </div>
+        `);
+      };
+
+      window.saveForm = function() {
+        showToast('フォームを保存しました。一覧へ戻ります。', 'success');
+        setTimeout(() => location.href = 'forms_list.html', 1200);
+      };
+    };
+  </script>
+</body>
+</html>

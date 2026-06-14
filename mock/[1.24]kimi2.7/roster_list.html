@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名簿一覧 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="roster_list">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>名簿一覧</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">名簿一覧</h1>
+        <p class="page-subtitle">テナント内の人（教員・児童生徒・保護者・職員）を検索・管理します</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <a href="roster_import.html" class="btn btn-secondary"><span class="icon" data-icon="upload"></span> CSVインポート</a>
+        <button class="btn btn-primary" onclick="openModal('modal-new-person')"><span class="icon" data-icon="plus"></span> 新規登録</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="roster-tabs">
+      <button class="tab active" data-tab="all">すべて</button>
+      <button class="tab" data-tab="basic">基本情報グループ</button>
+      <button class="tab" data-tab="contact">連絡先グループ</button>
+      <button class="tab" data-tab="sensitive">機微情報グループ</button>
+      <button class="tab" data-tab="qual">資格・所属グループ</button>
+    </div>
+
+    <div class="roster-filter-bar">
+      <div class="input-group" style="flex:1;max-width:320px">
+        <input type="text" id="roster-search" class="form-input" placeholder="氏名・メール・職員番号で検索">
+        <button class="btn btn-primary"><span class="icon" data-icon="search"></span></button>
+      </div>
+      <select class="form-select" id="filter-type" style="min-width:140px">
+        <option value="">すべての種別</option>
+        <option value="teacher">教員</option>
+        <option value="student">生徒</option>
+        <option value="guardian">保護者</option>
+        <option value="staff">職員</option>
+      </select>
+      <select class="form-select" id="filter-org" style="min-width:180px">
+        <option value="">すべての組織</option>
+      </select>
+      <button class="btn btn-secondary" onclick="resetFilters()"><span class="icon" data-icon="refresh-cw"></span> リセット</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="users"></span></span>登録者一覧</h3>
+        <span class="tag tag-primary" id="roster-count">0件</span>
+      </div>
+      <div class="card-body table-wrap">
+        <table class="table" id="roster-table">
+          <thead>
+            <tr>
+              <th>氏名</th>
+              <th>種別</th>
+              <th>所属組織</th>
+              <th>クラス</th>
+              <th>職種/役割</th>
+              <th>連絡先</th>
+              <th>状態</th>
+              <th style="text-align:right">操作</th>
+            </tr>
+          </thead>
+          <tbody><!-- JS --></tbody>
+        </table>
+      </div>
+      <div class="card-footer" style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.82rem;color:var(--color-text-muted)">1 - 10 / 12,840件</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-secondary btn-sm" disabled>前へ</button>
+          <button class="btn btn-secondary btn-sm">1</button>
+          <button class="btn btn-secondary btn-sm">2</button>
+          <button class="btn btn-secondary btn-sm">次へ</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-new-person">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="plus"></span> 新規人物登録</h3>
+        <button class="modal-close" onclick="closeModal('modal-new-person')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">氏名 <span class="required">*</span></label>
+            <input type="text" class="form-input" placeholder="例：山田 太郎">
+          </div>
+          <div class="form-group">
+            <label class="form-label">種別 <span class="required">*</span></label>
+            <select class="form-select"><option>教員</option><option>生徒</option><option>保護者</option><option>職員</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">所属組織</label>
+            <select class="form-select"><option>静岡市立中央小学校</option><option>静岡市立西小学校</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">メールアドレス</label>
+            <input type="email" class="form-input" placeholder="example@edu.city.shizuoka.jp">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">備考</label>
+          <textarea class="form-textarea" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-new-person')">キャンセル</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-new-person'); showToast('新規登録を受け付けました（モック）','success')">登録</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function typeLabel(t) {
+      const map = { teacher: '教員', student: '生徒', guardian: '保護者', staff: '職員' };
+      return map[t] || t;
+    }
+
+    window.init_roster_list = function() {
+      // 組織フィルタ
+      const orgSelect = document.getElementById('filter-org');
+      MOCK_DATA.organizations.filter(o => o.type === 'school' || o.type === 'department' || o.type === 'board').forEach(o => {
+        orgSelect.insertAdjacentHTML('beforeend', `<option value="${o.id}">${escapeHtml(o.name)}</option>`);
+      });
+
+      const tbody = document.querySelector('#roster-table tbody');
+      function render() {
+        const q = document.getElementById('roster-search').value.toLowerCase();
+        const type = document.getElementById('filter-type').value;
+        const org = document.getElementById('filter-org').value;
+        tbody.innerHTML = '';
+        const filtered = MOCK_DATA.people.filter(p => {
+          if (type && p.type !== type) return false;
+          if (org && p.orgId !== org) return false;
+          if (q) {
+            const text = (p.name + ' ' + p.email + ' ' + p.position + ' ' + getOrgName(p.orgId)).toLowerCase();
+            if (!text.includes(q)) return false;
+          }
+          return true;
+        });
+        document.getElementById('roster-count').textContent = filtered.length + '件';
+        filtered.forEach(p => {
+          const c = MOCK_DATA.classes.find(c => c.id === p.classId);
+          const statusLabel = p.status === 'active' ? '有効' : '無効';
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="roster-avatar">${p.name.charAt(0)}</div>
+                  <div>
+                    <div class="roster-name"><a href="roster_detail.html?id=${p.id}">${escapeHtml(p.name)}</a></div>
+                    <div class="roster-meta">${escapeHtml(p.email || '')}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-primary">${typeLabel(p.type)}</span></td>
+              <td>${escapeHtml(getOrgName(p.orgId))}</td>
+              <td>${c ? escapeHtml(c.name) : '-'}</td>
+              <td>${escapeHtml(p.position || '-')}</td>
+              <td>${escapeHtml(p.phone || '-')}</td>
+              <td><span class="status-badge ${statusClass(statusLabel)}">${statusLabel}</span></td>
+              <td style="text-align:right">
+                <a href="roster_detail.html?id=${p.id}" class="btn btn-ghost btn-sm" title="詳細"><span class="icon" data-icon="eye"></span></a>
+                <button class="btn btn-secondary btn-sm" title="編集" onclick="showToast('編集モードを開きました（モック）','info')"><span class="icon" data-icon="edit"></span></button>
+              </td>
+            </tr>
+          `);
+        });
+        replaceIcons();
+      }
+
+      document.getElementById('roster-search').addEventListener('input', render);
+      document.getElementById('filter-type').addEventListener('change', render);
+      document.getElementById('filter-org').addEventListener('change', render);
+      window.resetFilters = function() {
+        document.getElementById('roster-search').value = '';
+        document.getElementById('filter-type').value = '';
+        document.getElementById('filter-org').value = '';
+        render();
+      };
+
+      // タブ切替（グループ表示）
+      document.getElementById('roster-tabs').addEventListener('click', e => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
+        document.querySelectorAll('#roster-tabs .tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        showToast(`表示グループを「${btn.textContent}」に切り替えました`, 'info');
+      });
+
+      render();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>同期設定 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="sync">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>同期設定</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">同期設定</h1>
+        <p class="page-subtitle">本システムからGoogle Workspaceへの一方的なデータ同期を管理します</p>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="refresh-cw"></span></span>Google Workspace 連携状況</h3>
+        </div>
+        <div class="card-body">
+          <div class="definition-list">
+            <div class="definition-row"><div class="definition-label">連携GCPプロジェクト</div><div class="definition-value">shizuoka-boe-prod</div></div>
+            <div class="definition-row"><div class="definition-label">データベースプロジェクト</div><div class="definition-value">shizuoka-boe-db-prod</div></div>
+            <div class="definition-row"><div class="definition-label">最終同期日時</div><div class="definition-value">2026-06-12 05:00</div></div>
+            <div class="definition-row"><div class="definition-label">ステータス</div><div class="definition-value"><span class="status-badge status-success">正常</span></div></div>
+          </div>
+          <div class="form-actions" style="border:none;padding:0;margin-top:20px">
+            <button class="btn btn-primary" onclick="showToast('強制同期を開始しました（モック）','info')"><span class="icon" data-icon="refresh-cw"></span> 今すぐ同期</button>
+            <button class="btn btn-secondary" onclick="showToast('設定を保存しました（モック）','success')">設定保存</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="settings"></span></span>同期対象属性</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox" checked> 氏名</label>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox" checked> メールアドレス</label>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox" checked> 所属組織</label>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox"> 電話番号</label>
+          </div>
+          <div class="form-group">
+            <label class="checkbox"><input type="checkbox"> 教員免許番号</label>
+          </div>
+          <p class="form-hint">チェックを外した属性は、Google Workspace側には反映されません。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <div class="card-header">
+        <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="file-text"></span></span>同期履歴</h3>
+      </div>
+      <div class="card-body table-wrap">
+        <table class="table">
+          <thead><tr><th>日時</th><th>種別</th><th>結果</th><th>新規</th><th>更新</th><th>処理時間</th></tr></thead>
+          <tbody>
+            <tr><td>2026-06-12 05:00</td><td>定期同期</td><td><span class="status-badge status-success">成功</span></td><td>3</td><td>5</td><td>2m14s</td></tr>
+            <tr><td>2026-06-11 05:00</td><td>定期同期</td><td><span class="status-badge status-success">成功</span></td><td>0</td><td>2</td><td>1m58s</td></tr>
+            <tr><td>2026-06-10 14:23</td><td>手動同期</td><td><span class="status-badge status-warning">警告</span></td><td>1</td><td>0</td><td>3m05s</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    window.init_sync = function(){};
+  </script>
+</body>
+</html>

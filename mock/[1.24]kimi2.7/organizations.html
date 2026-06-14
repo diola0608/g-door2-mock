@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>組織管理 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="organizations">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>組織管理</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">組織管理</h1>
+        <p class="page-subtitle">テナントをルートとした階層構造を管理します。各校・各課で独自の権限上書きも可能です</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-org-create')"><span class="icon" data-icon="plus"></span> 組織追加</button>
+    </div>
+
+    <div class="grid grid-3" style="align-items:start">
+      <div class="card" style="grid-column:span 2">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="building"></span></span>組織階層</h3>
+        </div>
+        <div class="card-body">
+          <div class="org-tree" id="org-tree">
+            <!-- JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="align-self:start">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="shield"></span></span>選択中の組織</h3>
+        </div>
+        <div class="card-body" id="org-detail">
+          <p style="color:var(--color-text-muted)">左の組織ツリーをクリックすると、詳細と独自設定が表示されます。</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-org-create">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="plus"></span> 組織追加</h3>
+        <button class="modal-close" onclick="closeModal('modal-org-create')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">組織名</label>
+          <input type="text" class="form-input" placeholder="例：静岡市立南小学校">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">種別</label>
+            <select class="form-select"><option>学校</option><option>市町村</option><option>教育委員会</option><option>部署</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">上位組織</label>
+            <select class="form-select">
+              <option>静岡県（テナント全体）</option>
+              <option>静岡市</option>
+              <option>静岡市教育委員会</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">独自権限設定</label>
+          <label class="checkbox"><input type="checkbox"> 上位組織の権限を上書き・追加する</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-org-create')">キャンセル</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-org-create'); showToast('組織を追加しました（モック）','success')">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_organizations = function() {
+      const root = MOCK_DATA.organizations.find(o => o.parentId === null);
+      const treeWrap = document.getElementById('org-tree');
+      treeWrap.innerHTML = `
+        <div class="org-node">
+          <div class="org-node-header" data-org-id="${root.id}">
+            <span class="org-toggle"><span class="icon" data-icon="chevron-down"></span></span>
+            <span class="org-name">${escapeHtml(root.name)}</span>
+            <span class="tag tag-primary" style="margin-left:auto">${escapeHtml(root.type)}</span>
+          </div>
+          ${renderOrgTree(root.id)}
+        </div>
+      `;
+      replaceIcons();
+
+      // クリックで詳細表示
+      treeWrap.addEventListener('click', e => {
+        const header = e.target.closest('.org-node-header');
+        if (!header) return;
+        const orgId = header.dataset.orgId;
+        const org = MOCK_DATA.organizations.find(o => o.id === orgId);
+        const detail = document.getElementById('org-detail');
+        const hasCustom = orgId === 'org_school_chuo' ? 'あり' : 'なし（テナント設定を継承）';
+        detail.innerHTML = `
+          <div class="definition-list" style="gap:6px 0">
+            <div class="definition-row" style="padding:6px 0"><div class="definition-label">組織ID</div><div class="definition-value">${escapeHtml(org.id)}</div></div>
+            <div class="definition-row" style="padding:6px 0"><div class="definition-label">名前</div><div class="definition-value">${escapeHtml(org.name)}</div></div>
+            <div class="definition-row" style="padding:6px 0"><div class="definition-label">種別</div><div class="definition-value"><span class="tag tag-primary">${escapeHtml(org.type)}</span></div></div>
+            <div class="definition-row" style="padding:6px 0"><div class="definition-label">所属パス</div><div class="definition-value">${escapeHtml(getOrgPath(org.id))}</div></div>
+            <div class="definition-row" style="padding:6px 0"><div class="definition-label">独自権限</div><div class="definition-value">${hasCustom}</div></div>
+          </div>
+          <div style="margin-top:16px">
+            <a href="permissions.html" class="btn btn-secondary btn-sm" style="width:100%">権限設定へ</a>
+          </div>
+        `;
+      });
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>権限設定 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="permissions">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>権限設定</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">権限設定</h1>
+        <p class="page-subtitle">サブジェクト・オブジェクト・組織スコープ・属性値を組み合わせた柔軟な権限ルールを管理します</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-perm-create')"><span class="icon" data-icon="plus"></span> ルール追加</button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="tabs" id="perm-tabs">
+          <button class="tab active" data-tab="all">すべて</button>
+          <button class="tab" data-tab="tenant">テナント全体</button>
+          <button class="tab" data-tab="org">組織独自</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="perm-table">
+            <thead>
+              <tr>
+                <th>ルール名</th>
+                <th>設定組織</th>
+                <th>サブジェクト</th>
+                <th>オブジェクト</th>
+                <th>対象リソース</th>
+                <th>アクション</th>
+                <th style="text-align:right">操作</th>
+              </tr>
+            </thead>
+            <tbody><!-- JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-perm-create">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="plus"></span> 権限ルール追加</h3>
+        <button class="modal-close" onclick="closeModal('modal-perm-create')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">ルール名</label>
+          <input type="text" class="form-input" placeholder="例：学年主任による機微情報閲覧">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">対象組織</label>
+            <select class="form-select"><option>テナント全体</option><option>静岡市教育委員会</option><option>静岡市立中央小学校</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">継承設定</label>
+            <select class="form-select"><option>配下組織に継承する</option><option>この組織のみ</option></select>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">サブジェクト条件</label>
+            <select class="form-select">
+              <option>職種 = 一般教員</option>
+              <option>職種 = 校長</option>
+              <option>属性「部活顧問」が設定</option>
+              <option>職種 = 学年主任 かつ 担任である</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">オブジェクト</label>
+            <select class="form-select">
+              <option>担当クラスの生徒</option>
+              <option>担当部活の所属生徒</option>
+              <option>同一市町村の一般教員</option>
+              <option>すべての生徒</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">対象リソース</label>
+            <select class="form-select">
+              <option>基本情報</option>
+              <option>連絡先情報</option>
+              <option>機微情報</option>
+              <option>属性項目「人物の特徴」</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">アクション</label>
+            <label class="checkbox" style="margin-right:12px"><input type="checkbox" checked> 閲覧</label>
+            <label class="checkbox"><input type="checkbox"> 編集</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-perm-create')">キャンセル</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-perm-create'); showToast('権限ルールを追加しました（モック）','success')">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_permissions = function() {
+      const tbody = document.querySelector('#perm-table tbody');
+      function render(filter) {
+        tbody.innerHTML = '';
+        MOCK_DATA.permissions.forEach(p => {
+          if (filter === 'tenant' && p.orgId !== 'org_root') return;
+          if (filter === 'org' && p.orgId === 'org_root') return;
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td><strong>${escapeHtml(p.name)}</strong></td>
+              <td>${escapeHtml(getOrgName(p.orgId))}<br><span class="tag tag-accent" style="margin-top:4px">${escapeHtml(p.inheritedFrom)}</span></td>
+              <td>${escapeHtml(p.subject)}</td>
+              <td>${escapeHtml(p.object)}<br><span style="font-size:.78rem;color:var(--color-text-muted)">${escapeHtml(p.scope)}</span></td>
+              <td>${escapeHtml(p.resource)}</td>
+              <td>${p.actions.map(a => `<span class="tag tag-primary">${escapeHtml(a)}</span>`).join(' ')}</td>
+              <td style="text-align:right">
+                <button class="btn btn-ghost btn-sm" onclick="openModal('modal-perm-create')">編集</button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+      document.getElementById('perm-tabs').addEventListener('click', e => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
+        document.querySelectorAll('#perm-tabs .tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        render(btn.dataset.tab);
+      });
+      render('all');
+    };
+  </script>
+</body>
+</html>

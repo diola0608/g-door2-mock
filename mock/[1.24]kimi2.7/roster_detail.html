@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名簿詳細 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="roster_detail">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <a href="roster_list.html">名簿一覧</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>名簿詳細</span>
+    </div>
+
+    <div class="page-header">
+      <div class="profile-header" style="margin-bottom:0">
+        <div class="profile-avatar" id="avatar">佐</div>
+        <div class="profile-title">
+          <h2 id="detail-name">--</h2>
+          <div class="profile-tags" id="detail-tags"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <a href="roster_transfer.html?person=" id="transfer-link" class="btn btn-secondary"><span class="icon" data-icon="git-compare"></span> 所属変更を申請</a>
+        <button class="btn btn-primary" onclick="openModal('modal-edit-basic')"><span class="icon" data-icon="edit"></span> 編集</button>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="align-items:start">
+      <div class="card" style="grid-column:span 2">
+        <div class="tabs" id="detail-tabs">
+          <button class="tab active" data-tab="basic">基本情報</button>
+          <button class="tab" data-tab="contact">連絡先情報</button>
+          <button class="tab" data-tab="sensitive">機微情報</button>
+          <button class="tab" data-tab="history">履歴</button>
+        </div>
+        <div class="tab-contents">
+          <div class="tab-content active" data-tab="basic">
+            <div class="definition-list" id="basic-list"></div>
+          </div>
+          <div class="tab-content" data-tab="contact">
+            <div class="definition-list" id="contact-list"></div>
+          </div>
+          <div class="tab-content" data-tab="sensitive">
+            <div class="card" style="background:var(--color-danger-light);border-color:#fecaca;margin-bottom:14px">
+              <div class="card-body" style="padding:14px 18px">
+                <strong style="color:var(--color-danger)"><span class="icon" data-icon="alert-triangle"></span> 機微情報の取り扱いに関する注意</strong>
+                <p style="margin:6px 0 0;font-size:.85rem;color:#7f1d1d">以下の情報は権限設定により閲覧が制限されています。画面のキャプチャや外部への持ち出しは禁止されています。</p>
+              </div>
+            </div>
+            <div class="definition-list" id="sensitive-list"></div>
+          </div>
+          <div class="tab-content" data-tab="history">
+            <div class="timeline" id="history-timeline"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="align-self:start">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-title-icon"><span class="icon" data-icon="building"></span></span>所属</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">所属パス</label>
+            <div class="form-input" id="org-path" style="background:#f8fafc">--</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">クラス</label>
+            <div class="form-input" id="class-name" style="background:#f8fafc">--</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Google Workspace 同期</label>
+            <span class="status-badge status-success">同期済み</span>
+            <p class="form-hint">最終同期：2026-06-12 05:00</p>
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn btn-secondary btn-sm" style="width:100%" onclick="showToast('同期処理を開始しました（モック）','info')"><span class="icon" data-icon="refresh-cw"></span> 今すぐ同期</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="modal-overlay" id="modal-edit-basic">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title"><span class="icon" data-icon="edit"></span> 基本情報の編集</h3>
+        <button class="modal-close" onclick="closeModal('modal-edit-basic')"><span class="icon" data-icon="x"></span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">氏名</label><input type="text" class="form-input" value="佐藤 花子"></div>
+          <div class="form-group"><label class="form-label">性別</label><select class="form-select"><option>女性</option><option>男性</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">生年月日</label><input type="date" class="form-input" value="1985-04-12"></div>
+          <div class="form-group"><label class="form-label">戸籍</label><input type="text" class="form-input" placeholder="未登録"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-edit-basic')">キャンセル</button>
+        <button class="btn btn-primary" onclick="closeModal('modal-edit-basic'); showToast('保存しました（モック）','success')">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.init_roster_detail = function() {
+      const params = new URLSearchParams(location.search);
+      const pid = params.get('id') || 'p001';
+      const p = MOCK_DATA.people.find(x => x.id === pid) || MOCK_DATA.people[0];
+
+      document.getElementById('detail-name').textContent = p.name;
+      document.getElementById('avatar').textContent = p.name.charAt(0);
+      const typeMap = { teacher: '教員', student: '生徒', guardian: '保護者', staff: '職員' };
+      document.getElementById('detail-tags').innerHTML = `
+        <span class="tag tag-primary">${typeMap[p.type]}</span>
+        <span class="tag tag-accent">${escapeHtml(p.position || '-')}</span>
+        <span class="status-badge ${p.status === 'active' ? 'status-success' : 'status-neutral'}">${p.status === 'active' ? '有効' : '無効'}</span>
+      `;
+      document.getElementById('transfer-link').href = 'roster_transfer.html?person=' + p.id;
+      document.getElementById('org-path').textContent = getOrgPath(p.orgId);
+      document.getElementById('class-name').textContent = getClassName(p.classId);
+
+      // 基本情報
+      const basic = [
+        { label: '氏名', value: p.name },
+        { label: '性別', value: p.sex || '-' },
+        { label: '生年月日', value: p.birthDate || '-' },
+        { label: '戸籍', value: '-' },
+        { label: 'メール', value: p.email || '-' },
+        { label: '職種/役割', value: p.position || '-' }
+      ];
+      document.getElementById('basic-list').innerHTML = basic.map(item => `
+        <div class="definition-row"><div class="definition-label">${item.label}</div><div class="definition-value">${escapeHtml(item.value)}</div></div>
+      `).join('');
+
+      // 連絡先
+      const contact = [
+        { label: '住所', value: p.address || '-' },
+        { label: '電話番号', value: p.phone || '-' },
+        { label: '緊急連絡先', value: '-' }
+      ];
+      document.getElementById('contact-list').innerHTML = contact.map(item => `
+        <div class="definition-row"><div class="definition-label">${item.label}</div><div class="definition-value">${escapeHtml(item.value)}</div></div>
+      `).join('');
+
+      // 機微
+      const sensitive = [
+        { label: '不登校履歴', value: 'なし' },
+        { label: 'いじめ歴（被害）', value: 'なし' },
+        { label: 'いじめ歴（加害）', value: p.features === 'いじめ加害者' ? '<span class="tag tag-danger">いじめ加害者</span>' : 'なし' },
+        { label: '食物アレルギー', value: 'なし' }
+      ];
+      document.getElementById('sensitive-list').innerHTML = sensitive.map(item => `
+        <div class="definition-row"><div class="definition-label">${item.label}</div><div class="definition-value">${item.value}</div></div>
+      `).join('');
+
+      // 履歴
+      document.getElementById('history-timeline').innerHTML = `
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">2026-06-10 10:00</div><div class="timeline-title">属性「人物の特徴」が更新</div><div class="timeline-body">「いじめ加害者」タグを学年主任権限で登録</div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">2025-04-01 09:00</div><div class="timeline-title">所属変更</div><div class="timeline-body">西小学校から静岡市立中央小学校へ移動</div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">2020-04-01</div><div class="timeline-title">採用・入学</div><div class="timeline-body">システムに新規登録</div></div>
+      `;
+
+      initTabs();
+    };
+  </script>
+</body>
+</html>

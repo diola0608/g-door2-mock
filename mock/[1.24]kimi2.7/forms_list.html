@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム一覧 | 静岡県教育委員会 統合管理システム</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="forms_list">
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <main id="main" class="content">
+    <div class="breadcrumbs">
+      <a href="index.html">ホーム</a>
+      <span class="icon" data-icon="chevron-right"></span>
+      <span>フォーム一覧</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">フォーム・アンケート一覧</h1>
+        <p class="page-subtitle">対象者を絞ったアンケートの作成、配信、回答状況、集計を管理します</p>
+      </div>
+      <a href="forms_create.html" class="btn btn-primary"><span class="icon" data-icon="plus"></span> 新規フォーム</a>
+    </div>
+
+    <div class="roster-filter-bar">
+      <input type="text" id="form-search" class="form-input" placeholder="フォームタイトルで検索" style="flex:1;max-width:320px">
+      <select class="form-select" id="form-status" style="min-width:140px">
+        <option value="">すべての状態</option>
+        <option>公開中</option>
+        <option>下書き</option>
+        <option>終了</option>
+      </select>
+    </div>
+
+    <div class="grid grid-2" id="form-grid">
+      <!-- JS -->
+    </div>
+
+  </main>
+
+  <script>
+    window.init_forms_list = function() {
+      const grid = document.getElementById('form-grid');
+      function render() {
+        const q = document.getElementById('form-search').value.toLowerCase();
+        const s = document.getElementById('form-status').value;
+        grid.innerHTML = '';
+        MOCK_DATA.forms.forEach(f => {
+          if (s && f.status !== s) return;
+          if (q && !f.title.toLowerCase().includes(q)) return;
+          const pct = f.totalCount ? Math.round(f.responseCount / f.totalCount * 100) : 0;
+          grid.insertAdjacentHTML('beforeend', `
+            <div class="card card-hover">
+              <div class="card-header">
+                <h3 class="card-title">${escapeHtml(f.title)}</h3>
+                <span class="status-badge ${statusClass(f.status)}">${escapeHtml(f.status)}</span>
+              </div>
+              <div class="card-body">
+                <p style="font-size:.9rem;color:var(--color-text-secondary);margin:0 0 14px">${escapeHtml(f.description)}</p>
+                <div class="definition-list" style="gap:6px 0">
+                  <div class="definition-row" style="padding:4px 0"><div class="definition-label">対象</div><div class="definition-value">${escapeHtml(f.target)}</div></div>
+                  <div class="definition-row" style="padding:4px 0"><div class="definition-label">締切</div><div class="definition-value">${f.deadline ? escapeHtml(f.deadline) : 'なし'}</div></div>
+                  <div class="definition-row" style="padding:4px 0"><div class="definition-label">名簿連携</div><div class="definition-value">${f.canMapToRoster ? '<span class="tag tag-primary">あり</span>' : '<span class="tag">なし</span>'}</div></div>
+                </div>
+                <div style="margin-top:14px">
+                  <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px">
+                    <span>回答状況</span>
+                    <span><strong>${f.responseCount}</strong> / ${f.totalCount || '--'}件（${pct}%）</span>
+                  </div>
+                  <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+                </div>
+              </div>
+              <div class="card-footer" style="display:flex;gap:8px;justify-content:flex-end">
+                <a href="forms_answer.html?id=${f.id}" class="btn btn-secondary btn-sm">回答する</a>
+                <a href="forms_summary.html?id=${f.id}" class="btn btn-accent btn-sm">集計</a>
+                <button class="btn btn-ghost btn-sm" onclick="showToast('編集画面を表示（モック）','info')">編集</button>
+              </div>
+            </div>
+          `);
+        });
+        replaceIcons();
+      }
+      document.getElementById('form-search').addEventListener('input', render);
+      document.getElementById('form-status').addEventListener('change', render);
+      render();
+    };
+  </script>
+</body>
+</html>
