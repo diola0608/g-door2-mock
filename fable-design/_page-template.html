@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+  Composer EDU ページ雛形 ── これを複製して新ページを作る。
+  手順: docs/03-add-a-page-playbook.md / 部品: docs/02-component-catalog.md / 思想: docs/00-principles.md
+  作業:
+   1) <title> と breadcrumb と page-head を埋める
+   2) <body data-page="__PAGE_ID__"> の id を決める
+   3) assets/app.js の NAV 配列に { id:"__PAGE_ID__", icon:"…", label:"…", href:"このファイル名.html" } を追加
+   4) <main> の中身を docs/02 の部品で組む（独自CSSはレイアウト用gridと小装飾だけ）
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ページ名 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* ページ固有の“レイアウト用”CSSのみ（例: 2ペインのgrid列指定）。
+     見た目のパーツは base.css にある。再発明しない。
+  .example-layout { display: grid; grid-template-columns: 250px 1fr; gap: 14px; align-items: start; } */
+</style>
+</head>
+<body data-page="__PAGE_ID__">
+<main>
+
+  <!-- パンくず（必ず） -->
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">ページ名</span>
+  </div>
+
+  <!-- 見出し＋説明＋右側アクション -->
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">tune</span>ページ名</h1>
+      <div class="desc">この画面が何で、どんな前提か（権限スコープ等）を1〜2文で書く。</div>
+    </div>
+    <div class="actions">
+      <button class="btn"><span class="material-symbols-rounded">download</span>サブ操作</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-sample')"><span class="material-symbols-rounded">add</span>主操作</button>
+    </div>
+  </div>
+
+  <!-- 本体（card / kpi-grid / tbl / tabs / tree / toolbar … を docs/02 から） -->
+  <section class="card">
+    <div class="card-h"><span class="material-symbols-rounded">widgets</span>セクション見出し</div>
+    <div class="card-b">
+      <p class="muted">ここに中身。権限/同期/履歴/非同期反映 を見せるべき箇所では docs/00 §3 の挙動を入れる。</p>
+    </div>
+  </section>
+
+  <!-- モーダル例（開閉は Composer.openModal/closeModal） -->
+  <div class="modal-backdrop" id="modal-sample">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>モーダル見出し</h3>
+        <button class="x" onclick="Composer.closeModal('modal-sample')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>入力例<span class="req">必須</span></label><input class="input" placeholder="例: …"></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-sample')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-sample'); Composer.toast('保存しました（反映タイミングも添えると良い）')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+<script src="assets/app.js"></script>
+<!-- ページ固有のミニ挙動が要るならここに小さな <script> を足す（base.css のクラスを使う） -->
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>権限ポリシー | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .policy-sentence { font-size: 12.5px; line-height: 1.9; }
+  .pol-token {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 6px;
+    font-weight: 600; font-size: 11.5px; margin: 0 2px; white-space: nowrap;
+  }
+  .pol-token .material-symbols-rounded { font-size: 13px; }
+  .pol-token.subj { background: var(--indigo-100); color: var(--indigo-700); }
+  .pol-token.cond { background: var(--gold-50); color: var(--gold); }
+  .pol-token.obj { background: var(--plum-50); color: var(--plum); }
+  .pol-token.scope { background: var(--sky-50); color: var(--sky); }
+  .pol-token.act { background: var(--pine-50); color: var(--pine); }
+  .inherit-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 5px; letter-spacing: .05em; }
+  .inherit-tag.tenant { background: var(--indigo-900); color: #cdd9ec; }
+  .inherit-tag.org { background: var(--vermilion); color: #fff; }
+  .builder-row {
+    display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: start;
+    padding: 12px 0; border-bottom: 1px dashed var(--line);
+  }
+  .builder-row:last-child { border-bottom: 0; }
+  .builder-row .b-key { font-size: 11.5px; font-weight: 700; color: var(--ink-2); padding-top: 8px; display: flex; align-items: center; gap: 6px; }
+  .builder-row .b-key .material-symbols-rounded { font-size: 16px; }
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+</style>
+</head>
+<body data-page="permissions">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">権限ポリシー</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">admin_panel_settings</span>権限ポリシー</h1>
+      <div class="desc">「誰が（サブジェクト）」「どの範囲の（スコープ）」「何を（オブジェクト）」「どうできるか（アクション）」を条件式で定義します。下位組織の設定が優先されます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-simulate')"><span class="material-symbols-rounded">frame_person</span>権限シミュレーター</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-builder')"><span class="material-symbols-rounded">add</span>ポリシーを作成</button>
+    </div>
+  </div>
+
+  <div class="callout mb-2">
+    <span class="material-symbols-rounded">layers</span>
+    <div><b>継承モデル</b>: テナント全体（県）で定義 → 各組織が継承 → 組織独自の追加・上書きが可能（下位優先）→ さらに配下へ波及。属性項目・コード選択肢の表示にも同じ条件式が使えます。</div>
+  </div>
+
+  <div class="tab-wrap">
+    <div class="tabs" data-tabs="p">
+      <button class="tab active" data-tab="tenant"><span class="material-symbols-rounded">flag</span>テナント全体設定（28）</button>
+      <button class="tab" data-tab="org"><span class="material-symbols-rounded">school</span>組織別の上書き・追加（10）</button>
+      <button class="tab" data-tab="attr"><span class="material-symbols-rounded">tune</span>属性・コードへの制限</button>
+    </div>
+
+    <!-- tenant -->
+    <div class="tab-panel active" data-tab-panel="p" data-tab="tenant">
+      <table class="tbl">
+        <thead><tr><th style="width:90px">ID</th><th>ポリシー（条件式）</th><th style="width:90px">定義元</th><th style="width:70px">状態</th><th style="width:110px"></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">POL-001</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>職種 = 一般教員</span>は、
+              <span class="pol-token scope"><span class="material-symbols-rounded">door_front</span>自分が担任のクラス</span>の生徒の
+              <span class="pol-token obj"><span class="material-symbols-rounded">id_card</span>基本情報</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">edit</span>閲覧・編集</span>できる
+            </td>
+            <td><span class="inherit-tag tenant">テナント</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">POL-002</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>教員</span>で
+              <span class="pol-token cond"><span class="material-symbols-rounded">tune</span>属性「部活顧問」に値あり</span>の場合、
+              <span class="pol-token scope"><span class="material-symbols-rounded">school</span>担当学校</span>の
+              <span class="pol-token cond"><span class="material-symbols-rounded">sports_soccer</span>同じ部に所属する生徒</span>の
+              <span class="pol-token obj"><span class="material-symbols-rounded">call</span>連絡先情報</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">visibility</span>閲覧のみ</span>できる
+            </td>
+            <td><span class="inherit-tag tenant">テナント</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">POL-003</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>職種 = 校長</span>は、
+              <span class="pol-token scope"><span class="material-symbols-rounded">location_city</span>同一市町村 かつ 同一学校種</span>の
+              <span class="pol-token subj"><span class="material-symbols-rounded">group</span>一般教員</span>の
+              <span class="pol-token obj"><span class="material-symbols-rounded">call</span>連絡先情報</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">visibility</span>閲覧</span>できる
+            </td>
+            <td><span class="inherit-tag tenant">テナント</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">POL-004</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>担任 または 学年主任</span>は、
+              <span class="pol-token scope"><span class="material-symbols-rounded">school</span>所属学校</span>の生徒の
+              <span class="pol-token obj"><span class="material-symbols-rounded">lock</span>属性「人物の特徴」</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">visibility</span>閲覧</span>できる
+              <span class="muted">（選択肢「いじめ加害者」は<a href="codes.html">コード側の制限</a>により学年主任のみ）</span>
+            </td>
+            <td><span class="inherit-tag tenant">テナント</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">POL-005</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>役割 = 県教委・CSV直接変更</span>は、
+              <span class="pol-token scope"><span class="material-symbols-rounded">flag</span>テナント全体</span>の
+              <span class="pol-token obj"><span class="material-symbols-rounded">swap_horiz</span>所属変更</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">bolt</span>承認フローなしで実行</span>できる
+            </td>
+            <td><span class="inherit-tag tenant">テナント</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- org overrides -->
+    <div class="tab-panel" data-tab-panel="p" data-tab="org">
+      <div class="toolbar" style="border:0; border-radius:0; border-bottom:1px solid var(--line); box-shadow:none">
+        <span class="muted">組織:</span>
+        <select class="select" style="width:260px"><option>長野市立城山小学校</option><option>長野市</option><option>松本市立開成中学校</option></select>
+        <span class="chip indigo" style="margin-left:auto">継承 28件 + 独自 3件</span>
+      </div>
+      <table class="tbl">
+        <thead><tr><th style="width:90px">ID</th><th>ポリシー（条件式）</th><th style="width:110px">定義元</th><th style="width:70px">状態</th><th style="width:110px"></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">POL-101</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>養護教諭</span>は、
+              <span class="pol-token scope"><span class="material-symbols-rounded">school</span>本校</span>の全生徒の
+              <span class="pol-token obj"><span class="material-symbols-rounded">medical_information</span>属性「給食アレルギー」「支援記録」</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">edit</span>閲覧・編集</span>できる
+            </td>
+            <td><span class="inherit-tag org">組織独自</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">POL-002<span class="muted">改</span></td>
+            <td class="policy-sentence">
+              <span class="muted" style="text-decoration:line-through">POL-002（部活顧問の連絡先閲覧）</span>を上書き:
+              <span class="pol-token cond"><span class="material-symbols-rounded">tune</span>属性「部活顧問」に値あり</span>でも
+              <span class="pol-token obj"><span class="material-symbols-rounded">call</span>緊急連絡先のみ</span>
+              <span class="pol-token act"><span class="material-symbols-rounded">visibility</span>閲覧可</span>に制限
+            </td>
+            <td><span class="inherit-tag org">上書き</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">POL-102</td>
+            <td class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">person</span>事務職員</span>は、
+              <span class="pol-token scope"><span class="material-symbols-rounded">school</span>本校</span>の教職員の
+              <span class="pol-token obj"><span class="material-symbols-rounded">id_card</span>基本情報</span>を
+              <span class="pol-token act"><span class="material-symbols-rounded">visibility</span>閲覧</span>できる
+            </td>
+            <td><span class="inherit-tag org">組織独自</span></td>
+            <td><span class="status wait">無効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-builder')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout warn" style="margin:14px">
+        <span class="material-symbols-rounded">south</span>
+        <div>この組織の設定は配下の組織にも波及します。配下組織がさらに上書きした場合は<b>より下位の設定が優先</b>されます。</div>
+      </div>
+    </div>
+
+    <!-- attr -->
+    <div class="tab-panel" data-tab-panel="p" data-tab="attr">
+      <div class="card-b">
+        <p class="muted mb-2">属性項目そのもの・コード選択肢ごとに閲覧/編集を制限できます。詳細は各マスター画面から設定します。</p>
+        <table class="tbl">
+          <thead><tr><th>対象</th><th>制限内容</th><th>設定場所</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="chip plum">属性「人物の特徴」</span></td>
+              <td class="policy-sentence">所属学校の<span class="pol-token subj">担任・学年主任</span>のみ閲覧可</td>
+              <td><a class="btn sm" href="attributes.html"><span class="material-symbols-rounded">tune</span>属性項目定義</a></td>
+            </tr>
+            <tr>
+              <td><span class="chip red">コード「いじめ加害者」</span></td>
+              <td class="policy-sentence">選択肢の表示は<span class="pol-token subj">学年主任</span>のみ（他職種には選択肢自体が非表示）</td>
+              <td><a class="btn sm" href="codes.html"><span class="material-symbols-rounded">data_object</span>コードマスター</a></td>
+            </tr>
+            <tr>
+              <td><span class="chip gold">属性「不登校歴」</span></td>
+              <td class="policy-sentence"><span class="pol-token subj">担任・管理職・教委指導主事</span>が閲覧可、編集は<span class="pol-token subj">学年主任</span>のみ</td>
+              <td><a class="btn sm" href="attributes.html"><span class="material-symbols-rounded">tune</span>属性項目定義</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ポリシービルダー -->
+  <div class="modal-backdrop" id="modal-builder">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">construction</span>ポリシービルダー</h3>
+        <button class="x" onclick="Composer.closeModal('modal-builder')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="builder-row">
+          <div class="b-key"><span class="material-symbols-rounded" style="color:var(--indigo-600)">person</span>サブジェクト</div>
+          <div>
+            <div class="row mb-1">
+              <select class="select" style="width:160px"><option>職種が一致</option><option>役割が一致</option><option>属性に値がある</option></select>
+              <select class="select" style="width:180px"><option>一般教員</option><option>校長</option><option>学年主任</option><option>養護教諭</option></select>
+              <button class="btn sm ghost"><span class="material-symbols-rounded">add</span>AND条件</button>
+            </div>
+            <div class="row">
+              <span class="chip gold"><span class="material-symbols-rounded sm">tune</span>AND: 属性「部活顧問」に値が設定されている</span>
+              <button class="btn sm ghost" onclick="this.parentElement.remove()"><span class="material-symbols-rounded sm">close</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="builder-row">
+          <div class="b-key"><span class="material-symbols-rounded" style="color:var(--sky)">travel_explore</span>組織スコープ</div>
+          <div class="row">
+            <select class="select" style="width:240px">
+              <option>担当学校（サブジェクトの所属校）</option>
+              <option>自分が担任のクラス</option>
+              <option>同一市町村・同一学校種</option>
+              <option>配下の全組織</option>
+              <option>テナント全体</option>
+            </select>
+            <span class="muted">サブジェクトとオブジェクトの関係で動的に決まります</span>
+          </div>
+        </div>
+        <div class="builder-row">
+          <div class="b-key"><span class="material-symbols-rounded" style="color:var(--plum)">category</span>オブジェクト</div>
+          <div>
+            <div class="row mb-1">
+              <select class="select" style="width:160px"><option>生徒</option><option>教員</option><option>教委職員</option></select>
+              <span class="muted">の</span>
+              <select class="select" style="width:200px"><option>連絡先情報（カテゴリ）</option><option>基本情報（カテゴリ）</option><option>機微情報（カテゴリ）</option><option>属性項目を個別指定…</option></select>
+            </div>
+            <div class="row">
+              <span class="chip plum"><span class="material-symbols-rounded sm">sports_soccer</span>絞込: サブジェクトの「部活顧問」と同じ部に所属</span>
+              <button class="btn sm ghost" onclick="this.parentElement.remove()"><span class="material-symbols-rounded sm">close</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="builder-row">
+          <div class="b-key"><span class="material-symbols-rounded" style="color:var(--pine)">key</span>アクション</div>
+          <div class="row" style="gap:16px">
+            <label class="checkbox-row" style="padding:0"><input type="checkbox" checked><span><b>閲覧</b></span></label>
+            <label class="checkbox-row" style="padding:0"><input type="checkbox"><span><b>編集</b></span></label>
+            <label class="checkbox-row" style="padding:0"><input type="checkbox"><span><b>エクスポート</b></span></label>
+            <label class="checkbox-row" style="padding:0"><input type="checkbox"><span><b>所属変更の承認</b></span></label>
+          </div>
+        </div>
+        <div class="builder-row">
+          <div class="b-key"><span class="material-symbols-rounded" style="color:var(--vermilion)">apps</span>割当機能</div>
+          <div class="row" style="gap:16px; flex-wrap:wrap">
+            <label class="checkbox-row" style="padding:0"><input type="checkbox" checked><span><b>名簿レジストリ</b></span></label>
+            <label class="checkbox-row" style="padding:0"><input type="checkbox" checked><span><b>フォーム対象者</b></span></label>
+            <label class="checkbox-row" style="padding:0"><input type="checkbox"><span><b>データ利活用</b></span></label>
+            <label class="checkbox-row" style="padding:0"><input type="checkbox"><span><b>CSVインポート</b></span></label>
+          </div>
+        </div>
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">preview</span>
+          <div class="policy-sentence"><b>プレビュー</b>:
+            <span class="pol-token subj">教員（部活顧問に値あり）</span>は
+            <span class="pol-token scope">担当学校</span>の
+            <span class="pol-token obj">同じ部の生徒の連絡先情報</span>を
+            <span class="pol-token act">閲覧</span>できる
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <div class="left row" style="gap:6px">
+          <span class="muted">定義先:</span>
+          <select class="select sm" style="width:220px; padding:5px 28px 5px 9px; font-size:11.5px"><option>テナント全体（長野県）</option><option>長野市立城山小学校（独自）</option></select>
+        </div>
+        <button class="btn" onclick="Composer.closeModal('modal-builder')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-builder'); Composer.toast('ポリシーを保存しました。配下組織へ波及します')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- シミュレーター -->
+  <div class="modal-backdrop" id="modal-simulate">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">frame_person</span>権限シミュレーター</h3>
+        <button class="x" onclick="Composer.closeModal('modal-simulate')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>この人として確認</label>
+            <select class="select"><option>高橋 美咲（一般教員・6年1組担任・サッカー部顧問）</option><option>渡辺 修（校長）</option></select></div>
+          <div class="field"><label>対象</label>
+            <select class="select"><option>田中 花子（6年1組・吹奏楽部）</option><option>小林 大翔（6年2組・サッカー部）</option></select></div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>カテゴリ</th><th>判定</th><th>根拠ポリシー</th></tr></thead>
+          <tbody>
+            <tr><td>基本情報</td><td><span class="chip green">閲覧・編集</span></td><td class="mono">POL-001（担任クラス）</td></tr>
+            <tr><td>連絡先情報</td><td><span class="chip green">閲覧</span></td><td class="mono">POL-001</td></tr>
+            <tr><td>機微情報「人物の特徴」</td><td><span class="chip gold">一部選択肢 非表示</span></td><td class="mono">POL-004 + CODE-049制限</td></tr>
+            <tr><td>所属変更の承認</td><td><span class="chip red">不可</span></td><td class="muted">該当ポリシーなし</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-f"><button class="btn" onclick="Composer.closeModal('modal-simulate')">閉じる</button></div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>
