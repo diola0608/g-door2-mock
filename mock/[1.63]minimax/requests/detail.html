@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>申請詳細 · 山本 蓮の所属変更</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><a href="index.html">申請・承認</a><span class="sep">/</span><span class="current">REQ-2026-0482</span></div>
+        <div class="row gap-12">
+          <h1 class="page-title" style="margin:0">所属変更申請 <em>REQ-2026-0482</em></h1>
+          <span class="status-pill status-pending">承認待ち</span>
+        </div>
+        <p class="page-sub">申請日 2026-06-10 · 発効予定 2026-04-01 · 経過 2日 · 自動実行バッチ対象</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost"><span data-i="history" data-s="14"></span> 監査ログ</button>
+        <button class="btn btn-secondary"><span data-i="x" data-s="14"></span> 取り消し</button>
+        <button class="btn btn-danger"><span data-i="x" data-s="14"></span> 却下</button>
+        <button class="btn btn-primary" onclick="openModal('modalApprove')"><span data-i="check" data-s="14"></span> 承認</button>
+      </div>
+    </div>
+
+    <div class="split split-2-1" style="align-items:start">
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">対象</div>
+              <div class="card-sub">人物: 山本 蓮</div>
+            </div>
+            <a href="../directory/person.html" class="muted-link fs-12">人物ページ <span data-i="external" data-s="12"></span></a>
+          </div>
+          <div class="card-body">
+            <div class="row gap-16">
+              <div class="person-avatar primary" style="width:48px;height:48px;font-size:16px;border-radius:var(--r-md)">山本</div>
+              <div>
+                <div class="fs-14 fw-6">山本 蓮</div>
+                <div class="fs-12 text-3">N-2024-1248 · 男 · 17歳 · 2008-04-12</div>
+                <div class="row gap-8 mt-8">
+                  <span class="tag tag-primary">生徒</span>
+                  <span class="tag tag-info">サッカー部</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">変更内容</div>
+              <div class="card-sub">所属組織 · 学年 · クラスを変更します</div>
+            </div>
+            <span class="tag tag-info">所属変更</span>
+          </div>
+          <div class="card-body" style="padding:24px">
+            <div class="split split-equal-2">
+              <div>
+                <div class="fs-11 text-3 fw-6" style="text-transform:uppercase;letter-spacing:0.08em">変更前</div>
+                <div class="card-section" style="background:var(--surface-2);border-radius:var(--r-sm);padding:14px 16px;margin-top:8px;border-bottom:0">
+                  <div class="fs-12 text-3">組織</div>
+                  <div class="fs-14 fw-6">古町中学校</div>
+                  <div class="fs-11 text-3 num mt-8">org: NIIGATA-M-014</div>
+                </div>
+                <div class="card-section" style="background:var(--surface-2);border-radius:var(--r-sm);padding:14px 16px;margin-top:8px;border-bottom:0">
+                  <div class="row between">
+                    <div>
+                      <div class="fs-12 text-3">学年 / クラス</div>
+                      <div class="fs-14 fw-6">3年C組</div>
+                    </div>
+                    <div>
+                      <div class="fs-12 text-3">担任</div>
+                      <div class="fs-14 fw-6">斎藤 健一</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <div style="width:42px;height:42px;background:var(--accent);color:#fff;border-radius:50%;display:grid;place-items:center"><span data-i="arrowRight" data-s="20"></span></div>
+                <div class="fs-11 text-3 mt-8">2026-04-01 発効</div>
+              </div>
+              <div>
+                <div class="fs-11 text-3 fw-6" style="text-transform:uppercase;letter-spacing:0.08em">変更後</div>
+                <div class="card-section" style="background:var(--primary-soft);border-radius:var(--r-sm);padding:14px 16px;margin-top:8px;border-bottom:0;border:1px solid var(--primary-3)">
+                  <div class="fs-12 text-primary">組織</div>
+                  <div class="fs-14 fw-6">新潟高等学校</div>
+                  <div class="fs-11 text-3 num mt-8">org: NIIGATA-H-001</div>
+                </div>
+                <div class="card-section" style="background:var(--primary-soft);border-radius:var(--r-sm);padding:14px 16px;margin-top:8px;border-bottom:0;border:1px solid var(--primary-3)">
+                  <div class="row between">
+                    <div>
+                      <div class="fs-12 text-primary">学年 / クラス</div>
+                      <div class="fs-14 fw-6">3年A組</div>
+                    </div>
+                    <div>
+                      <div class="fs-12 text-primary">担任</div>
+                      <div class="fs-14 fw-6">中村 健太</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">承認フロー</div>
+              <div class="card-sub">古町中 · 新潟高校の順に校長が承認 · 発効日にバッチで反映</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-date">2026-06-10 16:18</div>
+                <div class="timeline-title">申請を受付</div>
+                <div class="timeline-detail">中村 健太 先生 が所属変更を申請 · 引率担任として</div>
+                <div class="timeline-user">申請者: 中村 健太 (新潟高校)</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-date">2026-06-10 16:42</div>
+                <div class="timeline-title">旧所属 (古町中) の承認待ち</div>
+                <div class="timeline-detail">古町中 校長 へ通知済 · 24時間以内に応答予定</div>
+                <div class="timeline-user">承認者: 古町中 · 校長</div>
+              </div>
+              <div class="timeline-item muted">
+                <div class="timeline-date">— 待機中 —</div>
+                <div class="timeline-title">新所属 (新潟高校) の承認</div>
+                <div class="timeline-detail">旧所属の承認後に通知</div>
+              </div>
+              <div class="timeline-item muted">
+                <div class="timeline-date">2026-04-01 00:00</div>
+                <div class="timeline-title">バッチ処理による自動反映</div>
+                <div class="timeline-detail">テナント全体の所属変更が実行されます</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">変更理由</div>
+              <div class="card-sub">申請者が記述</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:13px;line-height:1.7;color:var(--ink-2)">
+              山本 蓮 さんは古町中学校 3年C組の生徒ですが、家庭の事情により 4月1日付で新潟市中央区に転居することになりました。本人および保護者の同意のもと、新潟高等学校 3年A組への所属変更を希望します。<br><br>
+              引率担任として、本人の学業継続と部活動 (サッカー部) の継続を支援するため、至急の手続きをお願いします。
+            </p>
+            <div class="row gap-8 mt-16">
+              <span class="tag tag-info">添付資料 あり</span>
+              <span class="tag tag-outline">保護者同意書.pdf</span>
+              <span class="tag tag-outline">転居先証明.pdf</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">承認者</div>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div class="fs-11 text-3">1. 旧所属 (古町中)</div>
+              <div class="row gap-8 mt-8">
+                <div class="person-avatar" style="width:32px;height:32px;font-size:12px">古</div>
+                <div style="flex:1">
+                  <div class="fs-13 fw-6">古町中 · 校長</div>
+                  <div class="fs-11 text-3">furumachi.prin@…</div>
+                </div>
+                <span class="status-pill status-pending">未応答</span>
+              </div>
+            </div>
+            <div>
+              <div class="fs-11 text-3">2. 新所属 (新潟高校)</div>
+              <div class="row gap-8 mt-8">
+                <div class="person-avatar primary" style="width:32px;height:32px;font-size:12px">渡</div>
+                <div style="flex:1">
+                  <div class="fs-13 fw-6">渡辺 茂雄 校長</div>
+                  <div class="fs-11 text-3">watanabe.s@…</div>
+                </div>
+                <span class="status-pill status-draft">待機</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">取り消し</div>
+              <div class="card-sub">発効日前なら取り消せます</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="fs-12 text-2 mb-12">取り消し後はすべての承認ステップが破棄されます。再度申請が必要です。</div>
+            <button class="btn btn-secondary btn-block justify-start" style="color:var(--danger)"><span data-i="x" data-s="14"></span> 申請を取り消す</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">関連する申請</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="list-compact">
+              <div class="list-compact-item">
+                <span data-i="gitBranch" data-s="14"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">REQ-2026-0421 · サッカー部入部</div>
+                  <div class="fs-11 text-3">2025-04-12 · 承認済</div>
+                </div>
+              </div>
+              <div class="list-compact-item">
+                <span data-i="fileText" data-s="14"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">REQ-2025-1102 · 課外活動許可</div>
+                  <div class="fs-11 text-3">2025-09-08 · 承認済</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalApprove">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">申請を承認</div>
+        <div class="modal-sub">古町中 · 校長として所属変更を承認します</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalApprove')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="banner info" style="margin:0 0 16px">
+        <span class="banner-icon"><span data-i="info" data-s="18"></span></span>
+        <div class="banner-content">
+          <div>この承認により、新所属 (新潟高校) の校長へ通知が送信されます。発効日 (2026-04-01) にバッチ処理で自動的に反映されます。</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">コメント (任意)</label>
+        <textarea class="form-textarea" placeholder="承認に関する所見や条件など"></textarea>
+      </div>
+      <div class="form-row">
+        <label class="checkbox"><input type="checkbox" checked> 次の承認者 (新潟高校 · 校長) へ通知</label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalApprove')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalApprove');toast('申請を承認しました','success')">承認する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'index.html' });</script>
+</body>
+</html>

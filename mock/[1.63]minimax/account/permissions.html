@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>権限ルール · アカウント</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../directory/index.html">名簿管理</a><span class="sep">/</span><span class="current">アカウント · 権限ルール</span></div>
+        <h1 class="page-title">権限<em>ルール</em></h1>
+        <p class="page-sub">サブジェクト（誰が）· オブジェクト（何を）· アクション（どうする）· 条件（どんなとき）の組み合わせで細粒度の権限を定義します。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="playCircle" data-s="14"></span> ルールテスター</button>
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddRule')"><span data-i="plus" data-s="14"></span> ルールを追加</button>
+      </div>
+    </div>
+
+    <div class="tabs tabs-scroll" id="tabBar">
+      <div class="tab active" data-tab="all">すべて <span class="count">186</span></div>
+      <div class="tab" data-tab="directory">名簿 <span class="count">82</span></div>
+      <div class="tab" data-tab="forms">フォーム <span class="count">48</span></div>
+      <div class="tab" data-tab="import">インポート <span class="count">22</span></div>
+      <div class="tab" data-tab="org">組織 <span class="count">18</span></div>
+      <div class="tab" data-tab="system">システム <span class="count">16</span></div>
+    </div>
+
+    <div class="split split-1-2" style="align-items:start;margin-top:16px">
+      <div>
+        <div class="filterbar" style="flex-direction:column;align-items:stretch;gap:8px">
+          <div class="filterbar-search">
+            <span data-i="search" data-s="14"></span>
+            <input type="text" placeholder="ルール名 · 識別子 · 説明で検索…">
+          </div>
+          <div class="row gap-8" style="flex-wrap:wrap">
+            <span class="chip active">継承元: テナント</span>
+            <span class="chip">継承元: 新潟市教委</span>
+            <span class="chip">新潟高校 独自</span>
+            <span class="chip">古町中 独自</span>
+          </div>
+        </div>
+
+        <div class="card card-tight">
+          <table class="table">
+            <tbody>
+              <tr style="background:var(--surface-2);cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">教員</span><span class="perm-arrow">→</span><span class="perm-token obj">生徒</span><span class="perm-arrow">→</span><span class="perm-token act">view</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">教員が担任するクラスの生徒の基本情報を閲覧</div>
+                </td>
+                <td class="text-3 fs-12 num">v3</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">教員</span><span class="perm-arrow">→</span><span class="perm-token obj">生徒</span><span class="perm-arrow">→</span><span class="perm-token act">view.contact</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">部活顧問の生徒のみ連絡先閲覧可</div>
+                </td>
+                <td class="text-3 fs-12 num">v2</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">校長</span><span class="perm-arrow">→</span><span class="perm-token obj">教員</span><span class="perm-arrow">→</span><span class="perm-token act">view.contact</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">同一市町村同一学校種の一般教員連絡先を閲覧</div>
+                </td>
+                <td class="text-3 fs-12 num">v4</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">学年主任</span><span class="perm-arrow">→</span><span class="perm-token obj">生徒.機微</span><span class="perm-arrow">→</span><span class="perm-token act">view</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">学年内人物区分（機微タグ）の閲覧</div>
+                </td>
+                <td class="text-3 fs-12 num">v1</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">教員</span><span class="perm-arrow">→</span><span class="perm-token obj">生徒</span><span class="perm-arrow">→</span><span class="perm-token act">edit</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">担任クラスの生徒基本情報編集</div>
+                </td>
+                <td class="text-3 fs-12 num">v2</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">教委職員</span><span class="perm-arrow">→</span><span class="perm-token obj">CSV取込</span><span class="perm-arrow">→</span><span class="perm-token act">create</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">所属変更の承認が不要なCSV取込</div>
+                </td>
+                <td class="text-3 fs-12 num">v5</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">教員</span><span class="perm-arrow">→</span><span class="perm-token obj">生徒.部活</span><span class="perm-arrow">→</span><span class="perm-token act">view.contact</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">部活顧問時のみ対象部員の連絡先閲覧</div>
+                </td>
+                <td class="text-3 fs-12 num">v2</td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td>
+                  <div class="row gap-8">
+                    <span class="perm-token sub">匿名</span><span class="perm-arrow">→</span><span class="perm-token obj">フォーム</span><span class="perm-arrow">→</span><span class="perm-token act">respond</span>
+                  </div>
+                  <div class="fs-11 text-3 mt-8">対象者に配布されたフォームへの回答</div>
+                </td>
+                <td class="text-3 fs-12 num">v1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="row gap-8 mb-8">
+                <span class="tag tag-primary">教員 → 生徒</span>
+                <span class="tag tag-accent">view.contact</span>
+                <span class="tag tag-outline">継承可</span>
+              </div>
+              <div class="card-title">部活顧問の生徒のみ連絡先閲覧可</div>
+              <div class="card-sub font-mono">perm_rule: teacher_view_student_contact_via_club</div>
+            </div>
+            <div class="row gap-8">
+              <span class="status-pill status-active">有効</span>
+              <button class="icon-btn"><span data-i="history" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="copy" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="step-flow mb-24">
+              <div class="step done"><div class="step-num">1</div><span>サブジェクト</span></div>
+              <div class="step-line"></div>
+              <div class="step done"><div class="step-num">2</div><span>オブジェクト</span></div>
+              <div class="step-line"></div>
+              <div class="step done"><div class="step-num">3</div><span>アクション</span></div>
+              <div class="step-line"></div>
+              <div class="step current"><div class="step-num">4</div><span>条件</span></div>
+              <div class="step-line"></div>
+              <div class="step"><div class="step-num">5</div><span>組織スコープ</span></div>
+              <div class="step-line"></div>
+              <div class="step"><div class="step-num">6</div><span>属性項目</span></div>
+            </div>
+
+            <div class="perm-rule">
+              <div class="perm-rule-head">
+                <span style="width:22px;height:22px;background:var(--primary-soft);color:var(--primary);border-radius:3px;display:grid;place-items:center;font-size:11px;font-weight:600">1</span>
+                <strong>サブジェクト (誰が)</strong>
+                <span class="spacer"></span>
+                <span class="text-3 fs-12">教員ロールに一致するユーザー</span>
+              </div>
+              <div class="perm-rule-body">
+                <div class="row gap-8" style="flex-wrap:wrap">
+                  <span class="perm-token sub">role:teacher</span><span class="perm-arrow">+</span><span class="perm-token sub">role:homeroom</span><span class="perm-arrow">+</span><span class="perm-token sub">role:club_advisor</span>
+                </div>
+                <div class="form-hint mt-8">いずれかに一致すれば対象</div>
+              </div>
+            </div>
+
+            <div class="perm-rule">
+              <div class="perm-rule-head">
+                <span style="width:22px;height:22px;background:var(--accent-soft);color:var(--accent-2);border-radius:3px;display:grid;place-items:center;font-size:11px;font-weight:600">2</span>
+                <strong>オブジェクト (何を)</strong>
+                <span class="spacer"></span>
+                <span class="text-3 fs-12">生徒エンティティ · 連絡先情報</span>
+              </div>
+              <div class="perm-rule-body">
+                <div class="row gap-8" style="flex-wrap:wrap">
+                  <span class="perm-token obj">person:type=student</span><span class="perm-arrow">.</span><span class="perm-token obj">attributes:contact.*</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="perm-rule">
+              <div class="perm-rule-head">
+                <span style="width:22px;height:22px;background:var(--info-soft);color:var(--info);border-radius:3px;display:grid;place-items:center;font-size:11px;font-weight:600">3</span>
+                <strong>アクション (どうする)</strong>
+                <span class="spacer"></span>
+                <span class="text-3 fs-12">読み取りのみ</span>
+              </div>
+              <div class="perm-rule-body">
+                <div class="row gap-8">
+                  <span class="perm-token act">view</span>
+                  <span class="text-3 fs-12">※ 編集は不可 · 別ルールが必要</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="perm-rule" style="border-color:var(--primary-3);background:var(--primary-soft)">
+              <div class="perm-rule-head" style="background:var(--primary-soft);border-bottom-color:var(--primary-3)">
+                <span style="width:22px;height:22px;background:var(--primary);color:#fff;border-radius:3px;display:grid;place-items:center;font-size:11px;font-weight:600">4</span>
+                <strong>条件 (どんなとき)</strong>
+                <span class="spacer"></span>
+                <span class="text-3 fs-12">AND · すべて満たす必要あり</span>
+              </div>
+              <div class="perm-rule-body">
+                <div class="row gap-8 mb-8" style="flex-wrap:wrap"><span class="perm-cond">subject.role IN [teacher, homeroom, club_advisor]</span></div>
+                <div class="row gap-8 mb-8" style="flex-wrap:wrap"><span class="perm-cond">subject.attr.部活顧問 == object.attr.部活</span><span class="perm-arrow">AND</span></div>
+                <div class="row gap-8" style="flex-wrap:wrap"><span class="perm-cond">subject.org.scope == object.org.scope</span><span class="perm-arrow">AND</span></div>
+                <div class="form-hint mt-12">条件に一致しない場合、アクセスは拒否されます。デフォルトルールは deny。</div>
+              </div>
+            </div>
+
+            <div class="perm-rule">
+              <div class="perm-rule-head">
+                <span style="width:22px;height:22px;background:var(--surface-3);color:var(--ink-2);border-radius:3px;display:grid;place-items:center;font-size:11px;font-weight:600">5</span>
+                <strong>組織スコープ</strong>
+                <span class="spacer"></span>
+                <span class="text-3 fs-12">教員の所属組織の配下</span>
+              </div>
+              <div class="perm-rule-body">
+                <div class="row gap-8">
+                  <span class="perm-cond">org:subtree(subject.org_id)</span>
+                  <span class="text-3 fs-12">— 自分の所属学校 · 学年 · クラスを内包</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="perm-rule">
+              <div class="perm-rule-head">
+                <span style="width:22px;height:22px;background:var(--warning-soft);color:var(--warning);border-radius:3px;display:grid;place-items:center;font-size:11px;font-weight:600">6</span>
+                <strong>属性項目スコープ</strong>
+                <span class="spacer"></span>
+                <span class="text-3 fs-12">連絡先のうち、機微以外</span>
+              </div>
+              <div class="perm-rule-body">
+                <div class="row gap-8" style="flex-wrap:wrap"><span class="perm-token attr">attributes: phone, email, address, commute_method</span></div>
+                <div class="row gap-8 mt-8" style="flex-wrap:wrap"><span class="perm-cond">NOT IN [allergy, accommodation, incident_history]</span></div>
+              </div>
+            </div>
+
+            <div class="banner info">
+              <span class="banner-icon"><span data-i="check" data-s="18"></span></span>
+              <div class="banner-content">
+                <div class="banner-title">このルールで許可される組み合わせ</div>
+                <div>サッカー部顧問 中村 健太先生は、新潟高校サッカー部に所属する <strong>42名</strong> の生徒の <strong>連絡先情報 (電話 · メール · 住所 · 通学方法)</strong> のみ閲覧できます。機微情報 (アレルギー · 配慮事項 · いじめ履歴) は閲覧できません。</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-foot">
+            <div class="row gap-8">
+              <span class="text-3 fs-12">最終更新 2026-06-08 14:21 · 佐藤 美咲</span>
+            </div>
+            <div class="row gap-8">
+              <button class="btn btn-ghost btn-sm">複製</button>
+              <button class="btn btn-secondary btn-sm">テスト実行</button>
+              <button class="btn btn-primary btn-sm"><span data-i="check" data-s="12"></span> 変更を保存</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">継承と上書き</div>
+              <div class="card-sub">このルールは下位組織が上書き可能</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-date">テナント · 新潟県教育委員会</div>
+                <div class="timeline-title font-display fs-13">v5 · 現在の有効版</div>
+                <div class="timeline-detail">部活顧問 → 部活一致時のみ連絡先閲覧</div>
+              </div>
+              <div class="timeline-item muted">
+                <div class="timeline-date">新潟市教育委員会</div>
+                <div class="timeline-title font-display fs-13">継承 (上書きなし)</div>
+                <div class="timeline-detail">テナント版をそのまま使用</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-date">新潟高校 · 独自</div>
+                <div class="timeline-title font-display fs-13">v3 · 部活一致を厳密化</div>
+                <div class="timeline-detail">顧問と部活が完全一致する場合のみ。引退済みの部員は除外。</div>
+                <div class="timeline-user">中村 健太 (2025-04-12)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddRule">
+  <div class="modal modal-xl">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">権限ルールを追加</div>
+        <div class="modal-sub">サブジェクト · オブジェクト · アクション · 条件 · スコープを順に定義</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddRule')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="step-flow mb-16">
+        <div class="step current"><div class="step-num">1</div><span>サブジェクト</span></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">2</div><span>オブジェクト</span></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">3</div><span>アクション</span></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">4</div><span>条件</span></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">5</div><span>スコープ</span></div>
+      </div>
+      <div class="form-row"><label class="form-label">ルール名 <span class="req">*</span></label><input class="form-input" placeholder="例: 部活顧問の連絡先閲覧"></div>
+      <div class="form-row"><label class="form-label">識別子 <span class="req">*</span></label><input class="form-input font-mono" placeholder="例: teacher_view_student_contact_via_club"></div>
+      <div class="form-row"><label class="form-label">サブジェクト (誰が) <span class="req">*</span></label><div class="row gap-8"><span class="perm-token sub">role:teacher</span><button class="btn btn-secondary btn-sm"><span data-i="plus" data-s="12"></span> ロール追加</button></div></div>
+      <div class="form-row"><label class="form-label">アクション <span class="req">*</span></label><div class="row gap-8"><span class="perm-token act">view</span><span class="perm-token act">edit</span><span class="perm-token act">export</span></div></div>
+      <div class="form-row"><label class="form-label">説明</label><textarea class="form-textarea" placeholder="このルールの目的と想定シナリオ"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddRule')">キャンセル</button>
+      <button class="btn btn-secondary">下書き保存</button>
+      <button class="btn btn-primary">次へ: オブジェクト <span data-i="arrowRight" data-s="12"></span></button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'permissions.html' }); activateTab(document.getElementById('tabBar'));</script>
+</body>
+</html>

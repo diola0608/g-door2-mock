@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>組織ツリー · 名簿管理</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="index.html">名簿管理</a><span class="sep">/</span><span class="current">組織ツリー</span></div>
+        <h1 class="page-title">組織<em>ツリー</em></h1>
+        <p class="page-sub">新潟県教育委員会の階層構造を表示します。テナント全体を起点に、市町村 · 学校種 · 学校 · クラスへ展開できます。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="filter" data-s="14"></span> 表示設定</button>
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddOrg')"><span data-i="plus" data-s="14"></span> 組織を追加</button>
+      </div>
+    </div>
+
+    <div class="filterbar">
+      <div class="filterbar-search">
+        <span data-i="search" data-s="14"></span>
+        <input type="text" placeholder="組織名で検索…">
+      </div>
+      <button class="chip active">すべて</button>
+      <button class="chip">教育委員会</button>
+      <button class="chip">市町村</button>
+      <button class="chip">学校種</button>
+      <button class="chip">学校</button>
+      <button class="chip">部署</button>
+      <div class="spacer"></div>
+      <button class="chip"><span data-i="chevronDown" data-s="12"></span> 全て展開</button>
+      <button class="chip"><span data-i="chevronUp" data-s="12"></span> 全て折りたたみ</button>
+    </div>
+
+    <div class="split split-3-1" style="align-items:start">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">新潟県教育委員会 · テナント全体</div>
+            <div class="card-sub">1,847 組織 · 128,490 名</div>
+          </div>
+          <span class="status-pill status-active">稼働中</span>
+        </div>
+        <div class="card-body">
+          <div class="tree">
+            <ul>
+              <li>
+                <div class="tree-node active">
+                  <span class="tree-toggle" data-i="chevronDown" data-s="14"></span>
+                  <div class="tree-node-icon dept">県</div>
+                  <div class="tree-node-name">新潟県教育委員会 (テナント全体)</div>
+                  <span class="tree-node-count">3,186</span>
+                </div>
+                <ul>
+                  <li>
+                    <div class="tree-node">
+                      <span class="tree-toggle" data-i="chevronDown" data-s="14"></span>
+                      <div class="tree-node-icon dept">市</div>
+                      <div class="tree-node-name">新潟市教育委員会</div>
+                      <span class="tree-node-count">24,816</span>
+                    </div>
+                    <ul>
+                      <li><div class="tree-node"><span class="tree-toggle" data-i="chevronDown" data-s="14"></span><div class="tree-node-icon">種</div><div class="tree-node-name">小学校 (107校)</div><span class="tree-node-count">12,418</span></div></li>
+                      <li><div class="tree-node"><span class="tree-toggle" data-i="chevronDown" data-s="14"></span><div class="tree-node-icon">種</div><div class="tree-node-name">中学校 (57校)</div><span class="tree-node-count">5,824</span></div></li>
+                      <li>
+                        <div class="tree-node">
+                          <span class="tree-toggle" data-i="chevronDown" data-s="14"></span>
+                          <div class="tree-node-icon">種</div>
+                          <div class="tree-node-name">高等学校 (22校)</div>
+                          <span class="tree-node-count">6,148</span>
+                        </div>
+                        <ul>
+                          <li><div class="tree-node" onclick="location.href='list.html'"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon school">高</div><div class="tree-node-name">新潟高等学校</div><span class="tree-node-count">1,284</span></div></li>
+                          <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon school">高</div><div class="tree-node-name">新潟中央高等学校</div><span class="tree-node-count">986</span></div></li>
+                          <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon school">高</div><div class="tree-node-name">新潟北高等学校</div><span class="tree-node-count">742</span></div></li>
+                          <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon school">高</div><div class="tree-node-name">万代高等学校</div><span class="tree-node-count">658</span></div></li>
+                        </ul>
+                      </li>
+                      <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon">種</div><div class="tree-node-name">特別支援学校 (5校)</div><span class="tree-node-count">426</span></div></li>
+                    </ul>
+                  </li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">市</div><div class="tree-node-name">長岡市教育委員会</div><span class="tree-node-count">18,142</span></div></li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">市</div><div class="tree-node-name">上越市教育委員会</div><span class="tree-node-count">13,728</span></div></li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">市</div><div class="tree-node-name">三条市教育委員会</div><span class="tree-node-count">10,418</span></div></li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">市</div><div class="tree-node-name">新発田市教育委員会</div><span class="tree-node-count">8,612</span></div></li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">市</div><div class="tree-node-name">柏崎市教育委員会</div><span class="tree-node-count">7,420</span></div></li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">市</div><div class="tree-node-name">その他 24市町村教育委員会</div><span class="tree-node-count">42,168</span></div></li>
+                  <li><div class="tree-node"><span class="tree-toggle" data-i="chevronRight" data-s="14"></span><div class="tree-node-icon dept">部</div><div class="tree-node-name">県教育委員会 · 情報政策課</div><span class="tree-node-count">42</span></div></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">新潟高等学校</div>
+              <div class="card-sub">org_id: niigata-h-001 · 高等学校</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-label">組織コード</div><div class="detail-value num">NIIGATA-H-001</div>
+              <div class="detail-label">所在地</div><div class="detail-value">新潟市中央区水道町1-X</div>
+              <div class="detail-label">電話</div><div class="detail-value num">025-XXX-XXXX</div>
+              <div class="detail-label">設立</div><div class="detail-value num">1878-04-01</div>
+              <div class="detail-label">校長</div><div class="detail-value">渡辺 茂雄</div>
+              <div class="detail-label">教員数</div><div class="detail-value num fw-6">98</div>
+              <div class="detail-label">生徒数</div><div class="detail-value num fw-6">1,284</div>
+              <div class="detail-label">クラス数</div><div class="detail-value num">36</div>
+              <div class="detail-label">権限継承</div><div class="detail-value">県 · 新潟市教委</div>
+            </div>
+          </div>
+          <div class="card-foot">
+            <a class="muted-link fs-12" href="list.html?org=niigata-h-001">所属人物 (1,284名) →</a>
+            <a class="muted-link fs-12" href="../settings/org.html">組織設定 →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">配下のクラス</div>
+              <div class="card-sub">36 クラス · 1〜3年</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="list-compact">
+              <div class="list-compact-item"><span class="tag tag-primary">3年</span><span class="fw-6">A組</span><span class="text-3 fs-12">担任: 中村 健太</span><span class="spacer"></span><span class="num fs-12 text-3">42名</span></div>
+              <div class="list-compact-item"><span class="tag tag-primary">3年</span><span class="fw-6">B組</span><span class="text-3 fs-12">担任: 田中 由美子</span><span class="spacer"></span><span class="num fs-12 text-3">41名</span></div>
+              <div class="list-compact-item"><span class="tag tag-primary">3年</span><span class="fw-6">C組</span><span class="text-3 fs-12">担任: 高橋 恵子</span><span class="spacer"></span><span class="num fs-12 text-3">40名</span></div>
+              <div class="list-compact-item"><span class="tag tag-info">2年</span><span class="fw-6">A組</span><span class="text-3 fs-12">担任: 伊藤 直樹</span><span class="spacer"></span><span class="num fs-12 text-3">38名</span></div>
+              <div class="list-compact-item"><span class="tag tag-info">2年</span><span class="fw-6">B組</span><span class="text-3 fs-12">担任: 斎藤 健一</span><span class="spacer"></span><span class="num fs-12 text-3">37名</span></div>
+              <div class="list-compact-item" style="background:var(--surface-2)"><span class="text-3 fs-12" style="font-style:italic">…他 31 クラス</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddOrg">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">組織を追加</div>
+        <div class="modal-sub">テナントの階層構造に新しい組織を追加</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddOrg')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">親組織 <span class="req">*</span></label>
+        <input class="form-input" value="新潟県教育委員会 · 高等学校" readonly>
+      </div>
+      <div class="form-row">
+        <label class="form-label">組織種別 <span class="req">*</span></label>
+        <select class="form-select">
+          <option>学校</option><option>教育委員会</option><option>部署</option><option>クラス</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">組織名 <span class="req">*</span></label>
+        <input class="form-input" placeholder="例: 新潟東高等学校">
+      </div>
+      <div class="form-row">
+        <label class="form-label">組織コード</label>
+        <input class="form-input font-mono" placeholder="auto-generated">
+        <div class="form-hint">空欄の場合は自動採番されます</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddOrg')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddOrg');toast('組織を追加しました','success')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'org.html' });</script>
+</body>
+</html>

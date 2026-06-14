@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>フォーム一覧 · データ利活用</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><span class="current">データ利活用 · フォーム</span></div>
+        <h1 class="page-title"><em>フォーム</em>一覧</h1>
+        <p class="page-sub">アンケート · 調査票 · 同意書 · 名簿更新依頼。対象者だけに配布し、回答は名簿へ自動反映できます。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="clipboardList" data-s="14"></span> テンプレート</button>
+        <button class="btn btn-primary" onclick="openModal('modalNewForm')"><span data-i="plus" data-s="14"></span> 新規フォーム</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-16">
+      <div class="kpi"><div class="kpi-label">全フォーム</div><div class="kpi-value">86</div><div class="kpi-delta-note">公開中 12 · 下書き 28 · 終了 46</div></div>
+      <div class="kpi"><div class="kpi-label">今月の回答</div><div class="kpi-value">23,418</div><div class="kpi-delta up"><span data-i="trendingUp" data-s="12"></span> +18%</div></div>
+      <div class="kpi"><div class="kpi-label">回答率 (進行中)</div><div class="kpi-value num">78<span class="kpi-value-unit">%</span></div><div class="kpi-delta-note">平均</div></div>
+      <div class="kpi"><div class="kpi-label">名簿反映</div><div class="kpi-value">12</div><div class="kpi-delta-note">回答 → 属性値の自動更新</div></div>
+    </div>
+
+    <div class="tabs tabs-scroll" id="tabBar">
+      <div class="tab active" data-tab="all">すべて <span class="count">86</span></div>
+      <div class="tab" data-tab="public">公開中 <span class="count">12</span></div>
+      <div class="tab" data-tab="draft">下書き <span class="count">28</span></div>
+      <div class="tab" data-tab="closed">終了 <span class="count">46</span></div>
+      <div class="tab" data-tab="archive">アーカイブ</div>
+    </div>
+
+    <div class="card mt-16 card-tight">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>フォーム名</th><th>種別</th><th>対象</th><th>状態</th><th>期間</th><th>回答数</th><th>回答率</th><th>名簿反映</th><th class="actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="fs-13 fw-6"><a href="builder.html" class="muted-link">在校生調査2026</a></div>
+              <div class="fs-11 text-3">form: in_school_survey_2026</div>
+            </td>
+            <td><span class="tag tag-info">アンケート</span></td>
+            <td class="fs-12">県内全高等学校 1〜3年</td>
+            <td><span class="status-pill status-active">公開中</span></td>
+            <td class="num text-3 fs-12">06-01 〜 06-30</td>
+            <td class="num fw-6">1,284 / 1,632</td>
+            <td>
+              <div class="row gap-8">
+                <div class="progress" style="width:60px;height:5px"><div class="progress-bar" style="width:78%"></div></div>
+                <span class="num fs-12">78%</span>
+              </div>
+            </td>
+            <td><span class="tag tag-success">有効</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="barChart" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fs-13 fw-6"><a href="builder.html" class="muted-link">教員自家用携帯番号 登録</a></div>
+              <div class="fs-11 text-3">form: teacher_personal_phone_2026</div>
+            </td>
+            <td><span class="tag tag-accent">名簿更新</span></td>
+            <td class="fs-12">県内全教員 (14,238名)</td>
+            <td><span class="status-pill status-active">公開中</span></td>
+            <td class="num text-3 fs-12">05-15 〜 07-15</td>
+            <td class="num fw-6">8,412 / 14,238</td>
+            <td>
+              <div class="row gap-8">
+                <div class="progress" style="width:60px;height:5px"><div class="progress-bar" style="width:59%"></div></div>
+                <span class="num fs-12">59%</span>
+              </div>
+            </td>
+            <td><span class="tag tag-success">自動反映</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="barChart" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fs-13 fw-6"><a href="builder.html" class="muted-link">特別支援 配慮事項 同意書</a></div>
+              <div class="fs-11 text-3">form: special_needs_consent_2026</div>
+            </td>
+            <td><span class="tag tag-warning">同意書</span></td>
+            <td class="fs-12">特別支援学校 児童生徒 保護者</td>
+            <td><span class="status-pill status-active">公開中</span></td>
+            <td class="num text-3 fs-12">05-20 〜 08-31</td>
+            <td class="num fw-6">412 / 1,820</td>
+            <td>
+              <div class="row gap-8">
+                <div class="progress" style="width:60px;height:5px"><div class="progress-bar warning" style="width:22%"></div></div>
+                <span class="num fs-12">22%</span>
+              </div>
+            </td>
+            <td>—</td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="barChart" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fs-13 fw-6"><a href="builder.html" class="muted-link">部活動調査 (中学)</a></div>
+              <div class="fs-11 text-3">form: club_activity_middle_2026</div>
+            </td>
+            <td><span class="tag">調査票</span></td>
+            <td class="fs-12">全中学校 1〜3年</td>
+            <td><span class="status-pill status-active">公開中</span></td>
+            <td class="num text-3 fs-12">06-05 〜 06-20</td>
+            <td class="num fw-6">2,418 / 21,486</td>
+            <td>
+              <div class="row gap-8">
+                <div class="progress" style="width:60px;height:5px"><div class="progress-bar" style="width:11%"></div></div>
+                <span class="num fs-12">11%</span>
+              </div>
+            </td>
+            <td>—</td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="barChart" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fs-13 fw-6"><a href="builder.html" class="muted-link">年度始め 校務分掌 アンケート</a></div>
+              <div class="fs-11 text-3">form: work_assignment_2026</div>
+            </td>
+            <td><span class="tag tag-info">アンケート</span></td>
+            <td class="fs-12">校長 · 教頭</td>
+            <td><span class="status-pill status-pending">下書き</span></td>
+            <td class="num text-3 fs-12">—</td>
+            <td class="num">0</td>
+            <td class="text-3">—</td>
+            <td>—</td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="fs-13 fw-6"><a href="builder.html" class="muted-link">卒業生 進路調査2025</a></div>
+              <div class="fs-11 text-3">form: graduate_career_2025</div>
+            </td>
+            <td><span class="tag">調査票</span></td>
+            <td class="fs-12">2025年度 卒業生</td>
+            <td><span class="status-pill status-draft">終了</span></td>
+            <td class="num text-3 fs-12">2025-04-01 〜 2025-06-30</td>
+            <td class="num">12,418 / 12,648</td>
+            <td>
+              <div class="row gap-8">
+                <div class="progress" style="width:60px;height:5px"><div class="progress-bar success" style="width:98%"></div></div>
+                <span class="num fs-12">98%</span>
+              </div>
+            </td>
+            <td>—</td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="barChart" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalNewForm">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">新規フォーム</div>
+        <div class="modal-sub">テンプレートから開始、または白紙から作成</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalNewForm')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="kpi-grid cols-2" style="gap:10px">
+        <div class="card-feature" style="padding:16px;cursor:pointer" onclick="closeModal('modalNewForm');location.href='builder.html'">
+          <div class="card-feature-icon cfi-accent" style="width:32px;height:32px;margin-bottom:10px"><span data-i="clipboardList" data-s="16"></span></div>
+          <div class="fw-6">アンケート</div>
+          <div class="fs-11 text-3 mt-8">対象者に質問を投げかけ集計</div>
+        </div>
+        <div class="card-feature" style="padding:16px;cursor:pointer" onclick="closeModal('modalNewForm');location.href='builder.html'">
+          <div class="card-feature-icon cfi-info" style="width:32px;height:32px;margin-bottom:10px"><span data-i="fileText" data-s="16"></span></div>
+          <div class="fw-6">調査票</div>
+          <div class="fs-11 text-3 mt-8">データ収集 · 報告資料向け</div>
+        </div>
+        <div class="card-feature" style="padding:16px;cursor:pointer" onclick="closeModal('modalNewForm');location.href='builder.html'">
+          <div class="card-feature-icon cfi-success" style="width:32px;height:32px;margin-bottom:10px"><span data-i="checkSquare" data-s="16"></span></div>
+          <div class="fw-6">同意書</div>
+          <div class="fs-11 text-3 mt-8">電子署名 · 同意取得</div>
+        </div>
+        <div class="card-feature" style="padding:16px;cursor:pointer" onclick="closeModal('modalNewForm');location.href='builder.html'">
+          <div class="card-feature-icon cfi-primary" style="width:32px;height:32px;margin-bottom:10px"><span data-i="edit" data-s="16"></span></div>
+          <div class="fw-6">名簿更新依頼</div>
+          <div class="fs-11 text-3 mt-8">回答 → 名簿の属性値を自動更新</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalNewForm')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'list.html' }); activateTab(document.getElementById('tabBar'));</script>
+</body>
+</html>

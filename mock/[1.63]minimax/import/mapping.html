@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>マッピング設定 · インポート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><a href="index.html">インポート</a><span class="sep">/</span><a href="upload.html">アップロード</a><span class="sep">/</span><span class="current">マッピング</span></div>
+        <h1 class="page-title">マッピング<em>設定</em></h1>
+        <p class="page-sub">CSVの列を名簿項目に紐づけ、識別子による同一人物判定 · 所属変更の承認フロー · バリデーションを設定します。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost">テンプレートとして保存</button>
+        <button class="btn btn-secondary" onclick="history.back()">戻る</button>
+        <button class="btn btn-primary" onclick="location.href='logs.html'">実行 <span data-i="arrowRight" data-s="14"></span></button>
+      </div>
+    </div>
+
+    <div class="step-flow mb-24">
+      <div class="step done"><div class="step-num">1</div><span>アップロード</span></div>
+      <div class="step-line"></div>
+      <div class="step current"><div class="step-num">2</div><span>マッピング</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">3</div><span>確認</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">4</div><span>実行</span></div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-head">
+        <div>
+          <div class="card-title">1. 識別子 (キー列)</div>
+          <div class="card-sub">同一人物の判定に使用する列。最低 1 列必須。</div>
+        </div>
+        <span class="tag tag-success">設定済</span>
+      </div>
+      <div class="card-body">
+        <div class="row gap-8 mb-8">
+          <span class="perm-token sub">CSV列: <strong>学籍番号</strong> (column 1)</span>
+          <span class="perm-arrow">→</span>
+          <span class="perm-token obj">名簿: <strong>student_id</strong></span>
+          <span class="status-pill status-active">主キー</span>
+        </div>
+        <div class="row gap-8">
+          <span class="perm-token sub">CSV列: <strong>姓 + 名 + 生年月日</strong></span>
+          <span class="perm-arrow">→</span>
+          <span class="perm-token obj">複合識別子</span>
+          <span class="tag tag-info">補助キー</span>
+        </div>
+        <div class="form-hint mt-8">学籍番号が見つからない場合、姓 + 名 + 生年月日で再照合を試みます。</div>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-head">
+        <div>
+          <div class="card-title">2. 列マッピング</div>
+          <div class="card-sub">CSVの 12 列を名簿の属性項目に対応付け</div>
+        </div>
+        <span class="row gap-8">
+          <button class="btn btn-ghost btn-sm">自動推定</button>
+          <button class="btn btn-ghost btn-sm">クリア</button>
+        </span>
+      </div>
+      <div class="card-body" style="padding:0;overflow-x:auto">
+        <table class="table" style="min-width:1100px">
+          <thead>
+            <tr><th>CSV列</th><th>サンプル値</th><th>名簿の属性項目</th><th>形式</th><th>動作</th><th>検証</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>学籍番号</code></td><td class="num">N-2024-1248</td><td><select class="form-select" style="height:28px;font-size:12px"><option>識別子 (主キー)</option></select></td><td><span class="tag tag-outline">文字列</span></td><td><label class="checkbox fs-12"><input type="checkbox" checked> 必須</label></td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>姓</code></td><td>山本</td><td><select class="form-select" style="height:28px;font-size:12px"><option>last_name (姓)</option></select></td><td><span class="tag tag-outline">文字列</span></td><td><label class="checkbox fs-12"><input type="checkbox" checked> 必須 · 常に更新</label></td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>名</code></td><td>蓮</td><td><select class="form-select" style="height:28px;font-size:12px"><option>first_name (名)</option></select></td><td><span class="tag tag-outline">文字列</span></td><td><label class="checkbox fs-12"><input type="checkbox" checked> 必須 · 常に更新</label></td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>生年月日</code></td><td class="num">2008-04-12</td><td><select class="form-select" style="height:28px;font-size:12px"><option>date_of_birth</option></select></td><td><span class="tag tag-outline">日付</span></td><td><label class="checkbox fs-12"><input type="checkbox"> 空なら更新しない</label></td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>性別</code></td><td>男</td><td><select class="form-select" style="height:28px;font-size:12px"><option>gender (コード: gender)</option></select></td><td><span class="tag tag-info">コード</span></td><td><label class="checkbox fs-12"><input type="checkbox"> コードマスター参照</label></td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>新所属コード</code></td><td class="num">NIIGATA-H-001</td><td><select class="form-select" style="height:28px;font-size:12px"><option>affiliation (所属)</option></select></td><td><span class="tag tag-info">組織参照</span></td><td><span class="tag tag-warning">所属変更</span></td><td><span class="status-pill status-pending">要確認</span></td></tr>
+            <tr><td><code>新学年</code></td><td>3</td><td><select class="form-select" style="height:28px;font-size:12px"><option>grade (学年)</option></select></td><td><span class="tag tag-outline">数値</span></td><td>—</td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>新クラス</code></td><td>A</td><td><select class="form-select" style="height:28px;font-size:12px"><option>class (クラス)</option></select></td><td><span class="tag tag-info">コード</span></td><td>—</td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>変更日</code></td><td class="num">2026-04-01</td><td><select class="form-select" style="height:28px;font-size:12px"><option>effective_date (発効日)</option></select></td><td><span class="tag tag-outline">日付</span></td><td><span class="tag tag-info">バッチ予約</span></td><td><span class="status-pill status-active">OK</span></td></tr>
+            <tr><td><code>備考</code></td><td class="cell-empty">—</td><td><select class="form-select" style="height:28px;font-size:12px"><option>マッピングなし</option></select></td><td><span class="tag tag-outline">文字列</span></td><td>—</td><td><span class="status-pill status-draft">スキップ</span></td></tr>
+            <tr><td><code>不明</code></td><td class="cell-empty">—</td><td><select class="form-select" style="height:28px;font-size:12px"><option>マッピングなし</option></select></td><td>—</td><td>—</td><td><span class="status-pill status-draft">未割当</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-head">
+        <div>
+          <div class="card-title">3. 所属変更の処理</div>
+          <div class="card-sub">CSVによる所属変更時の承認フロー制御</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <label class="form-label">所属変更の承認</label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label class="radio"><input type="radio" name="aff" checked><span><strong>承認が必要</strong> — 旧所属 · 新所属の校長が順に承認 · 発効日にバッチ処理で反映</span></label>
+            <label class="radio"><input type="radio" name="aff"><span><strong>承認不要 (CSV直接実行)</strong> — アップロード後即時に反映 · 教委職員以上の権限が必要</span></label>
+            <label class="radio"><input type="radio" name="aff"><span><strong>ハイブリッド</strong> — 同一市町村内の異動は即時、市町村を超える異動は承認</span></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">バッチ処理</label>
+          <div class="row gap-16">
+            <label class="radio"><input type="radio" name="batch" checked> 発効日に自動実行</label>
+            <label class="radio"><input type="radio" name="batch"> 即時実行</label>
+            <label class="radio"><input type="radio" name="batch"> 手動実行を予約</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="checkbox"><input type="checkbox" checked> 取り消し申請を許可 (発効日前)</label>
+          <label class="checkbox" style="margin-left:16px"><input type="checkbox" checked> 変更通知をメール送信</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-head">
+        <div>
+          <div class="card-title">4. プレビュー · 影響範囲</div>
+          <div class="card-sub">このインポートで更新される想定件数</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="kpi-grid cols-4">
+          <div class="kpi" style="border-color:var(--success-soft)"><div class="kpi-label">新規作成</div><div class="kpi-value">0</div><div class="kpi-delta-note">新規人物</div></div>
+          <div class="kpi" style="border-color:var(--info-soft)"><div class="kpi-label">更新</div><div class="kpi-value num">1,279</div><div class="kpi-delta-note">既存 · 属性更新</div></div>
+          <div class="kpi" style="border-color:var(--warning-soft)"><div class="kpi-label">所属変更</div><div class="kpi-value num">1,284</div><div class="kpi-delta-note">承認フロー対象</div></div>
+          <div class="kpi" style="border-color:var(--danger-soft)"><div class="kpi-label">エラー</div><div class="kpi-value num text-danger">5</div><div class="kpi-delta-note">識別子不一致 · スキップ</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row between">
+      <button class="btn btn-ghost" onclick="history.back()">戻る</button>
+      <div class="row gap-8">
+        <button class="btn btn-secondary">下書き保存</button>
+        <button class="btn btn-primary">実行に進む <span data-i="arrowRight" data-s="14"></span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'index.html' });</script>
+</body>
+</html>

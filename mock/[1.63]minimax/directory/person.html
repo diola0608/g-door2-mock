@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>山本 蓮 · 名簿 · Atlas</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+
+  <div class="page">
+
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow">
+          <a href="index.html">名簿管理</a>
+          <span class="sep">/</span>
+          <a href="list.html">名簿一覧</a>
+          <span class="sep">/</span>
+          <span class="current">山本 蓮</span>
+        </div>
+        <h1 class="page-title"><span style="font-feature-settings: normal">山本 蓮</span> <em class="font-mono fs-13 text-3" style="font-family:var(--font-mono);font-style:normal;margin-left:8px">N-2024-1248</em></h1>
+        <p class="page-sub">新潟高等学校 3年A組 · サッカー部 · 2008年4月12日生まれ · Google Workspace 連携中</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="history" data-s="14"></span> 変更履歴</button>
+        <button class="btn btn-secondary"><span data-i="gitBranch" data-s="14"></span> 所属変更を申請</button>
+        <button class="btn btn-secondary"><span data-i="edit" data-s="14"></span> 編集</button>
+        <button class="icon-btn" title="その他"><span data-i="more" data-s="16"></span></button>
+      </div>
+    </div>
+
+    <div class="card mb-16" style="background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%)">
+      <div class="card-body" style="display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center">
+        <div class="person-avatar primary" style="width:64px;height:64px;font-size:20px;border-radius:var(--r-md)">山本</div>
+        <div>
+          <div class="row gap-8 mb-8">
+            <span class="tag tag-primary">生徒</span>
+            <span class="tag tag-info">サッカー部</span>
+            <span class="tag tag-outline">生徒会</span>
+            <span class="status-pill status-active">在籍中</span>
+            <span class="status-pill status-active">Google 同期</span>
+          </div>
+          <div class="row gap-16 fs-12 text-2">
+            <span><span data-i="mail" data-s="12"></span> yamamoto.ren@niigata-h.ed.jp</span>
+            <span><span data-i="phone" data-s="12"></span> 025-***-**** (保護者)</span>
+            <span><span data-i="calendar" data-s="12"></span> 2008-04-12 (17歳)</span>
+            <span><span data-i="mapPin" data-s="12"></span> 新潟県新潟市中央区</span>
+          </div>
+        </div>
+        <div class="col gap-4" style="text-align:right">
+          <div class="fs-11 text-3">最終更新</div>
+          <div class="num fs-12 fw-6">2026-06-10 14:23</div>
+          <div class="fs-11 text-3">佐藤 美咲 が更新</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs tabs-scroll" id="tabBar">
+      <div class="tab active" data-tab="basic">基本情報</div>
+      <div class="tab" data-tab="contact">連絡先 <span class="count">8</span></div>
+      <div class="tab" data-tab="affiliation">所属・履歴 <span class="count">14</span></div>
+      <div class="tab" data-tab="student">生徒固有 <span class="count">18</span></div>
+      <div class="tab" data-tab="attributes">属性項目 <span class="count">12</span></div>
+      <div class="tab" data-tab="sensitive">機微情報 <span class="count">4</span></div>
+      <div class="tab" data-tab="history">変更履歴 <span class="count">28</span></div>
+    </div>
+
+    <div data-panel="basic" class="card mt-16">
+      <div class="card-section">
+        <h4>識別情報</h4>
+        <span class="status-pill status-active">Google 同期中</span>
+      </div>
+      <div class="card-body">
+        <div class="attr-row"><div class="attr-name">姓 (姓) <span class="meta">last_name · 文字列</span></div><div class="attr-value">山本</div></div>
+        <div class="attr-row"><div class="attr-name">名 (名) <span class="meta">first_name · 文字列</span></div><div class="attr-value">蓮</div></div>
+        <div class="attr-row"><div class="attr-name">姓カナ <span class="meta">last_name_kana · 文字列</span></div><div class="attr-value font-mono">ヤマモト</div></div>
+        <div class="attr-row"><div class="attr-name">名カナ <span class="meta">first_name_kana · 文字列</span></div><div class="attr-value font-mono">レン</div></div>
+        <div class="attr-row"><div class="attr-name">生年月日 <span class="meta">date_of_birth · 日付</span></div><div class="attr-value num">2008-04-12 (17歳)</div></div>
+        <div class="attr-row"><div class="attr-name">性別 <span class="meta">gender · コード</span></div><div class="attr-value"><span class="tag">男性</span></div></div>
+        <div class="attr-row"><div class="attr-name">生徒番号 <span class="meta">student_id · 文字列(識別子)</span></div><div class="attr-value num fw-6">N-2024-1248</div></div>
+        <div class="attr-row"><div class="attr-name">メールアドレス <span class="meta">email · 文字列(識別子)</span></div><div class="attr-value">yamamoto.ren@niigata-h.ed.jp</div></div>
+        <div class="attr-row"><div class="attr-name">血液型 <span class="meta">blood_type · コード</span></div><div class="attr-value"><span class="tag tag-outline">A型</span></div></div>
+      </div>
+    </div>
+
+    <div data-panel="contact" style="display:none" class="card mt-16">
+      <div class="card-section">
+        <h4>連絡先情報</h4>
+        <span class="text-3 fs-12">権限: 担任 / 学年主任 / 校長 · 閲覧可</span>
+      </div>
+      <div class="card-body">
+        <div class="attr-row"><div class="attr-name">本人 電話 <span class="meta">phone_personal · 文字列</span></div><div class="attr-value num">090-****-****</div></div>
+        <div class="attr-row"><div class="attr-name">本人 メール <span class="meta">email_personal · 文字列</span></div><div class="attr-value text-3">未登録</div></div>
+        <div class="attr-row"><div class="attr-name">保護者 氏名 <span class="meta">guardian_name · 文字列</span></div><div class="attr-value">山本 真理子 (母)</div></div>
+        <div class="attr-row"><div class="attr-name">保護者 電話 <span class="meta">guardian_phone · 文字列</span></div><div class="attr-value num">025-***-****</div></div>
+        <div class="attr-row"><div class="attr-name">保護者 メール <span class="meta">guardian_email · 文字列</span></div><div class="attr-value">yamamoto.m@personal.example.jp</div></div>
+        <div class="attr-row"><div class="attr-name">現住所 郵便番号 <span class="meta">address_zip · 文字列</span></div><div class="attr-value num">950-0087</div></div>
+        <div class="attr-row"><div class="attr-name">現住所 <span class="meta">address · 文字列</span></div><div class="attr-value">新潟県新潟市中央区東大通2-X-XX</div></div>
+        <div class="attr-row"><div class="attr-name">通学方法 <span class="meta">commute_method · コード</span></div><div class="attr-value"><span class="tag">電車</span> <span class="tag tag-outline">JR信越本線</span></div></div>
+      </div>
+    </div>
+
+    <div data-panel="affiliation" style="display:none" class="card mt-16">
+      <div class="card-section">
+        <h4>所属の履歴</h4>
+        <a href="../requests/index.html" class="btn btn-ghost btn-sm">所属変更申請 <span data-i="arrowRight" data-s="12"></span></a>
+      </div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2026-04-01 〜 継続中</div>
+            <div class="timeline-title">新潟高等学校 · 3年A組</div>
+            <div class="timeline-detail">担任: <strong>中村 健太</strong> 先生。2026年3月に古町中学校から編入。</div>
+            <div class="timeline-user">承認: 古町中 校長 · 2026-02-14 申請</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2023-04-01 〜 2026-03-31</div>
+            <div class="timeline-title">古町中学校 · 1〜3年</div>
+            <div class="timeline-detail">部活: サッカー部 (3年時)。生徒会役員。</div>
+            <div class="timeline-user">—</div>
+          </div>
+          <div class="timeline-item muted">
+            <div class="timeline-date">2020-04-01 〜 2023-03-31</div>
+            <div class="timeline-title">古町小学校</div>
+            <div class="timeline-detail">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-panel="student" style="display:none" class="card mt-16">
+      <div class="card-section">
+        <h4>生徒固有項目</h4>
+        <span class="text-3 fs-12">権限: 担任 · 編集可 / 学年主任 · 閲覧可</span>
+      </div>
+      <div class="card-body">
+        <div class="attr-row"><div class="attr-name">部活 <span class="meta">club · コード(複数)</span></div><div class="attr-value"><span class="tag tag-info">サッカー部</span> <span class="tag tag-info">陸上部 (引退)</span></div></div>
+        <div class="attr-row"><div class="attr-name">生徒会 <span class="meta">student_council · コード</span></div><div class="attr-value"><span class="tag tag-accent">副会長</span></div></div>
+        <div class="attr-row"><div class="attr-name">通学区域 <span class="meta">commute_zone · コード</span></div><div class="attr-value"><span class="tag">A地区</span></div></div>
+        <div class="attr-row"><div class="attr-name">部活顧問 <span class="meta">club_advisor · 人物参照</span></div><div class="attr-value"><div class="person-cell"><div class="person-avatar primary">中</div><div class="person-info"><div class="person-name">中村 健太 先生</div><div class="person-meta">サッカー部顧問 · 保健体育</div></div></div></div></div>
+        <div class="attr-row"><div class="attr-name">奨学金 <span class="meta">scholarship · コード(複数)</span></div><div class="attr-value text-3">未受給</div></div>
+      </div>
+    </div>
+
+    <div data-panel="attributes" style="display:none" class="card mt-16">
+      <div class="card-section">
+        <h4>属性項目 (テナント固有)</h4>
+        <button class="btn btn-secondary btn-sm"><span data-i="plus" data-s="12"></span> 項目を追加</button>
+      </div>
+      <div class="card-body">
+        <div class="attr-row"><div class="attr-name">特徴タグ <span class="meta">person_tag · コード(複数)</span></div><div class="attr-value"><span class="tag tag-success">リーダーシップ</span> <span class="tag">運動得意</span></div></div>
+        <div class="attr-row"><div class="attr-name">出身小学校 <span class="meta">elementary_school · コード</span></div><div class="attr-value"><span class="tag">古町小学校</span></div></div>
+        <div class="attr-row"><div class="attr-name">卒業予定年 <span class="meta">graduation_year · 数値</span></div><div class="attr-value num fw-6">2027</div></div>
+        <div class="attr-row"><div class="attr-name">通塾 <span class="meta">cram_school · コード</span></div><div class="attr-value"><span class="tag tag-outline">あり</span> <span class="text-3">明光義塾 新潟駅前校</span></div></div>
+        <div class="attr-row"><div class="attr-name">係活動 <span class="meta">class_role · コード(複数)</span></div><div class="attr-value"><span class="tag">体育委員</span></div></div>
+      </div>
+    </div>
+
+    <div data-panel="sensitive" style="display:none" class="card mt-16">
+      <div class="card-head" style="background:var(--danger-soft);border-bottom:1px solid #c89a96">
+        <div>
+          <div class="card-title" style="color:var(--danger)">機微情報 <span data-i="lock" data-s="14" style="vertical-align:middle"></span></div>
+          <div class="card-sub" style="color:var(--danger)">権限: 学年主任 · 限定公開 / 担任 · 閲覧のみ</div>
+        </div>
+        <span class="tag tag-danger">要権限</span>
+      </div>
+      <div class="card-body">
+        <div class="banner warning" style="margin:0 0 16px">
+          <span class="banner-icon"><span data-i="shield" data-s="18"></span></span>
+          <div class="banner-content">
+            <div class="banner-title">このセクションは機微情報を含みます</div>
+            <div>閲覧・編集の試行は監査ログに記録されます。担当外の人物について閲覧申請を行う場合は「情報開示申請」を行ってください。</div>
+          </div>
+        </div>
+        <div class="attr-row"><div class="attr-name">健康状態 <span class="meta">health_status · コード</span></div><div class="attr-value"><span class="tag">良好</span></div></div>
+        <div class="attr-row"><div class="attr-name">アレルギー <span class="meta">allergy · コード(複数)</span></div><div class="attr-value"><span class="tag tag-warning">卵</span> <span class="tag tag-warning">そば</span></div></div>
+        <div class="attr-row"><div class="attr-name">配慮事項 <span class="meta">accommodation · テキスト</span></div><div class="attr-value">体育時は運動負荷の調整が必要な場合あり。要保護者面談記録あり。</div></div>
+        <div class="attr-row"><div class="attr-name">いじめ・不登校履歴 <span class="meta">incident_history · コード(複数)</span></div><div class="attr-value text-3">なし</div></div>
+      </div>
+    </div>
+
+    <div data-panel="history" style="display:none" class="card mt-16">
+      <div class="card-head">
+        <div>
+          <div class="card-title">変更履歴</div>
+          <div class="card-sub">この人物に関するすべての変更 · 全 28 件</div>
+        </div>
+        <div class="row gap-8">
+          <button class="chip">すべて</button>
+          <button class="chip active">属性値</button>
+          <button class="chip">所属</button>
+          <button class="chip">権限</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2026-06-10 14:23</div>
+            <div class="timeline-title">部活顧問を更新</div>
+            <div class="timeline-detail">サッカー部 → <strong>中村 健太</strong> を設定</div>
+            <div class="timeline-user">佐藤 美咲 (情報政策課)</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2026-05-14 09:42</div>
+            <div class="timeline-title">生徒会役職を変更</div>
+            <div class="timeline-detail">書記 → <strong>副会長</strong></div>
+            <div class="timeline-user">中村 健太 (担任)</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2026-04-01 06:00</div>
+            <div class="timeline-title">所属変更が反映</div>
+            <div class="timeline-detail">古町中学校 → <strong>新潟高等学校 · 3年A組</strong></div>
+            <div class="timeline-user">システム (バッチ処理)</div>
+          </div>
+          <div class="timeline-item muted">
+            <div class="timeline-date">2026-02-14 16:18</div>
+            <div class="timeline-title">所属変更申請が承認</div>
+            <div class="timeline-detail">古町中 校長 により承認。発効日: 2026-04-01</div>
+            <div class="timeline-user">古町中 · 校長</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>
+  mount({ active: 'list.html' });
+  activateTab(document.getElementById('tabBar'));
+</script>
+</body>
+</html>

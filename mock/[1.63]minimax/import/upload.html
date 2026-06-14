@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>CSVアップロード · インポート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><a href="index.html">インポート</a><span class="sep">/</span><span class="current">アップロード</span></div>
+        <h1 class="page-title">CSV<em>アップロード</em></h1>
+        <p class="page-sub">CSVファイルから名簿を一括更新。アップロード後にマッピング設定へと進みます。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> CSVテンプレート</button>
+        <button class="btn btn-ghost" onclick="history.back()">キャンセル</button>
+      </div>
+    </div>
+
+    <div class="split split-3-1" style="align-items:start">
+      <div>
+        <div class="step-flow mb-24">
+          <div class="step current"><div class="step-num">1</div><span>アップロード</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">2</div><span>マッピング</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">3</div><span>確認</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">4</div><span>実行</span></div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head"><div><div class="card-title">1. ファイルを選択</div><div class="card-sub">CSV · TSV · 文字コード自動判定</div></div></div>
+          <div class="card-body">
+            <div style="border:2px dashed var(--border-2);border-radius:var(--r-md);padding:48px 24px;text-align:center;background:var(--surface-2);cursor:pointer" onclick="document.getElementById('csvFile').click()">
+              <div style="width:48px;height:48px;background:var(--primary-soft);color:var(--primary);border-radius:var(--r-md);display:inline-grid;place-items:center;margin-bottom:12px"><span data-i="upload" data-s="22"></span></div>
+              <div class="fs-14 fw-6">CSVファイルをドラッグ&ドロップ</div>
+              <div class="fs-12 text-3 mt-8">または クリックして選択 · 最大 50MB</div>
+              <input type="file" id="csvFile" accept=".csv,.tsv" style="display:none">
+            </div>
+
+            <div class="mt-16 card" style="background:var(--surface-2);padding:14px 16px">
+              <div class="row gap-12">
+                <div style="width:36px;height:36px;background:var(--success-soft);color:var(--success);border-radius:var(--r-sm);display:grid;place-items:center"><span data-i="fileText" data-s="16"></span></div>
+                <div style="flex:1">
+                  <div class="fs-13 fw-6">高中3年_学籍異動_20260612.csv</div>
+                  <div class="fs-11 text-3 mt-8">2.4 MB · 1,284 行 · 12 列 · UTF-8 · カンマ区切り</div>
+                </div>
+                <span class="status-pill status-active">検証済</span>
+                <button class="icon-btn"><span data-i="x" data-s="14"></span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head"><div><div class="card-title">2. プレビュー (最初の 5 行)</div><div class="card-sub">ファイルの先頭データを確認</div></div></div>
+          <div class="card-body" style="padding:0;overflow-x:auto">
+            <table class="table" style="min-width:800px">
+              <thead>
+                <tr><th>#</th><th>学籍番号</th><th>姓</th><th>名</th><th>生年月日</th><th>性別</th><th>新所属コード</th><th>新学年</th><th>新クラス</th><th>変更日</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="num text-3">1</td><td class="num">N-2024-1248</td><td>山本</td><td>蓮</td><td class="num">2008-04-12</td><td>男</td><td class="num">NIIGATA-H-001</td><td>3</td><td>A</td><td class="num">2026-04-01</td></tr>
+                <tr><td class="num text-3">2</td><td class="num">N-2024-2018</td><td>田中</td><td>美桜</td><td class="num">2009-07-22</td><td>女</td><td class="num">NIIGATA-H-001</td><td>2</td><td>B</td><td class="num">2026-04-01</td></tr>
+                <tr><td class="num text-3">3</td><td class="num">N-2024-1842</td><td>斎藤</td><td>健一</td><td class="num">2009-11-03</td><td>男</td><td class="num">NIIGATA-H-001</td><td>2</td><td>A</td><td class="num">2026-04-01</td></tr>
+                <tr><td class="num text-3">4</td><td class="num">M-2022-0842</td><td>小林</td><td>由衣</td><td class="num">2011-05-18</td><td>女</td><td class="num">NIIGATA-C-002</td><td>3</td><td>C</td><td class="num">2026-04-01</td></tr>
+                <tr><td class="num text-3">5</td><td class="num text-danger">N-2024-9999</td><td>該当</td><td>なし</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="num">NIIGATA-H-001</td><td>3</td><td>A</td><td class="num">2026-04-01</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-foot">
+            <span class="fs-12 text-3">5 / 1,284 行を表示中</span>
+            <span class="tag tag-warning">5 行に警告あり (プレビュー中)</span>
+          </div>
+        </div>
+
+        <div class="row between">
+          <button class="btn btn-ghost" onclick="history.back()">キャンセル</button>
+          <button class="btn btn-primary" onclick="location.href='mapping.html'">マッピングへ進む <span data-i="arrowRight" data-s="14"></span></button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">自動検出結果</div>
+            </div>
+            <span class="status-pill status-active">すべてOK</span>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row between"><span class="fs-12">文字コード</span><span class="fs-12 fw-6">UTF-8 (BOM なし)</span></div>
+            <div class="row between"><span class="fs-12">区切り文字</span><span class="fs-12 fw-6">カンマ (,)</span></div>
+            <div class="row between"><span class="fs-12">ヘッダー行</span><span class="fs-12 fw-6">1行目</span></div>
+            <div class="row between"><span class="fs-12">行数</span><span class="fs-12 fw-6 num">1,284</span></div>
+            <div class="row between"><span class="fs-12">列数</span><span class="fs-12 fw-6 num">12</span></div>
+            <div class="row between"><span class="fs-12">推定マッピング</span><span class="fs-12 fw-6">学籍データ (高校)</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">最近のアップロード</div></div></div>
+          <div class="card-body" style="padding:0">
+            <div class="list-compact">
+              <div class="list-compact-item">
+                <span data-i="fileText" data-s="14"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">教員免許更新_2026Q2</div>
+                  <div class="fs-11 text-3">2,184 行 · 1時間前</div>
+                </div>
+                <span class="status-pill status-active">完了</span>
+              </div>
+              <div class="list-compact-item">
+                <span data-i="fileText" data-s="14"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">全校生徒_基本情報_月次</div>
+                  <div class="fs-11 text-3">98,418 行 · 06:00</div>
+                </div>
+                <span class="status-pill status-active">完了</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'index.html' });</script>
+</body>
+</html>

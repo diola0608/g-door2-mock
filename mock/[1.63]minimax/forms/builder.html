@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>フォームビルダー · データ利活用</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><a href="list.html">フォーム</a><span class="sep">/</span><span class="current">在校生調査2026</span></div>
+        <div class="row gap-12">
+          <h1 class="page-title" style="margin:0">在校生調査<em>2026</em></h1>
+          <span class="status-pill status-active">公開中</span>
+        </div>
+        <p class="page-sub">form: in_school_survey_2026 · 県内全高等学校 1〜3年 · 1,284 / 1,632 回答</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost"><span data-i="eye" data-s="14"></span> プレビュー</button>
+        <button class="btn btn-secondary"><span data-i="copy" data-s="14"></span> 複製</button>
+        <button class="btn btn-secondary"><span data-i="barChart" data-s="14"></span> 集計</button>
+        <button class="btn btn-primary" onclick="toast('フォームを保存しました','success')"><span data-i="check" data-s="14"></span> 保存</button>
+      </div>
+    </div>
+
+    <div class="split split-1-3" style="align-items:start">
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">設定</div>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <label class="form-label">タイトル</label>
+              <input class="form-input" value="在校生調査2026">
+            </div>
+            <div>
+              <label class="form-label">説明</label>
+              <textarea class="form-textarea">2026年度 後学期に開講される科目選択のための調査です。回答期限までにすべての項目にお答えください。</textarea>
+            </div>
+            <div>
+              <label class="form-label">配布対象</label>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label class="checkbox fs-12"><input type="checkbox" checked> 高等学校</label>
+                <label class="checkbox fs-12"><input type="checkbox" checked> 学年: 1〜3年</label>
+                <label class="checkbox fs-12"><input type="checkbox"> 在籍中のみ</label>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">対象者 (自動抽出)</label>
+              <div class="card-section" style="background:var(--surface-2);border-radius:var(--r-sm);padding:8px 10px">
+                <div class="fs-12"><strong>1,632 名</strong> が該当</div>
+                <div class="fs-11 text-3">新潟高校 1,284 · 新潟中央 286 · 新潟北 62</div>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">期間</label>
+              <div class="form-grid-2">
+                <input class="form-input" type="date" value="2026-06-01">
+                <input class="form-input" type="date" value="2026-06-30">
+              </div>
+            </div>
+            <div>
+              <label class="form-label">通知</label>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label class="checkbox fs-12"><input type="checkbox" checked> 配布時にメール通知</label>
+                <label class="checkbox fs-12"><input type="checkbox" checked> 3日後にリマインダー</label>
+                <label class="checkbox fs-12"><input type="checkbox"> 回答完了時に通知</label>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">名簿への自動反映</label>
+              <div class="row gap-8">
+                <div class="switch on"></div>
+                <span class="fs-12">回答内容を属性項目に自動反映</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">集計・権限</div>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <label class="form-label">結果閲覧権限</label>
+              <select class="form-select">
+                <option>フォーム作成者 + 教委職員</option>
+                <option>所属組織の校長が閲覧可</option>
+                <option>全教員が自校分のみ</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">個別回答の閲覧</label>
+              <select class="form-select">
+                <option>回答者本人 + 担任</option>
+                <option>作成者のみ</option>
+                <option>匿名集計のみ</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="row between mb-16">
+          <div>
+            <div class="sec-title">フォームの設問</div>
+            <div class="sec-sub">4 セクション · 18 設問</div>
+          </div>
+          <div class="row gap-8">
+            <button class="btn btn-secondary btn-sm"><span data-i="layers" data-s="12"></span> セクション追加</button>
+            <button class="btn btn-secondary btn-sm"><span data-i="plus" data-s="12"></span> 設問追加</button>
+          </div>
+        </div>
+
+        <div class="fb-section">
+          <div class="fb-section-head">
+            <span data-i="layers" data-s="14"></span>
+            <span>基本情報</span>
+            <span class="tag tag-outline">3 設問</span>
+            <span class="spacer"></span>
+            <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+            <button class="icon-btn"><span data-i="trash" data-s="14"></span></button>
+          </div>
+          <div class="fb-section-body">
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="user" data-s="12"></span></div>
+              <div class="fb-item-label">氏名</div>
+              <span class="tag tag-primary">必須</span>
+              <span class="tag tag-info">名簿参照</span>
+              <span class="fb-item-meta">type:text</span>
+            </div>
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="building" data-s="12"></span></div>
+              <div class="fb-item-label">所属学校 · 学年 · クラス</div>
+              <span class="tag tag-primary">必須</span>
+              <span class="tag tag-info">名簿参照</span>
+              <span class="fb-item-meta">type:derived</span>
+            </div>
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="mail" data-s="12"></span></div>
+              <div class="fb-item-label">本人 メールアドレス</div>
+              <span class="tag tag-primary">必須</span>
+              <span class="tag tag-info">名簿反映</span>
+              <span class="fb-item-meta">attribute: email_personal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fb-section">
+          <div class="fb-section-head">
+            <span data-i="layers" data-s="14"></span>
+            <span>科目選択 (3年)</span>
+            <span class="tag tag-outline">8 設問</span>
+            <span class="spacer"></span>
+            <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+            <button class="icon-btn"><span data-i="trash" data-s="14"></span></button>
+          </div>
+          <div class="fb-section-body">
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="checkSquare" data-s="12"></span></div>
+              <div class="fb-item-label">第1志望 (文系)</div>
+              <span class="tag">単一選択</span>
+              <span class="fb-item-meta">code: subject_arts</span>
+            </div>
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="checkSquare" data-s="12"></span></div>
+              <div class="fb-item-label">第1志望 (理系)</div>
+              <span class="tag">単一選択</span>
+              <span class="fb-item-meta">code: subject_science</span>
+            </div>
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="list" data-s="12"></span></div>
+              <div class="fb-item-label">選択科目 (3つまで)</div>
+              <span class="tag">複数選択</span>
+              <span class="tag tag-info">名簿反映</span>
+              <span class="fb-item-meta">attribute: elective_subjects</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fb-section">
+          <div class="fb-section-head">
+            <span data-i="layers" data-s="14"></span>
+            <span>進路希望</span>
+            <span class="tag tag-outline">4 設問</span>
+            <span class="spacer"></span>
+            <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+            <button class="icon-btn"><span data-i="trash" data-s="14"></span></button>
+          </div>
+          <div class="fb-section-body">
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="barChart" data-s="12"></span></div>
+              <div class="fb-item-label">卒業後の予定</div>
+              <span class="tag">単一選択</span>
+              <span class="fb-item-meta">code: post_graduation_plan</span>
+            </div>
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="fileText" data-s="12"></span></div>
+              <div class="fb-item-label">具体的な志望校 · 企業</div>
+              <span class="tag">長文テキスト</span>
+              <span class="fb-item-meta">type:textarea</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fb-section">
+          <div class="fb-section-head">
+            <span data-i="layers" data-s="14"></span>
+            <span>健康・配慮</span>
+            <span class="tag tag-outline">3 設問</span>
+            <span class="spacer"></span>
+            <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+            <button class="icon-btn"><span data-i="trash" data-s="14"></span></button>
+          </div>
+          <div class="fb-section-body">
+            <div class="fb-item">
+              <span class="fb-item-handle">::</span>
+              <div class="fb-item-icon"><span data-i="alertCircle" data-s="12"></span></div>
+              <div class="fb-item-label">配慮が必要な事項</div>
+              <span class="tag tag-warning">機微</span>
+              <span class="tag">複数選択</span>
+              <span class="fb-item-meta">code: accommodation_request</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="border-style:dashed;cursor:pointer;text-align:center;padding:24px;color:var(--ink-3)" onclick="toast('セクションを追加','default')">
+          <span data-i="plus" data-s="18"></span>
+          <div class="fs-13 fw-6 mt-8">セクションを追加</div>
+          <div class="fs-11">新しい設問グループを開始</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'list.html' });</script>
+</body>
+</html>

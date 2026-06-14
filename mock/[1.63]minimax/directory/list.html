@@ -1,0 +1,392 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>名簿一覧 · 名簿管理</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow">
+          <a href="index.html">名簿管理</a>
+          <span class="sep">/</span>
+          <span class="current">名簿一覧</span>
+        </div>
+        <h1 class="page-title">名簿<em>一覧</em></h1>
+        <p class="page-sub">全登録人物の検索・絞り込み・一括操作。タブで対象種別を切り替え、列で属性項目を組み合わせて表示します。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="filter" data-s="14"></span> 表示設定</button>
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> 書き出し</button>
+        <button class="btn btn-secondary"><span data-i="upload" data-s="14"></span> CSV取込</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddPerson')"><span data-i="plus" data-s="14"></span> 人物を追加</button>
+      </div>
+    </div>
+
+    <div class="tabs tabs-scroll" id="tabBar">
+      <div class="tab active" data-tab="all">すべて <span class="count">128,490</span></div>
+      <div class="tab" data-tab="student">生徒 <span class="count">98,418</span></div>
+      <div class="tab" data-tab="teacher">教員 <span class="count">14,238</span></div>
+      <div class="tab" data-tab="staff">教委職員 <span class="count">3,186</span></div>
+      <div class="tab" data-tab="related">関係者 <span class="count">12,648</span></div>
+      <div class="tab" data-tab="inactive">休職・退職 <span class="count">2,418</span></div>
+    </div>
+
+    <div class="filterbar">
+      <div class="filterbar-search">
+        <span data-i="search" data-s="14"></span>
+        <input type="text" placeholder="氏名、メール、職員番号、学籍番号で検索…">
+      </div>
+      <button class="chip active"><span data-i="building" data-s="12"></span> 新潟市 <span class="chip-close">×</span></button>
+      <button class="chip"><span data-i="briefcase" data-s="12"></span> 職種: 一般教員</button>
+      <button class="chip"><span data-i="shieldCheck" data-s="12"></span> 在籍中のみ</button>
+      <button class="chip"><span data-i="plus" data-s="12"></span> フィルター追加</button>
+      <div class="spacer"></div>
+      <button class="chip active">グループ化: 所属学校 <span data-i="chevronDown" data-s="12"></span></button>
+      <button class="chip"><span data-i="layers" data-s="12"></span> 列: 12 / 24</button>
+    </div>
+
+    <div class="split split-3-1" style="align-items:start">
+      <div>
+        <div class="table-wrap mb-16" style="overflow:visible">
+          <div class="group-head">
+            <div class="row gap-12">
+              <span data-i="chevronDown" data-s="14"></span>
+              <div style="width:22px;height:22px;background:var(--primary-soft);color:var(--primary);border-radius:3px;display:grid;place-items:center"><span data-i="building" data-s="12"></span></div>
+              <span>新潟高等学校</span>
+              <span class="tag tag-primary">高等学校</span>
+              <span class="count">3 名 / 全 1,284 名中</span>
+            </div>
+            <div class="row gap-8">
+              <button class="btn btn-ghost btn-sm"><span data-i="eye" data-s="12"></span> 学校を表示</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th>氏名</th>
+                <th>カナ</th>
+                <th>学年 / クラス</th>
+                <th>生年月日</th>
+                <th>部活</th>
+                <th>生徒番号</th>
+                <th>メール</th>
+                <th>Google 同期</th>
+                <th class="actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="table-checkbox"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar primary">山本</div>
+                    <div class="person-info">
+                      <div class="person-name"><a href="person.html" class="muted-link">山本 蓮</a></div>
+                      <div class="person-meta">男 · 17歳</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12 text-2">ヤマモト レン</td>
+                <td><span class="tag">3年A組</span></td>
+                <td class="num fs-12">2008-04-12</td>
+                <td><span class="tag tag-info">サッカー部</span> <span class="tag tag-outline">生徒会</span></td>
+                <td class="num fs-12 text-2">N-2024-1248</td>
+                <td class="fs-12">yamamoto.ren@…</td>
+                <td><span class="status-pill status-active">同期済</span></td>
+                <td class="actions">
+                  <button class="icon-btn" title="詳細"><span data-i="eye" data-s="14"></span></button>
+                  <button class="icon-btn" title="編集"><span data-i="edit" data-s="14"></span></button>
+                  <button class="icon-btn" title="その他"><span data-i="more" data-s="14"></span></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="table-checkbox"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar accent">田中</div>
+                    <div class="person-info">
+                      <div class="person-name"><a href="person.html" class="muted-link">田中 美桜</a></div>
+                      <div class="person-meta">女 · 16歳</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12 text-2">タナカ ミオ</td>
+                <td><span class="tag">2年B組</span></td>
+                <td class="num fs-12">2009-07-22</td>
+                <td><span class="tag tag-info">吹奏楽部</span></td>
+                <td class="num fs-12 text-2">N-2024-2018</td>
+                <td class="fs-12">tanaka.mio@…</td>
+                <td><span class="status-pill status-active">同期済</span></td>
+                <td class="actions">
+                  <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="table-checkbox"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar">斎藤</div>
+                    <div class="person-info">
+                      <div class="person-name"><a href="person.html" class="muted-link">斎藤 健一</a></div>
+                      <div class="person-meta">男 · 16歳</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12 text-2">サイトウ ケンイチ</td>
+                <td><span class="tag">2年A組</span></td>
+                <td class="num fs-12">2009-11-03</td>
+                <td class="cell-empty">—</td>
+                <td class="num fs-12 text-2">N-2024-1842</td>
+                <td class="fs-12 text-3">未連携</td>
+                <td><span class="status-pill status-pending">未連携</span></td>
+                <td class="actions">
+                  <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-wrap mb-16" style="overflow:visible">
+          <div class="group-head">
+            <div class="row gap-12">
+              <span data-i="chevronDown" data-s="14"></span>
+              <div style="width:22px;height:22px;background:var(--primary-soft);color:var(--primary);border-radius:3px;display:grid;place-items:center"><span data-i="building" data-s="12"></span></div>
+              <span>古町中学校</span>
+              <span class="tag tag-primary">中学校</span>
+              <span class="count">3 名 / 全 1,284 名中</span>
+            </div>
+            <div class="row gap-8">
+              <button class="btn btn-ghost btn-sm"><span data-i="eye" data-s="12"></span> 学校を表示</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th>氏名</th>
+                <th>カナ</th>
+                <th>学年 / クラス</th>
+                <th>生年月日</th>
+                <th>部活</th>
+                <th>生徒番号</th>
+                <th>メール</th>
+                <th>Google 同期</th>
+                <th class="actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="table-checkbox"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar primary">小林</div>
+                    <div class="person-info">
+                      <div class="person-name"><a href="person.html" class="muted-link">小林 由衣</a></div>
+                      <div class="person-meta">女 · 14歳</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12 text-2">コバヤシ ユイ</td>
+                <td><span class="tag">3年C組</span></td>
+                <td class="num fs-12">2011-05-18</td>
+                <td><span class="tag tag-info">陸上競技部</span></td>
+                <td class="num fs-12 text-2">M-2022-0842</td>
+                <td class="fs-12">kobayashi.yui@…</td>
+                <td><span class="status-pill status-active">同期済</span></td>
+                <td class="actions">
+                  <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="table-checkbox"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar">渡辺</div>
+                    <div class="person-info">
+                      <div class="person-name"><a href="person.html" class="muted-link">渡辺 陽翔</a></div>
+                      <div class="person-meta">男 · 15歳</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12 text-2">ワタナベ ハルト</td>
+                <td><span class="tag">3年A組</span></td>
+                <td class="num fs-12">2010-09-30</td>
+                <td><span class="tag tag-info">バスケット部</span></td>
+                <td class="num fs-12 text-2">M-2022-0418</td>
+                <td class="fs-12">watanabe.h@…</td>
+                <td><span class="status-pill status-active">同期済</span></td>
+                <td class="actions">
+                  <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="table-checkbox"><input type="checkbox"></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar accent">加藤</div>
+                    <div class="person-info">
+                      <div class="person-name"><a href="person.html" class="muted-link">加藤 美咲</a></div>
+                      <div class="person-meta">女 · 14歳</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12 text-2">カトウ ミサキ</td>
+                <td><span class="tag">2年B組</span></td>
+                <td class="num fs-12">2011-02-14</td>
+                <td class="cell-empty">—</td>
+                <td class="num fs-12 text-2">M-2022-1284</td>
+                <td class="fs-12">kato.misaki@…</td>
+                <td><span class="status-pill status-active">同期済</span></td>
+                <td class="actions">
+                  <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+                  <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row between mt-16">
+          <div class="fs-12 text-3">1 - 8 件 / 全 1,284 件中 (フィルター適用後)</div>
+          <div class="row gap-4">
+            <button class="btn btn-secondary btn-sm" disabled>前のページ</button>
+            <button class="btn btn-primary btn-sm">1</button>
+            <button class="btn btn-secondary btn-sm">2</button>
+            <button class="btn btn-secondary btn-sm">3</button>
+            <button class="btn btn-secondary btn-sm">…</button>
+            <button class="btn btn-secondary btn-sm">161</button>
+            <button class="btn btn-secondary btn-sm">次のページ</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">絞り込み</div>
+              <div class="card-sub">3 条件適用中</div>
+            </div>
+            <button class="btn btn-ghost btn-sm">クリア</button>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:18px">
+            <div>
+              <div class="form-label mb-8">学校種</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label class="checkbox fs-12"><input type="checkbox" checked> 小学校 <span class="text-3 ml-4">487校 · 38,418名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox" checked> 中学校 <span class="text-3">238校 · 21,486名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox" checked> 高等学校 <span class="text-3">98校 · 36,418名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 特別支援学校 <span class="text-3">24校 · 2,096名</span></label>
+              </div>
+            </div>
+            <div>
+              <div class="form-label mb-8">市町村</div>
+              <div class="input-prefix">
+                <span data-i="search" data-s="14"></span>
+                <input class="form-input" placeholder="市町村名で検索">
+              </div>
+              <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+                <label class="checkbox fs-12"><input type="checkbox" checked> 新潟市 <span class="text-3">24,816名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 長岡市 <span class="text-3">18,142名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 上越市 <span class="text-3">13,728名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 三条市 <span class="text-3">10,418名</span></label>
+                <a href="org.html" class="muted-link fs-12">すべての市町村 (30) →</a>
+              </div>
+            </div>
+            <div>
+              <div class="form-label mb-8">属性項目</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label class="checkbox fs-12"><input type="checkbox"> 部活: サッカー部 <span class="text-3">412名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 部活: 吹奏楽部 <span class="text-3">286名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 学年主任 <span class="text-3">184名</span></label>
+                <label class="checkbox fs-12"><input type="checkbox"> 通学区域: A地区 <span class="text-3">8,124名</span></label>
+                <a href="attributes.html" class="muted-link fs-12">すべての属性項目 →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">選択中: 8 名</div>
+              <div class="card-sub">一括操作を実行</div>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-secondary btn-block justify-start"><span data-i="gitBranch" data-s="14"></span> 所属変更を申請</button>
+            <button class="btn btn-secondary btn-block justify-start"><span data-i="send" data-s="14"></span> フォームを送信</button>
+            <button class="btn btn-secondary btn-block justify-start"><span data-i="tag" data-s="14"></span> 属性値を一括更新</button>
+            <button class="btn btn-secondary btn-block justify-start"><span data-i="download" data-s="14"></span> CSVエクスポート</button>
+            <button class="btn btn-secondary btn-block justify-start" style="color:var(--danger)"><span data-i="trash" data-s="14"></span> 削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddPerson">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">人物を追加</div>
+        <div class="modal-sub">1名ずつ手動で登録します。</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddPerson')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">識別子 <span class="req">*</span></label>
+        <div class="form-grid-2">
+          <select class="form-select">
+            <option>メールアドレス</option>
+            <option>職員番号</option>
+            <option>学籍番号</option>
+          </select>
+          <input class="form-input" placeholder="yamamoto.ren@niigata-h.ed.jp">
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label class="form-label">姓 <span class="req">*</span></label>
+          <input class="form-input" placeholder="山本">
+        </div>
+        <div class="form-row">
+          <label class="form-label">名 <span class="req">*</span></label>
+          <input class="form-input" placeholder="蓮">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddPerson')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddPerson');toast('人物を登録しました','success')">登録する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>
+  mount({ active: 'directory/list.html' });
+  activateTab(document.getElementById('tabBar'));
+</script>
+</body>
+</html>

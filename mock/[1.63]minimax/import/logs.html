@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>インポートログ · インポート</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><a href="index.html">インポート</a><span class="sep">/</span><span class="current">ログ</span></div>
+        <h1 class="page-title">インポート<em>ログ</em></h1>
+        <p class="page-sub">CSVインポート処理の実行履歴。エラー時の対応 · 再処理 · 取り消しもここから行います。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> ログエクスポート</button>
+        <button class="btn btn-secondary"><span data-i="refresh" data-s="14"></span> 更新</button>
+      </div>
+    </div>
+
+    <div class="banner danger">
+      <span class="banner-icon"><span data-i="alertTriangle" data-s="18"></span></span>
+      <div class="banner-content">
+        <div class="banner-title">未対応のインポートエラーが 1 件あります</div>
+        <div>高中3年_学籍異動_20260612 で 5 件の処理が失敗しました。スキップされた行を確認し、必要に応じて再アップロードしてください。</div>
+      </div>
+      <div class="row gap-8">
+        <button class="btn btn-secondary btn-sm">詳細を確認</button>
+        <button class="btn btn-danger btn-sm">エラー対応</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-16">
+      <div class="kpi"><div class="kpi-label">実行中</div><div class="kpi-value">2</div><div class="kpi-delta-note">バッチ処理中</div></div>
+      <div class="kpi"><div class="kpi-label">24時間</div><div class="kpi-value">8</div><div class="kpi-delta-note">処理 218,418行</div></div>
+      <div class="kpi"><div class="kpi-label">成功率</div><div class="kpi-value num">99.2<span class="kpi-value-unit">%</span></div><div class="kpi-delta-note">30日平均</div></div>
+      <div class="kpi"><div class="kpi-label">承認待ち</div><div class="kpi-value num">12</div><div class="kpi-delta-note">所属変更 · 1,284名</div></div>
+    </div>
+
+    <div class="filterbar">
+      <div class="filterbar-search"><span data-i="search" data-s="14"></span><input type="text" placeholder="ジョブ名 · 実行者で絞り込み…"></div>
+      <button class="chip active">すべて</button>
+      <button class="chip">実行中</button>
+      <button class="chip">完了</button>
+      <button class="chip">エラー</button>
+      <button class="chip">承認待ち</button>
+      <div class="spacer"></div>
+      <span class="text-3 fs-12">過去 30 日間</span>
+    </div>
+
+    <div class="card card-tight">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>状態</th><th>ジョブ</th><th>実行者</th><th class="num-col">処理</th><th class="num-col">成功</th><th class="num-col">失敗</th><th>開始</th><th>所要時間</th><th class="actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="status-pill status-error">エラー</span></td>
+            <td>
+              <div class="fs-12 fw-6">高中3年_学籍異動_20260612</div>
+              <div class="fs-11 text-3">学籍データ · 高校3年</div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="width:22px;height:22px;font-size:9px">高</div>
+                <div class="person-info"><div class="person-name fs-12">高橋 恵子</div></div>
+              </div>
+            </td>
+            <td class="num fw-6">1,284</td>
+            <td class="num text-success fw-6">1,279</td>
+            <td class="num text-danger fw-6">5</td>
+            <td class="num text-3 fs-12">14:48:21</td>
+            <td class="num text-3 fs-12">2m 18s</td>
+            <td class="actions">
+              <button class="btn btn-secondary btn-sm">エラー詳細</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="status-pill status-pending">実行中</span></td>
+            <td>
+              <div class="fs-12 fw-6">教員自家用携帯番号 月次反映</div>
+              <div class="fs-11 text-3">フォーム回答 → 名簿反映 · 14,238件</div>
+              <div class="progress mt-8" style="width:200px;height:4px"><div class="progress-bar" style="width:62%"></div></div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="width:22px;height:22px;font-size:9px">シ</div>
+                <div class="person-info"><div class="person-name fs-12">システム</div></div>
+              </div>
+            </td>
+            <td class="num fw-6">8,824</td>
+            <td class="num text-success fw-6">8,824</td>
+            <td class="num text-3">0</td>
+            <td class="num text-3 fs-12">14:42:00</td>
+            <td class="num text-3 fs-12">実行中 (4m)</td>
+            <td class="actions">
+              <button class="btn btn-secondary btn-sm">進捗</button>
+              <button class="icon-btn"><span data-i="pauseCircle" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="status-pill status-active">完了</span></td>
+            <td>
+              <div class="fs-12 fw-6">教員免許更新_2026Q2</div>
+              <div class="fs-11 text-3">教員情報 · 2,184件</div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="width:22px;height:22px;font-size:9px">中</div>
+                <div class="person-info"><div class="person-name fs-12">中村 健太</div></div>
+              </div>
+            </td>
+            <td class="num fw-6">2,184</td>
+            <td class="num text-success fw-6">2,184</td>
+            <td class="num text-3">0</td>
+            <td class="num text-3 fs-12">13:42:18</td>
+            <td class="num text-3 fs-12">1m 02s</td>
+            <td class="actions">
+              <button class="btn btn-ghost btn-sm">詳細</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="status-pill status-active">完了</span></td>
+            <td>
+              <div class="fs-12 fw-6">全校生徒_基本情報_月次</div>
+              <div class="fs-11 text-3">基本情報 · 98,418件 (全学校)</div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="width:22px;height:22px;font-size:9px">シ</div>
+                <div class="person-info"><div class="person-name fs-12">システム (自動)</div></div>
+              </div>
+            </td>
+            <td class="num fw-6">98,418</td>
+            <td class="num text-success fw-6">98,412</td>
+            <td class="num text-warning fw-6">6</td>
+            <td class="num text-3 fs-12">06:00:00</td>
+            <td class="num text-3 fs-12">8m 12s</td>
+            <td class="actions">
+              <button class="btn btn-ghost btn-sm">詳細</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="status-pill status-active">完了</span></td>
+            <td>
+              <div class="fs-12 fw-6">特別支援_配慮事項_追加</div>
+              <div class="fs-11 text-3">機微情報 · 412件</div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="width:22px;height:22px;font-size:9px">伊</div>
+                <div class="person-info"><div class="person-name fs-12">伊藤 直樹</div></div>
+              </div>
+            </td>
+            <td class="num fw-6">412</td>
+            <td class="num text-success fw-6">412</td>
+            <td class="num text-3">0</td>
+            <td class="num text-3 fs-12">昨日 16:42</td>
+            <td class="num text-3 fs-12">38s</td>
+            <td class="actions">
+              <button class="btn btn-ghost btn-sm">詳細</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="status-pill status-active">完了</span></td>
+            <td>
+              <div class="fs-12 fw-6">卒業生 進路調査 CSV取込</div>
+              <div class="fs-11 text-3">卒業生データ · 12,648件</div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="width:22px;height:22px;font-size:9px">佐</div>
+                <div class="person-info"><div class="person-name fs-12">佐藤 美咲</div></div>
+              </div>
+            </td>
+            <td class="num fw-6">12,648</td>
+            <td class="num text-success fw-6">12,648</td>
+            <td class="num text-3">0</td>
+            <td class="num text-3 fs-12">06-08 11:18</td>
+            <td class="num text-3 fs-12">2m 48s</td>
+            <td class="actions">
+              <button class="btn btn-ghost btn-sm">詳細</button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'logs.html' });</script>
+</body>
+</html>

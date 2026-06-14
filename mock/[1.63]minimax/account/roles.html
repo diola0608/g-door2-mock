@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ロール · アカウント</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../directory/index.html">名簿管理</a><span class="sep">/</span><span class="current">アカウント · ロール</span></div>
+        <h1 class="page-title"><em>ロール</em>管理</h1>
+        <p class="page-sub">ユーザーに付与する権限セット。ロールごとに権限ルールを割り当て、職種 · 職責 · 組織スコープを組み合わせた設計が可能です。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="copy" data-s="14"></span> 複製</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddRole')"><span data-i="plus" data-s="14"></span> ロールを作成</button>
+      </div>
+    </div>
+
+    <div class="filterbar">
+      <div class="filterbar-search">
+        <span data-i="search" data-s="14"></span>
+        <input type="text" placeholder="ロール名・識別子で検索…">
+      </div>
+      <button class="chip active">すべて <span class="text-3">42</span></button>
+      <button class="chip">システムロール <span class="text-3">8</span></button>
+      <button class="chip">テナントロール <span class="text-3">22</span></button>
+      <button class="chip">組織独自 <span class="text-3">12</span></button>
+      <div class="spacer"></div>
+      <button class="chip"><span data-i="filter" data-s="12"></span> 並び替え</button>
+    </div>
+
+    <div class="grid-cards">
+      <div class="card card-tight" style="overflow:hidden">
+        <div style="background:var(--ink);color:var(--bg);padding:14px 16px">
+          <div class="row gap-8">
+            <span class="tag" style="background:rgba(255,255,255,0.18);color:#fff">システム</span>
+            <span class="tag" style="background:rgba(196,93,46,0.4);color:#fff">管理者</span>
+          </div>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:8px">テナント管理者</div>
+          <div style="font-family:var(--font-mono);font-size:11px;opacity:0.7;margin-top:2px">role:tenant_admin</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div class="fs-12 text-3 mb-12">テナント全体のすべての操作が可能。テナント設定、ユーザー管理、権限ルール編集を含む。</div>
+          <div class="row between" style="padding-top:10px;border-top:1px solid var(--border-soft)">
+            <div><div class="fs-11 text-3">付与数</div><div class="num fw-6">12</div></div>
+            <div><div class="fs-11 text-3">権限ルール</div><div class="num fw-6">42 / 186</div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="fs-11 text-3">変更不可</span>
+          <a class="muted-link fs-12" href="permissions.html">詳細</a>
+        </div>
+      </div>
+
+      <div class="card card-tight" style="overflow:hidden">
+        <div style="background:var(--primary);color:#fff;padding:14px 16px">
+          <div class="row gap-8"><span class="tag" style="background:rgba(255,255,255,0.18);color:#fff">テナント</span></div>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:8px">組織管理者</div>
+          <div style="font-family:var(--font-mono);font-size:11px;opacity:0.8;margin-top:2px">role:org_admin</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div class="fs-12 text-3 mb-12">配下組織のユーザー管理、属性項目設定、CSVインポートが可能。テナント設定は不可。</div>
+          <div class="row between" style="padding-top:10px;border-top:1px solid var(--border-soft)">
+            <div><div class="fs-11 text-3">付与数</div><div class="num fw-6">86</div></div>
+            <div><div class="fs-11 text-3">権限ルール</div><div class="num fw-6">28 / 186</div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="fs-11 text-3">編集可</span>
+          <div class="row gap-8">
+            <button class="btn btn-ghost btn-sm"><span data-i="edit" data-s="12"></span></button>
+            <button class="btn btn-ghost btn-sm"><span data-i="copy" data-s="12"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-tight" style="overflow:hidden">
+        <div style="background:var(--accent);color:#fff;padding:14px 16px">
+          <div class="row gap-8"><span class="tag" style="background:rgba(255,255,255,0.18);color:#fff">テナント</span></div>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:8px">一般教員</div>
+          <div style="font-family:var(--font-mono);font-size:11px;opacity:0.8;margin-top:2px">role:teacher</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div class="fs-12 text-3 mb-12">自身が担任するクラスの生徒基本情報を閲覧・編集。部活顧問時は追加で連絡先閲覧可。</div>
+          <div class="row between" style="padding-top:10px;border-top:1px solid var(--border-soft)">
+            <div><div class="fs-11 text-3">付与数</div><div class="num fw-6">14,238</div></div>
+            <div><div class="fs-11 text-3">権限ルール</div><div class="num fw-6">8 / 186</div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="fs-11 text-3">編集可</span>
+          <div class="row gap-8">
+            <button class="btn btn-ghost btn-sm"><span data-i="edit" data-s="12"></span></button>
+            <button class="btn btn-ghost btn-sm"><span data-i="copy" data-s="12"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-tight" style="overflow:hidden">
+        <div style="background:var(--info);color:#fff;padding:14px 16px">
+          <div class="row gap-8"><span class="tag" style="background:rgba(255,255,255,0.18);color:#fff">テナント</span></div>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:8px">校長</div>
+          <div style="font-family:var(--font-mono);font-size:11px;opacity:0.8;margin-top:2px">role:principal</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div class="fs-12 text-3 mb-12">学校全体の閲覧権限。同一市町村同一学校種の一般教員の連絡先を閲覧可。</div>
+          <div class="row between" style="padding-top:10px;border-top:1px solid var(--border-soft)">
+            <div><div class="fs-11 text-3">付与数</div><div class="num fw-6">486</div></div>
+            <div><div class="fs-11 text-3">権限ルール</div><div class="num fw-6">14 / 186</div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="fs-11 text-3">編集可</span>
+          <div class="row gap-8">
+            <button class="btn btn-ghost btn-sm"><span data-i="edit" data-s="12"></span></button>
+            <button class="btn btn-ghost btn-sm"><span data-i="copy" data-s="12"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-tight" style="overflow:hidden">
+        <div style="background:var(--success);color:#fff;padding:14px 16px">
+          <div class="row gap-8"><span class="tag" style="background:rgba(255,255,255,0.18);color:#fff">テナント</span></div>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:8px">学年主任</div>
+          <div style="font-family:var(--font-mono);font-size:11px;opacity:0.8;margin-top:2px">role:grade_chief</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div class="fs-12 text-3 mb-12">学年に属する生徒の機微情報を含む全属性を閲覧。人物区分の機微タグも閲覧可。</div>
+          <div class="row between" style="padding-top:10px;border-top:1px solid var(--border-soft)">
+            <div><div class="fs-11 text-3">付与数</div><div class="num fw-6">684</div></div>
+            <div><div class="fs-11 text-3">権限ルール</div><div class="num fw-6">12 / 186</div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="fs-11 text-3">編集可</span>
+          <div class="row gap-8">
+            <button class="btn btn-ghost btn-sm"><span data-i="edit" data-s="12"></span></button>
+            <button class="btn btn-ghost btn-sm"><span data-i="copy" data-s="12"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-tight" style="overflow:hidden;display:grid;place-items:center;background:var(--surface-2);border-style:dashed;cursor:pointer;min-height:200px" onclick="openModal('modalAddRole')">
+        <div class="center" style="text-align:center;color:var(--ink-3)">
+          <div style="width:40px;height:40px;background:var(--surface);border:1px dashed var(--border-2);border-radius:var(--r-sm);display:grid;place-items:center;margin:0 auto 8px"><span data-i="plus" data-s="18"></span></div>
+          <div class="fs-13 fw-6">新しいロールを作成</div>
+          <div class="fs-11 mt-8">権限ルールを組み合わせて定義</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddRole">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">ロールを作成</div>
+        <div class="modal-sub">権限ルールを選択して組み合わせる</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddRole')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">ロール名 <span class="req">*</span></label><input class="form-input" placeholder="例: 教頭"></div>
+      <div class="form-row"><label class="form-label">識別子 <span class="req">*</span></label><input class="form-input font-mono" placeholder="role:vice_principal"></div>
+      <div class="form-row"><label class="form-label">説明</label><textarea class="form-textarea" placeholder="このロールの責務と権限スコープ"></textarea></div>
+      <div class="form-row"><label class="form-label">コピー元</label><select class="form-select"><option>なし (新規作成)</option><option>校長 (role:principal)</option><option>学年主任 (role:grade_chief)</option><option>一般教員 (role:teacher)</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddRole')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddRole');toast('ロールを作成しました','success')">作成する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'roles.html' });</script>
+</body>
+</html>

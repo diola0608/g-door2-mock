@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名簿ダッシュボード · 名簿管理 · Atlas</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+
+  <div class="page">
+
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow">
+          <span class="page-eyebrow-dot"></span>
+          <span>名簿管理</span>
+          <span class="hr-dot"></span>
+          <span>サービスホーム</span>
+        </div>
+        <h1 class="page-title">名簿<em>ダッシュボード</em></h1>
+        <p class="page-sub">教育委員会・教員・生徒とその関係者の登録状況、属性項目、組織構造の全体像を確認します。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+        <button class="btn btn-secondary"><span data-i="upload" data-s="14"></span> CSV取込</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddPerson')"><span data-i="plus" data-s="14"></span> 人物を追加</button>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div style="position:relative;z-index:1">
+        <div class="hero-eyebrow">県全体の登録データ</div>
+        <div class="hero-title"><span class="bignum">128,490<sup>名</sup></span></div>
+        <div class="hero-sub">前月比 <strong style="color:#fff">+148</strong> 名。Google Workspace との同期率は <strong style="color:#fff">99.2%</strong>、残り 1,012 名は未連携のオフラインユーザーです。</div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">14,238</div><div class="hero-stat-label">教員</div></div>
+          <div><div class="hero-stat-num">98,418</div><div class="hero-stat-label">生徒</div></div>
+          <div><div class="hero-stat-num">12,648</div><div class="hero-stat-label">関係者</div></div>
+          <div><div class="hero-stat-num">3,186</div><div class="hero-stat-label">教委・職員</div></div>
+        </div>
+        <div class="hero-cta">
+          <a href="list.html" class="btn btn-accent"><span data-i="list" data-s="14"></span> 一覧を開く</a>
+          <a href="org.html" class="btn btn-secondary" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)"><span data-i="tree" data-s="14"></span> 組織を見る</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg viewBox="0 0 320 220" style="width:100%;height:100%">
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#C45D2E" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#C45D2E" stop-opacity="0.2"/>
+            </linearGradient>
+          </defs>
+          <g fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1">
+            <line x1="0" y1="40" x2="320" y2="40"/>
+            <line x1="0" y1="90" x2="320" y2="90"/>
+            <line x1="0" y1="140" x2="320" y2="140"/>
+            <line x1="0" y1="190" x2="320" y2="190"/>
+          </g>
+          <g fill="url(#grad)">
+            <rect x="20" y="120" width="22" height="60" rx="1"/>
+            <rect x="48" y="100" width="22" height="80" rx="1"/>
+            <rect x="76" y="80" width="22" height="100" rx="1"/>
+            <rect x="104" y="50" width="22" height="130" rx="1"/>
+            <rect x="132" y="70" width="22" height="110" rx="1"/>
+            <rect x="160" y="40" width="22" height="140" rx="1"/>
+            <rect x="188" y="60" width="22" height="120" rx="1"/>
+            <rect x="216" y="30" width="22" height="150" rx="1"/>
+            <rect x="244" y="55" width="22" height="125" rx="1"/>
+            <rect x="272" y="20" width="22" height="160" rx="1"/>
+          </g>
+          <g font-family="JetBrains Mono" font-size="9" fill="rgba(255,255,255,0.6)">
+            <text x="20" y="210">4月</text>
+            <text x="76" y="210">6月</text>
+            <text x="132" y="210">8月</text>
+            <text x="188" y="210">10月</text>
+            <text x="244" y="210">12月</text>
+            <text x="290" y="210">2月</text>
+          </g>
+          <g font-family="Fraunces" font-size="11" fill="rgba(255,255,255,0.7)" font-style="italic">
+            <text x="20" y="22">monthly enrollment</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-24">
+      <div class="kpi">
+        <div class="kpi-label">小学校</div>
+        <div class="kpi-value">487</div>
+        <div class="kpi-delta-note">校 · 児童 38,418名</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">中学校</div>
+        <div class="kpi-value">238</div>
+        <div class="kpi-delta-note">校 · 生徒 21,486名</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">高等学校</div>
+        <div class="kpi-value">98</div>
+        <div class="kpi-delta-note">校 · 生徒 36,418名</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">特別支援学校</div>
+        <div class="kpi-value">24</div>
+        <div class="kpi-delta-note">校 · 児童生徒 2,096名</div>
+      </div>
+    </div>
+
+    <div class="split split-2-1">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">市町村別 登録数</div>
+            <div class="card-sub">上位 8 市町村 · 全 30 市町村</div>
+          </div>
+          <a href="org.html" class="btn btn-ghost btn-sm">組織ツリー <span data-i="arrowRight" data-s="12"></span></a>
+        </div>
+        <div class="card-body">
+          <div class="chart-bars">
+            <div class="bar" style="height:90%"><div class="bar-val">24,816</div></div>
+            <div class="bar" style="height:62%"><div class="bar-val">18,142</div></div>
+            <div class="bar" style="height:48%"><div class="bar-val">13,728</div></div>
+            <div class="bar" style="height:36%"><div class="bar-val">10,418</div></div>
+            <div class="bar" style="height:30%"><div class="bar-val">8,612</div></div>
+            <div class="bar" style="height:26%"><div class="bar-val">7,420</div></div>
+            <div class="bar" style="height:22%"><div class="bar-val">6,148</div></div>
+            <div class="bar" style="height:18%"><div class="bar-val">5,124</div></div>
+          </div>
+          <div class="row" style="justify-content:space-between;font-size:10.5px;color:var(--ink-3);font-family:var(--font-mono);padding:0 6px">
+            <span>新潟市</span><span>長岡市</span><span>上越市</span><span>三条市</span><span>新発田市</span><span>柏崎市</span><span>燕市</span><span>村上市</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">属性項目サマリー</div>
+            <div class="card-sub">86 項目 · 機微情報 8 含む</div>
+          </div>
+          <a href="attributes.html" class="btn btn-ghost btn-sm">管理 <span data-i="arrowRight" data-s="12"></span></a>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+          <div class="row between"><span class="fs-12">基本情報</span><span class="num text-3 fs-12">12 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar" style="width:100%"></div></div>
+          <div class="row between" style="margin-top:6px"><span class="fs-12">連絡先情報</span><span class="num text-3 fs-12">8 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar" style="width:67%"></div></div>
+          <div class="row between" style="margin-top:6px"><span class="fs-12">所属・履歴</span><span class="num text-3 fs-12">14 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar" style="width:100%"></div></div>
+          <div class="row between" style="margin-top:6px"><span class="fs-12">教職員固有</span><span class="num text-3 fs-12">22 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar accent" style="width:90%"></div></div>
+          <div class="row between" style="margin-top:6px"><span class="fs-12">生徒固有</span><span class="num text-3 fs-12">18 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar" style="width:72%"></div></div>
+          <div class="row between" style="margin-top:6px"><span class="fs-12">機微情報</span><span class="num text-3 fs-12">8 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar warning" style="width:32%"></div></div>
+          <div class="row between" style="margin-top:6px"><span class="fs-12">学校独自</span><span class="num text-3 fs-12">4 項目</span></div>
+          <div class="progress" style="height:4px"><div class="progress-bar" style="width:18%"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddPerson">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">人物を追加</div>
+        <div class="modal-sub">1名ずつ手動で登録します。一括登録は CSV インポートをご利用ください。</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddPerson')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">識別子 <span class="req">*</span></label>
+        <div class="form-grid-2">
+          <select class="form-select">
+            <option>メールアドレス</option>
+            <option>職員番号</option>
+            <option>学籍番号</option>
+            <option>姓 + 名 + 生年月日</option>
+          </select>
+          <input class="form-input" placeholder="yamamoto.ren@niigata-h.ed.jp">
+        </div>
+        <div class="form-hint">Google Workspace 連携中の場合、ここで入力した値がアカウントと照合されます。</div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label class="form-label">姓 <span class="req">*</span></label>
+          <input class="form-input" placeholder="山本">
+        </div>
+        <div class="form-row">
+          <label class="form-label">名 <span class="req">*</span></label>
+          <input class="form-input" placeholder="蓮">
+        </div>
+        <div class="form-row">
+          <label class="form-label">姓(カナ)</label>
+          <input class="form-input" placeholder="ヤマモト">
+        </div>
+        <div class="form-row">
+          <label class="form-label">名(カナ)</label>
+          <input class="form-input" placeholder="レン">
+        </div>
+        <div class="form-row">
+          <label class="form-label">生年月日</label>
+          <input class="form-input" type="date" value="2008-04-12">
+        </div>
+        <div class="form-row">
+          <label class="form-label">性別</label>
+          <select class="form-select">
+            <option>男性</option><option>女性</option><option>その他</option><option>回答しない</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">種別 <span class="req">*</span></label>
+        <div class="row gap-16">
+          <label class="radio"><input type="radio" name="ptype" checked> 生徒</label>
+          <label class="radio"><input type="radio" name="ptype"> 教員</label>
+          <label class="radio"><input type="radio" name="ptype"> 教委職員</label>
+          <label class="radio"><input type="radio" name="ptype"> 関係者</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddPerson')">キャンセル</button>
+      <button class="btn btn-secondary">下書き保存</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddPerson');toast('人物を登録しました','success')">登録する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'directory/index.html' });</script>
+</body>
+</html>

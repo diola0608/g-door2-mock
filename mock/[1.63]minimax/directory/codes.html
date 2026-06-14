@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>コードマスター · 名簿管理</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="index.html">名簿管理</a><span class="sep">/</span><span class="current">コードマスター</span></div>
+        <h1 class="page-title">コード<em>マスター</em></h1>
+        <p class="page-sub">属性項目で利用する選択肢コードを管理します。コードごとに閲覧権限や編集権限を制御できます。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddCode')"><span data-i="plus" data-s="14"></span> コードセットを追加</button>
+      </div>
+    </div>
+
+    <div class="split split-1-3" style="align-items:start">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">コードセット</div>
+            <div class="card-sub">42 セット · 286 コード</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="list-compact">
+            <div class="list-compact-item" style="background:var(--surface-2);font-weight:600"><span data-i="tag" data-s="14"></span><span>部活</span><span class="spacer"></span><span class="num text-3 fs-12">42</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>人物区分</span><span class="spacer"></span><span class="num text-3 fs-12">12</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>科目</span><span class="spacer"></span><span class="num text-3 fs-12">28</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>職種</span><span class="spacer"></span><span class="num text-3 fs-12">18</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>学籍状態</span><span class="spacer"></span><span class="num text-3 fs-12">8</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>通学区域</span><span class="spacer"></span><span class="num text-3 fs-12">5</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>係活動</span><span class="spacer"></span><span class="num text-3 fs-12">14</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>血液型</span><span class="spacer"></span><span class="num text-3 fs-12">8</span></div>
+            <div class="list-compact-item"><span data-i="tag" data-s="14"></span><span>アレルギー</span><span class="spacer"></span><span class="num text-3 fs-12">22</span></div>
+            <div class="list-compact-item" style="background:var(--surface-2);font-style:italic;color:var(--ink-3)"><span data-i="more" data-s="14"></span><span>他 32 セット</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">部活 <span class="tag tag-primary" style="margin-left:6px">42 コード</span></div>
+              <div class="card-sub">code_set: club · テナント全体</div>
+            </div>
+            <div class="row gap-8">
+              <button class="btn btn-ghost btn-sm"><span data-i="history" data-s="12"></span> 変更履歴</button>
+              <button class="btn btn-secondary btn-sm" onclick="openModal('modalAddCode')"><span data-i="plus" data-s="12"></span> コード追加</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row gap-8 mb-16">
+              <button class="chip active">すべて <span class="text-3">42</span></button>
+              <button class="chip">運動部 <span class="text-3">24</span></button>
+              <button class="chip">文化部 <span class="text-3">14</span></button>
+              <button class="chip">同好会 <span class="text-3">4</span></button>
+              <span class="spacer"></span>
+              <span class="fs-11 text-3">並び順: 表示順 ↑</span>
+            </div>
+            <table class="table">
+              <thead>
+                <tr><th>表示ラベル</th><th>コード値</th><th>カテゴリ</th><th>使用件数</th><th>権限</th><th>並び順</th><th class="actions"></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>サッカー部</td><td><code>club_soccer</code></td><td><span class="tag">運動部</span></td><td class="num">412</td><td>—</td><td class="num">1</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>野球部</td><td><code>club_baseball</code></td><td><span class="tag">運動部</span></td><td class="num">386</td><td>—</td><td class="num">2</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>陸上競技部</td><td><code>club_track</code></td><td><span class="tag">運動部</span></td><td class="num">284</td><td>—</td><td class="num">3</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>バスケットボール部</td><td><code>club_basket</code></td><td><span class="tag">運動部</span></td><td class="num">268</td><td>—</td><td class="num">4</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>バレーボール部</td><td><code>club_volley</code></td><td><span class="tag">運動部</span></td><td class="num">198</td><td>—</td><td class="num">5</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>吹奏楽部</td><td><code>club_band</code></td><td><span class="tag">文化部</span></td><td class="num">286</td><td>—</td><td class="num">6</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>美術部</td><td><code>club_art</code></td><td><span class="tag">文化部</span></td><td class="num">142</td><td>—</td><td class="num">7</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>生徒会</td><td><code>club_student_council</code></td><td><span class="tag tag-accent">特別</span></td><td class="num">186</td><td><span class="tag tag-warning">役職者限定</span></td><td class="num">8</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>将棋同好会</td><td><code>club_shogi</code></td><td><span class="tag">同好会</span></td><td class="num">42</td><td>—</td><td class="num">9</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr style="background:var(--surface-2)"><td style="font-style:italic;color:var(--ink-3)">…他 32 コード</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">人物区分 <span class="tag tag-danger" style="margin-left:6px">12 コード · 機微</span></div>
+              <div class="card-sub">code_set: person_classification · 機微情報 · 学年主任以上のみ閲覧可</div>
+            </div>
+            <div class="row gap-8">
+              <span class="tag tag-danger">要権限</span>
+              <button class="btn btn-secondary btn-sm"><span data-i="plus" data-s="12"></span> コード追加</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="banner warning" style="margin:0 0 14px">
+              <span class="banner-icon"><span data-i="shield" data-s="18"></span></span>
+              <div class="banner-content">
+                <div class="banner-title">機微情報を含むコードセットです</div>
+                <div>「優良生徒」「いじめ加害者」「配慮必要」などの選択肢があり、学年主任のみが閲覧できる制限もコード単位で設定できます。</div>
+              </div>
+            </div>
+            <table class="table">
+              <thead><tr><th>表示ラベル</th><th>コード値</th><th>使用件数</th><th>閲覧権限</th><th>編集権限</th><th class="actions"></th></tr></thead>
+              <tbody>
+                <tr><td>優良生徒</td><td><code>class_excellent</code></td><td class="num">186</td><td>担任 · 学年主任</td><td>担任</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>要支援</td><td><code>class_needs_support</code></td><td class="num">248</td><td>担任 · 学年主任</td><td>学年主任</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr style="background:var(--warning-soft)"><td><span data-i="lock" data-s="12" style="vertical-align:middle;color:var(--warning)"></span> いじめ加害者</td><td><code>class_bully</code></td><td class="num">8</td><td><strong>学年主任のみ</strong></td><td>学年主任</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr style="background:var(--warning-soft)"><td><span data-i="lock" data-s="12" style="vertical-align:middle;color:var(--warning)"></span> いじめ被害者</td><td><code>class_victim</code></td><td class="num">12</td><td><strong>学年主任のみ</strong></td><td>学年主任</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+                <tr><td>不登校傾向</td><td><code>class_truancy</code></td><td class="num">42</td><td>担任 · 学年主任 · 校長</td><td>学年主任</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddCode">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">コードを追加</div>
+        <div class="modal-sub">部活セットに新しいコードを追加</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddCode')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">表示ラベル <span class="req">*</span></label><input class="form-input" placeholder="例: 卓球部"></div>
+      <div class="form-row"><label class="form-label">コード値 <span class="req">*</span></label><input class="form-input font-mono" placeholder="club_table_tennis"><div class="form-hint">英数字とアンダースコア</div></div>
+      <div class="form-row"><label class="form-label">カテゴリ</label><select class="form-select"><option>運動部</option><option>文化部</option><option>同好会</option><option>特別</option></select></div>
+      <div class="form-row"><label class="form-label">並び順</label><input class="form-input num" value="10"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddCode')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddCode');toast('コードを追加しました','success')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'codes.html' });</script>
+</body>
+</html>

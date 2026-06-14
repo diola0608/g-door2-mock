@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ユーザー一覧 · アカウント</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../directory/index.html">名簿管理</a><span class="sep">/</span><span class="current">アカウント・権限</span></div>
+        <h1 class="page-title">ユーザー<em>一覧</em></h1>
+        <p class="page-sub">教育委員会にログインするすべてのユーザーを管理します。Google Workspace 連携ユーザーは自動で同期されます。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+        <button class="btn btn-secondary"><span data-i="refresh" data-s="14"></span> Google 同期</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddUser')"><span data-i="plus" data-s="14"></span> ユーザーを追加</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-16">
+      <div class="kpi"><div class="kpi-label">アクティブ</div><div class="kpi-value">14,238</div><div class="kpi-delta-note">過去30日ログイン</div></div>
+      <div class="kpi"><div class="kpi-label">招待中</div><div class="kpi-value">86</div><div class="kpi-delta-note">未ログイン</div></div>
+      <div class="kpi"><div class="kpi-label">停止中</div><div class="kpi-value">42</div><div class="kpi-delta-note">手動停止</div></div>
+      <div class="kpi"><div class="kpi-label">MFA有効</div><div class="kpi-value num">99.4<span class="kpi-value-unit">%</span></div><div class="kpi-delta-note">14,148 / 14,238</div></div>
+    </div>
+
+    <div class="filterbar">
+      <div class="filterbar-search">
+        <span data-i="search" data-s="14"></span>
+        <input type="text" placeholder="ユーザー名、メール、職員番号で検索…">
+      </div>
+      <button class="chip active">すべて</button>
+      <button class="chip">教員</button>
+      <button class="chip">教委職員</button>
+      <button class="chip">管理者</button>
+      <button class="chip">休止</button>
+      <div class="spacer"></div>
+      <button class="chip"><span data-i="filter" data-s="12"></span> 詳細フィルター</button>
+    </div>
+
+    <div class="card card-tight">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="table-checkbox"><input type="checkbox"></th>
+            <th>ユーザー</th><th>メール</th><th>組織</th><th>ロール</th><th>最終ログイン</th><th>MFA</th><th>状態</th><th class="actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="background:linear-gradient(135deg,#0F4C5C,#1A6B7E)">佐</div>
+                <div class="person-info">
+                  <div class="person-name">佐藤 美咲</div>
+                  <div class="person-meta">職員番号: NI-00184</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">sato.misaki@niigata-boe.ed.jp</td>
+            <td><span class="tag tag-primary">情報政策課</span></td>
+            <td><span class="tag tag-accent">テナント管理者</span></td>
+            <td class="num text-3 fs-12">今 14:48</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar accent">中</div>
+                <div class="person-info">
+                  <div class="person-name">中村 健太</div>
+                  <div class="person-meta">職員番号: NI-H-0184</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">nakamura.k@niigata-h.ed.jp</td>
+            <td><span class="tag">新潟高校 · 3年A組</span></td>
+            <td><span class="tag">一般教員 · 担任</span></td>
+            <td class="num text-3 fs-12">今 11:24</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar">田</div>
+                <div class="person-info">
+                  <div class="person-name">田中 由美子</div>
+                  <div class="person-meta">職員番号: NI-H-0242</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">tanaka.y@niigata-h.ed.jp</td>
+            <td><span class="tag">新潟高校 · 3年B組</span></td>
+            <td><span class="tag">一般教員 · 担任 · 学年主任</span></td>
+            <td class="num text-3 fs-12">今 09:42</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar">高</div>
+                <div class="person-info">
+                  <div class="person-name">高橋 恵子</div>
+                  <div class="person-meta">職員番号: NI-H-0318</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">takahashi.k@niigata-h.ed.jp</td>
+            <td><span class="tag">新潟高校 · 3年C組</span></td>
+            <td><span class="tag">一般教員 · 担任</span></td>
+            <td class="num text-3 fs-12">昨日 18:21</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary">伊</div>
+                <div class="person-info">
+                  <div class="person-name">伊藤 直樹</div>
+                  <div class="person-meta">職員番号: NI-H-0421</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">ito.n@niigata-h.ed.jp</td>
+            <td><span class="tag">新潟高校 · 2年A組</span></td>
+            <td><span class="tag">一般教員 · 担任</span></td>
+            <td class="num text-3 fs-12">今 13:08</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar">斉</div>
+                <div class="person-info">
+                  <div class="person-name">斎藤 健一</div>
+                  <div class="person-meta">職員番号: NI-H-0522</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12 text-3">未連携</td>
+            <td><span class="tag">新潟高校 · 2年B組</span></td>
+            <td><span class="tag">一般教員</span></td>
+            <td class="num text-3 fs-12">3日前</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-pending">招待中</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary">渡</div>
+                <div class="person-info">
+                  <div class="person-name">渡辺 茂雄</div>
+                  <div class="person-meta">職員番号: NI-H-0001</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">watanabe.s@niigata-h.ed.jp</td>
+            <td><span class="tag">新潟高校</span></td>
+            <td><span class="tag tag-accent">校長</span></td>
+            <td class="num text-3 fs-12">今 08:18</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="table-checkbox"><input type="checkbox"></td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="background:var(--surface-3)">鈴</div>
+                <div class="person-info">
+                  <div class="person-name">鈴木 翔太</div>
+                  <div class="person-meta">職員番号: NI-00221</div>
+                </div>
+              </div>
+            </td>
+            <td class="fs-12">suzuki.s@niigata-boe.ed.jp</td>
+            <td><span class="tag tag-primary">情報政策課</span></td>
+            <td><span class="tag">教委職員</span></td>
+            <td class="num text-3 fs-12">今 14:14</td>
+            <td><span class="status-pill status-active">有効</span></td>
+            <td><span class="status-pill status-active">アクティブ</span></td>
+            <td class="actions">
+              <button class="icon-btn"><span data-i="eye" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="edit" data-s="14"></span></button>
+              <button class="icon-btn"><span data-i="more" data-s="14"></span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card-foot">
+        <div class="fs-12 text-3">8 件 / 全 14,238 件中</div>
+        <div class="row gap-4">
+          <button class="btn btn-secondary btn-sm" disabled>前へ</button>
+          <button class="btn btn-primary btn-sm">1</button>
+          <button class="btn btn-secondary btn-sm">2</button>
+          <button class="btn btn-secondary btn-sm">3</button>
+          <button class="btn btn-secondary btn-sm">…</button>
+          <button class="btn btn-secondary btn-sm">次へ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddUser">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">ユーザーを追加</div>
+        <div class="modal-sub">Google Workspace 連携の場合、招待メールが自動送信されます</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddUser')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">メールアドレス <span class="req">*</span></label><input class="form-input" placeholder="user@niigata-boe.ed.jp"></div>
+      <div class="form-row"><label class="form-label">表示名 <span class="req">*</span></label><input class="form-input" placeholder="氏名"></div>
+      <div class="form-row"><label class="form-label">組織 <span class="req">*</span></label><select class="form-select"><option>情報政策課</option><option>新潟高校</option><option>古町中学校</option></select></div>
+      <div class="form-row"><label class="form-label">ロール</label><div class="pill-row"><span class="tag tag-outline">一般教員</span><span class="tag tag-outline">担任</span><span class="tag tag-outline">学年主任</span><span class="tag tag-outline">校長</span></div></div>
+      <div class="form-row"><label class="checkbox"><input type="checkbox" checked> Google Workspace と同期</label></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddUser')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddUser');toast('ユーザーを追加しました','success')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'users.html' });</script>
+</body>
+</html>

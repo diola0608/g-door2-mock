@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>フォーム回答 · 在校生調査2026</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app" style="grid-template-columns:1fr;grid-template-areas:'header' 'main'">
+  <header class="app-header" style="grid-area:header">
+    <a href="list.html" class="row gap-8" style="color:var(--ink-2)">
+      <span data-i="arrowLeft" data-s="16"></span>
+      <span class="fs-13 fw-6">フォーム一覧</span>
+    </a>
+    <div class="header-tenant" style="margin-left:16px">
+      <div class="header-tenant-avatar">新</div>
+      <div class="header-tenant-meta">
+        <div class="header-tenant-name">新潟県教育委員会</div>
+        <div class="header-tenant-sub">Niigata Prefectural BOE</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <span class="status-pill status-active">回答中</span>
+    <span class="fs-12 text-3" style="margin-left:8px">自動保存 · 最終保存 14:48</span>
+  </header>
+
+  <main class="app-main">
+    <div class="page page-narrow">
+      <div class="step-flow mb-24">
+        <div class="step done"><div class="step-num">1</div><span>配布</span></div>
+        <div class="step-line"></div>
+        <div class="step current"><div class="step-num">2</div><span>回答</span></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">3</div><span>確認</span></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num">4</div><span>完了</span></div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-head">
+          <div>
+            <div class="row gap-8 mb-8">
+              <span class="tag tag-info">アンケート</span>
+              <span class="tag tag-outline">在校生</span>
+            </div>
+            <div class="card-title" style="font-size:22px">在校生調査2026</div>
+            <div class="card-sub">2026年度 後学期に開講される科目選択のための調査です。回答期限までにすべての項目にお答えください。</div>
+          </div>
+          <div class="row gap-8">
+            <span class="fs-12 text-3">期限 2026-06-30</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-section"><h4>基本情報</h4><span class="text-3 fs-12">名簿から自動参照</span></div>
+        <div class="card-body">
+          <div class="form-grid-2">
+            <div><label class="form-label">氏名</label><input class="form-input" value="山本 蓮" readonly style="background:var(--surface-2)"></div>
+            <div><label class="form-label">学籍番号</label><input class="form-input num" value="N-2024-1248" readonly style="background:var(--surface-2)"></div>
+            <div><label class="form-label">所属</label><input class="form-input" value="新潟高等学校 · 3年A組" readonly style="background:var(--surface-2)"></div>
+            <div><label class="form-label">担任</label><input class="form-input" value="中村 健太 先生" readonly style="background:var(--surface-2)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-section"><h4>連絡先 <span class="tag tag-primary" style="margin-left:6px">名簿反映</span></h4><span class="text-3 fs-12">回答内容が名簿の属性値として自動更新されます</span></div>
+        <div class="card-body">
+          <div class="form-row"><label class="form-label">本人 メールアドレス <span class="req">*</span></label><input class="form-input" placeholder="personal@example.com"><div class="form-hint">名簿の <code>email_personal</code> 属性に反映されます</div></div>
+          <div class="form-row"><label class="form-label">本人 携帯番号</label><input class="form-input" placeholder="090-XXXX-XXXX"></div>
+          <div class="form-row"><label class="form-label">現住所</label><input class="form-input" placeholder="新潟県新潟市..."></div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-section"><h4>卒業後の予定 <span class="tag" style="margin-left:6px">単一選択</span></h4></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <label class="radio"><input type="radio" name="grad"> 大学進学 (国公立)</label>
+              <label class="radio"><input type="radio" name="grad" checked> 大学進学 (私立)</label>
+              <label class="radio"><input type="radio" name="grad"> 専門学校</label>
+              <label class="radio"><input type="radio" name="grad"> 就職</label>
+              <label class="radio"><input type="radio" name="grad"> 未定 · 検討中</label>
+              <label class="radio"><input type="radio" name="grad"> その他</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-section"><h4>第1志望 (文系) <span class="tag" style="margin-left:6px">単一選択</span></h4></div>
+        <div class="card-body">
+          <div class="form-row">
+            <select class="form-select">
+              <option>選択してください</option>
+              <option>日本史</option><option>世界史</option><option>地理</option>
+              <option>現代文</option><option>倫理 · 政治経済</option><option>古文 · 漢文</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-section"><h4>選択科目 (3つまで) <span class="tag tag-primary" style="margin-left:6px">名簿反映</span></h4><span class="text-3 fs-12">attribute: elective_subjects</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <label class="checkbox"><input type="checkbox" checked> 数学Ⅱ</label>
+              <label class="checkbox"><input type="checkbox"> 数学Ⅲ</label>
+              <label class="checkbox"><input type="checkbox"> 物理</label>
+              <label class="checkbox"><input type="checkbox"> 化学</label>
+              <label class="checkbox"><input type="checkbox"> 生物</label>
+              <label class="checkbox"><input type="checkbox"> 地学</label>
+              <label class="checkbox"><input type="checkbox" checked> 日本史</label>
+              <label class="checkbox"><input type="checkbox"> 世界史</label>
+              <label class="checkbox"><input type="checkbox"> 地理</label>
+              <label class="checkbox"><input type="checkbox"> 公民</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-16" style="border-color:var(--warning);background:var(--warning-soft)">
+        <div class="card-section" style="background:transparent;border-bottom:1px solid #d9c47a">
+          <h4 style="color:var(--warning)">健康・配慮 <span data-i="lock" data-s="14" style="vertical-align:middle"></span></h4>
+          <span class="tag tag-warning">機微情報</span>
+        </div>
+        <div class="card-body">
+          <div class="banner info" style="margin:0 0 16px;background:rgba(255,255,255,0.6)">
+            <span class="banner-icon"><span data-i="shield" data-s="18"></span></span>
+            <div class="banner-content">
+              <div class="banner-title">機微情報の取り扱い</div>
+              <div>回答は学年主任以上の権限で閲覧可能。回答者本人と担任は集計結果のみ閲覧できます。</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">配慮が必要な事項 (任意)</label>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <label class="checkbox"><input type="checkbox"> 体育時の運動負荷</label>
+              <label class="checkbox"><input type="checkbox"> アレルギー対応</label>
+              <label class="checkbox"><input type="checkbox"> 通学支援</label>
+              <label class="checkbox"><input type="checkbox"> その他 (自由記述)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row between mb-24" style="position:sticky;bottom:0;background:var(--bg);padding:14px 0;border-top:1px solid var(--border)">
+        <div class="fs-12 text-3">すべての必須項目にお答えください</div>
+        <div class="row gap-8">
+          <button class="btn btn-secondary">下書き保存</button>
+          <button class="btn btn-primary" onclick="toast('回答を送信しました','success')">回答を送信 <span data-i="send" data-s="14"></span></button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>監査ログ · アカウント</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../directory/index.html">名簿管理</a><span class="sep">/</span><span class="current">アカウント · 監査ログ</span></div>
+        <h1 class="page-title">監査<em>ログ</em></h1>
+        <p class="page-sub">権限に関わるすべての操作履歴。機微情報の閲覧試行、権限ルールの変更、所属変更などの追跡が可能です。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="filter" data-s="14"></span> フィルター</button>
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-16">
+      <div class="kpi"><div class="kpi-label">24時間の操作</div><div class="kpi-value">8,418</div><div class="kpi-delta-note">前月比 +12%</div></div>
+      <div class="kpi"><div class="kpi-label">機微情報 閲覧</div><div class="kpi-value">186</div><div class="kpi-delta-note">権限内のアクセス</div></div>
+      <div class="kpi"><div class="kpi-label">権限違反試行</div><div class="kpi-value num" style="color:var(--danger)">3</div><div class="kpi-delta-note">拒否 · アラート済</div></div>
+      <div class="kpi"><div class="kpi-label">特権操作</div><div class="kpi-value">42</div><div class="kpi-delta-note">管理者のみ</div></div>
+    </div>
+
+    <div class="filterbar">
+      <div class="filterbar-search"><span data-i="search" data-s="14"></span><input type="text" placeholder="ユーザー · 対象 · アクションで検索…"></div>
+      <button class="chip active">すべて</button>
+      <button class="chip">ログイン</button>
+      <button class="chip">閲覧</button>
+      <button class="chip">編集</button>
+      <button class="chip">権限変更</button>
+      <button class="chip">拒否</button>
+      <div class="spacer"></div>
+      <span class="text-3 fs-12">期間: 2026-06-11 〜 2026-06-12</span>
+    </div>
+
+    <div class="card card-tight">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>日時</th><th>実行者</th><th>アクション</th><th>対象</th><th>結果</th><th>IP / デバイス</th><th>変更</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 14:48:21</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="width:24px;height:24px;font-size:10px">佐</div>
+                <div class="person-info"><div class="person-name fs-12">佐藤 美咲</div></div>
+              </div>
+            </td>
+            <td><span class="tag tag-primary">権限ルール更新</span></td>
+            <td class="fs-12"><code>teacher_view_student_contact_via_club</code> v2→v3</td>
+            <td><span class="status-pill status-active">成功</span></td>
+            <td class="fs-12 text-3 num">10.0.12.4 · macOS Chrome</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 14:32:08</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar accent" style="width:24px;height:24px;font-size:10px">中</div>
+                <div class="person-info"><div class="person-name fs-12">中村 健太</div></div>
+              </div>
+            </td>
+            <td><span class="tag tag-info">機微情報 閲覧</span></td>
+            <td class="fs-12">生徒 <strong>山本 蓮</strong> · 属性: <code>allergy</code></td>
+            <td><span class="status-pill status-active">許可</span></td>
+            <td class="fs-12 text-3 num">10.0.18.42 · Windows Edge</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 14:18:42</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="width:24px;height:24px;font-size:10px">田</div>
+                <div class="person-info"><div class="person-name fs-12">田中 由美子</div></div>
+              </div>
+            </td>
+            <td><span class="tag">所属変更申請</span></td>
+            <td class="fs-12">生徒 <strong>小林 由衣</strong> · 古町中 → 新潟中央高</td>
+            <td><span class="status-pill status-pending">承認待ち</span></td>
+            <td class="fs-12 text-3 num">10.0.18.45 · iOS Safari</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 14:02:18</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="width:24px;height:24px;font-size:10px;font-family:var(--font-mono)">U</div>
+                <div class="person-info"><div class="person-name fs-12">不明</div></div>
+              </div>
+            </td>
+            <td><span class="tag tag-danger">権限違反試行</span></td>
+            <td class="fs-12">人物区分 <code>class_bully</code> 閲覧</td>
+            <td><span class="status-pill status-error">拒否</span></td>
+            <td class="fs-12 text-3 num">203.0.113.42 · Linux</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 13:48:21</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="width:24px;height:24px;font-size:10px">高</div>
+                <div class="person-info"><div class="person-name fs-12">高橋 恵子</div></div>
+              </div>
+            </td>
+            <td><span class="tag">CSVインポート</span></td>
+            <td class="fs-12"><code>高中3年_学籍異動_20260612.csv</code> · 1,284件</td>
+            <td><span class="status-pill status-error">5件失敗</span></td>
+            <td class="fs-12 text-3 num">10.0.18.48 · Windows Chrome</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 13:21:08</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar primary" style="width:24px;height:24px;font-size:10px">伊</div>
+                <div class="person-info"><div class="person-name fs-12">伊藤 直樹</div></div>
+              </div>
+            </td>
+            <td><span class="tag">属性項目 追加</span></td>
+            <td class="fs-12"><code>club_advisor</code> · データ形式: 人物参照</td>
+            <td><span class="status-pill status-active">成功</span></td>
+            <td class="fs-12 text-3 num">10.0.18.44 · macOS Safari</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 12:18:42</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar" style="width:24px;height:24px;font-size:10px">佐</div>
+                <div class="person-info"><div class="person-name fs-12">佐藤 美咲</div></div>
+              </div>
+            </td>
+            <td><span class="tag tag-accent">ロール付与</span></td>
+            <td class="fs-12">鈴木 翔太 へ <code>role:org_admin</code></td>
+            <td><span class="status-pill status-pending">承認待ち</span></td>
+            <td class="fs-12 text-3 num">10.0.12.4 · macOS Chrome</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+          <tr>
+            <td class="num fs-12 text-2">2026-06-12 11:08:21</td>
+            <td>
+              <div class="person-cell">
+                <div class="person-avatar accent" style="width:24px;height:24px;font-size:10px">渡</div>
+                <div class="person-info"><div class="person-name fs-12">渡辺 茂雄</div></div>
+              </div>
+            </td>
+            <td><span class="tag tag-warning">特権操作</span></td>
+            <td class="fs-12">権限ルール <code>teacher_view_teacher_contact</code> 上書き</td>
+            <td><span class="status-pill status-active">成功</span></td>
+            <td class="fs-12 text-3 num">10.0.18.1 · Windows Chrome</td>
+            <td class="actions"><button class="icon-btn"><span data-i="eye" data-s="14"></span></button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card-foot">
+        <div class="fs-12 text-3">8 件 / 全 8,418 件中 (24時間)</div>
+        <div class="row gap-4">
+          <button class="btn btn-secondary btn-sm" disabled>前へ</button>
+          <button class="btn btn-primary btn-sm">1</button>
+          <button class="btn btn-secondary btn-sm">2</button>
+          <button class="btn btn-secondary btn-sm">3</button>
+          <button class="btn btn-secondary btn-sm">…</button>
+          <button class="btn btn-secondary btn-sm">1052</button>
+          <button class="btn btn-secondary btn-sm">次へ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'audit.html' });</script>
+</body>
+</html>

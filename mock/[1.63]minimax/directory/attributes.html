@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>属性項目 · 名簿管理</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="index.html">名簿管理</a><span class="sep">/</span><span class="current">属性項目</span></div>
+        <h1 class="page-title">属性<em>項目</em></h1>
+        <p class="page-sub">名簿に追加できるデータ項目を定義します。データ形式、バリデーション、機微性、表示先組織スコープを制御できます。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="filter" data-s="14"></span> 表示設定</button>
+        <button class="btn btn-primary" onclick="openModal('modalAddAttr')"><span data-i="plus" data-s="14"></span> 属性項目を追加</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-16">
+      <div class="kpi"><div class="kpi-label">全属性項目</div><div class="kpi-value">86</div><div class="kpi-delta-note">12 グループ · 30 派生</div></div>
+      <div class="kpi"><div class="kpi-label">機微項目</div><div class="kpi-value num" style="color:var(--danger)">8</div><div class="kpi-delta-note">権限による閲覧制限あり</div></div>
+      <div class="kpi"><div class="kpi-label">コード参照</div><div class="kpi-value">42</div><div class="kpi-delta-note">コードマスターから取得</div></div>
+      <div class="kpi"><div class="kpi-label">学校独自</div><div class="kpi-value">4</div><div class="kpi-delta-note">各校で上書き可能</div></div>
+    </div>
+
+    <div class="tabs tabs-scroll" id="tabBar">
+      <div class="tab active" data-tab="all">すべて <span class="count">86</span></div>
+      <div class="tab" data-tab="basic">基本情報 <span class="count">12</span></div>
+      <div class="tab" data-tab="contact">連絡先 <span class="count">8</span></div>
+      <div class="tab" data-tab="aff">所属 <span class="count">14</span></div>
+      <div class="tab" data-tab="staff">教職員固有 <span class="count">22</span></div>
+      <div class="tab" data-tab="stu">生徒固有 <span class="count">18</span></div>
+      <div class="tab" data-tab="sensitive">機微 <span class="count">8</span></div>
+    </div>
+
+    <div class="card mt-16 card-tight">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="table-checkbox"><input type="checkbox"></th>
+            <th>項目名</th><th>識別子</th><th>カテゴリ</th><th>データ形式</th><th>必須</th><th>機微</th><th>権限継承</th><th>使用</th><th class="actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">姓</div><div class="fs-11 text-3">姓名の姓部分</div></td><td><code>last_name</code></td><td><span class="tag">基本情報</span></td><td><span class="tag tag-outline">単一文字列</span></td><td><span class="tag tag-danger">必須</span></td><td>—</td><td>テナント全体</td><td class="num">128,490</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">生年月日</div><div class="fs-11 text-3">西暦</div></td><td><code>date_of_birth</code></td><td><span class="tag">基本情報</span></td><td><span class="tag tag-outline">日付</span></td><td><span class="tag tag-danger">必須</span></td><td>—</td><td>テナント全体</td><td class="num">128,490</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">部活</div><div class="fs-11 text-3">複数の部活所属</div></td><td><code>club</code></td><td><span class="tag">生徒固有</span></td><td><span class="tag tag-info">コード(複数)</span></td><td>—</td><td>—</td><td>各学校が上書き可</td><td class="num">82,418</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">部活顧問</div><div class="fs-11 text-3">部活ごとの教員参照</div></td><td><code>club_advisor</code></td><td><span class="tag">生徒固有</span></td><td><span class="tag tag-info">人物参照</span></td><td>—</td><td>—</td><td>各学校が上書き可</td><td class="num">1,284</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">特徴タグ</div><div class="fs-11 text-3">生徒を特徴付ける選択式タグ</div></td><td><code>person_tag</code></td><td><span class="tag">属性項目</span></td><td><span class="tag tag-info">コード(複数)</span></td><td>—</td><td>—</td><td>テナント全体</td><td class="num">42,184</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">人物区分</div><div class="fs-11 text-3">優良生徒 / いじめ加害者 / 配慮必要 など</div></td><td><code>person_classification</code></td><td><span class="tag tag-danger">機微情報</span></td><td><span class="tag tag-info">コード(複数)</span></td><td>—</td><td><span class="tag tag-danger">機微</span></td><td>学年主任のみ閲覧</td><td class="num">1,284</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">配慮事項</div><div class="fs-11 text-3">健康・家庭環境など自由記述</div></td><td><code>accommodation</code></td><td><span class="tag tag-danger">機微情報</span></td><td><span class="tag tag-outline">長文テキスト</span></td><td>—</td><td><span class="tag tag-danger">機微</span></td><td>担任 · 学年主任 · 校長</td><td class="num">8,124</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">教員免許番号</div><div class="fs-11 text-3">普通 · 特別 · 養護</div></td><td><code>teaching_license_no</code></td><td><span class="tag">教職員固有</span></td><td><span class="tag tag-outline">単一文字列</span></td><td><span class="tag tag-danger">必須</span></td><td>—</td><td>テナント全体</td><td class="num">14,238</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">卒業予定年</div><div class="fs-11 text-3">卒業予定 / 入学年</div></td><td><code>graduation_year</code></td><td><span class="tag">生徒固有</span></td><td><span class="tag tag-outline">数値</span></td><td>—</td><td>—</td><td>テナント全体</td><td class="num">98,418</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+          <tr><td class="table-checkbox"><input type="checkbox"></td><td><div class="fs-13 fw-6">通学区域</div><div class="fs-11 text-3">A地区 · B地区 · C地区</div></td><td><code>commute_zone</code></td><td><span class="tag">生徒固有</span></td><td><span class="tag tag-info">コード</span></td><td>—</td><td>—</td><td>市町村教委が上書き可</td><td class="num">98,418</td><td class="actions"><button class="icon-btn"><span data-i="edit" data-s="14"></span></button><button class="icon-btn"><span data-i="more" data-s="14"></span></button></td></tr>
+        </tbody>
+      </table>
+      <div class="card-foot">
+        <div class="fs-12 text-3">10 件 / 全 86 件中</div>
+        <div class="row gap-4">
+          <button class="btn btn-secondary btn-sm" disabled>前のページ</button>
+          <button class="btn btn-primary btn-sm">1</button>
+          <button class="btn btn-secondary btn-sm">2</button>
+          <button class="btn btn-secondary btn-sm">3</button>
+          <button class="btn btn-secondary btn-sm">…</button>
+          <button class="btn btn-secondary btn-sm">9</button>
+          <button class="btn btn-secondary btn-sm">次のページ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddAttr">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">属性項目を追加</div>
+        <div class="modal-sub">テナント全体で使える、または組織限定で展開する項目を定義</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalAddAttr')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">表示名 <span class="req">*</span></label><input class="form-input" placeholder="例: 部活顧問"></div>
+      <div class="form-row"><label class="form-label">識別子 <span class="req">*</span></label><input class="form-input font-mono" placeholder="例: club_advisor"><div class="form-hint">英数字とアンダースコアのみ。後から変更できません。</div></div>
+      <div class="form-grid-2">
+        <div class="form-row"><label class="form-label">カテゴリ <span class="req">*</span></label><select class="form-select"><option>基本情報</option><option>連絡先</option><option>所属・履歴</option><option>教職員固有</option><option>生徒固有</option><option>機微情報</option><option>学校独自</option></select></div>
+        <div class="form-row"><label class="form-label">データ形式 <span class="req">*</span></label><select class="form-select"><option>単一文字列</option><option>複数文字列</option><option>数値</option><option>日付</option><option>コード(単一)</option><option>コード(複数)</option><option>人物参照</option><option>長文テキスト</option></select></div>
+      </div>
+      <div class="form-row">
+        <label class="checkbox"><input type="checkbox"> 必須項目にする</label>
+        <label class="checkbox" style="margin-left:16px"><input type="checkbox"> 機微情報として扱う</label>
+        <label class="checkbox" style="margin-left:16px"><input type="checkbox"> 識別子として使う</label>
+      </div>
+      <div class="form-row"><label class="form-label">バリデーション</label><div class="form-grid-2"><input class="form-input" placeholder="最小文字数"><input class="form-input" placeholder="最大文字数"></div><div class="form-hint">正規表現を使う場合は <code>pattern</code> を指定</div></div>
+      <div class="form-row"><label class="form-label">権限スコープ</label><select class="form-select"><option>テナント全体で参照 · 編集は本人 + 管理者</option><option>所属組織内のみ</option><option>担任 · 学年主任 · 校長 のみ</option><option>校長が個別設定</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddAttr')">キャンセル</button>
+      <button class="btn btn-primary" onclick="closeModal('modalAddAttr');toast('属性項目を追加しました','success')">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'attributes.html' }); activateTab(document.getElementById('tabBar'));</script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード · Atlas — 新潟県教育委員会</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div id="app">
+
+  <div class="page">
+
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow">
+          <span class="page-eyebrow-dot"></span>
+          <span>ホーム</span>
+          <span class="hr-dot"></span>
+          <span>最終同期 2026.06.12 14:48 · Google Workspace 連携中</span>
+        </div>
+        <h1 class="page-title">おかえりなさい、<em>佐藤さん</em></h1>
+        <p class="page-sub">新潟県教育委員会の全体状況を確認できます。今日は承認待ち <strong>5件</strong>、エラー対応 <strong>2件</strong>があります。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="refresh" data-s="14"></span> 同期</button>
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> 日次レポート</button>
+        <button class="btn btn-primary" onclick="openModal('modalQuickCreate')"><span data-i="plus" data-s="14"></span> クイック作成</button>
+      </div>
+    </div>
+
+    <div class="banner danger">
+      <span class="banner-icon"><span data-i="alertTriangle" data-s="18"></span></span>
+      <div class="banner-content">
+        <div class="banner-title">インポート処理で 5 件のエラーが発生しています</div>
+        <div>バッチ <code>高中3年_学籍異動_20260612.csv</code> の取り込みに失敗しました。エラーの内訳を確認し、再処理または個別対応を行ってください。</div>
+      </div>
+      <div class="row gap-8">
+        <button class="btn btn-secondary btn-sm">詳細を確認</button>
+        <button class="btn btn-danger btn-sm">エラー対応</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid cols-4 mb-24">
+      <div class="kpi">
+        <div class="kpi-label">登録人物数</div>
+        <div class="kpi-value">128,490<span class="kpi-value-unit">名</span></div>
+        <div class="kpi-delta up"><span data-i="trendingUp" data-s="12"></span> <span>+148</span> <span class="kpi-delta-note">/ 先月比</span></div>
+        <svg class="kpi-spark" viewBox="0 0 80 60" preserveAspectRatio="none"><polyline points="0,40 10,38 20,42 30,30 40,32 50,22 60,18 70,12 80,8" fill="none" stroke="#0F4C5C" stroke-width="1.5"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">アクティブ教員</div>
+        <div class="kpi-value">14,238<span class="kpi-value-unit">名</span></div>
+        <div class="kpi-delta up"><span data-i="trendingUp" data-s="12"></span> <span>+24</span> <span class="kpi-delta-note">/ 先月比</span></div>
+        <svg class="kpi-spark" viewBox="0 0 80 60" preserveAspectRatio="none"><polyline points="0,30 10,28 20,32 30,24 40,26 50,18 60,20 70,14 80,10" fill="none" stroke="#4F7942" stroke-width="1.5"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">進行中のフォーム</div>
+        <div class="kpi-value">12<span class="kpi-value-unit">件</span></div>
+        <div class="kpi-delta up"><span data-i="trendingUp" data-s="12"></span> <span>+3</span> <span class="kpi-delta-note">/ 先週比</span></div>
+        <svg class="kpi-spark" viewBox="0 0 80 60" preserveAspectRatio="none"><polyline points="0,40 10,35 20,38 30,30 40,28 50,22 60,20 70,16 80,12" fill="none" stroke="#C45D2E" stroke-width="1.5"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">承認待ち</div>
+        <div class="kpi-value">5<span class="kpi-value-unit">件</span></div>
+        <div class="kpi-delta down"><span data-i="clock" data-s="12"></span> <span>最長 2日</span></div>
+        <svg class="kpi-spark" viewBox="0 0 80 60" preserveAspectRatio="none"><polyline points="0,20 10,22 20,18 30,28 40,30 50,28 60,34 70,38 80,40" fill="none" stroke="#A67400" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+
+    <div class="section-label">
+      <span class="section-label-text">サービス · Service Launcher</span>
+      <span class="section-label-line"></span>
+    </div>
+
+    <div class="kpi-grid cols-3 mb-24">
+      <a class="card-feature" href="directory/list.html">
+        <div class="card-feature-icon cfi-primary"><span data-i="users" data-s="20"></span></div>
+        <div class="kicker">01 / Directory</div>
+        <div class="card-feature-title" style="margin-top:6px">名簿管理</div>
+        <div class="card-feature-sub">教育委員会・教員・生徒とその関係者の一元管理。属性項目、所属履歴、コードマスターに対応。</div>
+        <div class="card-feature-meta">
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">人物</div>
+            <div class="card-feature-meta-value">128,490</div>
+          </div>
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">組織</div>
+            <div class="card-feature-meta-value">1,847</div>
+          </div>
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">属性項目</div>
+            <div class="card-feature-meta-value">86</div>
+          </div>
+        </div>
+        <div style="position:absolute;top:18px;right:18px;color:var(--ink-3)"><span data-i="arrowUpRight" data-s="14"></span></div>
+      </a>
+
+      <a class="card-feature" href="account/users.html">
+        <div class="card-feature-icon cfi-accent"><span data-i="shieldCheck" data-s="20"></span></div>
+        <div class="kicker">02 / Identity</div>
+        <div class="card-feature-title" style="margin-top:6px">アカウント・権限</div>
+        <div class="card-feature-sub">サブジェクト・オブジェクト関係による細粒度の権限設計。属性項目や選択肢単位の制御も。</div>
+        <div class="card-feature-meta">
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">ユーザー</div>
+            <div class="card-feature-meta-value">14,238</div>
+          </div>
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">ロール</div>
+            <div class="card-feature-meta-value">42</div>
+          </div>
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">権限ルール</div>
+            <div class="card-feature-meta-value">186</div>
+          </div>
+        </div>
+        <div style="position:absolute;top:18px;right:18px;color:var(--ink-3)"><span data-i="arrowUpRight" data-s="14"></span></div>
+      </a>
+
+      <a class="card-feature" href="forms/list.html">
+        <div class="card-feature-icon cfi-info"><span data-i="clipboardList" data-s="20"></span></div>
+        <div class="kicker">03 / Activate</div>
+        <div class="card-feature-title" style="margin-top:6px">データ利活用</div>
+        <div class="card-feature-sub">フォーム・CSVインポート・申請フロー。名簿への自動反映、属性値のバッチ更新を実現。</div>
+        <div class="card-feature-meta">
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">フォーム</div>
+            <div class="card-feature-meta-value">86</div>
+          </div>
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">今月の回答</div>
+            <div class="card-feature-meta-value">23,418</div>
+          </div>
+          <div class="card-feature-meta-item">
+            <div class="card-feature-meta-label">承認待ち</div>
+            <div class="card-feature-meta-value">5</div>
+          </div>
+        </div>
+        <div style="position:absolute;top:18px;right:18px;color:var(--ink-3)"><span data-i="arrowUpRight" data-s="14"></span></div>
+      </a>
+    </div>
+
+    <div class="split split-2-1">
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">承認待ち <span class="tag tag-warning" style="margin-left:6px">5</span></div>
+              <div class="card-sub">所属変更申請と権限付与申請 — 古い順に表示</div>
+            </div>
+            <a href="requests/index.html" class="btn btn-ghost btn-sm">すべて表示 <span data-i="arrowRight" data-s="12"></span></a>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>種別</th>
+                <th>対象者</th>
+                <th>変更内容</th>
+                <th>申請者</th>
+                <th>経過</th>
+                <th class="actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag tag-info">所属変更</span></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar primary">山本</div>
+                    <div class="person-info">
+                      <div class="person-name">山本 蓮</div>
+                      <div class="person-meta">新潟高校 3年 A組</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12">古町中学校 <span style="color:var(--ink-4)">→</span> 新潟高校</td>
+                <td class="fs-12">中村 健太 先生</td>
+                <td class="num text-3 fs-12">2日</td>
+                <td class="actions">
+                  <button class="btn btn-secondary btn-sm">却下</button>
+                  <button class="btn btn-primary btn-sm">承認</button>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-info">所属変更</span></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar accent">田中</div>
+                    <div class="person-info">
+                      <div class="person-name">田中 美桜</div>
+                      <div class="person-meta">東新潟中学校 2年</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12">白根北中 <span style="color:var(--ink-4)">→</span> 東新潟中</td>
+                <td class="fs-12">高橋 恵子 先生</td>
+                <td class="num text-3 fs-12">1日</td>
+                <td class="actions">
+                  <button class="btn btn-secondary btn-sm">却下</button>
+                  <button class="btn btn-primary btn-sm">承認</button>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-accent">権限付与</span></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar">鈴木</div>
+                    <div class="person-info">
+                      <div class="person-name">鈴木 翔太</div>
+                      <div class="person-meta">情報政策課</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12"><code>role:org_admin</code> を付与</td>
+                <td class="fs-12">佐藤 美咲</td>
+                <td class="num text-3 fs-12">6時間</td>
+                <td class="actions">
+                  <button class="btn btn-secondary btn-sm">却下</button>
+                  <button class="btn btn-primary btn-sm">承認</button>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-info">所属変更</span></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar primary">小林</div>
+                    <div class="person-info">
+                      <div class="person-name">小林 由衣</div>
+                      <div class="person-meta">三条東高校 1年</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12">三条東高 <span style="color:var(--ink-4)">→</span> 新潟中央高</td>
+                <td class="fs-12">伊藤 直樹 先生</td>
+                <td class="num text-3 fs-12">4時間</td>
+                <td class="actions">
+                  <button class="btn btn-secondary btn-sm">却下</button>
+                  <button class="btn btn-primary btn-sm">承認</button>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-warning">属性変更</span></td>
+                <td>
+                  <div class="person-cell">
+                    <div class="person-avatar">斎藤</div>
+                    <div class="person-info">
+                      <div class="person-name">斎藤 健一</div>
+                      <div class="person-meta">長岡高校 · 教員</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fs-12">部活顧問: <code>サッカー部</code> 追加</td>
+                <td class="fs-12">斎藤 健一</td>
+                <td class="num text-3 fs-12">1時間</td>
+                <td class="actions">
+                  <button class="btn btn-secondary btn-sm">却下</button>
+                  <button class="btn btn-primary btn-sm">承認</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">最近のインポート処理</div>
+              <div class="card-sub">CSV一括処理の実行状況 — 過去 7 日間</div>
+            </div>
+            <a href="import/logs.html" class="btn btn-ghost btn-sm">ログを見る <span data-i="arrowRight" data-s="12"></span></a>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ジョブ名</th>
+                <th>種別</th>
+                <th>処理対象</th>
+                <th class="num-col">成功</th>
+                <th class="num-col">失敗</th>
+                <th>状態</th>
+                <th>実行</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="fs-12 fw-6">高中3年_学籍異動_20260612</div><div class="fs-11 text-3">2 分前に開始</div></td>
+                <td><span class="tag">学籍データ</span></td>
+                <td class="num">1,284</td>
+                <td class="num fw-6">1,279</td>
+                <td class="num text-danger fw-6">5</td>
+                <td><span class="status-pill status-error">エラー</span></td>
+                <td class="text-3 fs-12">自動</td>
+              </tr>
+              <tr>
+                <td><div class="fs-12 fw-6">教員免許更新_2026Q2</div><div class="fs-11 text-3">1 時間前に完了</div></td>
+                <td><span class="tag">教員情報</span></td>
+                <td class="num">2,184</td>
+                <td class="num fw-6">2,184</td>
+                <td class="num text-3">0</td>
+                <td><span class="status-pill status-active">完了</span></td>
+                <td class="text-3 fs-12">手動</td>
+              </tr>
+              <tr>
+                <td><div class="fs-12 fw-6">全校生徒_基本情報_月次</div><div class="fs-11 text-3">今朝 06:00 完了</div></td>
+                <td><span class="tag">基本情報</span></td>
+                <td class="num">98,418</td>
+                <td class="num fw-6">98,412</td>
+                <td class="num text-warning fw-6">6</td>
+                <td><span class="status-pill status-active">完了</span></td>
+                <td class="text-3 fs-12">自動</td>
+              </tr>
+              <tr>
+                <td><div class="fs-12 fw-6">特別支援_配慮事項_追加</div><div class="fs-11 text-3">昨日 16:42 完了</div></td>
+                <td><span class="tag tag-accent">機微情報</span></td>
+                <td class="num">412</td>
+                <td class="num fw-6">412</td>
+                <td class="num text-3">0</td>
+                <td><span class="status-pill status-active">完了</span></td>
+                <td class="text-3 fs-12">手動</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">クイックアクセス</div>
+              <div class="card-sub">よく使う機能</div>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
+            <a class="row gap-12 qa" href="directory/list.html">
+              <div class="qa-icon" style="background:var(--primary-soft);color:var(--primary)"><span data-i="searchUsers" data-s="16"></span></div>
+              <div style="flex:1">
+                <div class="fs-13 fw-6">人物検索</div>
+                <div class="fs-11 text-3">メール・職員番号・氏名から</div>
+              </div>
+              <span style="color:var(--ink-4)"><span data-i="arrowRight" data-s="12"></span></span>
+            </a>
+            <a class="row gap-12 qa" href="forms/builder.html">
+              <div class="qa-icon" style="background:var(--accent-soft);color:var(--accent)"><span data-i="plus" data-s="16"></span></div>
+              <div style="flex:1">
+                <div class="fs-13 fw-6">フォームを作成</div>
+                <div class="fs-11 text-3">テンプレートから開始</div>
+              </div>
+              <span style="color:var(--ink-4)"><span data-i="arrowRight" data-s="12"></span></span>
+            </a>
+            <a class="row gap-12 qa" href="import/upload.html">
+              <div class="qa-icon" style="background:var(--info-soft);color:var(--info)"><span data-i="upload" data-s="16"></span></div>
+              <div style="flex:1">
+                <div class="fs-13 fw-6">CSVをインポート</div>
+                <div class="fs-11 text-3">名簿を一括更新</div>
+              </div>
+              <span style="color:var(--ink-4)"><span data-i="arrowRight" data-s="12"></span></span>
+            </a>
+            <a class="row gap-12 qa" href="directory/org.html">
+              <div class="qa-icon" style="background:var(--success-soft);color:var(--success)"><span data-i="tree" data-s="16"></span></div>
+              <div style="flex:1">
+                <div class="fs-13 fw-6">組織ツリー</div>
+                <div class="fs-11 text-3">県 · 市町村 · 学校</div>
+              </div>
+              <span style="color:var(--ink-4)"><span data-i="arrowRight" data-s="12"></span></span>
+            </a>
+            <a class="row gap-12 qa" href="account/permissions.html">
+              <div class="qa-icon" style="background:var(--warning-soft);color:var(--warning)"><span data-i="key" data-s="16"></span></div>
+              <div style="flex:1">
+                <div class="fs-13 fw-6">権限ルール編集</div>
+                <div class="fs-11 text-3">サブジェクト・オブジェクト条件</div>
+              </div>
+              <span style="color:var(--ink-4)"><span data-i="arrowRight" data-s="12"></span></span>
+            </a>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">最近の操作</div>
+              <div class="card-sub">テナント全体のアクティビティ</div>
+            </div>
+            <button class="icon-btn"><span data-i="more" data-s="16"></span></button>
+          </div>
+          <div class="card-body" style="padding-top:0">
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:var(--primary-soft);color:var(--primary)">佐</div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>佐藤 美咲</strong> が権限ルール <code>view_student_basic</code> を更新</div>
+                <div class="activity-time">12分前 · 権限ルール</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:var(--accent-soft);color:var(--accent)">中</div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>中村 健太</strong> が「在校生調査2026」を公開</div>
+                <div class="activity-time">1時間前 · フォーム</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:var(--info-soft);color:var(--info)">高</div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>高橋 恵子</strong> が <strong>42名</strong> の所属変更を申請</div>
+                <div class="activity-time">2時間前 · 申請</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:var(--success-soft);color:var(--success)"><span data-i="refresh" data-s="14"></span></div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>システム</strong> が Google Workspace と同期完了 (14,238名)</div>
+                <div class="activity-time">3時間前 · 連携</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar" style="background:var(--surface-3);color:var(--ink-2)">伊</div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>伊藤 直樹</strong> が属性項目「部活顧問」を追加</div>
+                <div class="activity-time">昨日 18:22 · 属性項目</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">システム状態</div>
+              <div class="card-sub">GCP テナント: niigata-boe-prod</div>
+            </div>
+            <span class="status-pill status-active">全サービス稼働中</span>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row between">
+              <div class="row gap-8 fs-12">
+                <span style="width:8px;height:8px;background:var(--success);border-radius:50%"></span>
+                <span>Google Workspace 同期</span>
+              </div>
+              <span class="fs-12 text-3 num">3分前</span>
+            </div>
+            <div class="row between">
+              <div class="row gap-8 fs-12">
+                <span style="width:8px;height:8px;background:var(--success);border-radius:50%"></span>
+                <span>バッチ処理ワーカー</span>
+              </div>
+              <span class="fs-12 text-3 num">稼働中</span>
+            </div>
+            <div class="row between">
+              <div class="row gap-8 fs-12">
+                <span style="width:8px;height:8px;background:var(--success);border-radius:50%"></span>
+                <span>Cloud SQL (PostgreSQL 16)</span>
+              </div>
+              <span class="fs-12 text-3 num">42ms</span>
+            </div>
+            <div class="row between">
+              <div class="row gap-8 fs-12">
+                <span style="width:8px;height:8px;background:var(--warning);border-radius:50%"></span>
+                <span>バックアップ (前回復元)</span>
+              </div>
+              <span class="fs-12 text-3 num">今朝 03:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalQuickCreate">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">クイック作成</div>
+        <div class="modal-sub">テンプレートまたは新規作成</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalQuickCreate')"><span data-i="x" data-s="16"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="kpi-grid cols-2" style="gap:10px">
+        <a href="forms/builder.html" class="card-feature" style="padding:16px">
+          <div class="card-feature-icon cfi-accent" style="width:32px;height:32px;margin-bottom:10px"><span data-i="clipboardList" data-s="16"></span></div>
+          <div class="fw-6">フォーム</div>
+          <div class="fs-11 text-3 mt-8">アンケート・調査票を作成</div>
+        </a>
+        <a href="import/upload.html" class="card-feature" style="padding:16px">
+          <div class="card-feature-icon cfi-info" style="width:32px;height:32px;margin-bottom:10px"><span data-i="upload" data-s="16"></span></div>
+          <div class="fw-6">インポート</div>
+          <div class="fs-11 text-3 mt-8">CSVから名簿を一括更新</div>
+        </a>
+        <a href="directory/list.html" class="card-feature" style="padding:16px">
+          <div class="card-feature-icon cfi-primary" style="width:32px;height:32px;margin-bottom:10px"><span data-i="user" data-s="16"></span></div>
+          <div class="fw-6">人物を追加</div>
+          <div class="fs-11 text-3 mt-8">1名ずつ手動で登録</div>
+        </a>
+        <a href="account/permissions.html" class="card-feature" style="padding:16px">
+          <div class="card-feature-icon cfi-default" style="width:32px;height:32px;margin-bottom:10px"><span data-i="key" data-s="16"></span></div>
+          <div class="fw-6">権限ルール</div>
+          <div class="fs-11 text-3 mt-8">閲覧・編集ルールを定義</div>
+        </a>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalQuickCreate')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>mount({ active: 'index.html' });</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>組織設定 · 設定</title>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<div id="app">
+  <div class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow"><a href="../index.html">ホーム</a><span class="sep">/</span><span class="current">設定 · 組織</span></div>
+        <h1 class="page-title">組織<em>設定</em></h1>
+        <p class="page-sub">新潟県教育委員会 · テナント全体の設定。各組織は上位組織の設定を継承しつつ、独自の上書き · 追加が可能です。</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary"><span data-i="download" data-s="14"></span> エクスポート</button>
+        <button class="btn btn-primary" onclick="toast('組織設定を保存しました','success')"><span data-i="check" data-s="14"></span> 保存</button>
+      </div>
+    </div>
+
+    <div class="split split-1-3" style="align-items:start">
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">組織ナビゲーション</div>
+              <div class="card-sub">1,847 組織 · 継承 / 上書きを可視化</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="tree">
+              <ul>
+                <li>
+                  <div class="tree-node active">
+                    <span class="tree-toggle" data-i="chevronDown" data-s="14"></span>
+                    <div class="tree-node-icon dept">県</div>
+                    <div class="tree-node-name">新潟県教育委員会</div>
+                    <span class="tag tag-primary" style="font-size:9px;padding:1px 5px">編集中</span>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="tree-node">
+                        <span class="tree-toggle" data-i="chevronDown" data-s="14"></span>
+                        <div class="tree-node-icon dept">市</div>
+                        <div class="tree-node-name">新潟市教育委員会</div>
+                        <span class="tag tag-info" style="font-size:9px;padding:1px 5px">3上書</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="tree-node">
+                        <span class="tree-toggle" data-i="chevronRight" data-s="14"></span>
+                        <div class="tree-node-icon dept">市</div>
+                        <div class="tree-node-name">長岡市教育委員会</div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="tree-node">
+                        <span class="tree-toggle" data-i="chevronRight" data-s="14"></span>
+                        <div class="tree-node-icon dept">部</div>
+                        <div class="tree-node-name">情報政策課</div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">継承ルール</div>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div class="row gap-8">
+              <span class="status-pill status-info">下位優先</span>
+            </div>
+            <div class="fs-12 text-2" style="line-height:1.6">
+              配下の組織は上位組織の設定を<strong>継承</strong>します。各組織は<strong>上書き</strong>または<strong>新規追加</strong>が可能で、その変更はさらに配下へ波及します。
+            </div>
+            <div class="divider" style="margin:8px 0"></div>
+            <div class="fs-11 text-3 fw-6" style="text-transform:uppercase;letter-spacing:0.08em">現在の継承状況</div>
+            <div class="row between fs-12"><span>継承</span><span class="num fw-6">162</span></div>
+            <div class="row between fs-12"><span>上書き</span><span class="num fw-6 text-accent">18</span></div>
+            <div class="row between fs-12"><span>新規追加</span><span class="num fw-6 text-primary">6</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">新潟県教育委員会 · 組織設定</div>
+              <div class="card-sub">org: niigata-boe · 継承元: なし (テナント最上位)</div>
+            </div>
+            <span class="status-pill status-active">テナント全体</span>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <label class="form-label">組織名</label>
+              <input class="form-input" value="新潟県教育委員会">
+            </div>
+            <div class="form-row">
+              <label class="form-label">組織コード</label>
+              <input class="form-input font-mono" value="niigata-boe" readonly style="background:var(--surface-2)">
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">権限 · ロールの継承</div>
+              <div class="card-sub">この組織が持つ権限ルール</div>
+            </div>
+            <a href="../account/permissions.html" class="muted-link fs-12">権限ルール <span data-i="arrowRight" data-s="12"></span></a>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="list-compact">
+              <div class="list-compact-item">
+                <span data-i="check" data-s="14" style="color:var(--success)"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">教員 → 生徒 · 担任クラス 基本情報</div>
+                  <div class="fs-11 text-3">継承 · 14,238名に適用</div>
+                </div>
+                <span class="tag tag-outline" style="font-size:10px">継承</span>
+              </div>
+              <div class="list-compact-item" style="background:var(--accent-soft)">
+                <span data-i="edit" data-s="14" style="color:var(--accent)"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">部活顧問 → 部員 連絡先</div>
+                  <div class="fs-11 text-3">上書き (新潟高校版) · 42名に適用</div>
+                </div>
+                <span class="tag tag-accent" style="font-size:10px">上書</span>
+              </div>
+              <div class="list-compact-item" style="background:var(--primary-soft)">
+                <span data-i="plus" data-s="14" style="color:var(--primary)"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">校長 → 同市町村 同学校種 教員連絡先</div>
+                  <div class="fs-11 text-3">新規追加 · テナント全体</div>
+                </div>
+                <span class="tag tag-primary" style="font-size:10px">追加</span>
+              </div>
+              <div class="list-compact-item">
+                <span data-i="check" data-s="14" style="color:var(--success)"></span>
+                <div style="flex:1">
+                  <div class="fs-12 fw-6">学年主任 → 学年 機微情報</div>
+                  <div class="fs-11 text-3">継承 · 684名に適用</div>
+                </div>
+                <span class="tag tag-outline" style="font-size:10px">継承</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-head">
+            <div>
+              <div class="card-title">属性項目の継承</div>
+              <div class="card-sub">86 項目 · 配下組織が上書き可能なもの</div>
+            </div>
+            <a href="../directory/attributes.html" class="muted-link fs-12">属性項目 <span data-i="arrowRight" data-s="12"></span></a>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead>
+                <tr><th>項目</th><th>形式</th><th>継承</th><th>上書</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>部活</td><td><span class="tag tag-info">コード</span></td><td>テナント</td><td><span class="status-pill status-active">可</span></td></tr>
+                <tr><td>通学区域</td><td><span class="tag tag-info">コード</span></td><td>テナント</td><td><span class="status-pill status-active">可</span></td></tr>
+                <tr><td>部活顧問</td><td><span class="tag tag-info">人物参照</span></td><td>テナント</td><td><span class="status-pill status-active">可</span></td></tr>
+                <tr><td>係活動</td><td><span class="tag tag-info">コード</span></td><td>新潟市教委</td><td><span class="status-pill status-active">可</span></td></tr>
+                <tr><td>氏名 · 生年月日</td><td><span class="tag tag-outline">文字列</span></td><td>テナント</td><td><span class="status-pill status-draft">不可</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">組織設定の変更履歴</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-date">2026-06-10 14:23</div>
+                <div class="timeline-title">権限ルール <code>teacher_view_student_contact_via_club</code> を上書き</div>
+                <div class="timeline-detail">新潟高校 · 部活一致を厳密化</div>
+                <div class="timeline-user">中村 健太 (新潟高校)</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-date">2026-05-14 09:42</div>
+                <div class="timeline-title">承認フロー デフォルトを変更</div>
+                <div class="timeline-detail">CSV インポート時の所属変更を「ハイブリッド」に</div>
+                <div class="timeline-user">佐藤 美咲 (情報政策課)</div>
+              </div>
+              <div class="timeline-item muted">
+                <div class="timeline-date">2026-04-01 06:00</div>
+                <div class="timeline-title">年度始め 一括更新</div>
+                <div class="timeline-detail">学年 · クラス進級を反映 · 1,284名</div>
+                <div class="timeline-user">システム (自動)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>mount({ active: 'org.html' });</script>
+</body>
+</html>
