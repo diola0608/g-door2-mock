@@ -108,6 +108,37 @@ const NAV = [
   { type: 'link', icon: 'building', label: '組織設定', href: 'settings/org.html' },
 ];
 
+function getNavPrefix() {
+  const script = document.querySelector('script[src*="assets/app.js"]');
+  if (!script) return '';
+  return (script.getAttribute('src') || '').replace(/assets\/app\.js$/, '');
+}
+
+function getCurrentRelPath() {
+  const depth = (getNavPrefix().match(/\.\.\//g) || []).length;
+  const parts = location.pathname.split('/').filter(Boolean);
+  const file = parts[parts.length - 1] || 'index.html';
+  if (depth === 0) return file;
+  const dirs = [];
+  for (let i = 0; i < depth; i++) {
+    dirs.unshift(parts[parts.length - 2 - i]);
+  }
+  return dirs.join('/') + '/' + file;
+}
+
+function resolveActive(activePath) {
+  if (!activePath) return getCurrentRelPath();
+  if (activePath.includes('/')) return activePath;
+  const rel = getCurrentRelPath();
+  const slash = rel.lastIndexOf('/');
+  if (slash === -1) return activePath;
+  return rel.slice(0, slash + 1) + activePath;
+}
+
+function navHref(href) {
+  return getNavPrefix() + href;
+}
+
 function buildHeader(opts = {}) {
   const tenantName = opts.tenantName || '新潟県教育委員会';
   const tenantSub = opts.tenantSub || 'Niigata Prefectural BOE';
@@ -117,7 +148,7 @@ function buildHeader(opts = {}) {
 
   return `
   <header class="app-header">
-    <button class="header-tenant" onclick="window.location.href='index.html'">
+    <button class="header-tenant" onclick="window.location.href='${navHref('index.html')}'">
       <div class="header-tenant-avatar">新</div>
       <div class="header-tenant-meta">
         <div class="header-tenant-name">${tenantName}</div>
@@ -164,11 +195,7 @@ function buildHeader(opts = {}) {
 }
 
 function buildSidebar(activePath = '') {
-  // activePath may be like 'list.html', 'index.html', 'permissions.html', etc.
-  // Match against the leaf of each NAV href so 'directory/index.html' only matches
-  // when activePath explicitly is 'directory/index.html' (and the root 'index.html'
-  // doesn't accidentally light up subdir index pages).
-  const here = activePath || location.pathname.split('/').pop();
+  const here = resolveActive(activePath);
   return `
   <aside class="app-sidebar">
     <div class="sidebar-brand">
@@ -183,10 +210,9 @@ function buildSidebar(activePath = '') {
         if (item.type === 'title') {
           return `<div class="sidebar-section-title">${item.label}</div>`;
         }
-        const target = item.href.split('/').pop();
         const hrefPath = item.href;
-        const active = (here === hrefPath) || (here === target && hrefPath === 'index.html') ? 'active' : '';
-        return `<a class="sidebar-link ${active}" href="${item.href}">
+        const active = here === hrefPath ? 'active' : '';
+        return `<a class="sidebar-link ${active}" href="${navHref(hrefPath)}">
           ${icon(item.icon, 16)}
           <span>${item.label}</span>
           ${item.badge ? `<span class="badge">${item.badge}</span>` : ''}
@@ -315,7 +341,7 @@ function toggleNotif() {
       </div>
     </div>
     <div style="padding:10px 16px;border-top:1px solid var(--border-soft);text-align:center;background:var(--surface-2)">
-      <a href="import/logs.html" class="muted-link fs-12">すべての通知を見る →</a>
+      <a href="${navHref('import/logs.html')}" class="muted-link fs-12">すべての通知を見る →</a>
     </div>
   `;
   document.body.appendChild(panel);
