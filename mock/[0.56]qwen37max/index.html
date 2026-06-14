@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduPlatform - 教育委員会統合管理システム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="global-header" id="globalHeader">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="メニュー">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="header-brand">
+          <div class="brand-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="6" fill="#1e3a5f"/>
+              <path d="M7 14L14 7L21 14L14 21L7 14Z" fill="#4da8da" opacity="0.9"/>
+              <path d="M10 14L14 10L18 14L14 18L10 14Z" fill="#ffffff" opacity="0.95"/>
+            </svg>
+          </div>
+          <span class="brand-name">EduPlatform</span>
+          <span class="brand-divider"></span>
+          <span class="brand-tenant" id="tenantName">静岡県教育委員会</span>
+        </div>
+      </div>
+      <div class="header-center">
+        <div class="header-search">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="text" placeholder="人物・組織・設定を検索..." class="search-input" id="globalSearch">
+          <kbd class="search-kbd">⌘K</kbd>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="header-icon-btn" id="notifBtn" aria-label="通知">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-badge" id="notifBadge">4</span>
+        </button>
+        <button class="header-icon-btn" aria-label="ヘルプ">
+          <span class="material-symbols-outlined">help</span>
+        </button>
+        <div class="header-user" id="userMenu">
+          <div class="user-avatar">YT</div>
+          <div class="user-info">
+            <span class="user-name">山田 太郎</span>
+            <span class="user-role">システム管理者</span>
+          </div>
+          <span class="material-symbols-outlined user-chevron">expand_more</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <nav class="sidebar" id="sidebar">
+        <div class="sidebar-nav" id="sidebarNav"></div>
+        <div class="sidebar-footer">
+          <div class="sidebar-version">v2.4.1</div>
+        </div>
+      </nav>
+
+      <main class="main-content" id="mainContent">
+        <div class="page-container" id="pageContainer"></div>
+      </main>
+    </div>
+
+    <div class="notification-panel" id="notifPanel">
+      <div class="notif-header">
+        <h3>通知</h3>
+        <button class="notif-mark-read">すべて既読</button>
+      </div>
+      <div class="notif-list" id="notifList"></div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" id="modal">
+        <div class="modal-header" id="modalHeader"></div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
