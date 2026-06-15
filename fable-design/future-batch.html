@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>予約バッチ FUT-20260612-031 | 未来データ | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .summary-head {
+    display: flex; gap: 16px; align-items: center; padding: 18px 22px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: var(--shadow-sm); margin-bottom: 16px; position: relative; overflow: hidden;
+  }
+  .summary-head::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--indigo-600), var(--vermilion)); }
+  .summary-head .bigmark { width: 54px; height: 54px; border-radius: 14px; display: grid; place-items: center; background: var(--indigo-50); color: var(--indigo-600); flex: none; }
+  .summary-head .bigmark .material-symbols-rounded { font-size: 28px; }
+  .summary-head h1 { font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-family: var(--mono); }
+  .summary-head .facts { display: flex; gap: 16px; margin-top: 7px; font-size: 11.5px; color: var(--ink-2); flex-wrap: wrap; }
+  .summary-head .facts .material-symbols-rounded { font-size: 15px; color: var(--ink-3); }
+  .fb-layout { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; }
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  .move { display: flex; align-items: center; gap: 7px; font-size: 12px; flex-wrap: wrap; }
+  .move .material-symbols-rounded { color: var(--indigo-600); font-size: 16px; }
+  .move .from { color: var(--ink-3); }
+  .move .to { font-weight: 600; }
+  .chip.solid { background: var(--indigo-700); color: #fff; }
+  @media (max-width: 1100px) { .fb-layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-page="future-data">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="future-data.html">未来データ</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">FUT-20260612-031</span>
+  </div>
+
+  <div class="summary-head">
+    <span class="bigmark"><span class="material-symbols-rounded">event_upcoming</span></span>
+    <div style="flex:1">
+      <h1>FUT-20260612-031
+        <span class="chip solid"><span class="material-symbols-rounded sm">event_repeat</span>次年度</span>
+        <span class="chip indigo">クラス編成（新年度）</span>
+        <span class="status warn">適用待ち</span>
+      </h1>
+      <div class="facts">
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">school</span>松本市立開成中学校</span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">groups</span>対象 388件</span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">person</span>登録: 教務主任（2026-06-12）</span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">upload_file</span><span class="mono" style="font-size:11px">CSV #JOB-20260612-031</span></span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">event</span>適用予定 <b>2027-04-01</b>（年度切替）</span>
+      </div>
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="btn" onclick="Composer.openModal('modal-dryrun')"><span class="material-symbols-rounded">science</span>ドライラン</button>
+      <button class="btn" onclick="Composer.toast('全388件のCSVをダウンロードしました')"><span class="material-symbols-rounded">download</span>全件CSV</button>
+      <button class="btn danger-ghost" onclick="Composer.openModal('modal-cancel-batch')"><span class="material-symbols-rounded">delete_forever</span>予約を取消</button>
+    </div>
+  </div>
+
+  <div class="stepper" style="margin-bottom:18px">
+    <div class="step done"><span class="s-num">1</span><span class="s-meta"><b>取込済み</b><span>未来用データ</span></span></div>
+    <div class="step done"><span class="s-num">2</span><span class="s-meta"><b>整合性・差分判定</b><span>重複排除・矛盾検出</span></span></div>
+    <div class="step now"><span class="s-num">3</span><span class="s-meta"><b>適用待ち</b><span>要確認 5件 / 保留中</span></span></div>
+    <div class="step"><span class="s-num">4</span><span class="s-meta"><b>一括適用</b><span>次年度 04:30 Wave2</span></span></div>
+  </div>
+
+  <section class="kpi-grid mb-2">
+    <div class="kpi" style="--accent: var(--pine)">
+      <div class="k-label"><span class="material-symbols-rounded">filter_alt</span>変更あり（適用対象）</div>
+      <div class="k-value">388<small>件</small></div>
+      <div class="k-delta">差分のある行のみ適用</div>
+    </div>
+    <div class="kpi" style="--accent: var(--ink-3)">
+      <div class="k-label"><span class="material-symbols-rounded">do_not_disturb_on</span>変更なし（スキップ）</div>
+      <div class="k-value">1,024<small>件</small></div>
+      <div class="k-delta">現在値と同一</div>
+    </div>
+    <div class="kpi" style="--accent: var(--sky)">
+      <div class="k-label"><span class="material-symbols-rounded">merge</span>重複マージ</div>
+      <div class="k-value">12<small>件</small></div>
+      <div class="k-delta">最新の登録を採用</div>
+    </div>
+    <div class="kpi" style="--accent: var(--vermilion)">
+      <div class="k-label"><span class="material-symbols-rounded">report</span>要確認（未解消）</div>
+      <div class="k-value">5<small>件</small></div>
+      <div class="k-delta down">適用前に解消が必要</div>
+    </div>
+  </section>
+
+  <div class="fb-layout">
+    <div>
+      <div class="callout warn mb-2">
+        <span class="material-symbols-rounded">rule</span>
+        <div>このバッチは <b>次年度（2027-04-01）</b> の年度切替で適用されます。適用時は<b>変更がある388件のみ</b>を反映し、変更なしの1,024件はスキップ。<b>要確認5件は適用対象から除外</b>されるため、適用前の解消を推奨します。重複12件は最新の登録を自動採用します。</div>
+      </div>
+
+      <div class="toolbar mb-2">
+        <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="氏名・学籍番号で検索"></div>
+        <select class="select" style="width:150px"><option>すべての学年</option><option>新1年</option><option>新2年</option><option>新3年</option></select>
+        <div class="sep"></div>
+        <span class="muted" style="margin-left:auto">全1,429件</span>
+      </div>
+
+      <div class="tab-wrap">
+        <div class="tabs" data-tabs="fb">
+          <button class="tab active" data-tab="review"><span class="material-symbols-rounded">report</span>要確認<span class="chip red" style="margin-left:4px">5</span></button>
+          <button class="tab" data-tab="dup"><span class="material-symbols-rounded">merge</span>重複マージ<span class="chip sky" style="margin-left:4px">12</span></button>
+          <button class="tab" data-tab="changed"><span class="material-symbols-rounded">filter_alt</span>変更あり</button>
+          <button class="tab" data-tab="skip"><span class="material-symbols-rounded">do_not_disturb_on</span>変更なし</button>
+        </div>
+
+        <!-- 要確認 -->
+        <div class="tab-panel active" data-tab-panel="fb" data-tab="review">
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>内容</th><th>要確認の理由</th><th style="width:150px"></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="person"><span class="avatar a5 sm">林</span><div><b>林 美優</b><span>S-2026-07731</span></div></div></td>
+                <td><div class="move"><span class="from">豊科北中 6年</span><span class="material-symbols-rounded">east</span><span class="to" style="color:var(--gold)">開成中 1年A組 ／ 鎌田中 1年C組</span></div></td>
+                <td><span class="chip red">2校が割当</span><div class="muted" style="font-size:10.5px">受入校の確定（承認）が必要</div></td>
+                <td>
+                  <button class="btn sm primary" onclick="Composer.openModal('modal-resolve')">解消</button>
+                  <a class="btn sm" href="transfers.html"><span class="material-symbols-rounded">approval</span>承認へ</a>
+                </td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">中</span><div><b>中村 颯太</b><span>S-2026-07120</span></div></div></td>
+                <td><div class="move"><span class="from">開成中 3年</span><span class="material-symbols-rounded">east</span><span class="to" style="color:var(--gold)">進学先 未確定</span></div></td>
+                <td><span class="chip gold">進学先 未定</span><div class="muted" style="font-size:10.5px">県立2校に出願中 — 確定待ち</div></td>
+                <td><button class="btn sm" onclick="Composer.toast('進学先の確定画面へ（モック）')">確定</button></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a4 sm">小</span><div><b>小林 結衣</b><span>S-2026-06880</span></div></div></td>
+                <td><div class="move"><span class="from">城山小 6年2組</span><span class="material-symbols-rounded">east</span><span class="to">開成中 1年B組</span></div></td>
+                <td><span class="chip gold">同名・別学籍</span><div class="muted" style="font-size:10.5px">既存「小林 結衣(S-2025-06881)」と同名 — 本人照合</div></td>
+                <td><button class="btn sm" onclick="Composer.openModal('modal-resolve')">本人確認</button></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a3 sm">加</span><div><b>加藤 蓮</b><span>S-2026-05533</span></div></div></td>
+                <td><div class="move"><span class="from">開成中 1年A組</span><span class="material-symbols-rounded">east</span><span class="to" style="color:var(--gold)">開成中 1年A組（41人目）</span></div></td>
+                <td><span class="chip gold">定員超過</span><div class="muted" style="font-size:10.5px">1年A組が定員40名を超過</div></td>
+                <td><button class="btn sm" onclick="Composer.openModal('modal-resolve')">クラス調整</button></td>
+              </tr>
+              <tr class="masked">
+                <td><div class="person"><span class="avatar sm">渡</span><div><b>渡辺 陽菜</b><span>S-2026-07788</span></div></div></td>
+                <td colspan="2"><span class="masked-cell"><span class="material-symbols-rounded">error</span>識別子が名簿に存在しません — 前籍校の送信待ち（エラー除外）</span></td>
+                <td><button class="btn sm" onclick="Composer.toast('エラー行CSVをダウンロードしました')"><span class="material-symbols-rounded">download</span>エラー行</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 重複マージ -->
+        <div class="tab-panel" data-tab-panel="fb" data-tab="dup">
+          <div class="callout" style="margin:14px 14px 0">
+            <span class="material-symbols-rounded">merge</span>
+            <div>同一対象に複数回登録された未来データは、<b>最後の登録を採用</b>してマージします。古い登録は履歴として残ります。</div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>採用される内容</th><th>登録の重複</th><th style="width:110px"></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b><span>S-2026-04412</span></div></div></td>
+                <td><div class="move"><span class="from">城山小 6年2組 21番</span><span class="material-symbols-rounded">east</span><span class="to">開成中 1年B組 03番</span></div></td>
+                <td><span class="chip green">06-12 採用</span> <span class="chip line" style="text-decoration:line-through">06-10</span></td>
+                <td><button class="btn sm ghost" onclick="Composer.toast('登録の差分を表示（モック）')">差分</button></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b><span>S-2026-04413</span></div></div></td>
+                <td><div class="move"><span class="from">城山小 6年1組 18番</span><span class="material-symbols-rounded">east</span><span class="to">開成中 1年A組 12番</span></div></td>
+                <td><span class="chip green">CSV 採用</span> <span class="chip line" style="text-decoration:line-through">手動 06-11</span></td>
+                <td><button class="btn sm ghost" onclick="Composer.toast('登録の差分を表示（モック）')">差分</button></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a3 sm">高</span><div><b>髙橋 樹</b><span>S-2026-05021</span></div></div></td>
+                <td><div class="move"><span class="from">城山小 6年3組</span><span class="material-symbols-rounded">east</span><span class="to">開成中 1年C組 08番</span></div></td>
+                <td><span class="chip green">06-12 採用</span> <span class="chip line" style="text-decoration:line-through">06-09</span></td>
+                <td><button class="btn sm ghost" onclick="Composer.toast('登録の差分を表示（モック）')">差分</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination"><span style="margin-right:auto" class="muted">12件中 1–3件</span><button class="cur">1</button><button>2</button><button>3</button><button>4</button></div>
+        </div>
+
+        <!-- 変更あり -->
+        <div class="tab-panel" data-tab-panel="fb" data-tab="changed">
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>現在 → 適用後（未来）</th><th>区分</th><th>適用</th><th style="width:80px"></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b><span>S-2026-04413</span></div></div></td>
+                <td><div class="move"><span class="from">城山小 6年1組 18番</span><span class="material-symbols-rounded">east</span><span class="to">開成中 1年A組 12番</span></div></td>
+                <td><span class="chip indigo">進学</span></td>
+                <td><span class="status ok">適用対象</span></td>
+                <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel-one')">取消</button></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b><span>S-2026-04412</span></div></div></td>
+                <td><div class="move"><span class="from">城山小 6年2組 21番</span><span class="material-symbols-rounded">east</span><span class="to">開成中 1年B組 03番</span></div></td>
+                <td><span class="chip sky"><span class="material-symbols-rounded sm">merge</span>重複→最新</span></td>
+                <td><span class="status ok">適用対象</span></td>
+                <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel-one')">取消</button></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a5 sm">佐</span><div><b>佐々木 大翔</b><span>S-2026-05540</span></div></div></td>
+                <td><div class="move"><span class="from">開成中 1年C組 22番</span><span class="material-symbols-rounded">east</span><span class="to">開成中 2年A組 05番</span></div></td>
+                <td><span class="chip green">進級</span></td>
+                <td><span class="status ok">適用対象</span></td>
+                <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel-one')">取消</button></td>
+              </tr>
+              <tr class="masked">
+                <td><div class="person"><span class="avatar sm">細</span><div><b>細田 蓮</b><span>S-2026-05120</span></div></div></td>
+                <td colspan="2"><span class="masked-cell"><span class="material-symbols-rounded">key</span>機微属性を含む変更 — 学年主任のみ閲覧可</span></td>
+                <td><span class="status wait">非表示</span></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination"><span style="margin-right:auto" class="muted">388件中 1–4件</span><button class="cur">1</button><button>2</button><button>3</button><button>…</button><button>97</button></div>
+        </div>
+
+        <!-- 変更なし -->
+        <div class="tab-panel" data-tab-panel="fb" data-tab="skip">
+          <div class="callout" style="margin:14px 14px 0">
+            <span class="material-symbols-rounded">do_not_disturb_on</span>
+            <div>登録された未来値が<b>現在値と同一</b>のため、適用日にスキップされます（無駄な更新・Workspace同期を発生させません）。</div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>値（現在＝未来）</th><th>適用</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="person"><span class="avatar a3 sm">木</span><div><b>木村 大和</b><span>S-2026-06033</span></div></div></td>
+                <td class="muted">開成中 1年B組 15番（変更なし）</td>
+                <td><span class="chip line">スキップ</span></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">山</span><div><b>山本 結菜</b><span>S-2026-06120</span></div></div></td>
+                <td class="muted">開成中 2年A組 09番（変更なし）</td>
+                <td><span class="chip line">スキップ</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination"><span style="margin-right:auto" class="muted">1,024件中 1–2件</span><button class="cur">1</button><button>2</button><button>…</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右ペイン -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">shield_person</span>このバッチへのあなたの権限</div>
+        <div class="card-b" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+          <div class="row between"><span>閲覧</span><span class="chip green">全件</span></div>
+          <div class="row between"><span>取消・解消</span><span class="chip green">可</span></div>
+          <div class="row between"><span>機微属性の閲覧</span><span class="chip gold">学年主任のみ</span></div>
+          <div class="muted mt-1">根拠: 「県教委システム管理者は全組織を管理できる」。機微属性は属性別ポリシーで制限。</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">approval</span>承認状況（このバッチ）</div>
+        <div class="card-b" style="font-size:12px;">
+          <div class="row between mb-1"><span>越境変更（受入校あり）</span><span class="mono">6件</span></div>
+          <div class="row between mb-1"><span>承認済</span><span class="chip green">5件</span></div>
+          <div class="row between"><span>承認待ち</span><span class="chip gold">1件</span></div>
+          <div class="callout warn mt-2" style="font-size:11px">
+            <span class="material-symbols-rounded">info</span>
+            <div>未承認の越境変更は適用対象から除外されます。</div>
+          </div>
+          <a class="btn sm ghost mt-2" href="transfers.html" style="align-self:flex-start"><span class="material-symbols-rounded">swap_horiz</span>承認フローを開く</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">history</span>この予約の来歴</div>
+        <div class="card-b">
+          <div class="timeline">
+            <div class="tl-item now">
+              <div class="tl-date">2027-04-01 04:30 予定</div>
+              <div class="tl-body"><b>一括適用</b>（Wave2・中学校）— 変更分388件</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-date">2026-06-13</div>
+              <div class="tl-body"><b>承認</b>: 受入校が越境5件を承認</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-date">2026-06-12 14:22</div>
+              <div class="tl-body"><b>整合性判定</b>: 重複12・矛盾5を検出</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-date">2026-06-12 14:22</div>
+              <div class="tl-body"><b>取込</b>: CSV #JOB-20260612-031（388件）</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">cloud_sync</span>Workspace への反映</div>
+        <div class="card-b" style="font-size:12px;">
+          <p class="muted" style="margin-bottom:8px">適用後の次回同期（04:00）で、進学先のOU・グループへ反映されます。</p>
+          <div class="callout" style="font-size:11px">
+            <span class="material-symbols-rounded">arrow_right_alt</span>
+            <div>同期は <b>Composer → Workspace の一方向</b>。適用までは Workspace に送られません。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 解消モーダル -->
+  <div class="modal-backdrop" id="modal-resolve">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">handyman</span>要確認を解消 — 林 美優</h3>
+        <button class="x" onclick="Composer.closeModal('modal-resolve')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout error mb-2">
+          <span class="material-symbols-rounded">report</span>
+          <div>2つの組織が同一生徒を別クラスへ割当てています。受入校（クラス）を1つに確定してください。確定後、受入校の承認を経て適用対象になります。</div>
+        </div>
+        <div class="field">
+          <label>採用する割当<span class="req">必須</span></label>
+          <label class="checkbox-row"><input type="radio" name="resolve" checked><span><b>松本市立開成中学校 1年A組</b><span>登録: 開成中・教務主任（2026-06-12）</span></span></label>
+          <label class="checkbox-row"><input type="radio" name="resolve"><span><b>松本市立鎌田中学校 1年C組</b><span>登録: 鎌田中・教務主任（2026-06-10）</span></span></label>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-resolve')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-resolve'); Composer.toast('割当を開成中1年A組に確定しました。受入校の承認待ちになります')"><span class="material-symbols-rounded">check</span>確定して承認へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 個別取消モーダル -->
+  <div class="modal-backdrop" id="modal-cancel-one">
+    <div class="modal danger">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">cancel</span>この1件の予約を取消しますか？</h3>
+        <button class="x" onclick="Composer.closeModal('modal-cancel-one')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p>対象者の未来データ1件のみを取消します。バッチの他の予約には影響しません。名簿の現在値は変わりません。</p>
+        <div class="field mt-2"><label>取消理由<span class="req">必須</span></label>
+          <select class="select"><option>転居・進学先の変更</option><option>登録内容の誤り</option><option>その他</option></select></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-cancel-one')">戻る</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-cancel-one'); Composer.toast('対象者の予約を取消しました')"><span class="material-symbols-rounded">delete_forever</span>取消を確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- バッチ取消モーダル -->
+  <div class="modal-backdrop" id="modal-cancel-batch">
+    <div class="modal danger">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">delete_forever</span>予約バッチ全体を取消しますか？</h3>
+        <button class="x" onclick="Composer.closeModal('modal-cancel-batch')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p><b>FUT-20260612-031（388件）</b>を取消します。次年度の年度切替で適用されなくなります。再登録には未来データの取り込み直しが必要です。</p>
+        <div class="callout mt-2" style="font-size:11.5px">
+          <span class="material-symbols-rounded">info</span>
+          <div>取消は監査ログに記録され、登録元（開成中・教務主任）に通知されます。</div>
+        </div>
+        <div class="field mt-2"><label>取消理由<span class="req">必須</span></label>
+          <select class="select"><option>登録のやり直し</option><option>クラス編成の見直し</option><option>重複登録のため</option><option>その他</option></select></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-cancel-batch')">戻る</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-cancel-batch'); Composer.toast('予約バッチを取消しました。登録元に通知されます'); setTimeout(()=>location.href='future-data.html',1200)"><span class="material-symbols-rounded">delete_forever</span>取消を確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ドライランモーダル -->
+  <div class="modal-backdrop" id="modal-dryrun">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">science</span>ドライラン（試験適用）</h3>
+        <button class="x" onclick="Composer.closeModal('modal-dryrun')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p class="muted mb-2">データを変更せず、いま適用したらどうなるかをレポートします。結果は処理状況・ログで確認できます。</p>
+        <dl style="display:grid; grid-template-columns:120px 1fr; gap:7px 10px; font-size:12.5px">
+          <dt class="muted">適用対象</dt><dd><b>388件</b>（変更あり）</dd>
+          <dt class="muted">スキップ</dt><dd>1,024件（変更なし）</dd>
+          <dt class="muted">除外</dt><dd style="color:var(--vermilion-dark)">5件（要確認・未解消）</dd>
+          <dt class="muted">Workspace</dt><dd>OU移動 388件（適用後の同期で反映）</dd>
+        </dl>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-dryrun')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-dryrun'); Composer.toast('ドライラン #JOB-20260615-021 を登録しました（処理状況・ログで確認）')"><span class="material-symbols-rounded">play_arrow</span>ドライランを実行</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

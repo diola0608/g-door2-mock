@@ -246,7 +246,13 @@
         <div>
           <div class="field">
             <label>実行タイミング</label>
-            <select class="select"><option>すぐにバックグラウンドで実行</option><option>夜間バッチ（本日 26:00）で実行</option><option>日時を指定して実行</option></select>
+            <select class="select">
+              <option>すぐにバックグラウンドで実行</option>
+              <option>夜間バッチ（本日 26:00）で実行</option>
+              <option>未来用データとして登録（適用日に変更分だけ一括適用）</option>
+              <option>次年度として登録（年度切替日に適用）</option>
+            </select>
+            <div class="hint"><span class="material-symbols-rounded sm" style="vertical-align:-3px">event_upcoming</span> 「未来用データ」「次年度」を選ぶと、データは適用日まで保留され、適用日に変更分だけが一括適用されます。保留中のデータは<a href="future-data.html">未来データ</a>画面で確認・取消できます。</div>
           </div>
           <label class="checkbox-row">
             <input type="checkbox" checked>

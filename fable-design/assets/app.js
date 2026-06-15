@@ -16,6 +16,8 @@
         { id: "roster", icon: "groups", label: "名簿レジストリ", href: "roster.html" },
         { id: "transfers", icon: "swap_horiz", label: "所属変更申請", href: "transfers.html", count: 4 },
         { id: "import", icon: "upload_file", label: "CSVインポート", href: "import.html" },
+        { id: "future-data", icon: "event_upcoming", label: "未来データ", href: "future-data.html", count: 2 },
+        { id: "year-update", icon: "published_with_changes", label: "年度更新", href: "year-update.html" },
         { id: "import-settings", icon: "rule", label: "取込・連携設定", href: "import-settings.html" },
         { id: "jobs", icon: "manage_history", label: "処理状況・ログ", href: "jobs.html", count: 2 },
       ],

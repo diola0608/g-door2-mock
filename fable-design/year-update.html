@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年度更新 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .yu-layout { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; }
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  .move { display: flex; align-items: center; gap: 7px; font-size: 12px; flex-wrap: wrap; }
+  .move .material-symbols-rounded { color: var(--pine); font-size: 16px; }
+  .move .from { color: var(--ink-3); }
+  .move .to { font-weight: 600; }
+  .chip.solid { background: var(--indigo-700); color: #fff; }
+  /* 進級・進学ルール */
+  .rule { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .rule:last-child { border-bottom: 0; }
+  .rule .r-ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; background: var(--pine-50); color: var(--pine); }
+  .rule b { font-size: 12.5px; }
+  .rule p { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
+  /* 負荷分散ウェーブ */
+  .wave { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 9px; background: #fbfaf8; border: 1px solid var(--line); margin-bottom: 7px; }
+  .wave .w-time { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--indigo-700); min-width: 92px; }
+  .wave .w-bar { flex: 1; height: 10px; border-radius: 5px; background: var(--paper-2); overflow: hidden; }
+  .wave .w-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--indigo-500), var(--indigo-600)); }
+  .wave .w-num { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); min-width: 78px; text-align: right; }
+  @media (max-width: 1100px) { .yu-layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-page="year-update">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">年度更新</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">published_with_changes</span>年度更新（2026年度 → 2027年度）</h1>
+      <div class="desc">各校が登録する来年度データを集約し、<b>整合性の取れたクリーンな状態</b>で、年度切替日 <b>2027-04-01</b> に一括適用します。4/1 0:00 への集中を避け、組織を波に分けて順次適用します。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-year')"><span class="material-symbols-rounded">event_repeat</span>年度切替の設定</button>
+      <button class="btn" onclick="Composer.openModal('modal-dryrun')"><span class="material-symbols-rounded">science</span>全体ドライラン</button>
+      <button class="btn accent" onclick="Composer.openModal('modal-run')"><span class="material-symbols-rounded">rocket_launch</span>年度更新を予約実行</button>
+    </div>
+  </div>
+
+  <div class="stepper" style="margin-bottom:18px">
+    <div class="step done"><span class="s-num">1</span><span class="s-meta"><b>事前登録</b><span>各校が来年度データを登録</span></span></div>
+    <div class="step now"><span class="s-num">2</span><span class="s-meta"><b>整合性・承認</b><span>重複排除・矛盾解消・越境承認</span></span></div>
+    <div class="step"><span class="s-num">3</span><span class="s-meta"><b>切替日に一括適用</b><span>2027-04-01・順次（負荷分散）</span></span></div>
+    <div class="step"><span class="s-num">4</span><span class="s-meta"><b>Workspace 同期</b><span>OU・グループへ反映</span></span></div>
+  </div>
+
+  <section class="kpi-grid mb-2">
+    <div class="kpi" style="--accent: var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">school</span>事前登録 済みの学校</div>
+      <div class="k-value">312<small>/ 418校</small></div>
+      <div class="k-delta">登録率 74.6%・締切 2027-03-20</div>
+    </div>
+    <div class="kpi" style="--accent: var(--sky)">
+      <div class="k-label"><span class="material-symbols-rounded">groups</span>登録済みの対象人数</div>
+      <div class="k-value">8,210<small>件</small></div>
+      <div class="k-delta">クラス編成・進級・進学</div>
+    </div>
+    <div class="kpi" style="--accent: var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">report</span>整合性 要確認</div>
+      <div class="k-value">47<small>件</small></div>
+      <div class="k-delta down">重複・矛盾・定員超過</div>
+    </div>
+    <div class="kpi" style="--accent: var(--vermilion)">
+      <div class="k-label"><span class="material-symbols-rounded">pending_actions</span>未登録の学校</div>
+      <div class="k-value">106<small>校</small></div>
+      <div class="k-delta down">締切までに登録が必要</div>
+    </div>
+  </section>
+
+  <div class="callout warn mb-2">
+    <span class="material-symbols-rounded">priority_high</span>
+    <div><b>適用は「変更があった分だけ」</b>。各校の登録を集約後、現在値と比較して差分のみを適用します。重複登録は最新を採用、組織間の矛盾は要確認として解消後に適用。未承認の越境変更・未解消の要確認は適用対象から除外されます。</div>
+  </div>
+
+  <div class="grid-2 mb-2">
+    <!-- 進級・進学ルール -->
+    <section class="card">
+      <div class="card-h"><span class="material-symbols-rounded">rule</span>進級・進学ルール
+        <span class="sub">この年度更新で自動適用される規則</span>
+        <div class="right"><button class="btn sm ghost" onclick="Composer.toast('ルールの編集へ（モック）')"><span class="material-symbols-rounded">edit</span>編集</button></div>
+      </div>
+      <div class="card-b" style="padding-top:4px">
+        <div class="rule">
+          <span class="r-ic"><span class="material-symbols-rounded sm">arrow_upward</span></span>
+          <div><b>自動進級</b><p>最終学年を除く全学年を +1（例: 小5 → 小6、中1 → 中2）。出席番号は新クラス編成に従う。</p></div>
+        </div>
+        <div class="rule">
+          <span class="r-ic" style="background:var(--indigo-50); color:var(--indigo-600)"><span class="material-symbols-rounded sm">school</span></span>
+          <div><b>小6 → 中学校へ進学</b><p>学区マスタに基づき進学先中学へ所属変更。越境（学区外）は<a href="transfers.html">承認フロー</a>を経て適用。</p></div>
+        </div>
+        <div class="rule">
+          <span class="r-ic" style="background:var(--plum-50); color:var(--plum)"><span class="material-symbols-rounded sm">workspace_premium</span></span>
+          <div><b>中3 → 進学先 or 卒業</b><p>進学先は出願結果の確定後に反映。確定前は「要確認」で保留。卒業者はアーカイブへ。</p></div>
+        </div>
+        <div class="rule">
+          <span class="r-ic" style="background:var(--gold-50); color:var(--gold)"><span class="material-symbols-rounded sm">block</span></span>
+          <div><b>原級留置・特別支援の個別指定</b><p>個別に指定された児童生徒は自動進級から除外（現学年を維持）。</p></div>
+        </div>
+        <div class="rule">
+          <span class="r-ic" style="background:var(--sky-50); color:var(--sky)"><span class="material-symbols-rounded sm">person_add</span></span>
+          <div><b>新入生（小1）の取り込み</b><p>就学予定者名簿から新1年を登録。Workspaceアカウントは命名規則で自動発行。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 負荷分散の実行プラン -->
+    <section class="card">
+      <div class="card-h"><span class="material-symbols-rounded">schedule</span>実行プラン（負荷分散）
+        <span class="sub">2027-04-01 を起点に順次適用</span>
+      </div>
+      <div class="card-b">
+        <div class="callout mb-2" style="font-size:11.5px">
+          <span class="material-symbols-rounded">bolt</span>
+          <div>4/1 00:00 に全件を一斉実行すると処理落ちの恐れがあるため、<b>組織を波（Wave）に分割</b>して時間をずらして適用します。各波の完了後に次の波を起動します。</div>
+        </div>
+        <div class="wave">
+          <span class="w-time">04:00</span><span class="muted" style="min-width:96px; font-size:11px">Wave1 小学校・長野</span>
+          <div class="w-bar"><div class="w-fill" style="width:88%"></div></div><span class="w-num">62,400件</span>
+        </div>
+        <div class="wave">
+          <span class="w-time">04:30</span><span class="muted" style="min-width:96px; font-size:11px">Wave2 中学校・長野</span>
+          <div class="w-bar"><div class="w-fill" style="width:64%"></div></div><span class="w-num">41,800件</span>
+        </div>
+        <div class="wave">
+          <span class="w-time">05:00</span><span class="muted" style="min-width:96px; font-size:11px">Wave3 松本・諏訪</span>
+          <div class="w-bar"><div class="w-fill" style="width:72%"></div></div><span class="w-num">48,200件</span>
+        </div>
+        <div class="wave">
+          <span class="w-time">05:30</span><span class="muted" style="min-width:96px; font-size:11px">Wave4 その他地区</span>
+          <div class="w-bar"><div class="w-fill" style="width:55%"></div></div><span class="w-num">44,140件</span>
+        </div>
+        <div class="row between mt-2" style="font-size:11.5px">
+          <span class="muted">推定 総件数</span><b class="mono">196,540件</b>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="yu-layout">
+    <div>
+      <div class="toolbar mb-2">
+        <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="学校名・市町村で検索"></div>
+        <select class="select" style="width:140px"><option>すべての学校種</option><option>小学校</option><option>中学校</option><option>高等学校</option></select>
+        <select class="select" style="width:130px"><option>すべての市町村</option><option>長野市</option><option>松本市</option><option>上田市</option></select>
+        <div class="sep"></div>
+        <span class="muted" style="margin-left:auto">418校</span>
+      </div>
+
+      <div class="tab-wrap">
+        <div class="tabs" data-tabs="yu">
+          <button class="tab active" data-tab="all"><span class="material-symbols-rounded">list</span>全校</button>
+          <button class="tab" data-tab="unreg"><span class="material-symbols-rounded">pending_actions</span>未登録<span class="chip red" style="margin-left:4px">106</span></button>
+          <button class="tab" data-tab="review"><span class="material-symbols-rounded">report</span>要確認<span class="chip gold" style="margin-left:4px">23</span></button>
+        </div>
+
+        <!-- 全校 -->
+        <div class="tab-panel active" data-tab-panel="yu" data-tab="all">
+          <table class="tbl">
+            <thead><tr><th>学校</th><th>学校種</th><th>登録状況</th><th class="num">件数</th><th>整合性</th><th>承認</th><th style="width:90px"></th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="location.href='future-batch.html'">
+                <td><b>松本市立開成中学校</b><br><span class="muted" style="font-size:10.5px">松本市</span></td>
+                <td><span class="chip green">中学校</span></td>
+                <td><span class="status ok">登録済</span></td>
+                <td class="num">388</td>
+                <td><span class="status warn">要確認 5</span></td>
+                <td><span class="chip gold">1件待ち</span></td>
+                <td><a class="btn sm" href="future-batch.html">確認</a></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='future-data.html'">
+                <td><b>長野市立城山小学校</b><br><span class="muted" style="font-size:10.5px">長野市</span></td>
+                <td><span class="chip sky">小学校</span></td>
+                <td><span class="status ok">登録済</span></td>
+                <td class="num">412</td>
+                <td><span class="status ok">クリーン</span></td>
+                <td><span class="chip green">不要</span></td>
+                <td><a class="btn sm" href="future-data.html">確認</a></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='future-data.html'">
+                <td><b>長野市（小→中 進学一括）</b><br><span class="muted" style="font-size:10.5px">長野市教委</span></td>
+                <td><span class="chip indigo">市一括</span></td>
+                <td><span class="status ok">登録済</span></td>
+                <td class="num">1,240</td>
+                <td><span class="status warn">要確認 18</span></td>
+                <td><span class="chip gold">12件待ち</span></td>
+                <td><a class="btn sm" href="future-data.html">確認</a></td>
+              </tr>
+              <tr>
+                <td><b>松本市立鎌田中学校</b><br><span class="muted" style="font-size:10.5px">松本市</span></td>
+                <td><span class="chip green">中学校</span></td>
+                <td><span class="status wait">未登録</span></td>
+                <td class="num muted">—</td>
+                <td class="muted">—</td>
+                <td class="muted">—</td>
+                <td><button class="btn sm ghost" onclick="Composer.toast('開成中へ登録の督促を送信しました')"><span class="material-symbols-rounded">notifications</span>督促</button></td>
+              </tr>
+              <tr>
+                <td><b>県立長野高等学校</b><br><span class="muted" style="font-size:10.5px">長野市</span></td>
+                <td><span class="chip gold">高等学校</span></td>
+                <td><span class="status ok">登録済</span></td>
+                <td class="num">64</td>
+                <td><span class="status ok">クリーン</span></td>
+                <td><span class="chip green">不要</span></td>
+                <td><a class="btn sm" href="future-data.html">確認</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination"><span style="margin-right:auto" class="muted">418校中 1–5校</span><button class="cur">1</button><button>2</button><button>3</button><button>…</button><button>84</button></div>
+        </div>
+
+        <!-- 未登録 -->
+        <div class="tab-panel" data-tab-panel="yu" data-tab="unreg">
+          <div class="callout warn" style="margin:14px 14px 0">
+            <span class="material-symbols-rounded">pending_actions</span>
+            <div><b>106校が未登録</b>です。締切（2027-03-20）までに来年度データの登録が必要です。一括で督促を送れます。</div>
+          </div>
+          <div style="padding:10px 14px"><button class="btn sm primary" onclick="Composer.toast('未登録106校に登録の督促を一括送信しました')"><span class="material-symbols-rounded">forward_to_inbox</span>未登録校へ一括督促</button></div>
+          <table class="tbl">
+            <thead><tr><th>学校</th><th>学校種</th><th>市町村</th><th>前年度の登録</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>松本市立鎌田中学校</b></td><td><span class="chip green">中学校</span></td><td class="muted">松本市</td><td class="muted mono">2026-03-18</td><td><button class="btn sm ghost" onclick="Composer.toast('督促を送信しました')">督促</button></td></tr>
+              <tr><td><b>上田市立第一中学校</b></td><td><span class="chip green">中学校</span></td><td class="muted">上田市</td><td class="muted mono">2026-03-15</td><td><button class="btn sm ghost" onclick="Composer.toast('督促を送信しました')">督促</button></td></tr>
+              <tr><td><b>飯田市立追手町小学校</b></td><td><span class="chip sky">小学校</span></td><td class="muted">飯田市</td><td class="muted mono">2026-03-19</td><td><button class="btn sm ghost" onclick="Composer.toast('督促を送信しました')">督促</button></td></tr>
+            </tbody>
+          </table>
+          <div class="pagination"><span style="margin-right:auto" class="muted">106校中 1–3校</span><button class="cur">1</button><button>2</button><button>…</button><button>36</button></div>
+        </div>
+
+        <!-- 要確認 -->
+        <div class="tab-panel" data-tab-panel="yu" data-tab="review">
+          <div class="callout error" style="margin:14px 14px 0">
+            <span class="material-symbols-rounded">report</span>
+            <div><b>23校で整合性の要確認</b>があります。重複・組織間の矛盾・定員超過などです。適用前に解消してください。</div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>学校</th><th>要確認の内容</th><th class="num">件数</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>松本市立開成中学校</b></td>
+                <td><span class="chip red">2校割当</span> <span class="chip gold">定員超過</span> <span class="chip gold">進学先未定</span></td>
+                <td class="num">5</td>
+                <td><a class="btn sm primary" href="future-batch.html">解消へ</a></td>
+              </tr>
+              <tr>
+                <td><b>長野市（小→中 進学一括）</b></td>
+                <td><span class="chip red">学区マスタ不一致</span> <span class="chip gold">越境 未承認</span></td>
+                <td class="num">18</td>
+                <td><a class="btn sm primary" href="future-data.html">解消へ</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右ペイン -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">shield_person</span>あなたの権限</div>
+        <div class="card-b" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+          <div class="row between"><span>年度更新の実行</span><span class="chip green">可</span></div>
+          <div class="row between"><span>ルールの編集</span><span class="chip green">可</span></div>
+          <div class="row between"><span>各校データの閲覧</span><span class="chip green">全組織</span></div>
+          <div class="muted mt-1">根拠: 「県教委システム管理者は全組織を管理できる」。年度更新はテナント全体に影響する操作です。</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">history</span>前回の年度更新</div>
+        <div class="card-b" style="font-size:12px;">
+          <dl style="display:grid; grid-template-columns:84px 1fr; gap:6px 10px">
+            <dt class="muted">実行日</dt><dd class="mono">2026-04-01</dd>
+            <dt class="muted">適用</dt><dd><b>196,540件</b></dd>
+            <dt class="muted">結果</dt><dd><span class="status ok">完了</span></dd>
+            <dt class="muted">所要</dt><dd class="mono">04:00〜05:48（4波）</dd>
+          </dl>
+          <a class="btn sm ghost mt-2" href="jobs.html" style="align-self:flex-start"><span class="material-symbols-rounded">manage_history</span>処理ログを見る</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">cloud_sync</span>Workspace への反映</div>
+        <div class="card-b" style="font-size:12px;">
+          <p class="muted" style="margin-bottom:8px">各波の適用後、次回同期でOU・グループへ反映されます（新入生はアカウント自動発行）。</p>
+          <div class="callout" style="font-size:11px">
+            <span class="material-symbols-rounded">arrow_right_alt</span>
+            <div>同期は <b>Composer → Workspace の一方向</b>です。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 年度更新 実行モーダル -->
+  <div class="modal-backdrop" id="modal-run">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">rocket_launch</span>年度更新を予約実行しますか？</h3>
+        <button class="x" onclick="Composer.closeModal('modal-run')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="card" style="box-shadow:none; background:#fbfaf8">
+            <div class="card-h" style="background:none"><span class="material-symbols-rounded">summarize</span>実行サマリー</div>
+            <div class="card-b" style="font-size:12px">
+              <dl style="display:grid; grid-template-columns:110px 1fr; gap:7px 10px">
+                <dt class="muted">適用日</dt><dd><span class="chip solid">2027-04-01</span> 04:00〜（4波・順次）</dd>
+                <dt class="muted">登録済み</dt><dd><b>312校 / 8,210件</b></dd>
+                <dt class="muted">適用見込み</dt><dd>変更分のみ（前回実績 196,540件）</dd>
+                <dt class="muted">除外</dt><dd style="color:var(--vermilion-dark)">要確認47件・未登録106校</dd>
+              </dl>
+            </div>
+          </div>
+          <div>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>負荷分散（4波で順次適用）</b><span>4/1 0:00 の一斉実行を避けます</span></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>要確認・未承認を除外して適用</b><span>解消済みのみ適用し、残りは保留</span></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>未登録校は前年度データを継続</b><span>未登録の106校は現状を維持</span></span></label>
+            <div class="callout warn mt-1" style="font-size:11px">
+              <span class="material-symbols-rounded">priority_high</span>
+              <div>テナント全体の名簿に影響します。実行はジョブとして登録され、結果は処理状況・ログで確認できます。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-run')">キャンセル</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-run'); Composer.toast('年度更新ジョブ #JOB-20270401-001 を予約しました（2027-04-01 04:00 起動）'); setTimeout(()=>location.href='jobs.html',1400)"><span class="material-symbols-rounded">rocket_launch</span>予約を確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全体ドライランモーダル -->
+  <div class="modal-backdrop" id="modal-dryrun">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">science</span>全体ドライラン</h3>
+        <button class="x" onclick="Composer.closeModal('modal-dryrun')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p class="muted mb-2">登録済み312校を対象に、いま年度更新を実行したらどうなるかを試算します（データは変更しません）。</p>
+        <dl style="display:grid; grid-template-columns:130px 1fr; gap:7px 10px; font-size:12.5px">
+          <dt class="muted">適用対象</dt><dd><b>差分のみ</b>（推定 約14万件）</dd>
+          <dt class="muted">スキップ</dt><dd>変更なし分</dd>
+          <dt class="muted">除外</dt><dd style="color:var(--vermilion-dark)">要確認47件・未承認越境</dd>
+          <dt class="muted">新入生</dt><dd>就学予定 約6,200件（アカウント発行）</dd>
+        </dl>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-dryrun')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-dryrun'); Composer.toast('全体ドライラン #JOB-20260615-022 を登録しました（処理状況・ログで確認）')"><span class="material-symbols-rounded">play_arrow</span>ドライランを実行</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 年度切替の設定モーダル -->
+  <div class="modal-backdrop" id="modal-year">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">event_repeat</span>年度切替の設定（テナント）</h3>
+        <button class="x" onclick="Composer.closeModal('modal-year')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p class="muted mb-2">「次年度」として登録された未来データは、ここで設定した<b>年度切替日</b>に一括適用されます。年度の初日を「次年度」として扱い、特定日（4/1 0:00）への集中を回避します。</p>
+        <div class="grid-2">
+          <div class="field">
+            <label>年度切替日<span class="req">必須</span></label>
+            <select class="select"><option>04-01（4月1日）</option><option>04-02</option><option>04-06</option></select>
+            <div class="hint">現在: 2026年度 ／ 次年度: 2027年度</div>
+          </div>
+          <div class="field">
+            <label>登録締切</label>
+            <input class="input" type="date" value="2027-03-20">
+          </div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>負荷分散して順次適用する</b><span>4/1 0:00 に全波を一斉実行せず、組織単位で順次処理します。</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-year')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-year'); Composer.toast('年度切替の設定を保存しました')"><span class="material-symbols-rounded">check</span>保存する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>
