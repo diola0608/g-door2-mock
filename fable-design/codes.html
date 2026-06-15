@@ -32,6 +32,7 @@
       <div class="desc">コード型属性の選択肢を管理します。コード（選択肢）ごとに表示・利用できる職種を制限できます。</div>
     </div>
     <div class="actions">
+      <a class="btn" href="code-standards.html"><span class="material-symbols-rounded">import_export</span>コード標準・連携</a>
       <button class="btn primary" onclick="Composer.openModal('modal-code-add')"><span class="material-symbols-rounded">add</span>コードマスターを作成</button>
     </div>
   </div>
@@ -112,6 +113,53 @@
       </div>
     </section>
   </div>
+
+  <!-- コードマスター外の未登録値（プロンプト002: 非登録値の許可） -->
+  <section class="card mt-3">
+    <div class="card-h"><span class="material-symbols-rounded">playlist_add_check</span>コードマスター外の値
+      <span class="sub">インポートで受領した未登録値の保留</span>
+      <div class="right"><a class="btn sm" href="attributes.html"><span class="material-symbols-rounded">tune</span>許可設定（属性側）</a></div>
+    </div>
+    <div class="callout" style="margin:14px 14px 0">
+      <span class="material-symbols-rounded">rule</span>
+      <div>属性のバリデーションで<b>「選択肢にない値の登録を許可」</b>が ON のコード型項目は、CSVにコードマスターへ無い値が来ても取り込めます。受領した未登録値はここに<b>保留</b>され、正式なコードへ<b>昇格</b>するか、既存コードへ<b>読み替え</b>できます。許可が OFF の機微項目（人物特徴など）は取込時にエラーになります。</div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>受領した値</th><th>対象マスター</th><th>許可設定</th><th>出現数</th><th>初回受領</th><th>対応</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>ICT支援員</b></td>
+          <td class="muted">職種（CODE-002）</td>
+          <td><span class="chip green">許可: ON</span></td>
+          <td class="num">12</td>
+          <td class="mono">2026-06-10</td>
+          <td class="row" style="gap:6px">
+            <button class="btn sm primary" onclick="Composer.toast('「ICT支援員」を正式コード JOB-40 として登録しました')"><span class="material-symbols-rounded">upgrade</span>コードへ昇格</button>
+            <a class="btn sm ghost" href="code-standards.html">標準対応</a>
+          </td>
+        </tr>
+        <tr>
+          <td><b>スクールバス（往復）</b></td>
+          <td class="muted">通学方法（CODE-014）</td>
+          <td><span class="chip green">許可: ON</span></td>
+          <td class="num">3</td>
+          <td class="mono">2026-06-12</td>
+          <td class="row" style="gap:6px">
+            <button class="btn sm primary" onclick="Composer.toast('「スクールバス（往復）」を登録しました')"><span class="material-symbols-rounded">upgrade</span>コードへ昇格</button>
+            <button class="btn sm ghost" onclick="Composer.toast('既存コード「バス」へ読み替えました')">読み替え</button>
+          </td>
+        </tr>
+        <tr class="masked">
+          <td><span class="masked-cell"><span class="material-symbols-rounded">block</span>（機微・許可OFFのためエラー）</span></td>
+          <td class="muted">人物特徴（CODE-049）</td>
+          <td><span class="chip red">許可: OFF</span></td>
+          <td class="num">—</td>
+          <td class="mono">—</td>
+          <td><a class="btn sm" href="jobs.html"><span class="material-symbols-rounded">receipt_long</span>エラーログ</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
   <!-- コード権限モーダル -->
   <div class="modal-backdrop" id="modal-code-perm">

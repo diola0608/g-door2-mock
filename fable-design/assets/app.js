@@ -7,6 +7,7 @@
       section: "ホーム",
       items: [
         { id: "home", icon: "space_dashboard", label: "ダッシュボード", href: "index.html" },
+        { id: "dashboards", icon: "dashboard_customize", label: "ダッシュボード管理", href: "dashboards.html" },
       ],
     },
     {
@@ -15,6 +16,7 @@
         { id: "roster", icon: "groups", label: "名簿レジストリ", href: "roster.html" },
         { id: "transfers", icon: "swap_horiz", label: "所属変更申請", href: "transfers.html", count: 4 },
         { id: "import", icon: "upload_file", label: "CSVインポート", href: "import.html" },
+        { id: "import-settings", icon: "rule", label: "取込・連携設定", href: "import-settings.html" },
         { id: "jobs", icon: "manage_history", label: "処理状況・ログ", href: "jobs.html", count: 2 },
       ],
     },
@@ -50,6 +52,7 @@
       items: [
         { id: "attributes", icon: "tune", label: "属性項目定義", href: "attributes.html" },
         { id: "codes", icon: "data_object", label: "コードマスター", href: "codes.html" },
+        { id: "code-standards", icon: "import_export", label: "コード標準・連携", href: "code-standards.html" },
       ],
     },
   ];

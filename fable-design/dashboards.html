@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード管理 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* レイアウト用のみ（見た目は base.css） */
+  .dash-layout { display: grid; grid-template-columns: 320px 1fr; gap: 14px; align-items: start; }
+  .tpl-list .item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; font-size: 12.5px;
+  }
+  .tpl-list .item:hover { background: var(--indigo-50); }
+  .tpl-list .item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .tpl-list .item .ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; flex: none; }
+  .tpl-list .item b { display: block; line-height: 1.3; }
+  .tpl-list .item .meta { font-size: 10px; color: var(--ink-3); font-family: var(--mono); }
+  /* ダッシュボードのウィジェット配置プレビュー */
+  .dash-preview { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .dw { border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px; background: #fbfaf8; position: relative; }
+  .dw.span2 { grid-column: 1 / -1; }
+  .dw .dw-h { font-size: 10.5px; font-weight: 700; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+  .dw .dw-h .material-symbols-rounded { font-size: 15px; color: var(--indigo-600); }
+  .dw .dw-h .tag { margin-left: auto; }
+  .dw.alert { background: var(--vermilion-50); border-color: #f0c5b6; }
+  .dw.alert .dw-h .material-symbols-rounded { color: var(--vermilion); }
+  /* アラート文章トークン（permissions.html と同じ語彙を流用） */
+  .policy-sentence { font-size: 12.5px; line-height: 1.9; }
+  .pol-token {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 6px;
+    font-weight: 600; font-size: 11.5px; margin: 0 2px; white-space: nowrap;
+  }
+  .pol-token .material-symbols-rounded { font-size: 13px; }
+  .pol-token.subj { background: var(--indigo-100); color: var(--indigo-700); }
+  .pol-token.cond { background: var(--gold-50); color: var(--gold); }
+  .pol-token.obj { background: var(--plum-50); color: var(--plum); }
+  .pol-token.scope { background: var(--sky-50); color: var(--sky); }
+  .pol-token.act { background: var(--vermilion-50); color: var(--vermilion-dark); }
+  .inherit-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 5px; letter-spacing: .05em; }
+  .inherit-tag.tenant { background: var(--indigo-900); color: #cdd9ec; }
+  .inherit-tag.org { background: var(--vermilion); color: #fff; }
+  @media (max-width: 1100px) { .dash-layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-page="dashboards">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">ダッシュボード管理</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">dashboard_customize</span>ダッシュボード管理</h1>
+      <div class="desc">役割・組織ごとに「どの情報を・どのレイアウトで・どんなアラート閾値で」見せるかを設計し、利用者へ割り当てます。閲覧者の<b>権限スコープ</b>でデータは自動的に絞り込まれます。</div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="index.html"><span class="material-symbols-rounded">visibility</span>自分の画面で確認</a>
+      <button class="btn primary" onclick="Composer.openModal('modal-tpl-new')"><span class="material-symbols-rounded">add</span>テンプレートを作成</button>
+    </div>
+  </div>
+
+  <div class="callout mb-3">
+    <span class="material-symbols-rounded">layers</span>
+    <div><b>割当モデル</b>: ダッシュボードは <b>役割 × 組織スコープ</b> で割り当てます。テナント既定を各組織が継承し、下位組織で個別割当があればそれが優先されます（下位優先）。利用者が複数条件に一致する場合は、より下位・より具体的な割当が表示されます。</div>
+  </div>
+
+  <section class="kpi-grid mb-3">
+    <div class="kpi" style="--accent: var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">dashboard</span>テンプレート</div>
+      <div class="k-value">6<small>種</small></div>
+      <div class="k-delta">役割別 5 / 個別 1</div>
+    </div>
+    <div class="kpi" style="--accent: var(--pine)">
+      <div class="k-label"><span class="material-symbols-rounded">how_to_reg</span>割当済み役割</div>
+      <div class="k-value">12<small>件</small></div>
+      <div class="k-delta up">テナント 8 / 組織独自 4</div>
+    </div>
+    <div class="kpi" style="--accent: var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">person_off</span>未割当の利用者</div>
+      <div class="k-value">38<small>人</small></div>
+      <div class="k-delta down">既定ダッシュボードが表示されます</div>
+    </div>
+    <div class="kpi" style="--accent: var(--vermilion)">
+      <div class="k-label"><span class="material-symbols-rounded">notification_important</span>発火中アラート</div>
+      <div class="k-value">5<small>件</small></div>
+      <div class="k-delta down">閾値超過 — 担任向け 3 / 校長向け 2</div>
+    </div>
+  </section>
+
+  <div class="dash-layout">
+    <!-- 左：テンプレート一覧 -->
+    <aside class="card tpl-list">
+      <div class="card-h"><span class="material-symbols-rounded">view_quilt</span>テンプレート<span class="sub">6種</span></div>
+      <div class="item active">
+        <span class="ic" style="background:var(--indigo-100); color:var(--indigo-600)"><span class="material-symbols-rounded">co_present</span></span>
+        <div style="flex:1"><b>担任向け（学級フォーカス）</b><span class="meta">DB-01・ウィジェット6</span></div>
+        <span class="chip indigo">1,284人</span>
+      </div>
+      <div class="item">
+        <span class="ic" style="background:var(--pine-50); color:var(--pine)"><span class="material-symbols-rounded">school</span></span>
+        <div style="flex:1"><b>校長・教頭向け（学校経営）</b><span class="meta">DB-02・ウィジェット7</span></div>
+        <span class="chip green">612人</span>
+      </div>
+      <div class="item">
+        <span class="ic" style="background:var(--sky-50); color:var(--sky)"><span class="material-symbols-rounded">flag</span></span>
+        <div style="flex:1"><b>教育委員会向け（広域監視）</b><span class="meta">DB-03・ウィジェット8</span></div>
+        <span class="chip sky">214人</span>
+      </div>
+      <div class="item">
+        <span class="ic" style="background:var(--vermilion-50); color:var(--vermilion)"><span class="material-symbols-rounded">crisis_alert</span></span>
+        <div style="flex:1"><b>指導主事向け（早期把握）</b><span class="meta">DB-04・機微</span></div>
+        <span class="chip red"><span class="material-symbols-rounded sm">lock</span>限定</span>
+      </div>
+      <div class="item">
+        <span class="ic" style="background:var(--plum-50); color:var(--plum)"><span class="material-symbols-rounded">medical_services</span></span>
+        <div style="flex:1"><b>養護教諭向け（保健室）</b><span class="meta">DB-05・ウィジェット5</span></div>
+        <span class="chip plum">1,840人</span>
+      </div>
+      <div class="item">
+        <span class="ic" style="background:var(--paper-2); color:var(--ink-2)"><span class="material-symbols-rounded">badge</span></span>
+        <div style="flex:1"><b>飯田市教委 個別ビュー</b><span class="meta">DB-06・上書き</span></div>
+        <span class="chip line">個別</span>
+      </div>
+    </aside>
+
+    <!-- 右：選択中テンプレの詳細 -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">co_present</span>担任向け（学級フォーカス）
+          <span class="chip mono" style="font-family:var(--mono)">DB-01</span>
+          <div class="right">
+            <button class="btn sm" onclick="Composer.openModal('modal-assign')"><span class="material-symbols-rounded">groups</span>割当を編集</button>
+            <button class="btn sm primary" onclick="Composer.openModal('modal-builder')"><span class="material-symbols-rounded">edit</span>レイアウトを編集</button>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="row" style="flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+            <span class="muted">割当対象:</span>
+            <span class="pol-token subj"><span class="material-symbols-rounded">person</span>職種 = 一般教員</span>
+            <span class="pol-token scope"><span class="material-symbols-rounded">door_front</span>自分が担任のクラス</span>
+            <span class="inherit-tag tenant">テナント既定</span>
+            <span class="chip" style="margin-left:auto">適用 1,284人</span>
+          </div>
+          <div class="muted mb-2" style="display:flex; align-items:center; gap:6px;">
+            <span class="material-symbols-rounded sm">grid_view</span>レイアウトプレビュー（担任から見える画面・スコープ内データのみ）
+          </div>
+          <div class="dash-preview">
+            <div class="dw">
+              <div class="dw-h"><span class="material-symbols-rounded">groups</span>自学級の在籍<span class="tag chip indigo">KPI</span></div>
+              <div class="k-value mono" style="font-size:22px; margin-top:4px">32<small style="font-size:11px; color:var(--ink-3)">人</small></div>
+            </div>
+            <div class="dw">
+              <div class="dw-h"><span class="material-symbols-rounded">event_available</span>本日の出欠<span class="tag chip indigo">KPI</span></div>
+              <div class="k-value mono" style="font-size:22px; margin-top:4px">出席 30 / 欠席 <span style="color:var(--vermilion)">2</span></div>
+            </div>
+            <div class="dw alert span2">
+              <div class="dw-h"><span class="material-symbols-rounded">notification_important</span>要注視アラート<span class="tag chip red">アラート</span></div>
+              <div class="muted mt-1" style="color:var(--vermilion-dark)">連続欠席7日: <b>田中 花子</b>（S-2026-04413） / 提出物未提出3件: 鈴木 一郎 ほか2名</div>
+            </div>
+            <div class="dw">
+              <div class="dw-h"><span class="material-symbols-rounded">bar_chart</span>提出物の状況<span class="tag chip sky">グラフ</span></div>
+              <div class="bars mt-1" style="gap:5px">
+                <div class="bar-row" style="grid-template-columns:42px 1fr 30px"><span class="b-label">国語</span><div class="b-track" style="height:11px"><div class="b-fill g" style="width:94%"></div></div><span class="b-num">94%</span></div>
+                <div class="bar-row" style="grid-template-columns:42px 1fr 30px"><span class="b-label">算数</span><div class="b-track" style="height:11px"><div class="b-fill gold" style="width:72%"></div></div><span class="b-num">72%</span></div>
+              </div>
+            </div>
+            <div class="dw">
+              <div class="dw-h"><span class="material-symbols-rounded">format_list_bulleted</span>要面談リスト<span class="tag chip plum">一覧</span></div>
+              <div class="muted mt-1">田中 花子・佐藤 大輔（閾値超過で自動抽出）</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- アラートルール（読める文章） -->
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">rule</span>アラートルール
+          <span class="sub">正常値を外れたデータを自動で強調・通知</span>
+          <div class="right"><button class="btn sm primary" onclick="Composer.openModal('modal-alert')"><span class="material-symbols-rounded">add</span>ルールを追加</button></div>
+        </div>
+        <div class="card-b" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="row between" style="align-items:flex-start; gap:12px;">
+            <div class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">groups</span>自学級の生徒</span>の
+              <span class="pol-token obj"><span class="material-symbols-rounded">event_busy</span>連続欠席日数</span>が
+              <span class="pol-token cond"><span class="material-symbols-rounded">trending_up</span>7日以上</span>になったら
+              <span class="pol-token act"><span class="material-symbols-rounded">priority_high</span>朱アラート＋通知</span>
+            </div>
+            <button class="btn sm ghost" onclick="Composer.openModal('modal-alert')">編集</button>
+          </div>
+          <div class="row between" style="align-items:flex-start; gap:12px;">
+            <div class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">groups</span>自学級の生徒</span>の
+              <span class="pol-token obj"><span class="material-symbols-rounded">assignment_late</span>提出物 未提出数</span>が
+              <span class="pol-token cond"><span class="material-symbols-rounded">trending_up</span>3件以上</span>で
+              <span class="pol-token act"><span class="material-symbols-rounded">flag</span>要面談リストへ自動抽出</span>
+            </div>
+            <button class="btn sm ghost" onclick="Composer.openModal('modal-alert')">編集</button>
+          </div>
+          <div class="row between" style="align-items:flex-start; gap:12px;">
+            <div class="policy-sentence">
+              <span class="pol-token subj"><span class="material-symbols-rounded">monitor_heart</span>体力測定値</span>が
+              <span class="pol-token cond"><span class="material-symbols-rounded">show_chart</span>学年平均 −2SD を下回る</span>場合に
+              <span class="pol-token act" style="background:var(--gold-50); color:var(--gold)"><span class="material-symbols-rounded">warning</span>金（要確認）で強調</span>
+              <span class="muted">（体力測定アドオン有効時）</span>
+            </div>
+            <button class="btn sm ghost" onclick="Composer.openModal('modal-alert')">編集</button>
+          </div>
+          <div class="callout warn" style="font-size:11px">
+            <span class="material-symbols-rounded">visibility_lock</span>
+            <div>アラート対象に機微情報（支援記録・不登校歴等）を含む場合、閲覧者の権限ポリシーで表示可否が判定されます。権限のない指標はマスクされ、アラートも発火しません。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 割当マトリクス -->
+  <section class="card mt-3">
+    <div class="card-h"><span class="material-symbols-rounded">grid_on</span>割当マトリクス
+      <span class="sub">どのダッシュボードを誰に出すか</span>
+      <div class="right"><button class="btn sm" onclick="Composer.openModal('modal-assign')"><span class="material-symbols-rounded">add</span>割当を追加</button></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>ダッシュボード</th><th>割当条件（役割 × 組織スコープ）</th><th>適用人数</th><th>継承</th><th>状態</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>担任向け（学級フォーカス）</b></td>
+          <td class="policy-sentence"><span class="pol-token subj">一般教員</span> × <span class="pol-token scope">自分が担任のクラス</span></td>
+          <td class="num">1,284</td>
+          <td><span class="inherit-tag tenant">テナント</span></td>
+          <td><span class="status ok">公開中</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-assign')">編集</button></td>
+        </tr>
+        <tr>
+          <td><b>校長・教頭向け（学校経営）</b></td>
+          <td class="policy-sentence"><span class="pol-token subj">校長・教頭・副校長</span> × <span class="pol-token scope">担当学校</span></td>
+          <td class="num">612</td>
+          <td><span class="inherit-tag tenant">テナント</span></td>
+          <td><span class="status ok">公開中</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-assign')">編集</button></td>
+        </tr>
+        <tr>
+          <td><b>教育委員会向け（広域監視）</b></td>
+          <td class="policy-sentence"><span class="pol-token subj">教委職員</span> × <span class="pol-token scope">配下の全組織</span></td>
+          <td class="num">214</td>
+          <td><span class="inherit-tag tenant">テナント</span></td>
+          <td><span class="status ok">公開中</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-assign')">編集</button></td>
+        </tr>
+        <tr>
+          <td><b>指導主事向け（早期把握）</b></td>
+          <td class="policy-sentence"><span class="pol-token subj">指導主事</span> × <span class="pol-token scope">同一市町村</span> <span class="muted">＋ 機微情報の閲覧権限</span></td>
+          <td class="num">48</td>
+          <td><span class="inherit-tag tenant">テナント</span></td>
+          <td><span class="status ok">公開中</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-assign')">編集</button></td>
+        </tr>
+        <tr style="background:var(--vermilion-50)">
+          <td><b>飯田市教委 個別ビュー</b></td>
+          <td class="policy-sentence">
+            <span class="muted" style="text-decoration:line-through">教育委員会向け</span> を上書き:
+            <span class="pol-token subj">教委職員</span> × <span class="pol-token scope">飯田市</span>
+          </td>
+          <td class="num">12</td>
+          <td><span class="inherit-tag org">組織独自・上書き</span></td>
+          <td><span class="status ok">公開中</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-assign')">編集</button></td>
+        </tr>
+        <tr class="masked">
+          <td><b>養護教諭向け（保健室）</b></td>
+          <td class="policy-sentence"><span class="pol-token subj">養護教諭</span> × <span class="pol-token scope">本校</span></td>
+          <td class="num">1,840</td>
+          <td><span class="inherit-tag tenant">テナント</span></td>
+          <td><span class="status wait">下書き</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-assign')">編集</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- テンプレート作成モーダル -->
+  <div class="modal-backdrop" id="modal-tpl-new">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>ダッシュボードテンプレートを作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-tpl-new')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>テンプレート名<span class="req">必須</span></label><input class="input" placeholder="例: 教務主任向け（時数管理）"></div>
+          <div class="field"><label>テンプレートID</label><input class="input mono" placeholder="自動採番（DB-07）" style="font-family:var(--mono)"></div>
+        </div>
+        <div class="field">
+          <label>ベースにする役割の視点</label>
+          <select class="select"><option>担任（学級フォーカス）</option><option>校長・教頭（学校経営）</option><option>教育委員会（広域監視）</option><option>養護教諭（保健室）</option><option>空のレイアウトから作成</option></select>
+          <div class="hint">役割を選ぶと、その立場でよく見る指標が初期ウィジェットとして配置されます。</div>
+        </div>
+        <div class="field"><label>レイアウト</label>
+          <select class="select"><option>2カラム（既定）</option><option>3カラム（広域向け）</option><option>1カラム（モバイル想定）</option></select></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-tpl-new')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-tpl-new'); Composer.openModal('modal-builder')"><span class="material-symbols-rounded">arrow_forward</span>レイアウト編集へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- レイアウトビルダーモーダル -->
+  <div class="modal-backdrop" id="modal-builder">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">view_quilt</span>レイアウト編集 — 担任向け（学級フォーカス）</h3>
+        <button class="x" onclick="Composer.closeModal('modal-builder')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2" style="gap:18px">
+          <div>
+            <div style="font-size:11.5px; font-weight:600; color:var(--ink-2); margin-bottom:8px">配置するウィジェット</div>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>KPI: 自学級の在籍 / 本日の出欠</b><span>名簿・出欠アドオンから取得</span></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>アラート: 要注視（閾値超過）</b><span>下のアラートルールに連動</span></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>グラフ: 提出物の状況（教科別）</b></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>一覧: 要面談リスト</b><span>アラートから自動抽出</span></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>タイムライン: 学級の変更履歴</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>グラフ: 体力測定（学年比較）</b><span class="muted">体力測定アドオンが無効です</span></span></label>
+          </div>
+          <div class="card" style="box-shadow:none; background:#fbfaf8">
+            <div class="card-h" style="background:none"><span class="material-symbols-rounded">grid_view</span>レイアウト（ドラッグで並べ替え）</div>
+            <div class="card-b">
+              <div class="dash-preview">
+                <div class="dw"><div class="dw-h"><span class="material-symbols-rounded">groups</span>在籍</div></div>
+                <div class="dw"><div class="dw-h"><span class="material-symbols-rounded">event_available</span>出欠</div></div>
+                <div class="dw alert span2"><div class="dw-h"><span class="material-symbols-rounded">notification_important</span>アラート</div></div>
+                <div class="dw"><div class="dw-h"><span class="material-symbols-rounded">bar_chart</span>提出物</div></div>
+                <div class="dw"><div class="dw-h"><span class="material-symbols-rounded">format_list_bulleted</span>要面談</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="callout">
+          <span class="material-symbols-rounded">shield_person</span>
+          <div>各ウィジェットのデータは<b>閲覧者の権限スコープ</b>で評価されます。担任には自学級のみ、校長には担当校全体が表示されます（同じテンプレートでも見える範囲は人によって異なります）。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn left danger-ghost" onclick="Composer.toast('テンプレートを複製しました（DB-07）')"><span class="material-symbols-rounded">content_copy</span>複製</button>
+        <button class="btn" onclick="Composer.closeModal('modal-builder')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-builder'); Composer.toast('レイアウトを保存しました。割当中の1,284人へ即時反映されます')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- アラートルールモーダル -->
+  <div class="modal-backdrop" id="modal-alert">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">rule</span>アラートルールの編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-alert')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>対象</label><select class="select"><option>自学級の生徒</option><option>担当校の生徒</option><option>担当校の教職員</option></select></div>
+          <div class="field"><label>指標（属性・集計値）</label><select class="select"><option>連続欠席日数</option><option>提出物 未提出数</option><option>保健室利用回数</option><option>体力測定（偏差）</option></select></div>
+          <div class="field"><label>条件</label><select class="select"><option>以上（≧）</option><option>以下（≦）</option><option>等しい（＝）</option><option>平均から外れる（±SD）</option></select></div>
+          <div class="field"><label>閾値</label><input class="input mono" value="7" style="font-family:var(--mono)"><div class="hint">単位は指標により自動（日 / 件 / 回 …）</div></div>
+          <div class="field"><label>重大度（強調色）</label><select class="select"><option>朱（注意・最優先）</option><option>金（要確認）</option><option>空（情報）</option></select></div>
+          <div class="field"><label>動作</label><select class="select"><option>強調＋通知＋要面談リストへ抽出</option><option>強調のみ</option><option>強調＋通知</option></select></div>
+        </div>
+        <div class="callout">
+          <span class="material-symbols-rounded">visibility</span>
+          <div class="policy-sentence"><b>プレビュー</b>:
+            <span class="pol-token subj">自学級の生徒</span>の
+            <span class="pol-token obj">連続欠席日数</span>が
+            <span class="pol-token cond">7日以上</span>になったら
+            <span class="pol-token act">朱アラート＋通知</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-alert')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-alert'); Composer.toast('アラートルールを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 割当編集モーダル -->
+  <div class="modal-backdrop" id="modal-assign">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">groups</span>ダッシュボードの割当</h3>
+        <button class="x" onclick="Composer.closeModal('modal-assign')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>ダッシュボード</label><select class="select"><option>担任向け（学級フォーカス）</option><option>校長・教頭向け（学校経営）</option><option>教育委員会向け（広域監視）</option></select></div>
+        <div class="grid-2">
+          <div class="field"><label>役割（サブジェクト）<span class="req">必須</span></label><select class="select"><option>一般教員</option><option>校長・教頭・副校長</option><option>教委職員</option><option>養護教諭</option><option>指導主事</option></select></div>
+          <div class="field"><label>組織スコープ</label><select class="select"><option>自分が担任のクラス</option><option>担当学校</option><option>同一市町村</option><option>配下の全組織</option><option>テナント全体</option></select></div>
+        </div>
+        <div class="callout warn">
+          <span class="material-symbols-rounded">layers</span>
+          <div>この割当は選択した範囲の下位組織へ継承されます。下位組織で別の割当があれば<b>下位が優先</b>されます（例: テナント既定の「教育委員会向け」を飯田市が個別ビューで上書き）。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-assign')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-assign'); Composer.toast('割当を保存しました。対象利用者の次回ログイン時から反映されます')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

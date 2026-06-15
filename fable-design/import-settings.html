@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>取込・連携設定 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* レイアウト用のみ（見た目は base.css） */
+  .taglist { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+  .tag-input {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-family: var(--mono);
+    background: var(--paper-2); border-radius: 99px; padding: 2.5px 5px 2.5px 9px; color: var(--ink-2);
+  }
+  .tag-input .material-symbols-rounded { font-size: 13px; color: var(--ink-3); cursor: pointer; }
+  .snippet {
+    font-family: var(--mono); font-size: 11.5px; background: var(--indigo-900); color: #cdd9ec;
+    border-radius: 9px; padding: 13px 15px; overflow-x: auto; line-height: 1.75; white-space: pre;
+  }
+  .snippet .c { color: #6e7f9e; } .snippet .k { color: #f0916f; } .snippet .s { color: #6fd0a2; } .snippet .f { color: #9fd4ff; }
+  .ba { display: grid; grid-template-columns: 1fr 30px 1fr; gap: 10px; align-items: center; }
+  .io-box {
+    font-family: var(--mono); font-size: 11.5px; background: #fbfaf8; border: 1px solid var(--line);
+    border-radius: 8px; padding: 9px 12px; color: var(--ink-2); line-height: 1.6;
+  }
+  .io-box.out { background: var(--pine-50); border-color: #bfe2d0; color: #14503a; }
+  .ba .arr { text-align: center; color: var(--pine); }
+  @media (max-width: 1100px) { .ba { grid-template-columns: 1fr; } .ba .arr { transform: rotate(90deg); } }
+</style>
+</head>
+<body data-page="import-settings">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="import.html">CSVインポート</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">取込・連携設定</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">rule</span>取込・連携設定</h1>
+      <div class="desc">CSV/TSV やクリップボード貼り付けで受領するデータを、現場のファイルのまま取り込めるようにする設定です。ヘッダーの自動判定・本人同定キー・変換ルールを事前に整備します。設定は<a href="import.html">CSVインポート</a>ウィザードで使われます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-test')"><span class="material-symbols-rounded">science</span>変換をテスト</button>
+      <a class="btn primary" href="import.html"><span class="material-symbols-rounded">upload_file</span>取込を開始</a>
+    </div>
+  </div>
+
+  <div class="tabs mb-3" data-tabs="set">
+    <button class="tab active" data-tab="dict"><span class="material-symbols-rounded">match_word</span>自動マッピング辞書</button>
+    <button class="tab" data-tab="ident"><span class="material-symbols-rounded">fingerprint</span>識別キー</button>
+    <button class="tab" data-tab="transform"><span class="material-symbols-rounded">transform</span>データ変換</button>
+    <button class="tab" data-tab="export"><span class="material-symbols-rounded">output</span>エクスポート変換</button>
+  </div>
+
+  <!-- TAB 1: 自動マッピング辞書 -->
+  <div class="tab-panel active" data-tab-panel="set" data-tab="dict">
+    <div class="callout mb-2">
+      <span class="material-symbols-rounded">match_word</span>
+      <div>取込時にファイルの<b>ヘッダー行</b>を判定文字列と突き合わせ、名簿項目へ<b>自動マッピング</b>します。1つの項目に判定文字列を<b>複数</b>登録でき、サードパーティごとに異なる列名（「Email / メール / mailaddress」など）を吸収します。判定できなかった列は<a href="import.html">ウィザードのステップ2</a>で手動指定します。</div>
+    </div>
+    <section class="card">
+      <div class="card-h"><span class="material-symbols-rounded">match_word</span>ヘッダー判定辞書
+        <span class="sub">列名 → 名簿項目</span>
+        <div class="right">
+          <button class="btn sm" onclick="Composer.toast('辞書をCSVで書き出しました')"><span class="material-symbols-rounded">download</span>書出</button>
+          <button class="btn sm primary" onclick="Composer.openModal('modal-dict')"><span class="material-symbols-rounded">add</span>判定文字列を追加</button>
+        </div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>名簿項目</th><th>判定文字列（いずれかに一致でマッピング）</th><th>データ型</th><th>役割</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>氏名</b></td>
+            <td><div class="taglist"><span class="chip">氏名</span><span class="chip">name</span><span class="chip">名前</span><span class="chip">フルネーム</span><span class="chip">full_name</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">単一文字列</span></td>
+            <td><span class="chip gold">一致確認</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr class="masked" style="background:var(--indigo-50)">
+            <td><b>メールアドレス</b></td>
+            <td><div class="taglist"><span class="chip indigo">Email</span><span class="chip indigo">メール</span><span class="chip indigo">mailaddress</span><span class="chip indigo">E-mail</span><span class="chip indigo">mail</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">単一文字列</span></td>
+            <td><span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr style="background:var(--indigo-50)">
+            <td><b>職員番号</b></td>
+            <td><div class="taglist"><span class="chip indigo">staff_no</span><span class="chip indigo">職員番号</span><span class="chip indigo">従業員コード</span><span class="chip indigo">教職員番号</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">単一文字列</span></td>
+            <td><span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>生年月日</b></td>
+            <td><div class="taglist"><span class="chip">生年月日</span><span class="chip">birthday</span><span class="chip">dob</span><span class="chip">誕生日</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">日付</span></td>
+            <td><span class="chip gold">一致確認</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>性別</b></td>
+            <td><div class="taglist"><span class="chip">性別</span><span class="chip">gender</span><span class="chip">sex</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">コード「性別」</span></td>
+            <td><span class="chip green">更新</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>部活顧問</b></td>
+            <td><div class="taglist"><span class="chip">club_advisor</span><span class="chip">部活顧問</span><span class="chip">顧問</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">複数文字列</span></td>
+            <td><span class="chip green">更新</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>所属（組織）</b></td>
+            <td><div class="taglist"><span class="chip">org_code</span><span class="chip">学校コード</span><span class="chip">所属コード</span><span class="chip">school</span></div></td>
+            <td><span class="muted mono" style="font-size:10.5px">組織参照</span></td>
+            <td><span class="chip sky">所属識別</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- TAB 2: 識別キー -->
+  <div class="tab-panel" data-tab-panel="set" data-tab="ident">
+    <div class="callout mb-2">
+      <span class="material-symbols-rounded">fingerprint</span>
+      <div>取込データが<b>誰のデータか</b>を判別するためのキーです。初めて一致したときに登録し、次回以降は同じキーで既存の人物データへ紐付けます。列名のゆらぎは<a href="#" onclick="document.querySelector('[data-tab=&quot;dict&quot;]').click();return false;">判定文字列</a>で吸収します。</div>
+    </div>
+    <section class="card mb-2">
+      <div class="card-h"><span class="material-symbols-rounded">key</span>登録済みの識別キー
+        <div class="right"><button class="btn sm primary" onclick="Composer.openModal('modal-ident')"><span class="material-symbols-rounded">add</span>識別キーを追加</button></div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>優先</th><th>識別キー</th><th>受領する列名（エイリアス）</th><th>紐付けの単位</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">1</td>
+            <td><b>Eメール</b></td>
+            <td><div class="taglist"><span class="chip indigo">Email</span><span class="chip indigo">メール</span><span class="chip indigo">mailaddress</span></div></td>
+            <td><span class="chip green"><span class="material-symbols-rounded sm">person</span>人と1対1</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-ident')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">2</td>
+            <td><b>職員番号（従業員コード）</b></td>
+            <td><div class="taglist"><span class="chip indigo">staff_no</span><span class="chip indigo">職員番号</span><span class="chip indigo">従業員コード</span></div></td>
+            <td><span class="chip gold"><span class="material-symbols-rounded sm">badge</span>人 ＋ 所属で1対1</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-ident')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">3</td>
+            <td><b>学籍番号</b>（生徒）</td>
+            <td><div class="taglist"><span class="chip indigo">student_no</span><span class="chip indigo">学籍番号</span><span class="chip indigo">児童生徒番号</span></div></td>
+            <td><span class="chip green"><span class="material-symbols-rounded sm">person</span>人と1対1</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-ident')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">—</td>
+            <td><b>組織コード</b>（所属の特定）</td>
+            <td><div class="taglist"><span class="chip">org_code</span><span class="chip">学校コード</span><span class="chip">所属コード</span></div></td>
+            <td><span class="chip sky"><span class="material-symbols-rounded sm">corporate_fare</span>所属の判別に併用</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-ident')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <div class="callout warn">
+      <span class="material-symbols-rounded">badge</span>
+      <div><b>人と1対1 でないデータに注意</b>: データは「人と1対1」のものと、「人の<b>所属</b>と1対1」のものがあります。例えば <b>X さん</b>は <b>A小学校では校長</b>、<b>B小学校では教頭</b> という具合に、所属先によって役職が異なります。この場合は識別キー（人）<b>＋ 組織名／組織コード</b>で所属レコードを特定して紐付けます。</div>
+    </div>
+  </div>
+
+  <!-- TAB 3: データ変換 -->
+  <div class="tab-panel" data-tab-panel="set" data-tab="transform">
+    <div class="callout mb-2">
+      <span class="material-symbols-rounded">transform</span>
+      <div>受領したファイルを、名簿の項目へそのままマッピングできない場合に変換します。<b>ファイル全体</b>の前処理（メタ行除去など）と、<b>1レコードごと</b>の変換（姓名分割・値の読み替え・コード変換）を、正規表現や JavaScript で柔軟に定義できます。</div>
+    </div>
+
+    <!-- ファイル全体変換 -->
+    <section class="card mb-2">
+      <div class="card-h"><span class="material-symbols-rounded">description</span>ファイル全体の前処理
+        <span class="sub">取込前にファイル全体へ適用</span>
+        <div class="right"><label class="toggle"><input type="checkbox" checked><span class="tr"></span></label></div>
+      </div>
+      <div class="card-b">
+        <p class="muted mb-2">例: サードパーティ出力のCSVで、先頭3行にシステム名・更新日などのファイル情報が入っているケース。これらを除去してからヘッダー判定にかけます。</p>
+        <div class="snippet"><span class="c">// 先頭3行のメタ情報（システム名・更新日時）を除去し、ヘッダー行を先頭にする</span>
+<span class="k">function</span> <span class="f">preprocess</span>(rows) {
+  <span class="k">const</span> meta = rows.<span class="f">slice</span>(0, 3);   <span class="c">// 例: ["校務システムX", "更新日,2026-06-12", ...]</span>
+  <span class="f">log</span>(<span class="s">"source"</span>, meta[0][0]);     <span class="c">// 監査ログへ出力元を記録</span>
+  <span class="k">return</span> rows.<span class="f">slice</span>(3)              <span class="c">// 4行目以降を採用</span>
+    .<span class="f">map</span>(r => r.<span class="f">map</span>(c => c.<span class="f">replace</span>(/　/g, <span class="s">" "</span>).<span class="f">trim</span>()));  <span class="c">// 全角空白→半角・trim</span>
+}</div>
+        <div class="row mt-2" style="gap:8px">
+          <button class="btn sm" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">edit</span>スクリプトを編集</button>
+          <span class="chip sky"><span class="material-symbols-rounded sm">code</span>JavaScript</span>
+          <span class="chip line">文字コード自動判定: UTF-8 / Shift_JIS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- レコード変換 -->
+    <section class="card mb-2">
+      <div class="card-h"><span class="material-symbols-rounded">rule_settings</span>レコード変換ルール
+        <span class="sub">列の値を名簿の項目に合わせて変換</span>
+        <div class="right"><button class="btn sm primary" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">add</span>ルールを追加</button></div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>ルール</th><th>変換内容</th><th>種別</th><th>適用条件</th><th>状態</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>氏名の分割</b></td>
+            <td class="muted">スペース1つ → 姓・名 / スペース2つ → 姓・ミドルネーム・名 に分割</td>
+            <td><span class="chip plum">分割</span></td>
+            <td><span class="muted">全件</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>性別の読み替え</b></td>
+            <td class="muted">Female → 女性 / Male → 男性 / F → 女性 / M → 男性</td>
+            <td><span class="chip sky">値マップ</span></td>
+            <td><span class="muted">列「性別」</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>連結データの抽出</b></td>
+            <td class="muted"><span class="mono" style="font-size:11px">山田 花子（女性）</span> → 姓・名・性別 を正規表現で抽出・振り分け</td>
+            <td><span class="chip gold">正規表現</span></td>
+            <td><span class="muted">列「氏名」</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>学年コードの変換</b></td>
+            <td class="muted">学年「3」 → 「9」（小1〜中3を 1〜9 の通し番号へ）</td>
+            <td><span class="chip">条件 ＋ JS</span></td>
+            <td><span class="chip green">組織タイプ = 中学校</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>職種のコード変換</b></td>
+            <td class="muted">「ICT支援員」→ 標準コード「その他の職員(99)」へ寄せて取込（<a href="code-standards.html">コード標準</a>を参照）</td>
+            <td><span class="chip indigo">コードマップ</span></td>
+            <td><span class="muted">列「職種」</span></td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')">編集</button></td>
+          </tr>
+          <tr class="masked">
+            <td><b>旧住所表記の正規化</b></td>
+            <td class="muted">「長野県」接頭辞の重複除去・番地の全角→半角</td>
+            <td><span class="chip gold">正規表現</span></td>
+            <td><span class="muted">列「住所」</span></td>
+            <td><span class="status wait">無効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 変換テスト（dry-run） -->
+    <section class="card">
+      <div class="card-h"><span class="material-symbols-rounded">science</span>変換テスト（ドライラン）
+        <span class="sub">1行を入力して変換結果を確認</span>
+        <div class="right"><button class="btn sm" onclick="Composer.openModal('modal-test')"><span class="material-symbols-rounded">play_arrow</span>別データで試す</button></div>
+      </div>
+      <div class="card-b">
+        <div class="ba">
+          <div>
+            <div class="muted mb-1" style="font-size:10.5px; letter-spacing:.06em">入力（受領した1行・中学校）</div>
+            <div class="io-box">name: <b>山田 花子（女性）</b><br>grade: <b>3</b><br>job: <b>ICT支援員</b></div>
+          </div>
+          <div class="arr"><span class="material-symbols-rounded">trending_flat</span></div>
+          <div>
+            <div class="muted mb-1" style="font-size:10.5px; letter-spacing:.06em">変換後（名簿へ取込）</div>
+            <div class="io-box out">姓: <b>山田</b> / 名: <b>花子</b><br>性別: <b>女性</b>（コード「性別」）<br>学年: <b>9</b>（中学校の通し番号）<br>職種: <b>ICT支援員</b>（標準: その他の職員99）</div>
+          </div>
+        </div>
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">code</span>
+          <div>変換は<b>正規表現</b>または<b>DBに登録した JavaScript</b>で実行されます。組織タイプ・所属自治体などの<b>条件</b>で分岐でき、適用結果は実行ジョブのログに記録されます（個人情報はマスク）。</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB 4: エクスポート変換 -->
+  <div class="tab-panel" data-tab-panel="set" data-tab="export">
+    <div class="callout mb-2">
+      <span class="material-symbols-rounded">output</span>
+      <div>各サードパーティへ連携するため、<b>インポートとは逆向き</b>の変換を行います。アプリ内の値を標準コードへ変換し、分割している項目を結合するなどしてから書き出します。連携は <b>Composer → 外部システム の一方向</b>です。</div>
+    </div>
+    <section class="card mb-2">
+      <div class="card-h"><span class="material-symbols-rounded">tune</span>エクスポートプロファイル
+        <div class="right"><button class="btn sm primary" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">add</span>プロファイルを追加</button></div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>プロファイル</th><th>準拠規格</th><th>変換ルール</th><th>連携</th><th>状態</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>OneRoster 連携</b></td>
+            <td><span class="chip plum">OneRoster v1.1</span></td>
+            <td class="num">14</td>
+            <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>一方向（書出）</span></td>
+            <td><span class="status ok">有効</span></td>
+          </tr>
+          <tr>
+            <td><b>校務支援システムX 連携</b></td>
+            <td><span class="chip">VENDOR-X 独自</span></td>
+            <td class="num">9</td>
+            <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>一方向（書出）</span></td>
+            <td><span class="status ok">有効</span></td>
+          </tr>
+          <tr>
+            <td><b>文科省 学校基本調査</b></td>
+            <td><span class="chip">MEXT 集計様式</span></td>
+            <td class="num">6</td>
+            <td><span class="sync off"><span class="material-symbols-rounded">cloud_off</span>手動書出</span></td>
+            <td><span class="status wait">下書き</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="card">
+      <div class="card-h"><span class="material-symbols-rounded">rule_settings</span>OneRoster 連携 — 書き出し変換ルール</div>
+      <table class="tbl">
+        <thead><tr><th>名簿項目</th><th></th><th>書き出し</th><th>種別</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>姓 ＋ 名</td>
+            <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">trending_flat</span></td>
+            <td>givenName / familyName へ分離出力</td>
+            <td><span class="chip plum">分割/結合</span></td>
+          </tr>
+          <tr>
+            <td>性別「女性」</td>
+            <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">trending_flat</span></td>
+            <td><span class="mono">female</span>（OneRoster enum）</td>
+            <td><span class="chip sky">値マップ</span></td>
+          </tr>
+          <tr style="background:var(--gold-50)">
+            <td>職種「ICT支援員」</td>
+            <td style="text-align:center; color:var(--gold)"><span class="material-symbols-rounded">trending_flat</span></td>
+            <td>その他の職員（99）<a href="code-standards.html" style="margin-left:6px">コード標準</a></td>
+            <td><span class="chip indigo">コードマップ</span></td>
+          </tr>
+          <tr>
+            <td>生年月日 2018-04-01</td>
+            <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">trending_flat</span></td>
+            <td><span class="mono">2018/04/01</span>（区切り変換）</td>
+            <td><span class="chip gold">正規表現</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout warn" style="margin:14px">
+        <span class="material-symbols-rounded">info</span>
+        <div>書き出し時に標準へのマッピングが未設定の値があると、その行はエラーになり書き出されません。<a href="code-standards.html">コード標準・連携マッピング</a>で対応付けを確認してください。</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 判定文字列モーダル -->
+  <div class="modal-backdrop" id="modal-dict">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">match_word</span>ヘッダー判定文字列の編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-dict')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>名簿項目</label><select class="select"><option>メールアドレス</option><option>氏名</option><option>職員番号</option><option>生年月日</option></select></div>
+        <div class="field">
+          <label>判定文字列（複数登録可・いずれかに一致でマッピング）</label>
+          <div class="taglist" style="padding:8px; border:1px solid var(--line-2); border-radius:7px; min-height:42px">
+            <span class="tag-input">Email<span class="material-symbols-rounded">close</span></span>
+            <span class="tag-input">メール<span class="material-symbols-rounded">close</span></span>
+            <span class="tag-input">mailaddress<span class="material-symbols-rounded">close</span></span>
+            <span class="tag-input">E-mail<span class="material-symbols-rounded">close</span></span>
+            <input style="border:0; outline:0; font-size:12px; font-family:var(--font); flex:1; min-width:80px" placeholder="文字列を入力して Enter">
+          </div>
+          <div class="hint">大文字小文字・全角半角のゆらぎは下のオプションで吸収できます。</div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>大文字小文字を区別しない</b></span></label>
+        <label class="checkbox-row"><input type="checkbox"><span><b>部分一致を許可する</b><span>「個人メールアドレス」のような列名にも一致します</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-dict')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-dict'); Composer.toast('判定文字列を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 識別キーモーダル -->
+  <div class="modal-backdrop" id="modal-ident">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">fingerprint</span>識別キーの編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-ident')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>識別キー名<span class="req">必須</span></label><input class="input" value="職員番号（従業員コード）"></div>
+        <div class="field">
+          <label>受領する列名（エイリアス）</label>
+          <div class="taglist" style="padding:8px; border:1px solid var(--line-2); border-radius:7px; min-height:42px">
+            <span class="tag-input">staff_no<span class="material-symbols-rounded">close</span></span>
+            <span class="tag-input">職員番号<span class="material-symbols-rounded">close</span></span>
+            <span class="tag-input">従業員コード<span class="material-symbols-rounded">close</span></span>
+            <input style="border:0; outline:0; font-size:12px; font-family:var(--font); flex:1; min-width:80px" placeholder="列名を入力して Enter">
+          </div>
+        </div>
+        <div class="field">
+          <label>紐付けの単位</label>
+          <select class="select"><option>人 ＋ 所属で1対1（所属ごとに値が変わる）</option><option>人と1対1（全所属で同一）</option></select>
+          <div class="hint">「人＋所属」を選ぶと、識別キーに加えて組織コードで所属レコードを特定します。</div>
+        </div>
+        <div class="field"><label>所属の特定に使う列</label><select class="select"><option>組織コード（org_code / 学校コード）</option><option>組織名</option><option>使わない</option></select></div>
+        <div class="callout">
+          <span class="material-symbols-rounded">badge</span>
+          <div>同一人物が所属先で異なる役職を持つ場合（A小で校長・B小で教頭）も、人物は同一として識別しつつ、所属レコードを分けて保持します。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-ident')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-ident'); Composer.toast('識別キーを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 変換ルールモーダル -->
+  <div class="modal-backdrop" id="modal-rule">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">transform</span>変換ルールの編集 — 連結データの抽出</h3>
+        <button class="x" onclick="Composer.closeModal('modal-rule')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>ルール名<span class="req">必須</span></label><input class="input" value="連結データの抽出"></div>
+          <div class="field"><label>種別</label>
+            <select class="select"><option>正規表現</option><option>値マップ（対応表）</option><option>分割</option><option>JavaScript（DB登録）</option><option>コードマップ（標準）</option></select></div>
+          <div class="field"><label>対象の列</label><select class="select"><option>氏名</option><option>性別</option><option>学年</option><option>職種</option></select></div>
+          <div class="field"><label>適用条件</label>
+            <select class="select"><option>全件</option><option>組織タイプ = 中学校</option><option>組織タイプ = 高等学校</option><option>所属自治体 = 上田市</option></select>
+            <div class="hint">組織タイプや所属自治体ごとに別の変換を適用できます。</div></div>
+        </div>
+        <div class="field">
+          <label>変換定義（正規表現 / JavaScript）</label>
+          <div class="snippet"><span class="c">// 「山田 花子（女性）」→ 姓・名・性別 に抽出</span>
+<span class="k">const</span> m = value.<span class="f">match</span>(/^(\S+)\s+(\S+)（(.+?)）$/);
+<span class="k">return</span> m ? { 姓: m[1], 名: m[2], 性別: m[3] } : { 姓: value };</div>
+        </div>
+        <div class="ba">
+          <div><div class="muted mb-1" style="font-size:10.5px">入力</div><div class="io-box">山田 花子（女性）</div></div>
+          <div class="arr"><span class="material-symbols-rounded">trending_flat</span></div>
+          <div><div class="muted mb-1" style="font-size:10.5px">変換後</div><div class="io-box out">姓: 山田 / 名: 花子 / 性別: 女性</div></div>
+        </div>
+        <label class="checkbox-row mt-2"><input type="checkbox" checked><span><b>取込前にバリデーションする</b><span>変換後の値を型・コード整合性で検証し、不正な行は要確認に回します</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn left" onclick="Composer.toast('サンプル20行で試験しました（成功18・要確認2）')"><span class="material-symbols-rounded">science</span>20行で試験</button>
+        <button class="btn" onclick="Composer.closeModal('modal-rule')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-rule'); Composer.toast('変換ルールを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 変換テストモーダル -->
+  <div class="modal-backdrop" id="modal-test">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">science</span>変換テスト（ドライラン）</h3>
+        <button class="x" onclick="Composer.closeModal('modal-test')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="row mb-2" style="gap:8px; flex-wrap:wrap">
+          <span class="muted">入力方法:</span>
+          <span class="chip indigo"><span class="material-symbols-rounded sm">content_paste</span>クリップボード貼り付け</span>
+          <span class="chip">CSV/TSV ファイル</span>
+          <select class="select" style="width:auto; padding:5px 28px 5px 11px; font-size:11.5px"><option>対象: 中学校</option><option>対象: 小学校</option></select>
+        </div>
+        <div class="field">
+          <label>テストデータ（ヘッダー行 ＋ 1〜数行を貼り付け）</label>
+          <textarea class="input mono" rows="4" style="font-family:var(--mono); font-size:11.5px">name,grade,gender,job
+山田 花子（女性）,3,,ICT支援員
+Smith John,2,Male,教諭</textarea>
+        </div>
+        <div class="ba">
+          <div>
+            <div class="muted mb-1" style="font-size:10.5px">解釈されたヘッダー（辞書で自動判定）</div>
+            <div class="io-box">name→氏名 / grade→学年 / gender→性別 / job→職種</div>
+          </div>
+          <div class="arr"><span class="material-symbols-rounded">trending_flat</span></div>
+          <div>
+            <div class="muted mb-1" style="font-size:10.5px">変換結果（2行）</div>
+            <div class="io-box out">① 山田 / 花子 / 女性 / 学年9 / ICT支援員<br>② Smith / John / 男性 / 学年8 / 一般教員</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-test')">閉じる</button>
+        <button class="btn primary" onclick="Composer.toast('テスト完了: 2行とも変換成功（保存はされません）')"><span class="material-symbols-rounded">play_arrow</span>変換を実行</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -81,15 +81,26 @@
           <select class="select"><option>長野県（テナント全体）</option><option>長野市</option><option>長野市立城山小学校</option></select>
         </div>
       </div>
+      <div class="callout mb-2">
+        <span class="material-symbols-rounded">match_word</span>
+        <div>ヘッダー行は<a href="import-settings.html">取込・連携設定の判定文字列辞書</a>に基づいて名簿項目へ自動マッピングされます。姓名の分割や値の読み替えなどの<a href="import-settings.html">変換ルール</a>もこの段階で適用されます。判定できない列は次のステップで手動指定します。</div>
+      </div>
       <div class="dropzone" onclick="wiz.go(2)">
         <span class="material-symbols-rounded">cloud_upload</span>
-        <b>CSVファイルをドラッグ＆ドロップ</b>
-        <p>またはクリックして選択（UTF-8 / Shift_JIS 自動判定・最大50MB）</p>
+        <b>CSV / TSV ファイルをドラッグ＆ドロップ</b>
+        <p>またはクリックして選択（UTF-8 / Shift_JIS 自動判定・タブ区切りにも対応・最大50MB）</p>
       </div>
       <div style="text-align:center">
         <div class="file-pill"><span class="material-symbols-rounded">check_circle</span>teachers_update_202606.csv<span class="muted">2,418行・14列</span>
           <button class="btn sm ghost" onclick="Composer.toast('ファイルを削除しました')"><span class="material-symbols-rounded sm">close</span></button>
         </div>
+      </div>
+      <div class="row" style="margin:16px 0 6px; gap:10px; color:var(--ink-3); font-size:11px">
+        <div style="flex:1; height:1px; background:var(--line)"></div>または<div style="flex:1; height:1px; background:var(--line)"></div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label><span class="material-symbols-rounded sm" style="vertical-align:-3px">content_paste</span> クリップボードから貼り付け（Google スプレッドシート等からのコピー＝TSV にも対応）</label>
+        <textarea class="input mono" rows="3" style="font-family:var(--mono); font-size:11.5px" placeholder="ヘッダー行を含めて貼り付け（タブ区切り / カンマ区切りを自動判定）" onchange="Composer.toast('貼り付けデータを読み込みました（タブ区切り・14列）')"></textarea>
       </div>
       <div class="wizard-foot">
         <span></span>
@@ -107,7 +118,7 @@
     <div class="card-b">
       <div class="callout mb-2">
         <span class="material-symbols-rounded">fingerprint</span>
-        <div><b>識別子（本人一致のキー）</b>には「職員番号」と「メールアドレス」が設定されています。マッピングでこの2列を指定してください。識別設定は<a href="attributes.html">属性項目定義</a>で変更できます。</div>
+        <div><b>識別子（本人一致のキー）</b>には「職員番号」と「メールアドレス」が設定されています。マッピングでこの2列を指定してください。識別キーや列名エイリアス（Email / メール / mailaddress …）は<a href="import-settings.html">取込・連携設定</a>で変更できます。</div>
       </div>
       <div class="map-row" style="border-bottom:2px solid var(--line); padding-bottom:6px">
         <span class="muted" style="font-size:10.5px; letter-spacing:.08em">CSV列（1行目ヘッダー）</span><span></span>
