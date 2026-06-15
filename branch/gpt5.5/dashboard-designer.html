@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード設計 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .designer-layout { display: grid; grid-template-columns: 300px 1fr 280px; gap: 14px; align-items: start; }
+  .dash-list .item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .12s;
+  }
+  .dash-list .item:hover { background: var(--indigo-50); }
+  .dash-list .item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .dash-list .item b { display: block; font-size: 12.5px; }
+  .dash-list .item span.meta { display: block; color: var(--ink-3); font-size: 10.5px; margin-top: 2px; }
+  .canvas-toolbar {
+    display: flex; align-items: center; gap: 8px; padding: 12px 14px;
+    border-bottom: 1px solid var(--line); background: #fbfaf8;
+  }
+  .widget-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; padding: 14px; }
+  .widget {
+    min-height: 116px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .widget.wide { grid-column: span 4; }
+  .widget.mid { grid-column: span 3; }
+  .widget.small { grid-column: span 2; }
+  .widget .wh {
+    display: flex; align-items: center; gap: 7px; padding: 10px 12px;
+    border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 700;
+  }
+  .widget .wh .right { margin-left: auto; }
+  .widget .wb { padding: 12px; font-size: 12px; }
+  .mini-kpi { display: flex; align-items: flex-end; gap: 8px; }
+  .mini-kpi b { font-size: 28px; line-height: 1; }
+  .threshold-row {
+    display: grid; grid-template-columns: 92px 1fr 42px; align-items: center; gap: 8px;
+    padding: 7px 0; border-bottom: 1px solid var(--line);
+  }
+  .threshold-row:last-child { border-bottom: 0; }
+  .rule-chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 5px 7px; border-radius: 7px;
+    background: var(--paper-2); color: var(--ink-2); font-size: 11px; font-weight: 600;
+  }
+  .palette-item {
+    display: flex; gap: 9px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .palette-item:last-child { border-bottom: 0; }
+  .palette-item .ic {
+    width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+    background: var(--indigo-50); color: var(--indigo-600); flex: none;
+  }
+  .assign-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 12px;
+  }
+  .assign-row:last-child { border-bottom: 0; }
+  .perm-mini { font-size: 11.5px; display: flex; flex-direction: column; gap: 7px; }
+  .fake-line { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .fake-line i { display: block; height: 100%; border-radius: 999px; background: var(--indigo-600); }
+  @media (max-width: 1300px) { .designer-layout { grid-template-columns: 1fr; } .widget-grid { grid-template-columns: repeat(2, 1fr); } .widget, .widget.wide, .widget.mid, .widget.small { grid-column: span 1; } }
+</style>
+</head>
+<body data-page="dashboard-designer">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="analytics.html">分析ダッシュボード</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">ダッシュボード設計</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">dashboard_customize</span>ダッシュボード設計</h1>
+      <div class="desc">教員・校長・教育委員会など、立場ごとに見るべき情報を並べ替え、閾値アラートと公開先を管理します。表示データは権限スコープで自動的に制御されます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-preview')"><span class="material-symbols-rounded">visibility</span>権限別プレビュー</button>
+      <button class="btn" onclick="Composer.openModal('modal-template')"><span class="material-symbols-rounded">library_add</span>テンプレートから作成</button>
+      <button class="btn accent" onclick="Composer.openModal('modal-publish')"><span class="material-symbols-rounded">publish</span>公開予約</button>
+    </div>
+  </div>
+
+  <section class="kpi-grid mb-2">
+    <div class="kpi" style="--accent:var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">dashboard</span>公開中ダッシュボード</div>
+      <div class="k-value">12<small>件</small></div>
+      <div class="k-delta">県教委 4 / 学校管理職 5 / 担任 3</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">crisis_alert</span>閾値アラート</div>
+      <div class="k-value">28<small>件</small></div>
+      <div class="k-delta down">長期欠席・保健室利用・指導記録</div>
+    </div>
+    <div class="kpi" style="--accent:var(--pine)">
+      <div class="k-label"><span class="material-symbols-rounded">verified_user</span>割当済みロール</div>
+      <div class="k-value">9<small>種</small></div>
+      <div class="k-delta">下位組織の上書き 3件を含む</div>
+    </div>
+    <div class="kpi" style="--accent:var(--sky)">
+      <div class="k-label"><span class="material-symbols-rounded">schedule</span>次回公開反映</div>
+      <div class="k-value">04:00</div>
+      <div class="k-delta">公開ジョブで配信・監査ログ記録</div>
+    </div>
+  </section>
+
+  <div class="designer-layout">
+    <aside class="card dash-list">
+      <div class="card-h"><span class="material-symbols-rounded">folder_managed</span>設計中・公開中<span class="sub">12件</span></div>
+      <div class="item active">
+        <span class="material-symbols-rounded" style="color:var(--vermilion)">crisis_alert</span>
+        <div><b>県域リスク早期把握</b><span class="meta">県教委・指導主事向け / 公開中</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--pine)">school</span>
+        <div><b>学校管理職 日次確認</b><span class="meta">校長・教頭向け / 上書きあり</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--indigo-600)">groups</span>
+        <div><b>担任クラス 状況把握</b><span class="meta">担任向け / 下書き</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--sky)">health_and_safety</span>
+        <div><b>健康診断・保健室利用</b><span class="meta">養護教諭向け / 7月公開予定</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--plum)">event_note</span>
+        <div><b>予定表・お便り配信</b><span class="meta">学校事務向け / テンプレート</span></div>
+      </div>
+      <div class="card-b">
+        <button class="btn primary" style="width:100%" onclick="Composer.openModal('modal-template')"><span class="material-symbols-rounded">add</span>新しいパターンを作成</button>
+      </div>
+    </aside>
+
+    <section class="card">
+      <div class="canvas-toolbar">
+        <span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>機微データを含む</span>
+        <select class="select" style="width:180px"><option>県教委・指導主事ビュー</option><option>校長ビュー</option><option>担任ビュー</option></select>
+        <select class="select" style="width:180px"><option>長野県（全体）</option><option>長野市</option><option>松本市立開成中学校</option></select>
+        <div class="sep"></div>
+        <button class="btn sm" onclick="Composer.openModal('modal-widget')"><span class="material-symbols-rounded">add_chart</span>ウィジェット追加</button>
+        <button class="btn sm" onclick="Composer.toast('配置を一時保存しました')"><span class="material-symbols-rounded">save</span>下書き保存</button>
+      </div>
+
+      <div class="callout warn" style="margin:14px 14px 0">
+        <span class="material-symbols-rounded">visibility_lock</span>
+        <div><b>権限コンテキスト</b>: 山田 太郎（県教委・システム管理者）は県全体を閲覧できます。校長・担任に割り当てると、個人明細や機微項目は所属・担当範囲だけに絞られ、権限外セルはマスクされます。</div>
+      </div>
+
+      <div class="widget-grid">
+        <article class="widget small">
+          <div class="wh"><span class="material-symbols-rounded" style="color:var(--gold)">event_busy</span>長期欠席率<div class="right"><span class="chip gold">閾値 2.8%</span></div></div>
+          <div class="wb">
+            <div class="mini-kpi"><b>2.31%</b><span class="k-delta down">+0.18pt</span></div>
+            <div class="fake-line mt-2"><i style="width:82%; background:var(--gold)"></i></div>
+            <div class="muted mt-1">3日連続上昇した自治体を要確認へ表示</div>
+          </div>
+        </article>
+        <article class="widget small">
+          <div class="wh"><span class="material-symbols-rounded" style="color:var(--vermilion)">psychology</span>相談・指導記録<div class="right"><span class="chip red">機微</span></div></div>
+          <div class="wb">
+            <div class="mini-kpi"><b>148</b><span>件 / 7日</span></div>
+            <div class="muted mt-2">個票は指導主事のみ。校長ビューでは所属校の集計のみ表示。</div>
+          </div>
+        </article>
+        <article class="widget small">
+          <div class="wh"><span class="material-symbols-rounded" style="color:var(--sky)">local_hospital</span>保健室利用</div>
+          <div class="wb">
+            <div class="mini-kpi"><b>1,204</b><span>件</span></div>
+            <div class="muted mt-2">前月比 +9.2%。学校種別の比較を表示。</div>
+          </div>
+        </article>
+        <article class="widget wide">
+          <div class="wh"><span class="material-symbols-rounded">monitoring</span>市町村別アラート分布<div class="right"><button class="btn sm ghost" onclick="Composer.openModal('modal-threshold')">閾値編集</button></div></div>
+          <div class="wb">
+            <div class="bars">
+              <div class="bar-row"><span class="b-label">長野市</span><div class="b-track"><div class="b-fill v" style="width:84%"></div></div><span class="b-num">11件</span></div>
+              <div class="bar-row"><span class="b-label">松本市</span><div class="b-track"><div class="b-fill gold" style="width:68%"></div></div><span class="b-num">8件</span></div>
+              <div class="bar-row"><span class="b-label">上田市</span><div class="b-track"><div class="b-fill gold" style="width:52%"></div></div><span class="b-num">6件</span></div>
+              <div class="bar-row"><span class="b-label">飯田市</span><div class="b-track"><div class="b-fill" style="width:35%"></div></div><span class="b-num">4件</span></div>
+            </div>
+          </div>
+        </article>
+        <article class="widget mid">
+          <div class="wh"><span class="material-symbols-rounded">rule</span>アラート条件</div>
+          <div class="wb">
+            <div class="threshold-row"><b>長期欠席</b><div><span class="rule-chip">7日以上</span> <span class="rule-chip">前月比 +0.2pt</span></div><span class="status warn">注意</span></div>
+            <div class="threshold-row"><b>保健室</b><div><span class="rule-chip">同一生徒 週3回</span></div><span class="status run">監視</span></div>
+            <div class="threshold-row"><b>相談記録</b><div><span class="rule-chip">未対応 72時間</span></div><span class="status err">緊急</span></div>
+          </div>
+        </article>
+        <article class="widget mid">
+          <div class="wh"><span class="material-symbols-rounded">person_search</span>要フォロー候補</div>
+          <div class="wb">
+            <table class="tbl">
+              <tbody>
+                <tr><td><div class="person"><span class="avatar a4 sm">鈴</span><div><b>鈴木 一郎</b><span>S-2026-04412</span></div></div></td><td><span class="chip gold">長期欠席</span></td></tr>
+                <tr><td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>校長ビューでは自校外の個人名をマスク</span></td><td><span class="chip red">機微</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <aside style="display:flex; flex-direction:column; gap:14px">
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">widgets</span>追加できる部品</div>
+        <div class="card-b">
+          <div class="palette-item"><span class="ic"><span class="material-symbols-rounded">query_stats</span></span><div><b>指標カード</b><div class="muted">出欠・体力測定・健康診断など</div></div></div>
+          <div class="palette-item"><span class="ic"><span class="material-symbols-rounded">stacked_bar_chart</span></span><div><b>比較グラフ</b><div class="muted">自治体・学校種・学年で比較</div></div></div>
+          <div class="palette-item"><span class="ic"><span class="material-symbols-rounded">crisis_alert</span></span><div><b>閾値アラート</b><div class="muted">正常値から外れた対象を強調</div></div></div>
+          <div class="palette-item"><span class="ic"><span class="material-symbols-rounded">assignment_ind</span></span><div><b>要フォロー名簿</b><div class="muted">権限外の個人情報はマスク</div></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">admin_panel_settings</span>公開先と権限</div>
+        <div class="card-b">
+          <div class="assign-row"><div><b>県教委・指導主事</b><div class="muted">県全体 / 個票閲覧可</div></div><span class="chip green">公開中</span></div>
+          <div class="assign-row"><div><b>校長・教頭</b><div class="muted">所属校のみ / 機微は集計</div></div><span class="chip gold">制限あり</span></div>
+          <div class="assign-row"><div><b>担任</b><div class="muted">自分のクラスのみ</div></div><span class="chip line">未割当</span></div>
+          <button class="btn sm" style="width:100%; margin-top:10px" onclick="Composer.openModal('modal-assign')"><span class="material-symbols-rounded">group_add</span>公開先を編集</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">history</span>変更履歴</div>
+        <div class="card-b">
+          <div class="timeline">
+            <div class="tl-item now"><div class="tl-date">2026-06-12 14:10</div><div class="tl-body"><b>山田 太郎</b>が相談記録ウィジェットを追加</div></div>
+            <div class="tl-item"><div class="tl-date">2026-06-10 09:30</div><div class="tl-body">長期欠席の閾値を 7日以上へ変更</div></div>
+            <div class="tl-item"><div class="tl-date">2026-06-01</div><div class="tl-body">県教委向けに公開</div></div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="modal-backdrop" id="modal-widget">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add_chart</span>ウィジェットを追加</h3>
+        <button class="x" onclick="Composer.closeModal('modal-widget')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>データソース</label><select class="select"><option>出欠</option><option>体力測定</option><option>健康診断</option><option>保健室利用情報</option><option>スクールカウンセラー利用情報</option></select></div>
+          <div class="field"><label>表示形式</label><select class="select"><option>閾値アラートカード</option><option>折れ線グラフ</option><option>棒グラフ</option><option>要フォロー名簿</option></select></div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>権限スコープで自動マスクする</b><span>公開先の職種・組織スコープに応じて個人名と機微項目を非表示にします</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-widget')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-widget'); Composer.toast('ウィジェットを追加しました')"><span class="material-symbols-rounded">add</span>追加</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-threshold">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">rule</span>閾値アラートを編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-threshold')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>対象指標</label><select class="select"><option>長期欠席率</option><option>保健室利用回数</option><option>相談記録の未対応時間</option></select></div>
+        <div class="grid-2">
+          <div class="field"><label>注意しきい値</label><input class="input" value="2.8% または 7日以上"></div>
+          <div class="field"><label>緊急しきい値</label><input class="input" value="3.5% または 14日以上"></div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>要対応タスクにも表示する</b><span>条件を超えた場合、ホームの要対応に表示されます</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-threshold')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-threshold'); Composer.toast('閾値を保存しました。公開反映は次回 04:00 です')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-assign">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">group_add</span>公開先を編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-assign')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout mb-2"><span class="material-symbols-rounded">policy</span><div><b>下位優先の継承</b>: テナントで公開した設定は各組織へ継承されます。学校で独自ダッシュボードが割り当てられている場合は学校設定が優先されます。</div></div>
+        <table class="tbl">
+          <thead><tr><th>公開先</th><th>対象範囲</th><th>個票</th><th>状態</th></tr></thead>
+          <tbody>
+            <tr><td>県教委・指導主事</td><td>長野県（全体）</td><td><span class="chip green">閲覧可</span></td><td><span class="status ok">公開中</span></td></tr>
+            <tr><td>校長・教頭</td><td>所属校のみ</td><td><span class="chip gold">所属校のみ</span></td><td><span class="status warn">制限あり</span></td></tr>
+            <tr><td>担任</td><td>自分のクラス</td><td><span class="chip line">機微はマスク</span></td><td><span class="status wait">未割当</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-assign')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-assign'); Composer.toast('公開先を保存しました。監査ログに記録されます')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-preview">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">visibility</span>権限別プレビュー</h3>
+        <button class="x" onclick="Composer.closeModal('modal-preview')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="perm-mini">
+          <div class="row between"><span>山田 太郎（県教委・システム管理者）</span><span class="chip green">県全体・個票閲覧可</span></div>
+          <div class="row between"><span>中村 真一（松本市立開成中・校長）</span><span class="chip gold">所属校のみ・県全体集計は閲覧可</span></div>
+          <div class="row between"><span>高橋 美咲（6年1組担任）</span><span class="chip line">自クラスのみ・機微選択肢の一部はマスク</span></div>
+        </div>
+        <div class="callout warn mt-2"><span class="material-symbols-rounded">visibility_off</span><div>担任ビューでは「相談・指導記録」の個人名と「人物特徴 P-04」は表示されません。表示結果は権限ポリシーのシミュレーターと同じ条件で評価されます。</div></div>
+      </div>
+      <div class="modal-f">
+        <a class="btn" href="permissions.html"><span class="material-symbols-rounded">admin_panel_settings</span>権限ポリシーを見る</a>
+        <button class="btn primary" onclick="Composer.closeModal('modal-preview')">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-template">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">library_add</span>テンプレートから作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-template')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>用途</label><select class="select"><option>県教委: 県域リスク早期把握</option><option>校長: 学校管理職 日次確認</option><option>担任: 担任クラス 状況把握</option><option>養護教諭: 健康診断・保健室利用</option></select></div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>既定の閾値と公開先を含める</b><span>後から組織別に上書きできます</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-template')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-template'); Composer.toast('テンプレートから下書きを作成しました')"><span class="material-symbols-rounded">check</span>作成</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-publish">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">publish</span>公開予約</h3>
+        <button class="x" onclick="Composer.closeModal('modal-publish')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p><b>県域リスク早期把握</b>を公開ジョブとして登録します。公開先の権限評価とキャッシュ更新はバックグラウンドで実行されます。</p>
+        <div class="callout mt-2"><span class="material-symbols-rounded">schedule</span><div>ジョブ <span class="mono">#JOB-20260612-011</span> として登録され、次回 04:00 の定期反映で全ユーザーのメニューへ表示されます。公開操作は監査ログに記録されます。</div></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-publish')">キャンセル</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-publish'); Composer.toast('公開ジョブ #JOB-20260612-011 を登録しました')"><span class="material-symbols-rounded">check</span>公開予約する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

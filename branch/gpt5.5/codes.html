@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コードマスター | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .code-layout { display: grid; grid-template-columns: 286px 1fr; gap: 14px; align-items: start; }
+  .code-list .item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; font-size: 12.5px;
+  }
+  .code-list .item:hover { background: var(--indigo-50); }
+  .code-list .item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .code-list .item b { display: block; }
+  .code-list .item span.meta { display:block; font-size: 10.5px; color: var(--ink-3); font-family: var(--mono); margin-top:2px; }
+  .std-map {
+    display: grid; grid-template-columns: 1fr 34px 1fr; align-items: center; gap: 9px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .std-map:last-child { border-bottom: 0; }
+  .std-box { border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; background: #fbfaf8; }
+  .std-box b { display:block; font-size:12px; }
+  .std-box span { color: var(--ink-3); font-size:10.5px; }
+  .inherit-tag {
+    display:inline-flex; align-items:center; gap:4px; border-radius:999px; padding:3px 7px;
+    font-size:10.5px; font-weight:700; border:1px solid var(--line);
+  }
+  .inherit-tag.tenant { color:var(--indigo-700); background:var(--indigo-50); border-color:#d4deef; }
+  .inherit-tag.org { color:var(--vermilion-dark); background:var(--vermilion-50); border-color:#efcabd; }
+  .unknown-card {
+    display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center;
+    border:1px solid var(--line); border-radius:10px; padding:12px; background:#fbfaf8;
+  }
+  .unknown-card + .unknown-card { margin-top:9px; }
+  .code-note { font-size: 11.5px; color: var(--ink-3); line-height: 1.65; }
+  @media (max-width:1100px) { .code-layout { grid-template-columns:1fr; } }
+</style>
+</head>
+<body data-page="codes">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">コードマスター</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">data_object</span>コードマスター</h1>
+      <div class="desc">コード型属性の選択肢、未登録値の受け入れ、標準コードへの変換、組織別上書きを管理します。アプリ内の分かりやすい表示と、OneRoster等の出力仕様を分離できます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-unknown')"><span class="material-symbols-rounded">playlist_add_check</span>未登録値キュー</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-code-add')"><span class="material-symbols-rounded">add</span>コードマスターを作成</button>
+    </div>
+  </div>
+
+  <div class="code-layout">
+    <aside class="card code-list">
+      <div class="card-h"><span class="material-symbols-rounded">folder</span>マスター一覧<span class="sub">12件</span></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">wc</span><div><b>性別</b><span class="meta">CODE-001・3コード</span></div></div>
+      <div class="item active"><span class="material-symbols-rounded" style="color:var(--vermilion)">work</span><div><b>職種</b><span class="meta">CODE-002・13コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">directions_bus</span><div><b>通学方法</b><span class="meta">CODE-014・5コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">event_busy</span><div><b>出欠状況</b><span class="meta">CODE-031・6コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">psychology</span><div><b>人物特徴</b><span class="meta">CODE-049・5コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">medical_services</span><div><b>アレルギー区分</b><span class="meta">CODE-052・9コード</span></div></div>
+      <div class="card-b code-note">
+        選択肢にない値を許可している属性では、CSVインポート時に未登録値がキューへ入り、承認するとこのマスターへ追加されます。
+      </div>
+    </aside>
+
+    <section style="display:flex; flex-direction:column; gap:14px">
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">work</span>職種
+          <span class="chip mono" style="font-family:var(--mono)">CODE-002</span>
+          <span class="inherit-tag tenant"><span class="material-symbols-rounded sm">account_tree</span>テナント定義</span>
+          <span class="chip gold"><span class="material-symbols-rounded sm">sync_alt</span>標準コード変換あり</span>
+          <div class="right">
+            <button class="btn sm" onclick="Composer.openModal('modal-usage')"><span class="material-symbols-rounded">link</span>利用箇所</button>
+            <button class="btn sm" onclick="Composer.openModal('modal-org-override')"><span class="material-symbols-rounded">layers</span>組織別上書き</button>
+            <button class="btn sm primary" onclick="Composer.openModal('modal-code-edit')"><span class="material-symbols-rounded">add</span>コードを追加</button>
+          </div>
+        </div>
+        <div class="callout" style="margin:14px 14px 0">
+          <span class="material-symbols-rounded">data_object</span>
+          <div><b>アプリ内表示と標準出力を分けて管理</b>: Composerでは「ICT支援員」として検索・登録できます。OneRosterや文科省標準で出力するときは、対応する標準コードへ変換されます。</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Composerコード</th><th>アプリ内表示</th><th>標準出力マッピング</th><th>入力時の別名</th><th>利用数</th><th>状態</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">J-01</td>
+              <td><span class="chip green">一般教員</span></td>
+              <td><span class="chip sky">文科省: 教諭</span> <span class="chip plum">OneRoster: teacher</span></td>
+              <td class="muted">教諭 / 教員 / Teacher</td>
+              <td class="num">18,402</td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-edit')">編集</button></td>
+            </tr>
+            <tr style="background:var(--gold-50)">
+              <td class="mono">J-09</td>
+              <td><span class="chip gold">ICT支援員</span></td>
+              <td><span class="chip sky">文科省: その他の職員</span> <span class="chip plum">OneRoster: aide</span></td>
+              <td class="muted">ICT Support / ICTサポーター / ICT支援</td>
+              <td class="num">83</td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-edit')">編集</button></td>
+            </tr>
+            <tr>
+              <td class="mono">J-02</td>
+              <td><span class="chip indigo">校長</span></td>
+              <td><span class="chip sky">文科省: 校長</span> <span class="chip plum">OneRoster: administrator</span></td>
+              <td class="muted">学校長 / Principal</td>
+              <td class="num">612</td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-edit')">編集</button></td>
+            </tr>
+            <tr>
+              <td class="mono">J-03</td>
+              <td><span class="chip indigo">教頭</span></td>
+              <td><span class="chip sky">文科省: 教頭</span> <span class="chip plum">OneRoster: administrator</span></td>
+              <td class="muted">副校長 / Vice Principal</td>
+              <td class="num">891</td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-edit')">編集</button></td>
+            </tr>
+            <tr class="masked">
+              <td class="mono">J-99</td>
+              <td><span class="chip">その他</span></td>
+              <td><span class="chip sky">文科省: その他の職員</span></td>
+              <td class="muted">未分類 / その他職員</td>
+              <td class="num">14</td>
+              <td><span class="status wait">統合予定</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-edit')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="grid-2">
+        <section class="card">
+          <div class="card-h"><span class="material-symbols-rounded">sync_alt</span>標準コード変換プレビュー
+            <div class="right"><button class="btn sm ghost" onclick="Composer.openModal('modal-map')">変換表を編集</button></div>
+          </div>
+          <div class="card-b">
+            <div class="std-map">
+              <div class="std-box"><b>Composer: ICT支援員</b><span class="mono">J-09 / アプリ内検索・名簿表示</span></div>
+              <span class="material-symbols-rounded" style="color:var(--line-2)">east</span>
+              <div class="std-box"><b>OneRoster: aide</b><span>文科省職種: その他の職員 として出力</span></div>
+            </div>
+            <div class="std-map">
+              <div class="std-box"><b>Composer: 一般教員</b><span class="mono">J-01 / UIでは現場語に統一</span></div>
+              <span class="material-symbols-rounded" style="color:var(--line-2)">east</span>
+              <div class="std-box"><b>OneRoster: teacher</b><span>文科省職種: 教諭 として出力</span></div>
+            </div>
+            <div class="callout warn mt-2">
+              <span class="material-symbols-rounded">warning</span>
+              <div>出力時のみ変換されます。Composer内の検索・フィルタ・権限条件では「ICT支援員」をそのまま扱います。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-h"><span class="material-symbols-rounded">playlist_add_check</span>未登録値の受け入れ
+            <span class="chip gold">3件</span>
+          </div>
+          <div class="card-b">
+            <div class="unknown-card">
+              <div><b>ICTサポーター</b><div class="muted">CSV: 松本市立開成中学校 / 7行 / 属性「職種」は未登録値を許可</div></div>
+              <button class="btn sm primary" onclick="Composer.openModal('modal-unknown')">確認</button>
+            </div>
+            <div class="unknown-card">
+              <div><b>副校長</b><div class="muted">小学校・中学校では「教頭」へ標準化候補</div></div>
+              <button class="btn sm" onclick="Composer.openModal('modal-unknown')">確認</button>
+            </div>
+            <div class="callout mt-2">
+              <span class="material-symbols-rounded">tune</span>
+              <div>未登録値を許可するかは<a href="attributes.html">属性項目定義</a>のバリデーションで設定します。許可しない属性ではインポート時にエラー行になります。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">layers</span>組織ごとの差分
+          <span class="sub">下位優先でテナント設定を上書き</span>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>組織</th><th>上書き内容</th><th>理由</th><th>適用期間</th><th>状態</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>県立長野高等学校</td>
+              <td><span class="inherit-tag org">組織独自</span> 「教頭」を非表示、「副校長」を表示</td>
+              <td class="muted">高校は副校長職を採用</td>
+              <td class="mono">2026-04-01〜</td>
+              <td><span class="status ok">適用中</span></td>
+            </tr>
+            <tr>
+              <td>長野市立城山小学校</td>
+              <td><span class="inherit-tag tenant">継承</span> テナント設定を使用</td>
+              <td class="muted">小学校は教頭を使用</td>
+              <td class="mono">2026-04-01〜</td>
+              <td><span class="status ok">適用中</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="modal-code-edit">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">edit</span>コードの編集 — J-09「ICT支援員」</h3>
+        <button class="x" onclick="Composer.closeModal('modal-code-edit')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>Composerコード</label><input class="input mono" value="J-09" style="font-family:var(--mono)"></div>
+          <div class="field"><label>アプリ内表示名</label><input class="input" value="ICT支援員"></div>
+          <div class="field"><label>文科省標準コード</label><select class="select"><option>その他の職員</option><option>教諭</option><option>校長</option><option>教頭</option></select></div>
+          <div class="field"><label>OneRoster role</label><select class="select"><option>aide</option><option>teacher</option><option>administrator</option><option>proctor</option></select></div>
+        </div>
+        <div class="field">
+          <label>入力時の別名（CSVヘッダー・値のゆらぎを吸収）</label>
+          <input class="input" value="ICT Support, ICTサポーター, ICT支援">
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>検索・フィルタではアプリ内表示名を使用する</b><span>出力時だけ標準コードへ変換します</span></span></label>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>このコードの変更を監査ログに記録</b><span>コード変換は外部連携結果に影響するため、変更者と適用開始日を保存します</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-code-edit')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-code-edit'); Composer.toast('コード設定を保存しました。出力変換は次回エクスポートから有効です')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-unknown">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">playlist_add_check</span>未登録値キュー</h3>
+        <button class="x" onclick="Composer.closeModal('modal-unknown')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout warn mb-2">
+          <span class="material-symbols-rounded">warning</span>
+          <div>属性「職種」は「選択肢にない値の登録を許可」がオンです。承認するとコードマスターに追加または既存コードへ別名として紐づきます。</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>未登録値</th><th>発生元</th><th>推奨処理</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>ICTサポーター</b></td>
+              <td class="muted">teachers_update_202606.csv / 松本市立開成中 / 7行</td>
+              <td><span class="chip gold">J-09「ICT支援員」の別名に追加</span></td>
+              <td><button class="btn sm primary" onclick="Composer.toast('ICTサポーターをJ-09の別名として承認しました')">承認</button></td>
+            </tr>
+            <tr>
+              <td><b>副校長</b></td>
+              <td class="muted">org_staff_ueda.tsv / 県立長野高 / 2行</td>
+              <td><span class="chip sky">高校組織のみ有効なコードとして追加</span></td>
+              <td><button class="btn sm primary" onclick="Composer.toast('副校長を高校向け上書きコードとして追加しました')">承認</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-unknown')">閉じる</button>
+        <button class="btn danger-ghost" onclick="Composer.closeModal('modal-unknown'); Composer.toast('選択した未登録値をエラー扱いに戻しました', 'err')">エラーへ戻す</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-map">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">sync_alt</span>標準コード変換表</h3>
+        <button class="x" onclick="Composer.closeModal('modal-map')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>出力形式</label><select class="select"><option>OneRoster 1.2</option><option>文科省標準コードCSV</option><option>校務支援ベンダー連携</option></select></div>
+        <div class="field"><label>変換ルール（JavaScript式・プレビュー用）</label><textarea class="input mono" rows="4">if (value === "ICT支援員") return "その他の職員";
+if (value === "一般教員") return "教諭";
+return value;</textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-map')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-map'); Composer.toast('変換表を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-org-override">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">layers</span>組織別の上書き</h3>
+        <button class="x" onclick="Composer.closeModal('modal-org-override')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>対象組織</label><select class="select"><option>県立長野高等学校</option><option>長野市立城山小学校</option><option>松本市立開成中学校</option></select></div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>高校では「副校長」を有効にし「教頭」を非表示</b><span>配下の県立高校へ継承されます</span></span></label>
+        <label class="checkbox-row"><input type="checkbox"><span><b>未登録値をこの組織だけで許可する</b><span>テナント全体へは波及しません</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-org-override')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-org-override'); Composer.toast('組織別上書きを保存しました。下位優先で適用されます')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-usage">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">link</span>利用箇所</h3>
+        <button class="x" onclick="Composer.closeModal('modal-usage')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <table class="tbl">
+          <tbody>
+            <tr><td>属性項目</td><td><a href="attributes.html">職種（教職員・基本情報）</a></td></tr>
+            <tr><td>インポート</td><td><a href="import.html">教職員名簿の登録・更新</a></td></tr>
+            <tr><td>権限条件</td><td><a href="permissions.html">職種 = 一般教員 / 校長 / ICT支援員</a></td></tr>
+            <tr><td>エクスポート</td><td>OneRoster / 文科省標準コードCSV</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-f"><button class="btn primary" onclick="Composer.closeModal('modal-usage')">閉じる</button></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-code-add">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>コードマスターを作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-code-add')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>マスター名<span class="req">必須</span></label><input class="input" placeholder="例: 進路区分"></div>
+          <div class="field"><label>マスターID</label><input class="input mono" placeholder="自動採番（CODE-053）" style="font-family:var(--mono)"></div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox"><span><b>選択肢にない値の登録を許可する</b><span>CSVインポート時に未登録値キューへ登録します</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-code-add')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-code-add'); Composer.toast('コードマスターを作成しました。続けてコードを追加してください')"><span class="material-symbols-rounded">check</span>作成</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

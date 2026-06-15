@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>処理状況・ログ | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .prog { width: 130px; height: 8px; background: var(--paper-2); border-radius: 5px; overflow: hidden; }
+  .prog .p-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--sky), #4d9fc7); animation: grow .6s ease; }
+  .log-line { font-family: var(--mono); font-size: 11px; padding: 5px 12px; border-left: 3px solid var(--line); margin-bottom: 2px; background: #fbfaf8; border-radius: 0 6px 6px 0; }
+  .log-line.err { border-left-color: var(--vermilion); background: var(--vermilion-50); color: var(--vermilion-dark); }
+  .log-line.ok { border-left-color: var(--pine); }
+</style>
+</head>
+<body data-page="jobs">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">処理状況・ログ</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">manage_history</span>処理状況・ログ</h1>
+      <div class="desc">CSVインポート・所属変更バッチ・Workspace同期など、バックグラウンド処理の進捗と結果を確認できます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('一覧を更新しました')"><span class="material-symbols-rounded">refresh</span>更新</button>
+      <a class="btn primary" href="import.html"><span class="material-symbols-rounded">upload_file</span>新しいインポート</a>
+    </div>
+  </div>
+
+  <div class="toolbar mb-2">
+    <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="ジョブID・ジョブ名で検索"></div>
+    <select class="select" style="width:150px"><option>すべての種類</option><option>CSVインポート</option><option>所属変更バッチ</option><option>Workspace同期</option><option>エクスポート</option></select>
+    <select class="select" style="width:130px"><option>すべての状態</option><option>実行中</option><option>完了</option><option>エラーあり</option></select>
+    <select class="select" style="width:140px"><option>自分の申請のみ</option><option>すべての申請者</option></select>
+  </div>
+
+  <section class="card">
+    <table class="tbl">
+      <thead><tr><th>ジョブID</th><th>種類 / ジョブ名</th><th>申請者</th><th>開始</th><th>結果</th><th>状態</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">#JOB-20260612-001</td>
+          <td><b>所属変更バッチ</b><br><span class="muted">生徒名簿 年度更新（転入学期反映）</span></td>
+          <td><div class="person"><span class="avatar sm">系</span><div><b>システム</b><span>定期実行</span></div></div></td>
+          <td class="mono">06-12 13:05</td>
+          <td><div class="prog"><div class="p-fill" style="width:52%"></div></div><span class="muted">1,243 / 2,390 行</span></td>
+          <td><span class="status run">実行中 52%</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.toast('実行中ジョブの詳細（モック）')">詳細</button></td>
+        </tr>
+        <tr style="background: var(--vermilion-50)">
+          <td class="mono">#JOB-20260612-003</td>
+          <td><b>CSVインポート</b><br><span class="muted">教員名簿一括更新（teachers_update_202606.csv）</span></td>
+          <td><div class="person"><span class="avatar sm">山</span><div><b>山田 太郎</b><span>県教委</span></div></div></td>
+          <td class="mono">06-12 11:42</td>
+          <td><span class="mono">成功 2,406 / エラー 12</span></td>
+          <td><span class="status err">エラーあり</span></td>
+          <td>
+            <button class="btn sm accent" onclick="Composer.openModal('modal-errors')"><span class="material-symbols-rounded">error</span>エラー詳細</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="mono">#JOB-20260612-002</td>
+          <td><b>Workspace同期</b><br><span class="muted">定期同期（OU・氏名・クラス情報）</span></td>
+          <td><div class="person"><span class="avatar sm">系</span><div><b>システム</b><span>定期実行 04:00</span></div></div></td>
+          <td class="mono">06-12 04:00</td>
+          <td><span class="mono">更新 248 / スキップ 3</span></td>
+          <td><span class="status ok">完了</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.toast('同期ログ（モック）')">詳細</button></td>
+        </tr>
+        <tr>
+          <td class="mono">#JOB-20260611-008</td>
+          <td><b>CSVエクスポート</b><br><span class="muted">長野市 小学校 名簿（基本情報）</span></td>
+          <td><div class="person"><span class="avatar a4 sm">加</span><div><b>加藤 直樹</b><span>長野市教委</span></div></div></td>
+          <td class="mono">06-11 16:20</td>
+          <td><span class="mono">18,204 行</span></td>
+          <td><span class="status ok">完了</span></td>
+          <td><button class="btn sm" onclick="Composer.toast('エクスポートファイルをダウンロードしました')"><span class="material-symbols-rounded">download</span>取得</button></td>
+        </tr>
+        <tr>
+          <td class="mono">#JOB-20260611-004</td>
+          <td><b>CSVインポート</b><br><span class="muted">クラス編成（後町小 2026年度）— ドライラン</span></td>
+          <td><div class="person"><span class="avatar a3 sm">渡</span><div><b>渡辺 修</b><span>城山小・校長</span></div></div></td>
+          <td class="mono">06-11 09:13</td>
+          <td><span class="mono">検証 388 行 / 警告 2</span></td>
+          <td><span class="status warn">完了（警告）</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.toast('ドライラン結果レポート（モック）')">レポート</button></td>
+        </tr>
+        <tr>
+          <td class="mono">#JOB-20260610-006</td>
+          <td><b>所属変更バッチ</b><br><span class="muted">承認済み申請の実行（6/10 実行日分）</span></td>
+          <td><div class="person"><span class="avatar sm">系</span><div><b>システム</b><span>定期実行</span></div></div></td>
+          <td class="mono">06-10 04:00</td>
+          <td><span class="mono">3 件</span></td>
+          <td><span class="status ok">完了</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.toast('実行内訳（モック）')">詳細</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <span style="margin-right:auto">直近30日 / 142ジョブ</span>
+      <button><span class="material-symbols-rounded sm">chevron_left</span></button>
+      <button class="cur">1</button><button>2</button><button>3</button>
+      <button><span class="material-symbols-rounded sm">chevron_right</span></button>
+    </div>
+  </section>
+
+  <!-- エラー詳細モーダル -->
+  <div class="modal-backdrop" id="modal-errors">
+    <div class="modal wide danger">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">error</span>エラー詳細 — #JOB-20260612-003</h3>
+        <button class="x" onclick="Composer.closeModal('modal-errors')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="row mb-2" style="gap:8px">
+          <span class="chip red">E-IDENT-MISMATCH × 12</span>
+          <span class="chip">教員名簿一括更新</span>
+          <span class="chip mono" style="font-family:var(--mono)">teachers_update_202606.csv</span>
+        </div>
+        <div class="log-line ok">11:42:03 [INFO]  job started — 2,418 rows, mapping "教員定期更新"</div>
+        <div class="log-line ok">11:42:18 [INFO]  identity check passed: 2,361 matched / 42 new</div>
+        <div class="log-line err">11:42:19 [ERROR] row 88   staff_no "T-9981" not found in roster (E-IDENT-MISMATCH)</div>
+        <div class="log-line err">11:42:19 [ERROR] row 214  staff_no "T-0000" not found in roster (E-IDENT-MISMATCH)</div>
+        <div class="log-line err">11:42:20 [ERROR] row 305  staff_no empty — identifier required (E-IDENT-MISMATCH)</div>
+        <div class="log-line err">11:42:20 [ERROR] … ほか9行（エラー行CSVに全件出力）</div>
+        <div class="log-line ok">11:44:51 [INFO]  job finished — success 2,406 / error 12</div>
+        <div class="callout error mt-2">
+          <span class="material-symbols-rounded">lightbulb</span>
+          <div><b>対処のヒント</b>: エラー行CSVを修正して再インポートしてください。職員番号が新規発番の場合は、先に名簿へ登録するか「新規登録を許可」を有効にしてください。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn left danger-ghost" onclick="Composer.closeModal('modal-errors'); Composer.openModal('modal-inquiry')"><span class="material-symbols-rounded">contact_support</span>システム管理者へ問い合わせ</button>
+        <button class="btn" onclick="Composer.toast('エラー行CSVをダウンロードしました')"><span class="material-symbols-rounded">download</span>エラー行CSV</button>
+        <a class="btn primary" href="import.html"><span class="material-symbols-rounded">replay</span>修正して再インポート</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 問い合わせモーダル -->
+  <div class="modal-backdrop" id="modal-inquiry">
+    <div class="modal danger">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">contact_support</span>システム管理者へ問い合わせ</h3>
+        <button class="x" onclick="Composer.closeModal('modal-inquiry')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>件名</label><input class="input" value="CSVインポートのエラーについて（#JOB-20260612-003）"></div>
+        <div class="field"><label>問い合わせ内容<span class="req">必須</span></label>
+          <textarea class="input" rows="4">識別子不一致の12行について、識別設定の見直しが必要か確認をお願いします。</textarea></div>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>エラーログを添付する</b><span>個人情報はマスクして添付されます</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-inquiry')">キャンセル</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-inquiry'); Composer.toast('問い合わせを送信しました（受付番号 INQ-0483）')"><span class="material-symbols-rounded">send</span>送信する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>
