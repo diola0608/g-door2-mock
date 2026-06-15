@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>連携・変換設定 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .codeblock { background: #0d1424; color: #cdd6e4; border-radius: var(--r-md); padding: 14px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.65; overflow-x: auto; white-space: pre; }
+    .codeblock .k { color: #c4b5fd; } .codeblock .s { color: #86efac; } .codeblock .c { color: #6b7a99; font-style: italic; } .codeblock .f { color: #7dd3fc; } .codeblock .n { color: #fca5a5; }
+    .match-row { display: grid; grid-template-columns: 200px 1fr 1.2fr 44px; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--border); }
+    .match-row:last-child { border-bottom: none; }
+    .pipe { display: flex; align-items: stretch; gap: 0; overflow-x: auto; }
+    .pipe__step { flex: 1; min-width: 130px; text-align: center; padding: 14px 10px; position: relative; }
+    .pipe__step:not(:last-child)::after { content: "→"; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--c-300); font-weight: 700; }
+    .pipe__ico { width: 42px; height: 42px; border-radius: var(--r-md); display: grid; place-items: center; margin: 0 auto 8px; }
+  </style>
+</head>
+<body data-page="data-mapping">
+  <main id="main" class="main">
+    <div class="page page--wide" data-tabs>
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">連携・変換設定</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile info" style="width:38px;height:38px"><i data-ic="plug" data-size="20"></i></span> 連携・変換設定</h1>
+          <p class="page-subtitle">インポート／エクスポートの項目マッピング・本人識別・データ変換・規格マッピングを一元管理します。CSV/TSVのアップロードとクリップボード貼り付けに対応します。</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-open="testModal"><i data-ic="play" data-size="16"></i> 変換をテスト</button>
+          <button class="btn btn--primary" data-open="profileDrawer"><i data-ic="plus" data-size="16"></i> プロファイル作成</button>
+        </div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile info"><i data-ic="plug"></i></span><span class="stat__label">連携プロファイル</span></div><div class="stat__value">5</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile success"><i data-ic="upload"></i></span><span class="stat__label">インポート</span></div><div class="stat__value">3</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile violet"><i data-ic="download"></i></span><span class="stat__label">エクスポート</span></div><div class="stat__value">2</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="sparkles"></i></span><span class="stat__label">変換ルール</span></div><div class="stat__value">19</div></div>
+      </div>
+
+      <div class="tabs mb-20">
+        <button class="tab active" data-tab="profiles"><i data-ic="plug" data-size="15"></i> 連携プロファイル</button>
+        <button class="tab" data-tab="fields"><i data-ic="list" data-size="15"></i> 項目マッピング</button>
+        <button class="tab" data-tab="keys"><i data-ic="key" data-size="15"></i> 識別キー</button>
+        <button class="tab" data-tab="transform"><i data-ic="code" data-size="15"></i> データ変換</button>
+        <button class="tab" data-tab="standards"><i data-ic="layers" data-size="15"></i> コード標準</button>
+      </div>
+
+      <!-- PROFILES -->
+      <div data-tab-panel="profiles" class="tab-pane active">
+        <div class="card mb-18"><div class="card__body" style="padding:16px 18px"><div class="pipe">
+          <div class="pipe__step"><div class="pipe__ico ico-tile info"><i data-ic="upload" data-size="20"></i></div><div class="fw-6 text-sm">① 読込</div><div class="text-3 text-xs">CSV/TSV・貼付</div></div>
+          <div class="pipe__step"><div class="pipe__ico ico-tile brand"><i data-ic="code" data-size="20"></i></div><div class="fw-6 text-sm">② ファイル変換</div><div class="text-3 text-xs">前処理(JS)</div></div>
+          <div class="pipe__step"><div class="pipe__ico ico-tile teal"><i data-ic="list" data-size="20"></i></div><div class="fw-6 text-sm">③ 項目マッピング</div><div class="text-3 text-xs">判定文字列</div></div>
+          <div class="pipe__step"><div class="pipe__ico ico-tile warning"><i data-ic="key" data-size="20"></i></div><div class="fw-6 text-sm">④ 本人識別</div><div class="text-3 text-xs">識別キー</div></div>
+          <div class="pipe__step"><div class="pipe__ico ico-tile violet"><i data-ic="sparkles" data-size="20"></i></div><div class="fw-6 text-sm">⑤ レコード変換</div><div class="text-3 text-xs">値の正規化</div></div>
+          <div class="pipe__step"><div class="pipe__ico ico-tile success"><i data-ic="checkCircle" data-size="20"></i></div><div class="fw-6 text-sm">⑥ 反映</div><div class="text-3 text-xs">名簿へ</div></div>
+        </div></div></div>
+
+        <div class="card">
+          <div class="card__head"><span class="card__title">連携プロファイル</span>
+            <div class="spacer segmented"><button class="active">すべて</button><button>インポート</button><button>エクスポート</button></div>
+          </div>
+          <div class="table-wrap"><table class="tbl tbl-clickable" id="profTable"><thead>
+            <tr><th>プロファイル名</th><th>方向</th><th>形式</th><th>対象</th><th class="num">項目</th><th class="num">変換</th><th>更新</th><th class="col-actions"></th></tr>
+          </thead><tbody id="profBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- FIELDS -->
+      <div data-tab-panel="fields" class="tab-pane">
+        <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">各項目に「ヘッダー行のどんな文字列が来たらこの項目か」を判定する<b>判定用文字列</b>を登録します（1項目に複数可）。サードパーティの様式が違っても、同じ設定で取り込めます。</div></div>
+        <div class="card">
+          <div class="card__head"><span class="card__title">項目マッピング辞書</span><button class="btn btn--sm btn--secondary spacer" data-toast="項目を追加しました（デモ）"><i data-ic="plus" data-size="14"></i> 項目を追加</button></div>
+          <div class="match-row" style="background:var(--surface-2);font-size:11.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em"><span>名簿の項目</span><span>判定用文字列（ヘッダー候補）</span><span>既定の変換</span><span></span></div>
+          <div id="matchBody"></div>
+        </div>
+      </div>
+
+      <!-- KEYS -->
+      <div data-tab-panel="keys" class="tab-pane">
+        <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">「誰のデータか」を判別する識別キーを登録します。初回に値が渡されたとき本人として登録し、次回以降は紐付け先として判定します。<b>人と1:1のキー</b>のほか、Xさんが「A校では校長・B校では教頭」のように<b>所属と1:1</b>のキー（組織コード＋職員番号）も設定できます。</div></div>
+        <div class="card">
+          <div class="card__head"><span class="card__title">識別キー</span><button class="btn btn--sm btn--secondary spacer" data-toast="識別キーを追加しました（デモ）"><i data-ic="plus" data-size="14"></i> キーを追加</button></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>識別キー</th><th>対応関係</th><th>判定される列名（ヘッダー候補）</th><th>主キー</th><th class="col-actions"></th></tr></thead><tbody id="keyBody"></tbody></table></div>
+        </div>
+        <div class="alert alert--warning mt-14"><span class="alert__ico"><i data-ic="shieldAlert" data-size="18"></i></span><div class="alert__text">識別子が一致した場合は、<b>すべての項目が一致するか</b>を確認した上で本人と判定します（テナント既定。<a href="settings.html" class="muted-link">本人識別設定</a>で変更可）。</div></div>
+      </div>
+
+      <!-- TRANSFORM -->
+      <div data-tab-panel="transform" class="tab-pane">
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+          <div class="card"><div class="card__head"><span class="card__title"><i data-ic="code" data-size="17"></i> ファイル全体の変換（前処理）</span><span class="badge badge--brand spacer">JavaScript</span></div><div class="card__body">
+            <p class="text-2 text-sm mb-12">ファイル情報行のスキップや全体置換など、柔軟な前処理を記述できます。例: 先頭3行のメタ情報を読み飛ばす。</p>
+            <div class="codeblock"><span class="c">// 先頭3行（システム名・更新日など）を除去</span>
+<span class="k">function</span> <span class="f">preprocess</span>(rows) {
+  <span class="k">const</span> meta = rows.<span class="f">slice</span>(<span class="n">0</span>, <span class="n">3</span>);
+  <span class="k">const</span> body = rows.<span class="f">slice</span>(<span class="n">3</span>);
+  <span class="c">// 全角スペースを半角へ正規化</span>
+  <span class="k">return</span> body.<span class="f">map</span>(r =&gt; r.<span class="f">replaceAll</span>(<span class="s">'　'</span>, <span class="s">' '</span>));
+}</div>
+            <div class="flex gap-8 mt-12"><button class="btn btn--sm btn--secondary" data-toast="スクリプトを検証しました（デモ）"><i data-ic="check" data-size="14"></i> 検証</button><button class="btn btn--sm btn--ghost" data-open="testModal">サンプルで実行</button></div>
+          </div></div>
+
+          <div class="card"><div class="card__head"><span class="card__title"><i data-ic="sparkles" data-size="17"></i> レコードの変換ルール</span><button class="btn btn--sm btn--secondary spacer" data-toast="ルールを追加しました（デモ）"><i data-ic="plus" data-size="14"></i> 追加</button></div><div class="card__body card__body--flush"><div id="ruleList"></div></div></div>
+        </div>
+
+        <div class="card mt-18"><div class="card__head"><span class="card__title"><i data-ic="braces" data-size="17"></i> レコード変換（高度・JavaScript）</span></div><div class="card__body">
+          <p class="text-2 text-sm mb-12">組織タイプや所属自治体による条件分岐、正規表現での分割など、DBに登録したJavaScriptで変換できます。例:「山田 花子（女性）」を 姓・名・性別 に振り分け、中学校では学年 3 → 9 に変換。</p>
+          <div class="codeblock"><span class="k">function</span> <span class="f">transform</span>(rec, ctx) {
+  <span class="c">// "山田 花子（女性）" → 姓 / 名 / 性別</span>
+  <span class="k">const</span> m = rec.fullname.<span class="f">match</span>(<span class="s">/^(\S+)\s+(\S+)（(.+)）$/</span>);
+  <span class="k">if</span> (m) { rec.lastName = m[<span class="n">1</span>]; rec.firstName = m[<span class="n">2</span>]; rec.gender = m[<span class="n">3</span>]; }
+  <span class="c">// 中学校は学年を OneRoster 表記へ（3 → 9）</span>
+  <span class="k">if</span> (ctx.schoolType === <span class="s">'中学校'</span>) rec.grade = Number(rec.grade) + <span class="n">6</span>;
+  <span class="k">return</span> rec;
+}</div>
+        </div></div>
+      </div>
+
+      <!-- STANDARDS -->
+      <div data-tab-panel="standards" class="tab-pane">
+        <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">アプリ内の表示・登録・検索に使う値と、規格（OneRoster・文科省コード等）で入出力する値を相互変換します。例:「ICT支援員」はアプリ内ではそのまま扱い、エクスポート時は「その他の職員」へマッピングします。</div></div>
+        <div class="card">
+          <div class="card__head"><span class="card__title">コード標準マッピング ― 職種</span>
+            <div class="spacer flex gap-8"><select class="select btn--sm" style="width:auto;height:34px"><option>職種</option><option>性別</option><option>学年</option><option>在籍区分</option></select><button class="btn btn--sm btn--secondary" data-toast="マッピングを追加しました（デモ）"><i data-ic="plus" data-size="14"></i> 追加</button></div>
+          </div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>アプリ内表示</th><th>内部コード</th><th>文科省 職種コード</th><th>OneRoster role</th><th>区分</th><th class="col-actions"></th></tr></thead><tbody id="stdBody"></tbody></table></div>
+          <div class="card__foot"><span class="text-3 text-sm"><i data-ic="info" data-size="14" style="vertical-align:-2px"></i> 黄色の行はアプリ独自の値です。規格にない値も、出力時に標準コードへ変換して書き出せます。</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Profile drawer -->
+  <div class="overlay drawer-right" id="profileDrawer"><div class="drawer drawer--lg">
+    <div class="drawer__head"><span class="ico-tile info"><i data-ic="plug"></i></span><div class="grow"><div class="fw-7" style="font-size:16px">連携プロファイル</div><div class="text-3 text-sm">読込から反映までを1つの設定にまとめます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="drawer__body">
+      <div class="field-row"><div class="field"><label class="label">プロファイル名 <span class="req">*</span></label><input class="input" placeholder="例: 校務支援システム 教職員取込" /></div><div class="field"><label class="label">方向</label><select class="select"><option>インポート</option><option>エクスポート</option></select></div></div>
+      <div class="field"><label class="label">入力ソース</label>
+        <div class="pills" data-pill-group><span class="pill active"><i data-ic="file" data-size="13" style="vertical-align:-2px"></i> CSV/TSVアップロード</span><span class="pill"><i data-ic="clipboard" data-size="13" style="vertical-align:-2px"></i> クリップボード貼り付け</span></div>
+      </div>
+      <div class="field-row"><div class="field"><label class="label">文字コード</label><select class="select"><option>自動判定（UTF-8）</option><option>Shift-JIS</option></select></div><div class="field"><label class="label">対象種別</label><select class="select"><option>教職員</option><option>児童生徒</option><option>教育委員会職員</option></select></div></div>
+      <div class="divider"></div>
+      <div class="fw-7 mb-8">含める処理</div>
+      <div class="flex col gap-10">
+        <label class="check" style="justify-content:space-between"><span>ファイル全体の前処理（JS）</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+        <label class="check" style="justify-content:space-between"><span>項目マッピング辞書を使用</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+        <label class="check" style="justify-content:space-between"><span>レコード変換ルールを適用</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+        <label class="check" style="justify-content:space-between"><span>コード標準マッピングを適用</span><label class="toggle"><input type="checkbox" /><span class="toggle__track"></span></label></label>
+      </div>
+    </div>
+    <div class="drawer__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--secondary" data-close data-toast="下書きを保存しました（デモ）">下書き</button><button class="btn btn--primary" data-close data-toast="プロファイルを保存しました（デモ）">保存</button></div>
+  </div></div>
+
+  <!-- Test modal -->
+  <div class="overlay modal-center" id="testModal"><div class="modal modal--lg"><div class="modal__head"><span class="modal__icon ico-tile brand"><i data-ic="play"></i></span><div><div class="modal__title">変換をテスト</div><div class="modal__desc">サンプル1行を貼り付けて、変換結果を確認します</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">入力（タブ/カンマ区切り）</label><textarea class="textarea mono" style="min-height:60px">山田 花子（女性）	yamada@example.ed.jp	3	ICT支援員</textarea></div>
+      <div class="flex items-center justify-center" style="color:var(--text-3);margin:4px 0"><i data-ic="chevronDown" data-size="20"></i></div>
+      <div class="fw-7 text-sm mb-8">変換結果（中学校 / エクスポート時）</div>
+      <div class="card"><div class="table-wrap"><table class="tbl tbl--compact"><thead><tr><th>項目</th><th>値</th><th>適用ルール</th></tr></thead><tbody>
+        <tr><td class="text-2">姓</td><td class="cell-main">山田</td><td class="text-3 text-sm">正規表現で分割</td></tr>
+        <tr><td class="text-2">名</td><td class="cell-main">花子</td><td class="text-3 text-sm">正規表現で分割</td></tr>
+        <tr><td class="text-2">性別</td><td class="cell-main">女性 <span class="text-3">→ female</span></td><td class="text-3 text-sm">コード標準（OneRoster）</td></tr>
+        <tr><td class="text-2">学年</td><td class="cell-main">3 <span class="text-3">→ 9</span></td><td class="text-3 text-sm">中学校の条件変換</td></tr>
+        <tr style="background:var(--warning-bg)"><td class="text-2">職種</td><td class="cell-main">ICT支援員 <span class="text-3">→ その他の職員</span></td><td class="fw-6 text-sm" style="color:var(--warning)">独自値→標準マッピング</td></tr>
+      </tbody></table></div></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>閉じる</button><button class="btn btn--primary" data-toast="変換は正常に完了しました（デモ）"><i data-ic="play" data-size="15"></i> 再実行</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, MP = window.DATA.mapProfiles, FM = window.DATA.fieldMatchers, KEYS = window.DATA.idKeys, STD = window.DATA.codeStd;
+
+      var dirMeta = { import: ['success', 'upload', 'インポート'], export: ['violet', 'download', 'エクスポート'] };
+      document.getElementById('profBody').innerHTML = MP.map(function (p) {
+        var d = dirMeta[p.dir];
+        return '<tr onclick="openOverlay(\'profileDrawer\')">' +
+          '<td class="cell-main">' + p.name + '<div class="cell-sub">' + p.source + '</div></td>' +
+          '<td><span class="badge badge--' + d[0] + '">' + I(d[1], { size: 12 }) + ' ' + d[2] + '</span></td>' +
+          '<td class="text-2 text-sm mono">' + p.fmt + '</td>' +
+          '<td class="text-2 text-sm">' + p.target + '</td>' +
+          '<td class="num">' + p.fields + '</td>' +
+          '<td class="num"><span class="badge badge--neutral">' + p.transforms + '</span></td>' +
+          '<td class="text-3 text-sm mono">' + p.updated + '</td>' +
+          '<td class="col-actions" onclick="event.stopPropagation()"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item" onclick="openOverlay(\'profileDrawer\')">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item" onclick="openOverlay(\'testModal\')">' + I('play', { size: 16 }) + 'テスト</div><div class="menu__item">' + I('copy', { size: 16 }) + '複製</div><div class="menu__sep"></div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('profBody'));
+
+      document.getElementById('matchBody').innerHTML = FM.map(function (f) {
+        var tIc = { string: ['violet', 'type'], number: ['info', 'hash'], code: ['pink', 'tag'], date: ['warning', 'calendar'] }[f.type];
+        var chips = f.headers.map(function (h) { return '<span class="tag mono" style="font-size:11.5px">' + h + ' <span class="x"><i data-ic="x" data-size="11"></i></span></span>'; }).join(' ');
+        return '<div class="match-row">' +
+          '<span class="flex items-center gap-8"><span class="ico-tile ' + tIc[0] + '" style="width:28px;height:28px">' + I(tIc[1], { size: 14 }) + '</span><span class="fw-6">' + f.field + '</span></span>' +
+          '<span class="flex items-center gap-6 wrap">' + chips + '<button class="btn btn--icon btn--sm btn--ghost">' + I('plus', { size: 14 }) + '</button></span>' +
+          '<span class="text-2 text-sm">' + (f.transform === '—' ? '<span class="text-3">—</span>' : I('sparkles', { size: 13, class: 'text-3' }) + ' ' + f.transform) + '</span>' +
+          '<span class="right"><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button></span></div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('matchBody'));
+
+      document.getElementById('keyBody').innerHTML = KEYS.map(function (k) {
+        var chips = k.headers.map(function (h) { return '<span class="tag mono" style="font-size:11.5px">' + h + '</span>'; }).join(' ');
+        return '<tr><td class="cell-main"><span class="flex items-center gap-8">' + I('key', { size: 15, class: 'text-3' }) + k.key + '</span></td>' +
+          '<td><span class="badge badge--' + (k.scope.indexOf('所属') >= 0 ? 'teal' : 'info') + '">' + k.scope + '</span></td>' +
+          '<td class="flex items-center gap-6 wrap" style="border:none">' + chips + '</td>' +
+          '<td>' + (k.primary ? '<span class="badge badge--success"><i data-ic="check" data-size="12"></i> 主キー</span>' : '<span class="text-3">補助</span>') + '</td>' +
+          '<td class="col-actions"><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button></td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('keyBody'));
+
+      var rules = [
+        { ic: 'type', c: 'violet', t: '氏名の分割', d: 'スペース1つ→姓/名、2つ→姓/ミドル/名' },
+        { ic: 'tag', c: 'pink', t: '性別の正規化', d: 'Female→女性 / Male→男性' },
+        { ic: 'hash', c: 'info', t: '学年の変換', d: '中学校は 1〜3 → 7〜9（OneRoster）' },
+        { ic: 'briefcase', c: 'warning', t: '職種マッピング', d: 'ICT支援員 → その他の職員（出力時）' },
+      ];
+      document.getElementById('ruleList').innerHTML = rules.map(function (r) {
+        return '<div class="flex items-center gap-12" style="padding:13px 18px;border-bottom:1px solid var(--border)"><span class="ico-tile ' + r.c + '" style="width:34px;height:34px">' + I(r.ic, { size: 16 }) + '</span><div class="grow"><div class="fw-6 text-sm">' + r.t + '</div><div class="text-3 text-xs">' + r.d + '</div></div><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('ruleList'));
+
+      document.getElementById('stdBody').innerHTML = STD.map(function (s) {
+        return '<tr' + (s.custom ? ' style="background:var(--warning-bg)"' : '') + '><td class="cell-main">' + s.app + (s.custom ? ' <span class="badge badge--warning" style="height:18px">独自</span>' : '') + '</td>' +
+          '<td class="mono text-2">' + s.appCode + '</td>' +
+          '<td><span class="text-2">' + s.mext + '</span> <span class="mono text-3 text-sm">(' + s.mextCode + ')</span></td>' +
+          '<td><span class="badge badge--outline mono">' + s.oneroster + '</span></td>' +
+          '<td>' + (s.custom ? '<span class="badge badge--warning">変換出力</span>' : '<span class="badge badge--neutral">標準一致</span>') + '</td>' +
+          '<td class="col-actions"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('stdBody'));
+    })();
+  </script>
+</body>
+</html>

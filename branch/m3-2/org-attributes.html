@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>組織別 属性上書き | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .ov-layout { display: grid; grid-template-columns: 320px 1fr; gap: 14px; align-items: start; }
+
+  /* 組織ツリー（左） */
+  .org-tree .ot-row {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+    border-bottom: 1px solid var(--line); cursor: pointer; font-size: 12.5px;
+  }
+  .org-tree .ot-row:hover { background: var(--indigo-50); }
+  .org-tree .ot-row.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .org-tree .ot-row .ind { width: 18px; }
+  .org-tree .ot-row .ic { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; }
+  .org-tree .ot-row .meta { color: var(--ink-3); font-size: 10.5px; margin-left: auto; font-family: var(--mono); }
+  .org-tree .ot-row .over { color: var(--vermilion); font-size: 12px; }
+  .org-tree .ot-row .over.ok { color: var(--pine); }
+
+  /* 継承ツリー（中央） */
+  .inh-tree { font-size: 12px; }
+  .inh-row { display: grid; grid-template-columns: 24px 1fr auto; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .inh-row:last-child { border-bottom: 0; }
+  .inh-row .dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--indigo-500); background: #fff; margin: 0 auto; }
+  .inh-row.up .dot { border-color: var(--line-2); }
+  .inh-row.cur .dot { background: var(--vermilion); border-color: var(--vermilion); box-shadow: 0 0 0 4px var(--vermilion-50); }
+  .inh-row .meta b { font-weight: 600; }
+  .inh-row .meta span { color: var(--ink-3); font-size: 10.5px; display: block; }
+  .inh-row .tag { font-size: 10.5px; }
+  .inh-arrow { text-align: center; color: var(--line-2); font-size: 18px; line-height: 1; margin: -2px 0; }
+
+  /* 上書きマトリクス */
+  .ov-matrix { font-size: 11.5px; border-collapse: collapse; width: 100%; }
+  .ov-matrix th, .ov-matrix td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .ov-matrix th { background: #faf9f6; font-weight: 600; color: var(--ink-3); font-size: 10.5px; letter-spacing: .07em; }
+  .ov-matrix td.inh { background: #fbfaf8; color: var(--ink-3); }
+  .ov-matrix td.cur { background: #fff8f4; }
+  .ov-matrix td.diff { background: #fff8f4; color: var(--vermilion-dark); }
+  .ov-matrix .cell-b { font-weight: 600; display: block; }
+  .ov-matrix .cell-s { font-size: 10.5px; color: var(--ink-3); display: block; margin-top: 1px; }
+
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .row.between { justify-content: space-between; }
+  .muted { color: var(--ink-3); font-size: 11.5px; }
+</style>
+</head>
+<body data-page="org-attributes">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="attributes.html">属性項目定義</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">組織別 上書き</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">account_tree</span>組織別 属性項目 上書き</h1>
+      <div class="desc">テナント既定の属性項目設定（表示カテゴリ・バリデーション・権限制限）を、各組織が<b>継承 / 上書き / 追加</b> する様子を可視化します。原則<b>下位優先</b>。</div>
+    </div>
+    <div class="actions">
+      <button class="btn"><span class="material-symbols-rounded">file_download</span>差分を出力</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-over')"><span class="material-symbols-rounded">add</span>上書きを追加</button>
+    </div>
+  </div>
+
+  <div class="callout mb-3">
+    <span class="material-symbols-rounded">layers</span>
+    <div>
+      <b>継承の原則</b>: テナント → 市町村 → 学校種 → 学校 の順に<b>下流へ伝播</b>します。下流で上書きされた項目は、配下すべてに波及します。組織は必要な箇所だけを <b>差分</b> として持ちます（フルコピーでないため、変更時の追従が容易です）。
+    </div>
+  </div>
+
+  <div class="ov-layout">
+    <!-- 左：組織ツリー -->
+    <aside class="card">
+      <div class="card-h">
+        <span class="material-symbols-rounded">account_tree</span>組織ツリー
+        <span class="sub">長野県</span>
+        <div class="right">
+          <button class="btn sm ghost" onclick="Composer.toast('上書きのある組織を抽出しました（28件）')"><span class="material-symbols-rounded">filter_alt</span>上書きあり</button>
+        </div>
+      </div>
+      <div class="card-b org-tree" style="padding:8px 0">
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-indigo"><span class="material-symbols-rounded" style="font-size:14px">domain</span></span>
+          <b>長野県（テナント）</b>
+          <span class="meta">38項目</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"><span class="material-symbols-rounded" style="font-size:14px; color:var(--ink-3)">chevron_right</span></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>長野市</span>
+          <span class="meta">+2</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>松本市</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>上田市</span>
+        </div>
+        <div class="ot-row active">
+          <span class="ind"><span class="material-symbols-rounded" style="font-size:14px; color:var(--indigo-600)">expand_more</span></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>飯田市</span>
+          <span class="meta">+3</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-sky"><span class="material-symbols-rounded" style="font-size:14px">school</span></span>
+          <span style="padding-left:18px">飯田市立 緑ヶ丘中学校</span>
+          <span class="meta">+1</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-sky"><span class="material-symbols-rounded" style="font-size:14px">school</span></span>
+          <span style="padding-left:18px">飯田市立 旭ヶ丘中学校</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-plum"><span class="material-symbols-rounded" style="font-size:14px">school</span></span>
+          <span style="padding-left:18px">長野県飯田 OI 高校</span>
+          <span class="over ok">●</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>伊那市</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>諏訪市</span>
+        </div>
+        <div class="ot-row">
+          <span class="ind"></span>
+          <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">location_city</span></span>
+          <span>…他 15 市町村</span>
+        </div>
+      </div>
+      <div style="padding:10px 14px; border-top:1px solid var(--line); background:#fbfaf8; font-size:10.5px; color:var(--ink-3)">
+        <b style="color:var(--ink-2)">凡例</b><br>
+        <span class="over">●</span> 上書きあり（赤）
+        &nbsp; <span class="over ok">●</span> 追加項目あり（緑）
+      </div>
+    </aside>
+
+    <!-- 右：選択組織の 上書き詳細 -->
+    <div class="stack">
+      <!-- 選択組織 + 継承ツリー -->
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">device_hub</span>継承ツリー
+          <span class="sub">テナント → 市町村 → 学校種 → 学校</span>
+          <div class="right">
+            <span class="chip indigo"><span class="material-symbols-rounded sm">layers</span>下位優先</span>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="inh-tree">
+            <div class="inh-row up">
+              <span class="dot"></span>
+              <div class="meta"><b>長野県（テナント全体）</b><span>テナント既定の属性項目定義がここにあります</span></div>
+              <span class="tag chip">既定 / 38項目</span>
+            </div>
+            <div class="inh-arrow">│</div>
+            <div class="inh-row up">
+              <span class="dot"></span>
+              <div class="meta"><b>飯田市</b><span>「性別」を「男性／女性」の2択に上書き / 「健康情報」タブを追加</span></div>
+              <span class="tag chip gold">+1 上書き / +1 追加</span>
+            </div>
+            <div class="inh-arrow">│</div>
+            <div class="inh-row up">
+              <span class="dot"></span>
+              <div class="meta"><b>飯田市 / 学校種 = 中学校</b><span>役職「教頭」を必須に／「進路情報」タブを追加</span></div>
+              <span class="tag chip gold">+1 上書き / +1 追加</span>
+            </div>
+            <div class="inh-arrow">│</div>
+            <div class="inh-row cur">
+              <span class="dot"></span>
+              <div class="meta"><b>飯田市立 緑ヶ丘中学校</b><span>「不登校歴」項目をこの学校では <b>非表示</b> に上書き（教育委員会指導による）</span></div>
+              <span class="tag chip red">+1 上書き</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 上書きマトリクス -->
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">compare</span>上書きマトリクス
+          <span class="sub">選択中の組織 <b>飯田市立 緑ヶ丘中学校</b> に適用される項目のうち、上流と差分があるものを一覧</span>
+          <div class="right">
+            <button class="btn sm"><span class="material-symbols-rounded">filter_alt</span>差分のみ</button>
+            <button class="btn sm"><span class="material-symbols-rounded">file_download</span>CSV</button>
+          </div>
+        </div>
+        <div class="card-b" style="padding:0">
+          <table class="ov-matrix">
+            <thead>
+              <tr>
+                <th rowspan="2" style="width:180px">属性項目</th>
+                <th colspan="3" style="border-bottom:0; text-align:center; background:#f5f3ed">上流（継承元）</th>
+                <th rowspan="2" style="width:230px; background:#fff8f4">この組織での設定</th>
+                <th rowspan="2" style="width:140px">変更者 / 変更日</th>
+              </tr>
+              <tr>
+                <th style="background:#faf9f6; width:140px">表示カテゴリ</th>
+                <th style="background:#faf9f6; width:160px">バリデーション</th>
+                <th style="background:#faf9f6; width:160px">権限</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>性別</b></td>
+                <td class="inh"><span class="chip indigo">基本情報</span></td>
+                <td class="inh mono" style="font-size:10.5px">男性/女性/適用不能</td>
+                <td class="inh">—</td>
+                <td class="cur">
+                  <span class="cell-b diff">男性 / 女性（2択）</span>
+                  <span class="cell-s">「適用不能」を非表示・選択不可</span>
+                </td>
+                <td>
+                  <div class="row" style="gap:5px"><span class="avatar a3 sm">飯</span><b style="font-size:11px">飯田 市教委</b></div>
+                  <span class="muted">2026-05-22</span>
+                </td>
+              </tr>
+              <tr>
+                <td><b>不登校歴</b></td>
+                <td class="inh"><span class="chip red">機微情報</span></td>
+                <td class="inh">コード整合性</td>
+                <td class="inh">担任・管理職・指導主事</td>
+                <td class="cur">
+                  <span class="cell-b diff">非表示</span>
+                  <span class="cell-s">この学校では項目自体を非表示にする</span>
+                </td>
+                <td>
+                  <div class="row" style="gap:5px"><span class="avatar sm">緑</span><b style="font-size:11px">緑ヶ丘中 校長</b></div>
+                  <span class="muted">2026-06-01</span>
+                </td>
+              </tr>
+              <tr>
+                <td><b>役職</b></td>
+                <td class="inh"><span class="chip indigo">基本情報</span></td>
+                <td class="inh">コード整合性</td>
+                <td class="inh">—</td>
+                <td class="cur">
+                  <span class="cell-b diff">必須</span>
+                  <span class="cell-s">この学校種（中学校）では必須項目に昇格</span>
+                </td>
+                <td>
+                  <div class="row" style="gap:5px"><span class="avatar a3 sm">飯</span><b style="font-size:11px">飯田 市教委</b></div>
+                  <span class="muted">2026-04-15</span>
+                </td>
+              </tr>
+              <tr>
+                <td><b>健康情報</b></td>
+                <td class="inh muted" style="font-style:italic">（テナントに未定義）</td>
+                <td class="inh muted" style="font-style:italic">—</td>
+                <td class="inh muted" style="font-style:italic">—</td>
+                <td class="cur">
+                  <span class="cell-b diff" style="color:var(--pine)">新規追加</span>
+                  <span class="cell-s">カテゴリ「健康情報」と4項目を組織独自に追加</span>
+                </td>
+                <td>
+                  <div class="row" style="gap:5px"><span class="avatar a3 sm">飯</span><b style="font-size:11px">飯田 市教委</b></div>
+                  <span class="muted">2026-05-22</span>
+                </td>
+              </tr>
+              <tr>
+                <td><b>進路情報</b></td>
+                <td class="inh muted" style="font-style:italic">（テナントに未定義）</td>
+                <td class="inh muted" style="font-style:italic">—</td>
+                <td class="inh muted" style="font-style:italic">—</td>
+                <td class="cur">
+                  <span class="cell-b diff" style="color:var(--pine)">新規追加</span>
+                  <span class="cell-s">カテゴリ「進路情報」と6項目を学校種（中）に追加</span>
+                </td>
+                <td>
+                  <div class="row" style="gap:5px"><span class="avatar a3 sm">飯</span><b style="font-size:11px">飯田 市教委</b></div>
+                  <span class="muted">2026-04-15</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ロール別の見え方（権限可視化） -->
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">visibility</span>この組織で <b>マスクされる / 現れる</b> 項目
+          <span class="sub">権限コンテキスト別の見え方</span>
+        </div>
+        <div class="card-b">
+          <div class="grid-2">
+            <div>
+              <b style="font-size:12px">校長（飯田市立 緑ヶ丘中）としてログイン</b>
+              <div class="mt-1" style="display:flex; flex-direction:column; gap:5px; font-size:12px">
+                <div class="row" style="gap:6px"><span class="chip red">機微情報</span> 「不登校歴」 <span class="chip" style="margin-left:auto">非表示（組織上書き）</span></div>
+                <div class="row" style="gap:6px"><span class="chip indigo">基本情報</span> 「性別」 <span class="chip" style="margin-left:auto">男性/女性（2択）</span></div>
+                <div class="row" style="gap:6px"><span class="chip green">健康情報</span> 4項目 <span class="chip" style="margin-left:auto">全て表示</span></div>
+                <div class="row" style="gap:6px"><span class="chip plum">進路情報</span> 6項目 <span class="chip" style="margin-left:auto">全て表示</span></div>
+              </div>
+            </div>
+            <div>
+              <b style="font-size:12px">教育委員会指導主事としてログイン</b>
+              <div class="mt-1" style="display:flex; flex-direction:column; gap:5px; font-size:12px">
+                <div class="row" style="gap:6px"><span class="chip red">機微情報</span> 「不登校歴」 <span class="chip green" style="margin-left:auto">マスク解除（指導主事の権限）</span></div>
+                <div class="row" style="gap:6px"><span class="chip indigo">基本情報</span> 「性別」 <span class="chip" style="margin-left:auto">男性/女性/適用不能（テナント既定）</span></div>
+                <div class="row" style="gap:6px"><span class="muted">他校で定義された独自項目</span> <span class="chip" style="margin-left:auto">自組織スコープ外のためマスク</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="callout warn mt-2">
+            <span class="material-symbols-rounded">shield_lock</span>
+            <div>
+              <b>権限 × 組織スコープ</b> の二段マスクです。組織上書きで表示を消した項目は、条件を満たす権限者（例: 指導主事・監査）には <b>マスク解除</b> できます。
+              あなたが今見ているのは <b>校長</b> ロール・<b>飯田市立 緑ヶ丘中</b> スコープの表示です。<a href="permissions.html">自分の権限を確認</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 上書き追加モーダル -->
+  <div class="modal-backdrop" id="modal-over">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>組織別 上書きを追加</h3>
+        <button class="x" onclick="Composer.closeModal('modal-over')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field">
+            <label>対象組織<span class="req">必須</span></label>
+            <select class="select"><option>飯田市立 緑ヶ丘中学校</option><option>飯田市 / 学校種 = 中学校</option><option>飯田市</option><option>長野県（テナント全体）</option></select>
+            <div class="hint">ここで選んだ組織と配下すべてに波及します</div>
+          </div>
+          <div class="field">
+            <label>上書きする属性項目<span class="req">必須</span></label>
+            <select class="select"><option>性別</option><option>役職</option><option>不登校歴</option><option>健康情報（カテゴリごと追加）</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>変更する内容</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px">
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>表示カテゴリの変更</b></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>バリデーションの変更</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>権限制限の変更</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>必須化</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>非表示化</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>組織独自項目の追加</b></span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label>変更理由（監査ログに記録）<span class="req">必須</span></label>
+          <textarea class="input" rows="2" placeholder="例: 飯田市内の不登校対応強化のため、健康情報を学校種単位で必須化する"></textarea>
+        </div>
+        <div class="callout warn">
+          <span class="material-symbols-rounded">history</span>
+          <div>上書きは <b>適用期間</b> を持てます。終了日を設定すると、その時点で自動的に上流の既定に戻ります。<a href="audit-log.html">来歴は監査ログに記録</a>されます。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-over')">キャンセル</button>
+        <button class="btn" onclick="Composer.toast('下書き保存しました')"><span class="material-symbols-rounded">save</span>下書き</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-over'); Composer.toast('上書きを保存しました。次回 04:00 同期で反映されます')"><span class="material-symbols-rounded">check</span>保存して反映予約</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

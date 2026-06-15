@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>フォーム作成 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px 18px; margin-bottom: 14px; position: relative; transition: .15s; }
+    .q-card:hover { box-shadow: var(--sh-md); border-color: var(--c-300); }
+    .q-card.sel { border-color: var(--brand-400); box-shadow: 0 0 0 3px var(--brand-50); }
+    .q-grip { position: absolute; left: 4px; top: 50%; transform: translateY(-50%); color: var(--c-300); cursor: grab; }
+    .q-type-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r-sm); border: 1px solid var(--border); cursor: pointer; transition: .13s; }
+    .q-type-btn:hover { border-color: var(--brand-400); background: var(--brand-50); }
+  </style>
+</head>
+<body data-page="forms-list">
+  <main id="main" class="main">
+    <div class="page page--wide" data-tabs>
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><a href="forms-list.html">フォーム</a><span class="sep">/</span><span class="cur">新規作成</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main" style="max-width:640px">
+          <input class="input" value="教職員 緊急連絡先 登録フォーム" style="font-size:20px;font-weight:740;height:auto;padding:8px 12px;border-color:transparent;background:transparent" onfocus="this.style.borderColor='var(--border-strong)';this.style.background='#fff'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" />
+          <input class="input" value="自家用の携帯番号を登録してください。回答は名簿に自動反映されます。" style="font-size:13.5px;color:var(--text-2);height:auto;padding:6px 12px;border-color:transparent;background:transparent;margin-top:2px" />
+        </div>
+        <div class="page-head__actions">
+          <span class="badge badge--neutral">下書き</span>
+          <button class="btn btn--secondary" data-open="previewModal"><i data-ic="eye" data-size="16"></i> プレビュー</button>
+          <button class="btn btn--secondary" data-toast="下書きを保存しました（デモ）"><i data-ic="check" data-size="16"></i> 保存</button>
+          <button class="btn btn--primary" data-open="publishModal"><i data-ic="send" data-size="16"></i> 配信する</button>
+        </div>
+      </div>
+
+      <div class="tabs mb-20">
+        <button class="tab active" data-tab="build"><i data-ic="forms" data-size="15"></i> 質問作成 <span class="count">4</span></button>
+        <button class="tab" data-tab="target"><i data-ic="users" data-size="15"></i> 配信対象</button>
+        <button class="tab" data-tab="link"><i data-ic="link" data-size="15"></i> 名簿連携</button>
+        <button class="tab" data-tab="setting"><i data-ic="settings" data-size="15"></i> 設定</button>
+      </div>
+
+      <!-- BUILD -->
+      <div data-tab-panel="build" class="tab-pane active">
+        <div class="grid" style="grid-template-columns:1fr 280px;align-items:start">
+          <div id="qCanvas"></div>
+          <div class="card" style="position:sticky;top:78px"><div class="card__head"><span class="card__title">質問を追加</span></div><div class="card__body flex col gap-8">
+            <div class="q-type-btn" data-toast="質問を追加しました（デモ）"><span class="ico-tile violet" style="width:32px;height:32px"><i data-ic="type" data-size="16"></i></span><div class="fw-6 text-sm">短文回答</div></div>
+            <div class="q-type-btn" data-toast="質問を追加しました（デモ）"><span class="ico-tile teal" style="width:32px;height:32px"><i data-ic="text" data-size="16"></i></span><div class="fw-6 text-sm">長文回答</div></div>
+            <div class="q-type-btn" data-toast="質問を追加しました（デモ）"><span class="ico-tile info" style="width:32px;height:32px"><i data-ic="circle" data-size="16"></i></span><div class="fw-6 text-sm">単一選択</div></div>
+            <div class="q-type-btn" data-toast="質問を追加しました（デモ）"><span class="ico-tile success" style="width:32px;height:32px"><i data-ic="listChecks" data-size="16"></i></span><div class="fw-6 text-sm">複数選択</div></div>
+            <div class="q-type-btn" data-toast="質問を追加しました（デモ）"><span class="ico-tile warning" style="width:32px;height:32px"><i data-ic="calendar" data-size="16"></i></span><div class="fw-6 text-sm">日付</div></div>
+            <div class="q-type-btn" data-toast="質問を追加しました（デモ）"><span class="ico-tile pink" style="width:32px;height:32px"><i data-ic="hash" data-size="16"></i></span><div class="fw-6 text-sm">数値</div></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- TARGET -->
+      <div data-tab-panel="target" class="tab-pane">
+        <div class="grid" style="grid-template-columns:1fr 320px;align-items:start">
+          <div class="card"><div class="card__head"><span class="card__title">配信対象の条件</span><span class="text-3 text-sm spacer">対象者のみが閲覧・回答できます</span></div><div class="card__body">
+            <div class="field"><span class="label">対象組織</span>
+              <div class="cond-block" style="border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div class="flex items-center gap-8 mb-8"><span class="badge badge--neutral">組織</span><select class="select btn--sm" style="height:32px;width:auto"><option>青葉市</option><option>青葉県全体</option></select><span class="text-2">の</span><select class="select btn--sm" style="height:32px;width:auto"><option>小学校・中学校</option><option>すべての学校種</option></select></div>
+              </div>
+            </div>
+            <div class="field"><span class="label">対象者の条件</span>
+              <div style="border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div class="flex items-center gap-8"><span class="badge badge--violet">職種</span><span class="text-2">＝</span><span class="tag tag--brand">一般教員 <span class="x"><i data-ic="x" data-size="12"></i></span></span><button class="btn btn--sm btn--ghost"><i data-ic="plus" data-size="14"></i> 条件追加</button></div>
+              </div>
+            </div>
+            <div class="alert alert--info"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">回答結果の閲覧権限も、サブジェクト・オブジェクト関係を含めて柔軟に設定できます（設定タブ）。</div></div>
+          </div></div>
+
+          <div class="card" style="position:sticky;top:78px"><div class="card__body center">
+            <div class="ico-tile info" style="width:52px;height:52px;margin:0 auto 12px"><i data-ic="users" data-size="26"></i></div>
+            <div class="text-3 text-sm">推定対象者</div><div class="fw-7" style="font-size:32px;letter-spacing:-.02em">418<small class="text-3" style="font-size:16px"> 名</small></div>
+            <div class="divider"></div>
+            <div class="flex justify-between text-sm mb-8"><span class="text-2">青葉市 小学校</span><b>241</b></div>
+            <div class="flex justify-between text-sm"><span class="text-2">青葉市 中学校</span><b>177</b></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- LINK -->
+      <div data-tab-panel="link" class="tab-pane">
+        <div class="card"><div class="card__head"><span class="card__title"><i data-ic="link" data-size="17"></i> 名簿連携</span><div class="flex items-center gap-8 spacer"><span class="text-sm text-2">回答を名簿に自動反映</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></div></div><div class="card__body">
+          <div class="alert alert--success mb-16"><span class="alert__ico"><i data-ic="checkCircle" data-size="18"></i></span><div class="alert__text">回答者を<b>メールアドレス</b>で本人識別し、対応づけた回答項目を名簿の属性へ反映します。反映は処理ログで確認できます。</div></div>
+          <div class="field"><label class="label">本人識別キー</label><select class="select" style="max-width:300px"><option>メールアドレス（回答者）</option><option>職員番号</option></select></div>
+          <div class="fw-7 mb-8 mt-8">回答項目 → 名簿属性 のマッピング</div>
+          <div class="card"><div class="table-wrap"><table class="tbl tbl--compact"><thead><tr><th>フォームの質問</th><th></th><th>名簿の属性項目</th><th>反映</th></tr></thead><tbody>
+            <tr><td class="cell-main">自家用携帯番号</td><td><i data-ic="arrowRight" data-size="16" data-cls="text-3"></i></td><td><span class="badge badge--teal">緊急連絡先 / 携帯</span></td><td><span class="badge badge--success">自動</span></td></tr>
+            <tr><td class="cell-main">緊急連絡先（続柄）</td><td><i data-ic="arrowRight" data-size="16" data-cls="text-3"></i></td><td><span class="badge badge--teal">緊急連絡先 / 続柄</span></td><td><span class="badge badge--success">自動</span></td></tr>
+            <tr><td class="text-3">ICT機器の活用頻度</td><td><i data-ic="arrowRight" data-size="16" data-cls="text-3"></i></td><td><span class="text-3">（連携しない）</span></td><td><span class="badge badge--neutral">—</span></td></tr>
+          </tbody></table></div></div>
+          <div class="help mt-8">反映前に承認を挟む場合は「設定」タブで承認要否を指定できます。</div>
+        </div></div>
+      </div>
+
+      <!-- SETTING -->
+      <div data-tab-panel="setting" class="tab-pane">
+        <div class="grid grid-2">
+          <div class="card"><div class="card__head"><span class="card__title">受付設定</span></div><div class="card__body">
+            <div class="field"><label class="label">回答期限</label><input class="input" type="date" value="2026-06-30" /></div>
+            <div class="flex col gap-12">
+              <label class="check justify-between" style="justify-content:space-between"><span>1人1回に制限</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+              <label class="check" style="justify-content:space-between"><span>回答後の編集を許可</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+              <label class="check" style="justify-content:space-between"><span>未回答者へ自動リマインド</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+            </div>
+          </div></div>
+          <div class="card"><div class="card__head"><span class="card__title"><i data-ic="shield" data-size="16"></i> 結果の閲覧権限</span></div><div class="card__body">
+            <div class="field"><label class="label">集計結果を見られる人</label><select class="select"><option>作成者と教育委員会</option><option>対象校の管理職</option><option>カスタム（権限ポリシー）</option></select></div>
+            <div class="field"><label class="label">個別回答を見られる人</label><select class="select"><option>作成者のみ</option><option>教育委員会</option></select></div>
+            <label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 匿名回答にする</label>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay modal-center" id="publishModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile violet"><i data-ic="send"></i></span><div><div class="modal__title">フォームを配信しますか？</div><div class="modal__desc">推定対象者 418名に配信されます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body"><dl class="def-list"><dt>対象</dt><dd>青葉市 小中学校 一般教員（418名）</dd><dt>期限</dt><dd>2026-06-30</dd><dt>名簿連携</dt><dd><span class="badge badge--teal">有効（携帯番号など2項目）</span></dd></dl></div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><a class="btn btn--primary" href="forms-results.html">配信する</a></div></div></div>
+
+  <div class="overlay modal-center" id="previewModal"><div class="modal"><div class="modal__head"><div><div class="modal__title">回答者プレビュー</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body" style="background:var(--surface-2)">
+      <div class="card"><div class="card__body"><div class="fw-7" style="font-size:16px">教職員 緊急連絡先 登録フォーム</div><div class="text-3 text-sm mt-4">自家用の携帯番号を登録してください。</div></div></div>
+      <div class="card mt-12"><div class="card__body"><div class="label">自家用携帯番号 <span class="req">*</span></div><input class="input" placeholder="090-0000-0000" /></div></div>
+      <div class="card mt-12"><div class="card__body"><div class="label">ICT機器の活用頻度</div><div class="flex col gap-8 mt-4"><label class="check check--radio"><input type="radio" name="pv" /><span class="check__box"></span> 毎日</label><label class="check check--radio"><input type="radio" name="pv" /><span class="check__box"></span> 週数回</label><label class="check check--radio"><input type="radio" name="pv" /><span class="check__box"></span> ほとんど使わない</label></div></div></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--primary spacer" data-close>閉じる</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon;
+      var qs = [
+        { t: 'short', label: '自家用携帯番号', req: true, ico: 'type', c: 'violet', sub: '短文回答 ・ 名簿連携' },
+        { t: 'short', label: '緊急連絡先（続柄）', req: false, ico: 'type', c: 'violet', sub: '短文回答 ・ 名簿連携' },
+        { t: 'single', label: 'ICT機器の活用頻度', req: true, ico: 'circle', c: 'info', sub: '単一選択', opts: ['毎日', '週に数回', '月に数回', 'ほとんど使わない'] },
+        { t: 'multi', label: '授業で課題に感じること', req: false, ico: 'listChecks', c: 'success', sub: '複数選択', opts: ['端末の不足', '通信環境', '教材', 'スキル習得時間'] },
+      ];
+      document.getElementById('qCanvas').innerHTML = qs.map(function (q, i) {
+        var body = '';
+        if (q.t === 'short') body = '<input class="input" disabled placeholder="回答者が入力" style="max-width:320px;margin-top:10px" />';
+        else if (q.opts) body = '<div class="flex col gap-6 mt-10">' + q.opts.map(function (o) { return '<div class="flex items-center gap-8 text-2">' + I(q.t === 'multi' ? 'circle' : 'circle', { size: 16, class: 'text-3' }) + o + '</div>'; }).join('') + '</div>';
+        return '<div class="q-card' + (i === 0 ? ' sel' : '') + '"><span class="q-grip">' + I('gripVertical', { size: 18 }) + '</span>' +
+          '<div class="flex items-center gap-10" style="padding-left:14px"><span class="ico-tile ' + q.c + '" style="width:30px;height:30px">' + I(q.ico, { size: 15 }) + '</span>' +
+          '<div class="grow"><div class="fw-7">' + q.label + (q.req ? ' <span class="req" style="color:var(--danger)">*</span>' : '') + '</div><div class="text-3 text-xs">' + q.sub + '</div></div>' +
+          '<div class="flex gap-4"><button class="btn btn--icon btn--sm btn--ghost">' + I('copy', { size: 15 }) + '</button><button class="btn btn--icon btn--sm btn--ghost">' + I('trash', { size: 15 }) + '</button></div></div>' +
+          '<div style="padding-left:14px">' + body + '</div></div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('qCanvas'));
+    })();
+  </script>
+</body>
+</html>

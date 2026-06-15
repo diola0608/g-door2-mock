@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ダッシュボード編集 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .builder { display: grid; grid-template-columns: 230px 1fr 304px; gap: 16px; align-items: start; }
+    .pal-item { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: var(--r-sm); border: 1px solid var(--border); cursor: grab; transition: .13s; background: var(--surface); }
+    .pal-item:hover { border-color: var(--brand-400); background: var(--brand-50); transform: translateX(2px); }
+    .canvas { background: var(--surface-2); border: 1.5px dashed var(--border-strong); border-radius: var(--r-lg); padding: 14px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-content: start; min-height: 540px; }
+    .widget { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px 16px; position: relative; box-shadow: var(--sh-xs); cursor: pointer; transition: box-shadow .13s, border-color .13s; }
+    .widget:hover { box-shadow: var(--sh-md); }
+    .widget.sel { border-color: var(--brand-500); box-shadow: 0 0 0 3px var(--brand-50); }
+    .widget.span2 { grid-column: span 2; }
+    .widget__grip { position: absolute; top: 8px; right: 8px; color: var(--c-300); opacity: 0; transition: .13s; }
+    .widget:hover .widget__grip { opacity: 1; }
+    .widget__h { font-size: 12.5px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+    .widget__h .icon { color: var(--text-3); }
+    .sticky { position: sticky; top: 78px; }
+    @media (max-width: 1240px) { .builder { grid-template-columns: 200px 1fr; } .builder > .set { grid-column: 1 / -1; position: static; } }
+    @media (max-width: 900px) { .builder { grid-template-columns: 1fr; } .canvas { grid-template-columns: 1fr; } .widget.span2 { grid-column: span 1; } .pal { position: static; } }
+  </style>
+</head>
+<body data-page="dashboards">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><a href="dashboards.html">ダッシュボード管理</a><span class="sep">/</span><span class="cur">編集</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main" style="max-width:560px">
+          <input class="input" value="担任 向け" style="font-size:21px;font-weight:740;height:auto;padding:7px 12px;border-color:transparent;background:transparent" onfocus="this.style.borderColor='var(--border-strong)';this.style.background='#fff'" onblur="this.style.borderColor='transparent';this.style.background='transparent'" />
+          <p class="page-subtitle" style="padding-left:12px">ウィジェットを追加・配置し、表示内容と閾値アラートを設定します</p>
+        </div>
+        <div class="page-head__actions">
+          <span class="badge badge--neutral">下書き</span>
+          <button class="btn btn--secondary" data-open="previewModal"><i data-ic="eye" data-size="16"></i> プレビュー</button>
+          <button class="btn btn--secondary" data-toast="下書きを保存しました（デモ）"><i data-ic="check" data-size="16"></i> 保存</button>
+          <button class="btn btn--primary" data-open="publishModal"><i data-ic="userCheck" data-size="16"></i> 公開して割当</button>
+        </div>
+      </div>
+
+      <div class="builder">
+        <!-- Palette -->
+        <div class="card sticky pal"><div class="card__head" style="padding:13px 16px"><span class="card__title" style="font-size:13.5px">ウィジェット</span></div>
+          <div class="card__body flex col gap-8" style="padding:12px">
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile brand" style="width:30px;height:30px"><i data-ic="gauge" data-size="16"></i></span><div class="fw-6 text-sm">KPI 数値</div></div>
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile info" style="width:30px;height:30px"><i data-ic="chart" data-size="16"></i></span><div class="fw-6 text-sm">棒グラフ</div></div>
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile teal" style="width:30px;height:30px"><i data-ic="lineChart" data-size="16"></i></span><div class="fw-6 text-sm">折れ線グラフ</div></div>
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile violet" style="width:30px;height:30px"><i data-ic="pieChart" data-size="16"></i></span><div class="fw-6 text-sm">構成比（ドーナツ）</div></div>
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile pink" style="width:30px;height:30px"><i data-ic="table" data-size="16"></i></span><div class="fw-6 text-sm">クロス集計表</div></div>
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile warning" style="width:30px;height:30px"><i data-ic="list" data-size="16"></i></span><div class="fw-6 text-sm">名簿リスト</div></div>
+            <div class="pal-item" data-toast="ウィジェットを追加しました（デモ）"><span class="ico-tile danger" style="width:30px;height:30px"><i data-ic="bellRing" data-size="16"></i></span><div class="fw-6 text-sm">アラート（閾値）</div></div>
+            <div class="divider" style="margin:6px 0"></div>
+            <div class="help">ウィジェットをドラッグして配置できます（デモ）。</div>
+          </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas" id="canvas">
+          <div class="widget" data-w="kpi1"><span class="widget__grip"><i data-ic="gripVertical" data-size="16"></i></span><div class="widget__h"><i data-ic="users" data-size="15"></i> 担当クラス在籍</div><div class="fw-7" style="font-size:26px;line-height:1">34<small class="text-3" style="font-size:13px"> 名</small></div></div>
+          <div class="widget" data-w="kpi2"><span class="widget__grip"><i data-ic="gripVertical" data-size="16"></i></span><div class="widget__h"><i data-ic="calendarCheck" data-size="15"></i> 本日の出席率</div><div class="fw-7" style="font-size:26px;line-height:1;color:var(--success)">91<small class="text-3" style="font-size:13px"> %</small></div></div>
+          <div class="widget sel span2" data-w="alert"><span class="widget__grip"><i data-ic="gripVertical" data-size="16"></i></span><div class="widget__h" style="color:var(--danger)"><i data-ic="bellRing" data-size="15"></i> 閾値を超えた生徒（アラート）</div>
+            <div id="wAlerts"></div>
+          </div>
+          <div class="widget span2" data-w="bars"><span class="widget__grip"><i data-ic="gripVertical" data-size="16"></i></span><div class="widget__h"><i data-ic="chart" data-size="15"></i> クラスの欠席者数（直近2週間）</div><div class="bars" id="wBars" style="height:120px"></div></div>
+          <div class="widget" data-w="donut"><span class="widget__grip"><i data-ic="gripVertical" data-size="16"></i></span><div class="widget__h"><i data-ic="pieChart" data-size="15"></i> 部活動 加入状況</div>
+            <div class="flex items-center gap-12"><div class="donut" style="--val:72;--col:var(--brand-500);width:80px;height:80px"><div class="donut__label"><div class="fw-7" style="font-size:15px">72%</div></div></div>
+            <div class="text-sm text-2">加入 25名<br>未加入 9名</div></div>
+          </div>
+          <div class="widget" data-w="health"><span class="widget__grip"><i data-ic="gripVertical" data-size="16"></i></span><div class="widget__h"><i data-ic="heart" data-size="15"></i> 保健室 来室（週）</div>
+            <div class="bars" id="wHealth" style="height:96px"></div></div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card sticky set"><div class="card__head" style="padding:13px 16px"><span class="card__title" style="font-size:13.5px"><i data-ic="sliders" data-size="16"></i> ウィジェット設定</span></div>
+          <div class="card__body">
+            <div class="flex items-center gap-8 mb-14" style="padding:9px 11px;background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--r-sm)">
+              <span class="ico-tile danger" style="width:30px;height:30px"><i data-ic="bellRing" data-size="16"></i></span><div><div class="fw-7 text-sm">アラート（閾値）</div><div class="text-3 text-xs">選択中のウィジェット</div></div>
+            </div>
+            <div class="field"><label class="label">タイトル</label><input class="input btn--sm" style="height:36px" value="閾値を超えた生徒" /></div>
+            <div class="field"><label class="label">データソース</label><select class="select btn--sm" style="height:36px"><option>出欠（連続欠席日数）</option><option>保健室 来室回数</option><option>属性「不登校状況」</option><option>成績の変動</option></select></div>
+            <div class="field"><label class="label">対象範囲</label><select class="select btn--sm" style="height:36px"><option>自分の担任クラス</option><option>担当学年</option><option>所属校</option></select></div>
+            <div class="divider"></div>
+            <div class="fw-7 text-sm mb-8 flex items-center gap-6"><i data-ic="target" data-size="16" data-cls="text-3"></i> 閾値・アラート条件</div>
+            <div class="field"><label class="label">条件</label>
+              <div class="flex items-center gap-8"><select class="select btn--sm" style="height:36px;width:auto"><option>≧（以上）</option><option>≦（以下）</option><option>＝</option></select><input class="input btn--sm mono" style="height:36px;width:62px;text-align:center" value="3" /><span class="text-2 text-sm">日連続</span></div>
+            </div>
+            <div class="field"><label class="label">重大度</label>
+              <div class="pills" data-pill-group><span class="pill">情報</span><span class="pill">注意</span><span class="pill active">重大</span></div>
+            </div>
+            <div class="flex col gap-10 mt-4">
+              <label class="check" style="justify-content:space-between"><span class="text-sm">該当時にバッジで強調</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+              <label class="check" style="justify-content:space-between"><span class="text-sm">メール／通知で知らせる</span><label class="toggle"><input type="checkbox" checked /><span class="toggle__track"></span></label></label>
+            </div>
+          </div>
+          <div class="card__foot"><button class="btn btn--sm btn--ghost" data-toast="ウィジェットを削除しました（デモ）"><i data-ic="trash" data-size="15"></i> 削除</button><button class="btn btn--sm btn--primary spacer" data-toast="ウィジェット設定を保存しました（デモ）">適用</button></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Publish modal -->
+  <div class="overlay modal-center" id="publishModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile brand"><i data-ic="userCheck"></i></span><div><div class="modal__title">公開して割り当てる</div><div class="modal__desc">このダッシュボードを表示するユーザーを指定します</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">適用対象（サブジェクト条件）</label><select class="select"><option>担任クラスを持つ一般教員</option><option>職種＝校長・教頭</option><option>職種＝養護教諭</option><option>カスタム条件…</option></select></div>
+      <label class="check mb-8"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 対象ユーザーによる切替・カスタマイズを許可</label>
+      <div class="alert alert--info"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">割り当ては<a href="dashboards.html" class="muted-link">ダッシュボード管理</a>の適用ルールで一覧管理できます。</div></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><a class="btn btn--primary" href="dashboards.html" data-toast="公開しました（デモ）">公開する</a></div></div></div>
+
+  <!-- Preview modal -->
+  <div class="overlay modal-center" id="previewModal"><div class="modal modal--xl"><div class="modal__head"><div><div class="modal__title">担任 向け ダッシュボード（プレビュー）</div><div class="modal__desc">伊藤 学 さん（2年A組 担任）として表示</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body" style="background:var(--surface-2)">
+      <div class="grid grid-4 mb-14">
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">担当クラス在籍</div><div class="fw-7" style="font-size:22px">34</div></div>
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">本日の出席率</div><div class="fw-7" style="font-size:22px;color:var(--success)">91%</div></div>
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">要対応アラート</div><div class="fw-7" style="font-size:22px;color:var(--danger)">2</div></div>
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">部活加入率</div><div class="fw-7" style="font-size:22px">72%</div></div>
+      </div>
+      <div class="alert alert--danger"><span class="alert__ico"><i data-ic="bellRing" data-size="18"></i></span><div class="grow"><div class="alert__title">鈴木 太郎（2年A組）: 欠席が連続5日（閾値3日を超過）</div><div class="alert__text">面談の検討をおすすめします。詳細は名簿で確認できます。</div></div><a class="btn btn--sm btn--danger-soft" href="roster-detail.html">確認</a></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--primary spacer" data-close>閉じる</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon;
+      var wAlerts = [
+        { c: 'danger', t: '鈴木 太郎', d: '2年A組 ・ 連続欠席 5日', tag: '閾値3日 超過' },
+        { c: 'warning', t: '高橋 美咲', d: '2年B組 ・ 欠席 3日', tag: '閾値到達' },
+      ];
+      document.getElementById('wAlerts').innerHTML = wAlerts.map(function (x) {
+        return '<div class="flex items-center gap-10" style="padding:9px 0;border-bottom:1px solid var(--border)"><span class="ico-tile ' + x.c + '" style="width:30px;height:30px">' + I('alert', { size: 15 }) + '</span><div class="grow" style="min-width:0"><div class="fw-6 text-sm">' + x.t + '</div><div class="text-3 text-xs">' + x.d + '</div></div><span class="badge badge--' + x.c + '">' + x.tag + '</span></div>';
+      }).join('');
+
+      var bars = [2, 3, 1, 4, 2, 0, 0, 3, 5, 2, 1, 3, 0, 0];
+      document.getElementById('wBars').innerHTML = bars.map(function (v, i) {
+        var h = v * 18 + 4;
+        return '<div class="bars__col"><div class="bars__bar' + (v >= 4 ? '' : ' alt') + '" style="height:' + h + '%' + (v >= 4 ? ';background:var(--warning)' : '') + '"></div><span class="bars__label">' + (i + 1) + '</span></div>';
+      }).join('');
+
+      var hb = [1, 2, 4, 3, 5];
+      document.getElementById('wHealth').innerHTML = hb.map(function (v, i) {
+        return '<div class="bars__col"><div class="bars__bar" style="height:' + (v * 18) + '%;background:var(--pink)"></div><span class="bars__label">' + (i + 1) + '</span></div>';
+      }).join('');
+
+      document.querySelectorAll('.widget').forEach(function (w) {
+        w.addEventListener('click', function () {
+          document.querySelectorAll('.widget').forEach(function (x) { x.classList.remove('sel'); });
+          w.classList.add('sel');
+        });
+      });
+      window.hydrateIcons(document.getElementById('wAlerts'));
+    })();
+  </script>
+</body>
+</html>

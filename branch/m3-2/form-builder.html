@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フォーム作成 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .builder-layout { display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start; }
+  .q-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; box-shadow: var(--shadow-sm); margin-bottom: 12px; position: relative;
+  }
+  .q-card.selected { border-color: var(--plum); box-shadow: 0 0 0 3px var(--plum-50), var(--shadow-sm); }
+  .q-card .q-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .q-card .q-no {
+    font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--plum);
+    background: var(--plum-50); border-radius: 6px; padding: 2px 8px;
+  }
+  .q-card .drag { color: var(--line-2); cursor: grab; margin-left: auto; }
+  .opt-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12.5px; color: var(--ink-2); }
+  .opt-row .material-symbols-rounded { font-size: 17px; color: var(--line-2); }
+  .map-tag {
+    display: flex; align-items: center; gap: 8px; background: var(--plum-50); border: 1px solid #e4cfee;
+    border-radius: 8px; padding: 8px 12px; font-size: 11.5px; color: var(--plum); font-weight: 600;
+  }
+  .side-card { margin-bottom: 14px; }
+</style>
+</head>
+<body data-page="forms">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="forms.html">フォーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">教職員 緊急連絡先（自家用携帯）登録</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">edit_note</span>フォーム作成</h1>
+      <div class="desc"><span class="chip gold">下書き</span> 自動保存 13:48</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-preview')"><span class="material-symbols-rounded">visibility</span>回答者プレビュー</button>
+      <button class="btn accent" onclick="Composer.openModal('modal-publish')"><span class="material-symbols-rounded">send</span>配信する</button>
+    </div>
+  </div>
+
+  <div class="builder-layout">
+    <!-- questions -->
+    <div>
+      <div class="q-card">
+        <div class="field" style="margin-bottom:8px">
+          <label>フォームタイトル</label>
+          <input class="input" style="font-size:15px; font-weight:700" value="教職員 緊急連絡先（自家用携帯）登録">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>説明文</label>
+          <textarea class="input" rows="2">災害時連絡網の整備のため、自家用携帯番号の登録をお願いします。回答内容は名簿に自動反映され、閲覧は管理職に限定されます。</textarea>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-head">
+          <span class="q-no">Q1</span>
+          <select class="select" style="width:160px"><option>テキスト（自動入力）</option></select>
+          <span class="chip indigo"><span class="material-symbols-rounded sm">lock</span>名簿から自動入力</span>
+          <span class="material-symbols-rounded drag">drag_indicator</span>
+        </div>
+        <input class="input mb-1" value="あなたのメールアドレス（確認用・編集不可）">
+        <div class="map-tag"><span class="material-symbols-rounded sm">fingerprint</span>回答者の識別子として「メールアドレス」を使用します（ログインアカウントから自動取得）</div>
+      </div>
+
+      <div class="q-card selected">
+        <div class="q-head">
+          <span class="q-no">Q2</span>
+          <select class="select" style="width:160px"><option>短文テキスト</option><option>長文テキスト</option><option>単一選択</option><option>複数選択</option><option>日付</option></select>
+          <label class="checkbox-row" style="padding:0; font-size:11.5px"><input type="checkbox" checked><span><b>必須</b></span></label>
+          <span class="material-symbols-rounded drag">drag_indicator</span>
+        </div>
+        <input class="input mb-1" value="自家用の携帯電話番号を入力してください">
+        <div class="row mb-1" style="gap:8px">
+          <span class="muted">バリデーション:</span>
+          <select class="select" style="width:180px"><option>電話番号形式</option><option>なし</option><option>正規表現…</option></select>
+        </div>
+        <div class="map-tag">
+          <span class="material-symbols-rounded sm">sync_alt</span>
+          名簿反映: 属性「<b>自家用携帯番号</b>」（連絡先情報）へ書き込み — 適用開始日 = 回答日
+          <button class="btn sm ghost" style="margin-left:auto" onclick="Composer.openModal('modal-map')">変更</button>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-head">
+          <span class="q-no">Q3</span>
+          <select class="select" style="width:160px"><option>単一選択</option></select>
+          <span class="material-symbols-rounded drag">drag_indicator</span>
+        </div>
+        <input class="input mb-1" value="緊急連絡網への掲載に同意しますか">
+        <div class="opt-row"><span class="material-symbols-rounded">radio_button_unchecked</span>同意する</div>
+        <div class="opt-row"><span class="material-symbols-rounded">radio_button_unchecked</span>同意しない（理由を管理職へ連絡）</div>
+        <div class="opt-row" style="color:var(--indigo-600); cursor:pointer" onclick="Composer.toast('選択肢を追加しました')"><span class="material-symbols-rounded" style="color:var(--indigo-600)">add</span>選択肢を追加</div>
+      </div>
+
+      <button class="btn" style="width:100%; justify-content:center; border-style:dashed" onclick="Composer.toast('設問を追加しました')"><span class="material-symbols-rounded">add</span>設問を追加</button>
+    </div>
+
+    <!-- settings -->
+    <aside>
+      <section class="card side-card">
+        <div class="card-h"><span class="material-symbols-rounded">frame_person</span>対象者（回答できる人）</div>
+        <div class="card-b">
+          <div class="field">
+            <label>対象者の条件式</label>
+            <div class="map-tag" style="background:var(--indigo-50); border-color:#d3deef; color:var(--indigo-800)">
+              <span class="material-symbols-rounded sm">filter_alt</span>種別 = 教員 AND 組織スコープ = テナント全体
+            </div>
+            <div class="hint">対象者のみフォームを閲覧・回答できます。条件は<a href="permissions.html">権限エンジン</a>で配信時に評価されます。</div>
+          </div>
+          <div class="row between" style="font-size:12px">
+            <span class="muted">現在の対象者数</span><b class="mono">27,967人</b>
+          </div>
+          <button class="btn sm mt-1" style="width:100%; justify-content:center" onclick="Composer.openModal('modal-target')"><span class="material-symbols-rounded">tune</span>条件を編集</button>
+        </div>
+      </section>
+
+      <section class="card side-card">
+        <div class="card-h"><span class="material-symbols-rounded">sync_alt</span>名簿への反映</div>
+        <div class="card-b" style="font-size:12px">
+          <div class="row between mb-1"><span>名簿反映</span><label class="toggle"><input type="checkbox" checked><span class="tr"></span></label></div>
+          <div class="muted mb-1">Q2 → 属性「自家用携帯番号」</div>
+          <div class="callout" style="font-size:11px">
+            <span class="material-symbols-rounded">fingerprint</span>
+            <div>本人一致はログインアカウントの<b>メールアドレス</b>で確認。反映はバッチ処理され、結果は<a href="jobs.html">処理ログ</a>に記録されます。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card side-card">
+        <div class="card-h"><span class="material-symbols-rounded">shield_person</span>結果の閲覧権限</div>
+        <div class="card-b" style="font-size:12px; display:flex; flex-direction:column; gap:8px">
+          <div class="row between"><span>集計（匿名サマリー）</span><span class="chip indigo">教委職員</span></div>
+          <div class="row between"><span>個票（回答者特定）</span><span class="chip red">同一学校の管理職のみ</span></div>
+          <div class="row between"><span>未回答者リスト</span><span class="chip gold">各校の管理職</span></div>
+          <button class="btn sm" style="width:100%; justify-content:center" onclick="Composer.openModal('modal-target')"><span class="material-symbols-rounded">tune</span>権限を編集</button>
+        </div>
+      </section>
+
+      <section class="card side-card">
+        <div class="card-h"><span class="material-symbols-rounded">event</span>配信スケジュール</div>
+        <div class="card-b">
+          <div class="field"><label>受付開始</label><input class="input" type="date" value="2026-06-15"></div>
+          <div class="field" style="margin-bottom:0"><label>締切</label><input class="input" type="date" value="2026-06-30"></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- 反映マッピングモーダル -->
+  <div class="modal-backdrop" id="modal-map">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">sync_alt</span>名簿反映の設定 — Q2</h3>
+        <button class="x" onclick="Composer.closeModal('modal-map')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>反映先の属性項目</label>
+          <select class="select"><option>自家用携帯番号（連絡先情報・単一文字列）</option><option>緊急連絡先1（連絡先情報）</option></select></div>
+        <div class="field"><label>値の適用開始日</label>
+          <select class="select"><option>回答日</option><option>締切日の翌日</option><option>固定日を指定</option></select>
+          <div class="hint">属性は履歴を持つため、旧値は適用期間とともに保持されます</div></div>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>反映前にバリデーションを実行</b><span>属性側の検証ルール（電話番号形式）で再チェックします</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-map')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-map'); Composer.toast('反映設定を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 対象者条件モーダル -->
+  <div class="modal-backdrop" id="modal-target">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">frame_person</span>対象者の条件</h3>
+        <button class="x" onclick="Composer.closeModal('modal-target')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>種別</label>
+          <select class="select"><option>教員</option><option>生徒</option><option>保護者（関係者）</option><option>教委職員</option></select></div>
+        <div class="field"><label>組織スコープ</label>
+          <select class="select"><option>テナント全体</option><option>長野市の小学校</option><option>自分の所属市町村のみ</option></select></div>
+        <div class="field"><label>追加条件（任意）</label>
+          <select class="select"><option>なし</option><option>職種 = 一般教員</option><option>属性「部活顧問」に値あり</option></select></div>
+        <div class="callout"><span class="material-symbols-rounded">calculate</span><div>この条件での対象者: <b>27,967人</b>（配信時に再計算されます）</div></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-target')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-target'); Composer.toast('対象者条件を更新しました')"><span class="material-symbols-rounded">check</span>適用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- プレビューモーダル -->
+  <div class="modal-backdrop" id="modal-preview">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">visibility</span>回答者プレビュー</h3>
+        <button class="x" onclick="Composer.closeModal('modal-preview')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b" style="background:var(--paper); border-radius:10px; margin:0 22px 16px; padding:20px">
+        <h4 style="font-size:15px; margin-bottom:4px">教職員 緊急連絡先（自家用携帯）登録</h4>
+        <p class="muted mb-2">災害時連絡網の整備のため、自家用携帯番号の登録をお願いします。</p>
+        <div class="field"><label>あなたのメールアドレス</label><input class="input" value="m.takahashi@nagano-edu.jp" readonly style="background:#eee"></div>
+        <div class="field"><label>自家用の携帯電話番号 <span class="req">必須</span></label><input class="input" placeholder="090-XXXX-XXXX"></div>
+        <div class="field"><label>緊急連絡網への掲載に同意しますか</label>
+          <div class="opt-row"><span class="material-symbols-rounded">radio_button_checked</span>同意する</div>
+          <div class="opt-row"><span class="material-symbols-rounded">radio_button_unchecked</span>同意しない</div>
+        </div>
+        <button class="btn primary" onclick="Composer.toast('（プレビューのため送信されません）')">送信</button>
+      </div>
+      <div class="modal-f"><button class="btn" onclick="Composer.closeModal('modal-preview')">閉じる</button></div>
+    </div>
+  </div>
+
+  <!-- 配信確認モーダル -->
+  <div class="modal-backdrop" id="modal-publish">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">send</span>フォームを配信しますか？</h3>
+        <button class="x" onclick="Composer.closeModal('modal-publish')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <dl style="display:grid; grid-template-columns:110px 1fr; gap:7px 12px; font-size:12.5px">
+          <dt class="muted">対象者</dt><dd><b>27,967人</b>（全教職員）</dd>
+          <dt class="muted">期間</dt><dd class="mono">2026-06-15 〜 06-30</dd>
+          <dt class="muted">名簿反映</dt><dd>Q2 → 属性「自家用携帯番号」（自動）</dd>
+          <dt class="muted">通知</dt><dd>対象者へメールとダッシュボード通知</dd>
+        </dl>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-publish')">キャンセル</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-publish'); Composer.toast('フォームを配信しました'); setTimeout(()=>location.href='forms.html', 1100)"><span class="material-symbols-rounded">check</span>配信する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

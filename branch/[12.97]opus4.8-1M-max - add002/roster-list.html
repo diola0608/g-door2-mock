@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名簿管理 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="roster-list">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">名簿管理</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile brand" style="width:38px;height:38px"><i data-ic="users" data-size="20"></i></span> 名簿管理</h1>
+          <p class="page-subtitle">児童生徒・教職員・教育委員会職員の名簿。カテゴリタブで表示項目を切り替えられます。</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-open="columnModal"><i data-ic="sliders" data-size="16"></i> 列設定</button>
+          <a class="btn btn--secondary" href="roster-import.html"><i data-ic="upload" data-size="16"></i> CSVインポート</a>
+          <button class="btn btn--primary" data-open="addPersonModal"><i data-ic="plus" data-size="16"></i> 新規登録</button>
+        </div>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="card" data-tabs>
+        <div class="tabs" style="padding:0 8px">
+          <button class="tab active" data-tab="basic"><i data-ic="user" data-size="16"></i> 基本情報</button>
+          <button class="tab" data-tab="contact"><i data-ic="phone" data-size="16"></i> 連絡先情報</button>
+          <button class="tab" data-tab="school"><i data-ic="school" data-size="16"></i> 学校生活</button>
+          <button class="tab" data-tab="sensitive"><i data-ic="lock" data-size="16"></i> 機微情報 <span class="badge badge--danger" style="height:18px">要権限</span></button>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="row-tools" style="border-bottom:1px solid var(--border)">
+          <div class="input-icon" style="width:300px"><i data-ic="search" data-size="17"></i><input class="input" placeholder="氏名・ID・メールで検索" /></div>
+          <select class="select" style="width:auto"><option>種別: すべて</option><option>生徒</option><option>教員</option><option>教育委員会</option></select>
+          <select class="select" style="width:auto"><option>組織: 青葉県全体</option><option>青葉市</option><option>青葉第一中学校</option><option>青葉第二中学校</option></select>
+          <button class="btn btn--secondary btn--sm"><i data-ic="filter" data-size="15"></i> 詳細フィルタ</button>
+          <div class="spacer flex items-center gap-10">
+            <span class="text-3 text-sm">グループ化</span>
+            <select class="select btn--sm" id="groupBy" style="width:auto;height:32px"><option value="">なし</option><option value="org">所属組織</option><option value="cls">クラス</option><option value="type">種別</option></select>
+          </div>
+        </div>
+
+        <!-- Sensitive notice -->
+        <div class="alert alert--warning hidden" id="sensNotice" style="margin:14px 16px 0">
+          <span class="alert__ico"><i data-ic="shieldAlert"></i></span>
+          <div><div class="alert__title">機微情報は権限により表示が制限されています</div>
+          <div class="alert__text">あなたの権限（システム管理者）では全項目を閲覧できます。一般教員には「人物の特徴」のうち一部コードのみが表示されます。項目・選択肢ごとの制限は<a href="permissions.html" class="muted-link">権限管理</a>で設定します。</div></div>
+        </div>
+
+        <!-- Bulk bar -->
+        <div class="row-tools hidden" data-bulk-bar style="background:var(--brand-50);border-bottom:1px solid var(--border)">
+          <span class="fw-6"><b data-bulk-count>0</b> 件を選択中</span>
+          <div class="spacer flex gap-8">
+            <button class="btn btn--sm btn--secondary" data-toast="メールを送信しました（デモ）"><i data-ic="mail" data-size="15"></i> 一括連絡</button>
+            <button class="btn btn--sm btn--secondary" data-open="bulkTransferModal"><i data-ic="swap" data-size="15"></i> 所属変更</button>
+            <button class="btn btn--sm btn--secondary" data-toast="CSVを書き出しました（デモ）"><i data-ic="download" data-size="15"></i> エクスポート</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="tbl tbl-clickable" id="rosterTable">
+            <thead id="rosterHead"></thead>
+            <tbody id="rosterBody"></tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <span>全 <b>48,210</b> 件中 1–12 件を表示</span>
+          <div class="pagination">
+            <button disabled><i data-ic="chevronLeft" data-size="16"></i></button>
+            <button class="active">1</button><button>2</button><button>3</button><button>…</button><button>4,018</button>
+            <button><i data-ic="chevronRight" data-size="16"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add person modal -->
+  <div class="overlay modal-center" id="addPersonModal">
+    <div class="modal modal--lg">
+      <div class="modal__head">
+        <span class="modal__icon ico-tile brand"><i data-ic="user"></i></span>
+        <div><div class="modal__title">人物を新規登録</div><div class="modal__desc">基本情報を入力します。属性項目は登録後に追加できます。</div></div>
+        <button class="modal__close" data-close><i data-ic="x"></i></button>
+      </div>
+      <div class="modal__body">
+        <div class="field"><span class="label">種別 <span class="req">*</span></span>
+          <div class="pills" data-pill-group><span class="pill active">生徒</span><span class="pill">教員</span><span class="pill">教育委員会職員</span></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="label">姓 <span class="req">*</span></label><input class="input" placeholder="佐藤" /></div>
+          <div class="field"><label class="label">名 <span class="req">*</span></label><input class="input" placeholder="花子" /></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="label">かな</label><input class="input" placeholder="さとう はなこ" /></div>
+          <div class="field"><label class="label">生年月日</label><input class="input" type="date" /></div>
+        </div>
+        <div class="field"><label class="label">メールアドレス <span class="opt">（任意・Workspace連携の識別子）</span></label><input class="input" placeholder="h.sato@s.aoba-edu.ed.jp" /></div>
+        <div class="field-row">
+          <div class="field"><label class="label">所属組織 <span class="req">*</span></label><select class="select"><option>青葉第一中学校</option><option>青葉第二中学校</option></select></div>
+          <div class="field"><label class="label">クラス</label><select class="select"><option>2年A組</option><option>2年B組</option></select></div>
+        </div>
+        <div class="alert alert--info"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">メールアドレスが管理対象ワークスペースのドメインの場合、登録内容はGoogle Workspaceへ自動同期されます（本システム→Workspaceの一方向）。</div></div>
+      </div>
+      <div class="modal__foot">
+        <button class="btn btn--ghost spacer" data-close>キャンセル</button>
+        <button class="btn btn--secondary" data-close data-toast="下書きとして保存しました（デモ）">下書き保存</button>
+        <button class="btn btn--primary" data-close data-toast="佐藤 花子 さんを登録しました（デモ）" data-toast-text="Workspaceへの同期をキューに追加しました">登録する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Column settings modal -->
+  <div class="overlay modal-center" id="columnModal">
+    <div class="modal">
+      <div class="modal__head"><span class="modal__icon ico-tile info"><i data-ic="sliders"></i></span><div><div class="modal__title">表示列・カテゴリ設定</div><div class="modal__desc">カテゴリ（タブ）に表示する属性項目を選びます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+      <div class="modal__body">
+        <p class="text-2 text-sm mb-12">「基本情報」タブに表示する項目</p>
+        <div class="flex col gap-8">
+          <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 氏名 / かな</label>
+          <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 種別</label>
+          <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 生年月日</label>
+          <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 性別</label>
+          <label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 学年</label>
+        </div>
+        <div class="divider"></div>
+        <a href="roster-attributes.html" class="muted-link text-sm"><i data-ic="arrowRight" data-size="15" style="vertical-align:-2px"></i> 属性項目そのものを追加・編集する</a>
+      </div>
+      <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="表示設定を保存しました（デモ）">保存</button></div>
+    </div>
+  </div>
+
+  <!-- Bulk transfer modal -->
+  <div class="overlay modal-center" id="bulkTransferModal">
+    <div class="modal">
+      <div class="modal__head"><span class="modal__icon ico-tile warning"><i data-ic="swap"></i></span><div><div class="modal__title">選択した人物の所属を変更</div><div class="modal__desc">変更先組織と発効日を指定します</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+      <div class="modal__body">
+        <div class="field"><label class="label">変更先の組織 <span class="req">*</span></label><select class="select"><option>選択してください</option><option>青葉第二中学校</option><option>緑川中央中学校</option></select></div>
+        <div class="field"><label class="label">発効日 <span class="req">*</span></label><input class="input" type="date" value="2026-07-01" /></div>
+        <label class="check mt-8"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 承認フローをスキップ（権限が必要・即時反映）</label>
+        <div class="help">チェックしない場合、変更先組織への承認申請として登録され、承認後にバッチで反映されます。</div>
+      </div>
+      <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="所属変更を申請しました（デモ）">申請する</button></div>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, P = window.DATA.people, U = window.UI;
+
+      var COLS = {
+        basic: [
+          { h: '氏名', r: function (p) { return personCell(p); } },
+          { h: '種別', r: function (p) { return U.typeBadge(p.type); } },
+          { h: 'ID', r: function (p) { return '<span class="mono text-2">' + p.id + '</span>'; } },
+          { h: '生年月日', r: function (p) { return p.birth; } },
+          { h: '性別', r: function (p) { return p.gender; } },
+          { h: '所属組織', r: function (p) { return p.org; } },
+          { h: 'クラス/役割', r: function (p) { return p.cls; } },
+          { h: '状況', r: function (p) { return U.statusBadge(p.status); } },
+        ],
+        contact: [
+          { h: '氏名', r: function (p) { return personCell(p); } },
+          { h: 'メールアドレス', r: function (p) { return p.email ? '<span class="mono">' + p.email + '</span>' : '<span class="text-3">—</span>'; } },
+          { h: '電話番号', r: function (p) { return '<span class="mono">' + p.tel + '</span>'; } },
+          { h: '住所', r: function (p) { return '<span class="text-2">' + p.addr + '</span>'; } },
+          { h: '同期', r: function (p) { return U.statusBadge(p.sync); } },
+        ],
+        school: [
+          { h: '氏名', r: function (p) { return personCell(p); } },
+          { h: '所属組織', r: function (p) { return p.org; } },
+          { h: 'クラス/役割', r: function (p) { return p.cls; } },
+          { h: '部活動 / 顧問', r: function (p) { return p.club ? '<span class="tag">' + p.club + '</span>' : '<span class="text-3">—</span>'; } },
+          { h: '教員免許', r: function (p) { return p.license ? '<span class="text-2 text-sm">' + p.license + '</span>' : '<span class="text-3">—</span>'; } },
+        ],
+        sensitive: [
+          { h: '氏名', r: function (p) { return personCell(p); } },
+          { h: '人物の特徴', r: function (p) { return featureBadge(p.feature); } },
+          { h: 'いじめ歴', r: function (p) { return p.feature && p.feature.indexOf('いじめ') >= 0 ? '<span class="badge badge--danger">記録あり</span>' : '<span class="text-3">—</span>'; } },
+          { h: '不登校状況', r: function (p) { return p.feature === '要配慮' ? '<span class="badge badge--warning">経過観察</span>' : '<span class="text-3">通常</span>'; } },
+          { h: '閲覧可能範囲', r: function () { return '<span class="badge badge--outline"><i data-ic="lock" data-size="12"></i> 担任・学年主任</span>'; } },
+        ],
+      };
+
+      function personCell(p) {
+        return '<div class="cell-person">' + U.avatar(p.name, { size: 'sm', color: p.color }) +
+          '<div class="cell-person__meta"><div class="cell-person__name">' + p.name + '</div><div class="cell-person__sub">' + p.kana + '</div></div></div>';
+      }
+      function featureBadge(f) {
+        if (!f) return '<span class="text-3">—</span>';
+        var map = { '優良生徒': 'success', '要配慮': 'warning', 'いじめ加害': 'danger' };
+        return '<span class="badge badge--' + (map[f] || 'neutral') + '">' + f + '</span>';
+      }
+
+      var current = 'basic';
+
+      function render() {
+        var cols = COLS[current];
+        document.getElementById('rosterHead').innerHTML =
+          '<tr><th class="col-check"><label class="check"><input type="checkbox" data-check-all /><span class="check__box">' + I('check', { size: 13 }) + '</span></label></th>' +
+          cols.map(function (c) { return '<th>' + c.h + '</th>'; }).join('') +
+          '<th class="col-actions"></th></tr>';
+
+        var groupBy = document.getElementById('groupBy').value;
+        var rows = '';
+        if (groupBy) {
+          var key = groupBy === 'org' ? 'org' : groupBy === 'cls' ? 'cls' : 'type';
+          var groups = {};
+          P.forEach(function (p) { (groups[p[key]] = groups[p[key]] || []).push(p); });
+          Object.keys(groups).forEach(function (g) {
+            rows += '<tr style="background:var(--surface-2)"><td colspan="' + (cols.length + 2) + '" style="padding:8px 16px"><span class="fw-7">' + g + '</span> <span class="text-3 text-sm">（' + groups[g].length + '名）</span></td></tr>';
+            groups[g].forEach(function (p) { rows += rowHtml(p, cols); });
+          });
+        } else {
+          P.forEach(function (p) { rows += rowHtml(p, cols); });
+        }
+        document.getElementById('rosterBody').innerHTML = rows;
+        window.hydrateIcons(document.getElementById('rosterTable'));
+      }
+
+      function rowHtml(p, cols) {
+        return '<tr onclick="if(!event.target.closest(\'label,button,.menu\'))location.href=\'roster-detail.html\'">' +
+          '<td class="col-check" onclick="event.stopPropagation()"><label class="check"><input type="checkbox" data-row-check /><span class="check__box">' + I('check', { size: 13 }) + '</span></label></td>' +
+          cols.map(function (c) { return '<td>' + c.r(p) + '</td>'; }).join('') +
+          '<td class="col-actions"><div class="dropdown" data-dropdown onclick="event.stopPropagation()"><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button>' +
+          '<div class="menu right"><a href="roster-detail.html" class="menu__item">' + I('eye', { size: 16 }) + '詳細を見る</a><div class="menu__item">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item">' + I('history', { size: 16 }) + '変更履歴</div><div class="menu__sep"></div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></td></tr>';
+      }
+
+      // tab change
+      document.querySelectorAll('[data-tab]').forEach(function (t) {
+        t.addEventListener('click', function () {
+          current = t.dataset.tab;
+          document.getElementById('sensNotice').classList.toggle('hidden', current !== 'sensitive');
+          render();
+        });
+      });
+      document.getElementById('groupBy').addEventListener('change', render);
+
+      render();
+    })();
+  </script>
+</body>
+</html>

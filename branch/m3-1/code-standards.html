@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<!--
+  プロンプト 002: コード管理 > コード標準
+  - OneRoster, 文科省コード, JIS X 0401/0402 地域コードなど「外部規格」とのマッピング
+  - アプリ内の表示と、エクスポート時のコード値が異なる場合を管理
+  - 例: アプリ上「ICT支援員」 → エクスポート時「その他の職員」（OneRoster）
+  - 例: MEXT「教諭」 → アプリ内「一般教員」
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コード標準マッピング | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .cs-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
+  .std-list .item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; font-size: 12.5px;
+  }
+  .std-list .item:hover { background: var(--indigo-50); }
+  .std-list .item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .std-list .item b { display: block; }
+  .std-list .item .std-meta { font-size: 10.5px; color: var(--ink-3); font-family: var(--mono); }
+
+  .map-row {
+    display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr 130px;
+    gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+  }
+  .map-row:last-child { border-bottom: 0; }
+  .map-row.head { font-size: 10.5px; color: var(--ink-3); letter-spacing: .08em; border-bottom: 2px solid var(--line); }
+  .map-row .arr { text-align: center; color: var(--line-2); }
+  .map-row .src, .map-row .dst {
+    border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px;
+    background: var(--paper-2); font-size: 12px;
+  }
+  .map-row .dst { background: var(--indigo-50); border-color: var(--indigo-100, var(--indigo-500)); }
+  .map-row .dst.miss { background: var(--vermilion-50); border-color: var(--vermilion); }
+
+  .demo-block { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .demo-card { background: var(--paper-2); border-radius: 9px; padding: 12px; }
+  .demo-card b { font-size: 11px; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .demo-card pre { font-family: var(--mono); font-size: 11.5px; line-height: 1.6; white-space: pre-wrap; }
+</style>
+</head>
+<body data-page="code-standards">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="codes.html">コードマスター</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">コード標準マッピング</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">public</span>コード標準マッピング</h1>
+      <div class="desc">外部システム／規格（OneRoster・文科省コード・JIS X 0401／0402 等）とアプリ内のコードを紐付けます。アプリ内での表示と、エクスポート時のコード値が異なる場合に使います。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('マッピングルールをCSV出力しました')"><span class="material-symbols-rounded">download</span>エクスポート</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-std-add')"><span class="material-symbols-rounded">add</span>標準を追加</button>
+    </div>
+  </div>
+
+  <div class="callout mb-2">
+    <span class="material-symbols-rounded">swap_horiz</span>
+    <div><b>アプリ内表示と外部コードは別物</b>です。例: アプリ内では「<b>ICT支援員</b>」として登録し、条件検索・フィルタリングもこの名称で行いますが、OneRoster等で外部出力する際は MEXT職種コードの「<b>その他の職員</b>」にマッピングして書き出します。逆も同様（<b>教諭</b>＝MEXT／アプリ内「<b>一般教員</b>」）。</div>
+  </div>
+
+  <div class="cs-layout">
+    <!-- 左：標準一覧 -->
+    <aside class="card std-list">
+      <div class="card-h"><span class="material-symbols-rounded">lan</span>外部規格
+        <span class="sub">4件登録</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--sky)">cloud</span>
+        <div style="flex:1"><b>OneRoster 1.2</b><div class="std-meta">IMS Global・1,200件超のマスター</div></div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--indigo-500)">account_balance</span>
+        <div style="flex:1"><b>文科省 学校教員統計調査 職種コード</b><div class="std-meta">MEXT・2024年改定版</div></div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--plum)">pin</span>
+        <div style="flex:1"><b>JIS X 0401 都道府県コード</b><div class="std-meta">全国地方公共団体コード</div></div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--gold)">location_city</span>
+        <div style="flex:1"><b>JIS X 0402 市区町村コード</b><div class="std-meta">全国地方公共団体コード</div></div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="item active">
+        <span class="material-symbols-rounded" style="color:var(--vermilion)">school</span>
+        <div style="flex:1"><b>学校コード（文部科学省）</b><div class="std-meta">MEXT・12桁・校種別</div></div>
+        <span class="status warn">要更新</span>
+      </div>
+    </aside>
+
+    <!-- 右：選択中規格のマッピング -->
+    <section class="card">
+      <div class="card-h">
+        <span class="material-symbols-rounded">account_balance</span>文科省 学校教員統計調査 職種コード
+        <span class="chip mono">STD-MEXT-JOB-2024</span>
+        <span class="chip green"><span class="material-symbols-rounded sm">check_circle</span>v2024 反映済</span>
+        <div class="right">
+          <button class="btn sm" onclick="Composer.toast('文科省公開CSVを取り込みました（重複は自動統合）')"><span class="material-symbols-rounded">file_download</span>最新版を取り込み</button>
+          <button class="btn sm primary" onclick="Composer.toast('マッピングを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+        </div>
+      </div>
+      <div class="card-b">
+        <div class="grid-2 mb-2" style="font-size:12px">
+          <div class="card" style="box-shadow:none; background:#fbfaf8">
+            <div class="card-h" style="background:none"><span class="material-symbols-rounded">description</span>規格の説明</div>
+            <div class="card-b">
+              <p>文部科学省「学校教員統計調査」で使用される職種コード。11区分。エクスポート時に本規格で出力するか、別規格（OneRoster等）に変換して出力するかは、<a href="#">連携設定</a>で選択します。</p>
+            </div>
+          </div>
+          <div class="card" style="box-shadow:none; background:#fbfaf8">
+            <div class="card-h" style="background:none"><span class="material-symbols-rounded">sync</span>適用タイミング</div>
+            <div class="card-b">
+              <div class="row between"><span class="muted">入力時</span><span>適用しない（アプリ内の表示が優先）</span></div>
+              <div class="row between"><span class="muted">エクスポート時</span><span><span class="chip green">適用する</span></span></div>
+              <div class="row between"><span class="muted">自動更新</span><span>文科省公開CSVの取込みで更新</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout warn mb-2">
+          <span class="material-symbols-rounded">warning</span>
+          <div><b>未マッピング 1件</b> — アプリ内コード「ICT支援員」は MEXT 職種コードに存在しません。「<b>その他の職員</b>（コード 99）」にマッピングしてエクスポートされます。</div>
+        </div>
+
+        <div class="map-row head">
+          <span>アプリ内表示名</span><span></span>
+          <span>アプリ内コード</span><span></span>
+          <span>外部規格の値</span>
+          <span>状態</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>一般教員</b><div class="muted" style="font-size:10.5px">アプリ既定の表示</div></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-01</span><div class="muted" style="font-size:10.5px">マスター: 職種</div></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">01</span> 教諭（正規）</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>一般教員（講師）</b></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-02</span></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">02</span> 講師（非常勤）</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>養護教諭</b></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-03</span></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">03</span> 養護教諭</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>栄養教諭</b></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-04</span></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">04</span> 栄養教諭</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+        <div class="map-row" style="background:var(--vermilion-50)">
+          <div class="src"><b>ICT支援員</b><div class="muted" style="font-size:10.5px">アプリ固有の追加コード</div></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-99</span><div class="muted" style="font-size:10.5px">マスター: 職種（カスタム）</div></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst miss"><span class="mono">99</span> その他の職員（集約）</div>
+          <span class="chip red"><span class="material-symbols-rounded sm">priority_high</span>規格に無し</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>教頭</b></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-05</span></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">05</span> 教頭</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>副校長</b></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-06</span></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">06</span> 副校長</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+        <div class="map-row">
+          <div class="src"><b>校長</b></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="src"><span class="mono">JOB-TEACHER-07</span></div>
+          <span class="arr"><span class="material-symbols-rounded">east</span></span>
+          <div class="dst"><span class="mono">07</span> 校長</div>
+          <span class="chip green">マッピング済</span>
+        </div>
+
+        <div class="mt-2">
+          <h3 style="font-size:12.5px; margin-bottom:6px"><span class="material-symbols-rounded" style="color:var(--indigo-500); vertical-align:-3px">science</span>変換の動作プレビュー</h3>
+          <div class="demo-block">
+            <div class="demo-card">
+              <b>入力（アプリ内）</b>
+              <pre>職種: "ICT支援員"
+氏名: "佐藤 慶子"
+職員番号: "T-1187"
+所属: "長野市立城山小学校"</pre>
+            </div>
+            <div class="demo-card">
+              <b>出力（外部規格: MEXT 2024）</b>
+              <pre>職種コード: "99"  // その他の職員
+職種表示名: "ICT支援員" // 拡張属性として保持
+氏名: "佐藤 慶子"
+職員番号: "T-1187"
+学校コード: "B120120000081"  // 城山小</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">info</span>
+          <div><b>エクスポート方針</b>: OneRoster／MEXT等の規格で出力する場合、マッピングにない値は「<b>99（その他の職員）</b>」等の集約コードにフォールバックし、ログに警告を残します。インポート時はアプリ内の表示名が優先され、CSVに新しい値があれば確認ダイアログで採用可否を尋ねます。</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 標準追加モーダル -->
+  <div class="modal-backdrop" id="modal-std-add">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>外部コード標準を追加</h3>
+        <button class="x" onclick="Composer.closeModal('modal-std-add')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>標準名<span class="req">必須</span></label><input class="input" placeholder="例: 長野県教育委員会 独自コード"></div>
+        <div class="field"><label>識別子</label><input class="input mono" placeholder="STD-XXXX-…"></div>
+        <div class="field">
+          <label>ソース</label>
+          <select class="select">
+            <option>公式CSVを取り込み（文科省・総務省・IMS）</option>
+            <option>URLから自動同期</option>
+            <option>手動アップロード</option>
+            <option>既存コードマスターから派生</option>
+          </select>
+          <div class="hint">公式CSVの取込みは月1回の自動更新が推奨。差分は手動確認後に適用されます。</div>
+        </div>
+        <div class="field"><label>説明</label><textarea class="input" rows="2" placeholder="この標準の用途"></textarea></div>
+        <label class="checkbox-row">
+          <input type="checkbox" checked>
+          <span><b>エクスポート時に適用する</b><span>CSV/TSVエクスポート時、この標準の値に変換して書き出します</span></span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox">
+          <span><b>インポート時にも参照する</b><span>CSV取込時にこの標準のコード値からアプリ内表示名に逆引きします</span></span>
+        </label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-std-add')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-std-add'); Composer.toast('コード標準を追加しました。続けてマッピングを設定してください')"><span class="material-symbols-rounded">check</span>追加</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

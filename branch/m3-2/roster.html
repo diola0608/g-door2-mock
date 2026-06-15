@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名簿レジストリ | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .roster-layout { display: grid; grid-template-columns: 250px 1fr; gap: 14px; align-items: start; }
+  .org-pane { position: sticky; top: calc(var(--header-h) + 16px); }
+  .org-pane .card-b { padding: 10px; max-height: 64vh; overflow-y: auto; }
+  .scope-note {
+    margin: 0 10px 10px; padding: 8px 11px; border-radius: 8px; font-size: 10.5px;
+    background: var(--indigo-50); color: var(--indigo-800); display: flex; gap: 7px; align-items: flex-start;
+  }
+  .scope-note .material-symbols-rounded { font-size: 14px; margin-top: 1px; color: var(--indigo-600); }
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  .tbl-scroll { overflow-x: auto; }
+</style>
+</head>
+<body data-page="roster">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">名簿レジストリ</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">groups</span>名簿レジストリ</h1>
+      <div class="desc">あなたの権限スコープで閲覧できる名簿を表示しています。カテゴリタブで表示項目グループを切り替えられます。</div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="import.html"><span class="material-symbols-rounded">upload_file</span>CSVインポート</a>
+      <button class="btn" onclick="Composer.toast('CSVエクスポートをジョブに登録しました（#JOB-20260612-006）')"><span class="material-symbols-rounded">download</span>エクスポート</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-add')"><span class="material-symbols-rounded">person_add</span>個別登録</button>
+    </div>
+  </div>
+
+  <div class="roster-layout">
+    <!-- org tree pane -->
+    <aside class="card org-pane">
+      <div class="card-h"><span class="material-symbols-rounded">account_tree</span>組織スコープ</div>
+      <div class="scope-note" style="margin-top:10px">
+        <span class="material-symbols-rounded">shield_person</span>
+        <span>あなたは <b>県教委・システム管理者</b> のため全組織を閲覧できます</span>
+      </div>
+      <div class="card-b tree">
+        <details open>
+          <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">flag</span>長野県（テナント全体）<span class="cnt">214,387</span></summary>
+          <details open>
+            <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">location_city</span>長野市<span class="cnt">42,118</span></summary>
+            <details open>
+              <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">category</span>小学校<span class="cnt">18,204</span></summary>
+              <div class="leaf active"><span class="material-symbols-rounded">school</span>長野市立城山小学校<span class="cnt">412</span></div>
+              <div class="leaf"><span class="material-symbols-rounded">school</span>長野市立後町小学校<span class="cnt">388</span></div>
+              <div class="leaf"><span class="material-symbols-rounded">school</span>長野市立山王小学校<span class="cnt">356</span></div>
+            </details>
+            <details>
+              <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">category</span>中学校<span class="cnt">12,931</span></summary>
+              <div class="leaf"><span class="material-symbols-rounded">school</span>長野市立柳町中学校<span class="cnt">521</span></div>
+            </details>
+            <details>
+              <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">corporate_fare</span>長野市教育委員会<span class="cnt">96</span></summary>
+              <div class="leaf"><span class="material-symbols-rounded">meeting_room</span>学校教育課<span class="cnt">31</span></div>
+              <div class="leaf"><span class="material-symbols-rounded">meeting_room</span>生涯学習課<span class="cnt">24</span></div>
+            </details>
+          </details>
+          <details>
+            <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">location_city</span>松本市<span class="cnt">31,672</span></summary>
+            <div class="leaf"><span class="material-symbols-rounded">school</span>松本市立開成中学校<span class="cnt">498</span></div>
+          </details>
+          <details>
+            <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">location_city</span>上田市<span class="cnt">18,455</span></summary>
+            <div class="leaf"><span class="material-symbols-rounded">school</span>上田市立第一中学校<span class="cnt">463</span></div>
+          </details>
+          <details>
+            <summary><span class="material-symbols-rounded tw">chevron_right</span><span class="material-symbols-rounded">category</span>県立高校（県直轄）<span class="cnt">38,920</span></summary>
+            <div class="leaf"><span class="material-symbols-rounded">school</span>県立長野高等学校<span class="cnt">962</span></div>
+          </details>
+        </details>
+      </div>
+    </aside>
+
+    <!-- list -->
+    <div>
+      <div class="toolbar mb-2">
+        <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="氏名・かな・メール・職員番号で検索"></div>
+        <select class="select" style="width:130px"><option>すべての種別</option><option>生徒</option><option>教員</option><option>教委職員</option><option>関係者</option></select>
+        <select class="select" style="width:130px"><option>2026年度</option><option>2025年度</option><option selected>2026年度</option></select>
+        <select class="select" style="width:140px"><option>クラス: すべて</option><option>6年1組</option><option>6年2組</option><option>5年1組</option></select>
+        <div class="sep"></div>
+        <button class="btn sm ghost" onclick="Composer.toast('フィルター条件を保存しました')"><span class="material-symbols-rounded">bookmark_add</span>条件を保存</button>
+        <span class="muted" style="margin-left:auto">412人中 1–8件</span>
+      </div>
+
+      <div class="tab-wrap">
+        <div class="tabs" data-tabs="cat">
+          <button class="tab active" data-tab="basic"><span class="material-symbols-rounded">id_card</span>基本情報</button>
+          <button class="tab" data-tab="contact"><span class="material-symbols-rounded">call</span>連絡先情報</button>
+          <button class="tab" data-tab="school"><span class="material-symbols-rounded">history_edu</span>学籍・部活</button>
+          <button class="tab" data-tab="sensitive"><span class="material-symbols-rounded">lock</span>機微情報<span class="material-symbols-rounded lock">shield_lock</span></button>
+        </div>
+
+        <!-- 基本情報 -->
+        <div class="tab-panel active tbl-scroll" data-tab-panel="cat" data-tab="basic">
+          <table class="tbl">
+            <thead><tr><th></th><th>氏名</th><th>種別</th><th>生年月日</th><th>性別</th><th>所属</th><th>クラス</th><th>Workspace</th><th></th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b><span>すずき いちろう・S-2026-04412</span></div></div></td>
+                <td><span class="chip indigo">生徒</span></td>
+                <td class="mono">2014-05-21</td><td>男</td>
+                <td class="muted">長野市立城山小学校</td><td class="mono">6年1組 / 12番</td>
+                <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>同期済</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b><span>たなか はなこ・S-2026-04413</span></div></div></td>
+                <td><span class="chip indigo">生徒</span></td>
+                <td class="mono">2014-11-02</td><td>女</td>
+                <td class="muted">長野市立城山小学校</td><td class="mono">6年1組 / 18番</td>
+                <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>同期済</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a3 sm">小</span><div><b>小林 大翔</b><span>こばやし ひろと・S-2026-04414</span></div></div></td>
+                <td><span class="chip indigo">生徒</span></td>
+                <td class="mono">2015-01-17</td><td>男</td>
+                <td class="muted">長野市立城山小学校</td><td class="mono">6年2組 / 07番</td>
+                <td><span class="sync pending"><span class="material-symbols-rounded">sync</span>反映待ち</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a5 sm">中</span><div><b>中村 結衣</b><span>なかむら ゆい・S-2026-04415</span></div></div></td>
+                <td><span class="chip indigo">生徒</span></td>
+                <td class="mono">2014-08-30</td><td>女</td>
+                <td class="muted">長野市立城山小学校</td><td class="mono">5年1組 / 21番</td>
+                <td><span class="sync off"><span class="material-symbols-rounded">cloud_off</span>対象外</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a2 sm">高</span><div><b>高橋 美咲</b><span>たかはし みさき・T-1187</span></div></div></td>
+                <td><span class="chip green">教員</span></td>
+                <td class="mono">1989-03-08</td><td>女</td>
+                <td class="muted">長野市立城山小学校</td><td class="mono">6年1組 担任</td>
+                <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>同期済</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a3 sm">渡</span><div><b>渡辺 修</b><span>わたなべ おさむ・T-0412</span></div></div></td>
+                <td><span class="chip green">教員</span></td>
+                <td class="mono">1975-12-14</td><td>男</td>
+                <td class="muted">長野市立城山小学校（校長）</td><td class="mono">—</td>
+                <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>同期済</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar sm">山</span><div><b>山本 恵子</b><span>やまもと けいこ・G-8821</span></div></div></td>
+                <td><span class="chip gold">関係者</span></td>
+                <td class="mono">—</td><td>女</td>
+                <td class="muted">鈴木 一郎の保護者</td><td class="mono">—</td>
+                <td><span class="sync off"><span class="material-symbols-rounded">cloud_off</span>対象外</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+              <tr class="clickable" onclick="location.href='roster-detail.html'">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div class="person"><span class="avatar a4 sm">加</span><div><b>加藤 直樹</b><span>かとう なおき・B-0094</span></div></div></td>
+                <td><span class="chip sky">教委職員</span></td>
+                <td class="mono">1982-06-25</td><td>男</td>
+                <td class="muted">長野市教委 学校教育課</td><td class="mono">—</td>
+                <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>同期済</span></td>
+                <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 連絡先 -->
+        <div class="tab-panel tbl-scroll" data-tab-panel="cat" data-tab="contact">
+          <table class="tbl">
+            <thead><tr><th>氏名</th><th>メールアドレス</th><th>電話番号</th><th>住所</th><th>緊急連絡先</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b><span>生徒</span></div></div></td>
+                <td class="mono">i.suzuki26@nagano-edu.jp</td>
+                <td class="mono">026-23X-XXXX</td>
+                <td class="muted">長野市大字南長野字幅下692-2</td>
+                <td class="mono">090-12XX-XXXX（母）</td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b><span>生徒</span></div></div></td>
+                <td class="mono">h.tanaka26@nagano-edu.jp</td>
+                <td class="mono">026-26X-XXXX</td>
+                <td class="muted">長野市三輪9丁目43-12</td>
+                <td class="mono">080-44XX-XXXX（父）</td>
+              </tr>
+              <tr class="masked">
+                <td><div class="person"><span class="avatar a3 sm">小</span><div><b>小林 大翔</b><span>生徒</span></div></div></td>
+                <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>閲覧権限がありません</span></td>
+                <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>非表示</span></td>
+                <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>非表示</span></td>
+                <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>非表示</span></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">高</span><div><b>高橋 美咲</b><span>教員</span></div></div></td>
+                <td class="mono">m.takahashi@nagano-edu.jp</td>
+                <td class="mono">090-88XX-XXXX</td>
+                <td class="muted">長野市若里4丁目22-8</td>
+                <td class="mono">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout mt-2" style="margin:14px">
+            <span class="material-symbols-rounded">info</span>
+            <div>連絡先情報は「担任クラスの生徒」または「部活顧問として担当する生徒」のみ閲覧できます。マスクされた行はあなたの権限の対象外です。</div>
+          </div>
+        </div>
+
+        <!-- 学籍・部活 -->
+        <div class="tab-panel tbl-scroll" data-tab-panel="cat" data-tab="school">
+          <table class="tbl">
+            <thead><tr><th>氏名</th><th>入学年度</th><th>部活動</th><th>通学方法</th><th>給食アレルギー</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b></div></div></td>
+                <td class="mono">2021</td>
+                <td><span class="chip green">サッカー部</span></td>
+                <td>徒歩</td><td><span class="chip red">卵・乳</span></td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b></div></div></td>
+                <td class="mono">2021</td>
+                <td><span class="chip plum">吹奏楽部</span></td>
+                <td>自転車</td><td class="muted">なし</td>
+              </tr>
+              <tr>
+                <td><div class="person"><span class="avatar a3 sm">小</span><div><b>小林 大翔</b></div></div></td>
+                <td class="mono">2021</td>
+                <td><span class="chip green">サッカー部</span><span class="chip sky">科学クラブ</span></td>
+                <td>バス</td><td class="muted">なし</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 機微情報 -->
+        <div class="tab-panel" data-tab-panel="cat" data-tab="sensitive">
+          <div class="callout warn" style="margin:14px">
+            <span class="material-symbols-rounded">shield_lock</span>
+            <div><b>機微情報カテゴリ</b> — このタブの閲覧は監査ログに記録されます。項目・選択肢ごとに閲覧可能な職種が制限されています（例:「いじめ加害者」コードは学年主任のみ表示）。</div>
+          </div>
+          <div class="tbl-scroll">
+            <table class="tbl">
+              <thead><tr><th>氏名</th><th>人物の特徴</th><th>不登校歴</th><th>支援記録</th><th>最終更新</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b></div></div></td>
+                  <td><span class="chip green">優良生徒</span></td>
+                  <td class="muted">なし</td>
+                  <td class="muted">—</td>
+                  <td class="mono">2026-04-08</td>
+                </tr>
+                <tr>
+                  <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b></div></div></td>
+                  <td><span class="masked-cell"><span class="material-symbols-rounded">key</span>学年主任のみ閲覧可の選択肢を含む</span></td>
+                  <td><span class="chip gold">2025年度 12日</span></td>
+                  <td><a href="roster-detail.html">記録 3件</a></td>
+                  <td class="mono">2026-05-30</td>
+                </tr>
+                <tr class="masked">
+                  <td><div class="person"><span class="avatar a3 sm">小</span><div><b>小林 大翔</b></div></div></td>
+                  <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>非表示</span></td>
+                  <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>非表示</span></td>
+                  <td><span class="masked-cell"><span class="material-symbols-rounded">visibility_off</span>非表示</span></td>
+                  <td class="mono">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pagination">
+          <span style="margin-right:auto">1ページ / 52ページ</span>
+          <button><span class="material-symbols-rounded sm">chevron_left</span></button>
+          <button class="cur">1</button><button>2</button><button>3</button><span>…</span><button>52</button>
+          <button><span class="material-symbols-rounded sm">chevron_right</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 個別登録モーダル -->
+  <div class="modal-backdrop" id="modal-add">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">person_add</span>名簿に個別登録</h3>
+        <button class="x" onclick="Composer.closeModal('modal-add')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>種別<span class="req">必須</span></label>
+            <select class="select"><option>生徒</option><option>教員</option><option>教委職員</option><option>関係者</option></select></div>
+          <div class="field"><label>所属組織<span class="req">必須</span></label>
+            <select class="select"><option>長野市立城山小学校</option><option>長野市立後町小学校</option></select></div>
+          <div class="field"><label>氏名<span class="req">必須</span></label><input class="input" placeholder="例: 信州 太郎"></div>
+          <div class="field"><label>かな<span class="req">必須</span></label><input class="input" placeholder="例: しんしゅう たろう"></div>
+          <div class="field"><label>生年月日</label><input class="input" type="date"></div>
+          <div class="field"><label>クラス / 出席番号</label><input class="input" placeholder="例: 6年1組 / 30"></div>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" checked>
+          <span><b>Google Workspace アカウントを発行する</b><span>メールアドレスは命名規則に従い自動生成されます（i.shinshu26@nagano-edu.jp）</span></span>
+        </label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-add')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-add'); Composer.toast('登録しました。属性項目は詳細画面から入力できます')"><span class="material-symbols-rounded">check</span>登録する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

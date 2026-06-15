@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ダッシュボード | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="dashboard">
+  <main id="main" class="main">
+    <div class="page page--wide">
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title">おはようございます、井上さん</h1>
+          <p class="page-subtitle">2026年6月13日（土）・青葉県教育委員会（テナント全体）のスコープで表示しています。</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-open="quickAddModal"><i data-ic="plus" data-size="17"></i> クイック登録</button>
+          <a class="btn btn--primary" href="roster-import.html"><i data-ic="upload" data-size="17"></i> CSVインポート</a>
+        </div>
+      </div>
+
+      <!-- Dashboard switcher -->
+      <div class="card mb-16"><div class="card__body flex items-center gap-14 wrap" style="padding:12px 18px">
+        <span class="fw-6 text-2"><i data-ic="dashboard" data-size="16" data-cls="text-3" style="vertical-align:-3px"></i> 表示中のダッシュボード</span>
+        <div class="segmented" id="dashSwitch"><button class="active">システム管理者</button><button>教育委員会</button><button>校長</button><button>担任</button></div>
+        <span class="text-3 text-sm">立場に応じて注視すべき情報が切り替わります</span>
+        <div class="spacer flex gap-8">
+          <a class="btn btn--sm btn--secondary" href="dashboards.html"><i data-ic="userCheck" data-size="15"></i> 適用ルール</a>
+          <a class="btn btn--sm btn--secondary" href="dashboard-builder.html"><i data-ic="sliders" data-size="15"></i> カスタマイズ</a>
+        </div>
+      </div></div>
+
+      <div class="alert alert--danger mb-20" style="align-items:center">
+        <span class="alert__ico"><i data-ic="alert"></i></span>
+        <div class="grow">
+          <div class="alert__title">対応が必要な処理が 2 件あります</div>
+          <div class="alert__text">「教員名簿_2026.csv」のインポートで 12 件の検証エラーが発生しています。内容を確認し、必要に応じてシステム管理者へ問い合わせてください。</div>
+        </div>
+        <a class="btn btn--sm btn--danger-soft" href="logs.html">エラーを確認</a>
+      </div>
+
+      <div class="grid grid-4 mb-24" id="stats"></div>
+
+      <!-- Anomaly / threshold alerts -->
+      <div class="flex items-center mb-12" style="gap:10px">
+        <h2 style="font-size:16px;font-weight:720"><i data-ic="bellRing" data-size="18" style="vertical-align:-3px;color:var(--danger)"></i> 異常検知・要確認</h2>
+        <span class="text-3 text-sm">正常値から外れたデータを検出しています</span>
+        <a href="dashboards.html" class="muted-link text-sm spacer">アラート設定 →</a>
+      </div>
+      <div class="grid grid-2 mb-24" id="dashAlerts"></div>
+
+      <div class="flex items-center mb-12" style="gap:10px">
+        <h2 style="font-size:16px;font-weight:720">サービス</h2>
+        <span class="text-3 text-sm">使いたい業務を選んでください</span>
+        <a href="apps.html" class="muted-link text-sm spacer">機能・アドオンを管理 →</a>
+      </div>
+      <div class="grid grid-4 mb-24" id="launcher"></div>
+
+      <div class="grid" style="grid-template-columns:1.35fr 1fr">
+        <div class="card">
+          <div class="card__head">
+            <span class="card__title"><i data-ic="flag" data-size="18"></i> 要対応タスク</span>
+            <span class="badge badge--danger spacer">6</span>
+          </div>
+          <div class="card__body card__body--flush" id="tasks"></div>
+        </div>
+
+        <div class="grid" style="gap:18px">
+          <div class="card">
+            <div class="card__head"><span class="card__title"><i data-ic="google" data-size="18"></i> Workspace 同期</span><a href="accounts.html" class="muted-link spacer text-sm">詳細</a></div>
+            <div class="card__body flex items-center gap-20">
+              <div class="donut" style="--val:91;--col:var(--success)">
+                <div class="donut__label"><div style="font-size:22px;font-weight:780">91%</div><div class="text-3 text-xs">同期済</div></div>
+              </div>
+              <div class="grow">
+                <div class="flex items-center justify-between mb-8"><span class="flex items-center gap-8 text-sm"><span style="width:9px;height:9px;border-radius:50%;background:var(--success);display:inline-block"></span>同期済</span><b>20,114</b></div>
+                <div class="flex items-center justify-between mb-8"><span class="flex items-center gap-8 text-sm"><span style="width:9px;height:9px;border-radius:50%;background:var(--warning);display:inline-block"></span>保留中</span><b>312</b></div>
+                <div class="flex items-center justify-between"><span class="flex items-center gap-8 text-sm"><span style="width:9px;height:9px;border-radius:50%;background:var(--c-300);display:inline-block"></span>アカウント無</span><b>1,680</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card__head"><span class="card__title"><i data-ic="history" data-size="18"></i> 最近のアクティビティ</span></div>
+            <div class="card__body" id="activity"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay modal-center" id="quickAddModal">
+    <div class="modal">
+      <div class="modal__head">
+        <span class="modal__icon ico-tile brand"><i data-ic="plus"></i></span>
+        <div><div class="modal__title">クイック登録</div><div class="modal__desc">登録する種別を選んでください</div></div>
+        <button class="modal__close" data-close><i data-ic="x"></i></button>
+      </div>
+      <div class="modal__body">
+        <div class="grid grid-2" style="gap:12px">
+          <a class="card clickable" href="roster-list.html" style="padding:16px;text-align:center"><span class="ico-tile info" style="margin:0 auto 10px"><i data-ic="users"></i></span><div class="fw-7">人物を登録</div><div class="text-3 text-sm mt-4">生徒・教員・委員会</div></a>
+          <a class="card clickable" href="roster-import.html" style="padding:16px;text-align:center"><span class="ico-tile success" style="margin:0 auto 10px"><i data-ic="upload"></i></span><div class="fw-7">CSVで一括登録</div><div class="text-3 text-sm mt-4">マッピング設定</div></a>
+          <a class="card clickable" href="forms-builder.html" style="padding:16px;text-align:center"><span class="ico-tile violet" style="margin:0 auto 10px"><i data-ic="forms"></i></span><div class="fw-7">フォーム作成</div><div class="text-3 text-sm mt-4">アンケート・調査</div></a>
+          <a class="card clickable" href="transfers.html" style="padding:16px;text-align:center"><span class="ico-tile warning" style="margin:0 auto 10px"><i data-ic="swap"></i></span><div class="fw-7">所属変更を申請</div><div class="text-3 text-sm mt-4">異動・転入出</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon;
+
+      var stats = [
+        { ic: 'users', c: 'brand', label: '登録者数（総数）', val: '48,210', unit: '名', delta: '+312', up: true, sub: '今月' },
+        { ic: 'briefcase', c: 'violet', label: '教職員', val: '4,128', unit: '名', delta: '+18', up: true, sub: '今月' },
+        { ic: 'google', c: 'success', label: '同期済アカウント', val: '20,114', unit: '件', delta: '91%', up: true, sub: '同期率' },
+        { ic: 'swap', c: 'warning', label: '承認待ちの申請', val: '4', unit: '件', delta: '要対応', up: false, sub: '所属変更' },
+      ];
+      document.getElementById('stats').innerHTML = stats.map(function (s) {
+        return '<div class="stat"><div class="stat__top"><span class="stat__ico ico-tile ' + s.c + '">' + I(s.ic) + '</span><span class="stat__label">' + s.label + '</span></div>' +
+          '<div class="stat__value">' + s.val + ' <small>' + s.unit + '</small></div>' +
+          '<div class="stat__delta ' + (s.up ? 'up' : 'down') + '">' + I(s.up ? 'trendUp' : 'flag', { size: 15 }) + ' ' + s.delta + ' <span class="muted">' + s.sub + '</span></div></div>';
+      }).join('');
+
+      var apps = [
+        { ic: 'users', c: 'brand', t: '名簿管理', d: '児童生徒・教職員の名簿を一元管理。属性項目やタブで柔軟に表示。', h: 'roster-list.html', meta: '48,210名' },
+        { ic: 'sitemap', c: 'teal', t: '組織管理', d: '県〜市町村〜学校種〜学校の階層と所属、設定の継承を管理。', h: 'org.html', meta: '312組織' },
+        { ic: 'user', c: 'info', t: 'アカウント管理', d: 'Google Workspace と連携したアカウント・ログインを管理。', h: 'accounts.html', meta: '同期 91%' },
+        { ic: 'swap', c: 'warning', t: '所属変更申請', d: '異動・転入出の申請と承認フロー、実行予約を管理。', h: 'transfers.html', meta: '承認待ち 4件', alert: true },
+        { ic: 'upload', c: 'success', t: 'CSVインポート', d: '項目マッピングと本人識別で安全に一括登録・更新。', h: 'roster-import.html', meta: '直近 6 ジョブ' },
+        { ic: 'forms', c: 'violet', t: 'フォーム', d: 'アンケート・調査を作成。対象を絞り、名簿へ自動反映。', h: 'forms-list.html', meta: '受付中 3件' },
+        { ic: 'chart', c: 'pink', t: 'データ利活用', d: '名簿・回答データを横断的に集計・可視化。', h: 'analytics.html', meta: '12 レポート' },
+        { ic: 'shield', c: 'warning', t: '権限管理', d: 'サブジェクト×オブジェクト×スコープで詳細な権限を設定。', h: 'permissions.html', meta: '23 ポリシー' },
+        { ic: 'calendarCheck', c: 'teal', t: '出欠管理', d: '日次・時限の出欠を記録し長期欠席を可視化。', h: 'apps.html', meta: '青葉市で稼働', addon: true },
+        { ic: 'calendarDays', c: 'info', t: '予定表', d: '学校・学年・クラスの予定を共有。', h: 'apps.html', meta: '全組織', addon: true },
+        { ic: 'heart', c: 'pink', t: '保健・健康診断', d: '健康診断や保健室利用を記録・分析。', h: 'apps.html', meta: '一部導入', addon: true },
+        { ic: 'puzzle', c: 'violet', t: '機能を追加', d: '体力測定・指導要録・保護者アプリ連携など。', h: 'apps.html', meta: '5 件 追加可能', addon: true },
+      ];
+      document.getElementById('launcher').innerHTML = apps.map(function (a) {
+        return '<a class="card clickable launcher-card" href="' + a.h + '" style="padding:18px;display:flex;flex-direction:column;gap:12px;transition:.16s" ' +
+          'onmouseover="this.style.boxShadow=\'var(--sh-lg)\';this.style.transform=\'translateY(-2px)\';this.style.borderColor=\'var(--c-300)\'" ' +
+          'onmouseout="this.style.boxShadow=\'\';this.style.transform=\'\';this.style.borderColor=\'\'">' +
+          '<div class="flex items-center justify-between"><span class="ico-tile ' + a.c + '" style="width:46px;height:46px">' + I(a.ic, { size: 23 }) + '</span>' +
+          (a.alert ? '<span class="badge badge--warning"><span class="dot-s"></span>要対応</span>' : a.addon ? '<span class="badge badge--violet">アドオン</span>' : '<span class="text-3">' + I('arrowUpRight', { size: 18 }) + '</span>') + '</div>' +
+          '<div><div style="font-weight:720;font-size:15.5px">' + a.t + '</div><div class="text-3 text-sm mt-4" style="line-height:1.5">' + a.d + '</div></div>' +
+          '<div class="text-3 text-xs fw-6" style="margin-top:auto">' + a.meta + '</div></a>';
+      }).join('');
+
+      // 異常検知アラート
+      var DA = window.DATA.dashAlerts;
+      document.getElementById('dashAlerts').innerHTML = DA.map(function (a) {
+        return '<a href="' + a.a + '" class="card clickable" style="padding:15px;display:flex;align-items:center;gap:13px;border-left:3px solid var(--' + a.sev + ')">' +
+          '<span class="ico-tile ' + a.sev + '" style="width:40px;height:40px">' + I(a.ic, { size: 20 }) + '</span>' +
+          '<div class="grow" style="min-width:0"><div class="fw-7" style="font-size:13.5px">' + a.t + '</div><div class="text-3 text-sm mt-2">' + a.d + '</div></div>' +
+          '<span class="btn btn--sm btn--secondary">' + a.al + '</span></a>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('dashAlerts'));
+
+      var tasks = [
+        { ic: 'alert', c: 'danger', t: 'CSVインポートのエラー（12件）', d: '教員名簿_2026.csv ・ 8分前', a: 'logs.html', al: '確認' },
+        { ic: 'swap', c: 'warning', t: '所属変更の承認依頼（吉田 葵）', d: '青葉第一中→緑川中央中 ・ 伊藤 学 申請', a: 'transfers.html', al: '承認' },
+        { ic: 'swap', c: 'warning', t: '所属変更の承認依頼（渡辺 由紀）', d: '青葉第一中→青葉第二中 ・ 山本 一郎 申請', a: 'transfers.html', al: '承認' },
+        { ic: 'forms', c: 'violet', t: 'フォーム締切が近づいています', d: 'ICT活用状況に関する調査 ・ 残り7日', a: 'forms-results.html', al: '集計' },
+        { ic: 'user', c: 'info', t: '保留中アカウント 312件', d: 'Google Workspace への招待が未完了', a: 'accounts.html', al: '確認' },
+      ];
+      document.getElementById('tasks').innerHTML = tasks.map(function (t) {
+        return '<a href="' + t.a + '" class="flex items-center gap-12" style="padding:13px 18px;border-bottom:1px solid var(--border)">' +
+          '<span class="ico-tile ' + t.c + '" style="width:36px;height:36px">' + I(t.ic, { size: 18 }) + '</span>' +
+          '<div class="grow" style="min-width:0"><div class="fw-6" style="font-size:13.5px">' + t.t + '</div><div class="text-3 text-sm">' + t.d + '</div></div>' +
+          '<span class="btn btn--sm btn--secondary">' + t.al + '</span></a>';
+      }).join('');
+
+      var acts = [
+        { dot: 'success', t: 'Google Workspace 同期完了', d: '1,204件を反映', tm: '3時間前' },
+        { dot: '', t: '所属変更バッチ実行', d: '18件の異動を反映', tm: '今朝 6:00' },
+        { dot: '', t: '生徒名簿_2年.csv を取込', d: '伊藤 学 ・ 132件', tm: '昨日 17:40' },
+        { dot: 'muted', t: 'フォーム「部活動希望調査」集計開始', d: '598/612件 回答', tm: '昨日 14:02' },
+      ];
+      document.getElementById('activity').innerHTML = '<div class="timeline">' + acts.map(function (a) {
+        return '<div class="tl-item"><span class="tl-dot ' + a.dot + '"></span><div class="tl-time">' + a.tm + '</div><div class="tl-title">' + a.t + '</div><div class="tl-text">' + a.d + '</div></div>';
+      }).join('') + '</div>';
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<!--
+  プロンプト 002: ダッシュボード機能
+  - 複数のダッシュボードパターンを作成
+  - 「誰にどのダッシュボードを適用するか」を設定
+  - ウィジェット（KPI/アラート/グラフ/リスト）を組み合わせて構成
+  - 適用対象 = 職種 × 組織スコープ（権限式と類似の思想）
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード管理 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .db-layout { display: grid; grid-template-columns: 320px 1fr; gap: 14px; align-items: start; }
+  .db-list .db-item {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; font-size: 12.5px;
+  }
+  .db-list .db-item:hover { background: var(--indigo-50); }
+  .db-list .db-item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .db-list .db-item b { display: block; }
+  .db-list .db-item .db-meta { font-size: 10.5px; color: var(--ink-3); font-family: var(--mono); margin-top: 2px; }
+  .db-list .db-item .db-meta .material-symbols-rounded { font-size: 13px; color: var(--ink-3); vertical-align: -2px; }
+
+  /* widget palette + canvas */
+  .db-canvas {
+    display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0/calc(100%/12) 60px,
+      var(--paper-2);
+    padding: 12px; border-radius: 10px; border: 1px solid var(--line);
+  }
+  .widget {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow-sm); padding: 12px; min-height: 110px; position: relative;
+  }
+  .widget .w-h { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600; color: var(--ink-2); }
+  .widget .w-h .material-symbols-rounded { font-size: 16px; color: var(--ink-3); }
+  .widget .w-h .right { margin-left: auto; display: flex; gap: 2px; }
+  .widget .w-h .right button { background: none; border: 0; cursor: pointer; color: var(--ink-3); padding: 2px; }
+  .widget .w-h .right button:hover { color: var(--vermilion); }
+  .widget .w-body { margin-top: 8px; }
+  .widget .w-body .w-num { font-size: 22px; font-weight: 700; font-family: var(--mono); }
+  .widget .w-body .w-delta { font-size: 10.5px; color: var(--ink-3); margin-top: 2px; }
+  .widget .w-body .w-bar { display: flex; align-items: center; gap: 6px; font-size: 10.5px; margin-top: 4px; }
+  .widget .w-body .w-bar .b-track { flex: 1; height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .widget .w-body .w-bar .b-fill { height: 100%; background: var(--vermilion); }
+
+  /* size variants (grid spans) */
+  .widget.col-3 { grid-column: span 3; }
+  .widget.col-4 { grid-column: span 4; }
+  .widget.col-5 { grid-column: span 5; }
+  .widget.col-6 { grid-column: span 6; }
+  .widget.col-7 { grid-column: span 7; }
+  .widget.col-8 { grid-column: span 8; }
+  .widget.col-12 { grid-column: span 12; }
+  @media (max-width: 1280px) { .widget.col-3, .widget.col-4 { grid-column: span 6; } .widget.col-5, .widget.col-7 { grid-column: span 12; } }
+
+  /* alert widget special */
+  .alert-item {
+    display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px;
+    background: var(--vermilion-50); font-size: 11px; margin-bottom: 4px;
+  }
+  .alert-item.gold { background: var(--gold-50); }
+  .alert-item.sky { background: var(--sky-50); }
+  .alert-item .material-symbols-rounded { font-size: 15px; }
+  .alert-item.gold .material-symbols-rounded { color: var(--gold); }
+  .alert-item .a-body { flex: 1; }
+  .alert-item .a-body b { display: block; font-size: 11.5px; }
+  .alert-item .a-body span { color: var(--ink-3); font-size: 10.5px; }
+
+  /* palette / cards list */
+  .palette { display: flex; flex-wrap: wrap; gap: 6px; }
+  .palette .pal-item {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid var(--line); background: var(--paper-2); color: var(--ink-2);
+    border-radius: 99px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+  }
+  .palette .pal-item:hover { background: var(--indigo-50); border-color: var(--indigo-300, var(--indigo-500)); }
+  .palette .pal-item .material-symbols-rounded { font-size: 13px; }
+
+  /* audience tokens (perm-like) */
+  .audience {
+    display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12px; line-height: 1.7;
+  }
+  .audience .pol-token { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 600; }
+  .audience .pol-token .material-symbols-rounded { font-size: 13px; }
+  .audience .pol-token.subj { background: var(--indigo-100); color: var(--indigo-800); }
+  .audience .pol-token.scope { background: var(--sky-50); color: var(--sky); }
+  .audience .pol-token.act { background: var(--pine-50); color: var(--pine); }
+  .audience .pol-sep { color: var(--ink-3); padding: 0 2px; }
+
+  /* inherit tag for org assignment */
+  .assign-list .row-line { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 12.5px; }
+  .assign-list .row-line:last-child { border-bottom: 0; }
+  .inherit-tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; font-weight: 700; letter-spacing: .04em; }
+  .inherit-tag.tenant { background: var(--indigo-100); color: var(--indigo-800); }
+  .inherit-tag.org { background: var(--vermilion-50); color: var(--vermilion-dark); }
+  .inherit-tag.over { background: var(--gold-50); color: var(--gold); border: 1px solid var(--gold); }
+</style>
+</head>
+<body data-page="dashboards">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="analytics.html">データ利活用</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">ダッシュボード管理</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">dashboard_customize</span>ダッシュボード管理</h1>
+      <div class="desc">校長・担任・県教委など、立場ごとに「何を見るべきか」を整理したダッシュボード・パターンを作成します。複数パターンを作成し、適用対象（職種 × 組織スコープ）を割り当てられます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('ダッシュボード一覧をCSV出力しました')"><span class="material-symbols-rounded">download</span>エクスポート</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-dash-add')"><span class="material-symbols-rounded">add</span>パターンを作成</button>
+    </div>
+  </div>
+
+  <div class="callout mb-2">
+    <span class="material-symbols-rounded">info</span>
+    <div><b>ダッシュボードは2レイヤで管理します</b> — (1) パターン（ウィジェットの組み合わせ）を作成 (2) そのパターンを「<b>誰に</b>」「<b>どの組織スコープで</b>」適用するかを割り当て。割り当てルールは権限式と同じ「下位優先」の継承モデルで、テナント → 市町村 → 学校 → 個人に波及します。</div>
+  </div>
+
+  <div class="db-layout">
+    <!-- 左：パターン一覧 -->
+    <aside class="card db-list">
+      <div class="card-h"><span class="material-symbols-rounded">view_kanban</span>ダッシュボード・パターン
+        <span class="sub">全 6 件</span>
+      </div>
+      <div class="db-item">
+        <span class="material-symbols-rounded" style="color:var(--indigo-500)">cottage</span>
+        <div style="flex:1">
+          <b>校長ダッシュボード</b>
+          <div class="db-meta"><span class="material-symbols-rounded">door_front</span> 校長 / 教頭 / 学校種別ごと</div>
+        </div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="db-item active">
+        <span class="material-symbols-rounded" style="color:var(--vermilion)">class</span>
+        <div style="flex:1">
+          <b>担任ダッシュボード（学級フォーカス）</b>
+          <div class="db-meta"><span class="material-symbols-rounded">door_front</span> 担任 / 学年主任</div>
+        </div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="db-item">
+        <span class="material-symbols-rounded" style="color:var(--sky)">corporate_fare</span>
+        <div style="flex:1">
+          <b>県教委ダッシュボード（エリア俯瞰）</b>
+          <div class="db-meta"><span class="material-symbols-rounded">door_front</span> 県教委職員 / テナント全体</div>
+        </div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="db-item">
+        <span class="material-symbols-rounded" style="color:var(--plum)">monitor_heart</span>
+        <div style="flex:1">
+          <b>保健室利用ダッシュボード</b>
+          <div class="db-meta"><span class="material-symbols-rounded">door_front</span> 養護教諭 / 保健主事</div>
+        </div>
+        <span class="status ok">有効</span>
+      </div>
+      <div class="db-item">
+        <span class="material-symbols-rounded" style="color:var(--gold)">switch_account</span>
+        <div style="flex:1">
+          <b>学級編成シミュレーション</b>
+          <div class="db-meta"><span class="material-symbols-rounded">door_front</span> 教頭 / 教務主任（年度更新期間のみ）</div>
+        </div>
+        <span class="status wait">季節限定</span>
+      </div>
+      <div class="db-item">
+        <span class="material-symbols-rounded" style="color:var(--ink-3)">draft</span>
+        <div style="flex:1">
+          <b>スクールカウンセラー用（下書き）</b>
+          <div class="db-meta"><span class="material-symbols-rounded">door_front</span> SC / 担任連携</div>
+        </div>
+        <span class="status">下書き</span>
+      </div>
+    </aside>
+
+    <!-- 右：選択中パターンの編集 -->
+    <section class="card">
+      <div class="card-h">
+        <span class="material-symbols-rounded">class</span>
+        <b>担任ダッシュボード（学級フォーカス）</b>
+        <span class="chip mono">DB-002</span>
+        <span class="chip green"><span class="material-symbols-rounded sm">check_circle</span>公開中</span>
+        <div class="right">
+          <button class="btn sm ghost" onclick="Composer.toast('プレビューを新しいタブで開きました（モック）')"><span class="material-symbols-rounded">open_in_new</span>プレビュー</button>
+          <button class="btn sm" onclick="Composer.toast('パターンを複製しました: DB-002-copy')"><span class="material-symbols-rounded">content_copy</span>複製</button>
+          <button class="btn sm primary"><span class="material-symbols-rounded">check</span>変更を保存</button>
+        </div>
+      </div>
+
+      <div class="card-b">
+        <!-- 適用対象（オーディエンス） -->
+        <div class="grid-2 mb-2">
+          <div class="card" style="box-shadow:none; background:#fbfaf8">
+            <div class="card-h" style="background:none"><span class="material-symbols-rounded">target</span>適用対象（誰にこのパターンを見せるか）
+              <div class="right"><button class="btn sm" onclick="Composer.openModal('modal-audience')"><span class="material-symbols-rounded">edit</span>編集</button></div>
+            </div>
+            <div class="card-b">
+              <div class="audience">
+                <span class="pol-token subj"><span class="material-symbols-rounded">person</span>職種 = 担任</span>
+                <span class="pol-sep">AND</span>
+                <span class="pol-token subj"><span class="material-symbols-rounded">person</span>学年主任</span>
+                <span class="pol-sep">の</span>
+                <span class="pol-token scope"><span class="material-symbols-rounded">door_front</span>自分の担任クラス</span>
+                <span class="pol-sep">に適用</span>
+              </div>
+              <div class="muted mt-1" style="font-size:11.5px">権限エンジンで評価し、ログイン後のホームに表示されます。割り当て変更は次回ログイン（または明示リフレッシュ）から反映。</div>
+            </div>
+          </div>
+          <div class="card" style="box-shadow:none; background:#fbfaf8">
+            <div class="card-h" style="background:none"><span class="material-symbols-rounded">schedule</span>表示タイミングと更新</div>
+            <div class="card-b" style="font-size:12.5px">
+              <div class="row between"><span class="muted">表示期間</span><span>年度単位（自動切替）</span></div>
+              <div class="row between"><span class="muted">データ更新</span><span>5分ごと / 重要KPIはリアルタイム</span></div>
+              <div class="row between"><span class="muted">しきい値変更</span><span><a href="#" onclick="Composer.toast('アラート条件エディタを開きます（モック）');return false;">アラート条件エディタ</a></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ウィジェットパレット -->
+        <div class="row between mb-1">
+          <div>
+            <span class="material-symbols-rounded" style="color:var(--indigo-500); vertical-align:-3px">widgets</span>
+            <b style="font-size:13px">ウィジェット（ドラッグで並び替え）</b>
+            <span class="muted" style="font-size:11px; margin-left:6px">— クリックで「サイズ・データソース・しきい値」を設定</span>
+          </div>
+          <div class="palette">
+            <span class="pal-item" onclick="Composer.toast('KPIウィジェットを追加しました')"><span class="material-symbols-rounded">add</span>KPI</span>
+            <span class="pal-item" onclick="Composer.toast('アラートウィジェットを追加しました')"><span class="material-symbols-rounded">add</span>アラート</span>
+            <span class="pal-item" onclick="Composer.toast('グラフウィジェットを追加しました')"><span class="material-symbols-rounded">add</span>グラフ</span>
+            <span class="pal-item" onclick="Composer.toast('リストウィジェットを追加しました')"><span class="material-symbols-rounded">add</span>リスト</span>
+            <span class="pal-item" onclick="Composer.toast('カレンダーウィジェットを追加しました')"><span class="material-symbols-rounded">add</span>カレンダー</span>
+            <span class="pal-item" onclick="Composer.toast('自由テキストを追加しました')"><span class="material-symbols-rounded">add</span>テキスト</span>
+          </div>
+        </div>
+
+        <!-- ダッシュボード・キャンバス（12グリッド） -->
+        <div class="db-canvas">
+          <!-- KPI 3つ -->
+          <div class="widget col-3" style="border-top:3px solid var(--vermilion)">
+            <div class="w-h"><span class="material-symbols-rounded">priority_high</span>要対応の児童
+              <div class="right"><button title="設定"><span class="material-symbols-rounded">tune</span></button><button title="削除"><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <div class="w-num" style="color:var(--vermilion)">3 <small style="font-size:12px; color:var(--ink-3); font-weight:500">名</small></div>
+              <div class="w-delta">閾値: 連続欠席 3日以上 / 月</div>
+            </div>
+          </div>
+          <div class="widget col-3" style="border-top:3px solid var(--gold)">
+            <div class="w-h"><span class="material-symbols-rounded">schedule</span>遅刻・早退
+              <div class="right"><button><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <div class="w-num">7<small style="font-size:12px; color:var(--ink-3); font-weight:500">件</small></div>
+              <div class="w-bar"><div class="b-track"><div class="b-fill" style="width:38%; background:var(--gold)"></div></div><span>前週比 +38%</span></div>
+            </div>
+          </div>
+          <div class="widget col-3" style="border-top:3px solid var(--pine)">
+            <div class="w-h"><span class="material-symbols-rounded">how_to_reg</span>今月の出席率
+              <div class="right"><button><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <div class="w-num">96.4<small style="font-size:12px; color:var(--ink-3); font-weight:500">%</small></div>
+              <div class="w-bar"><div class="b-track"><div class="b-fill" style="width:96%; background:var(--pine)"></div></div><span>前月比 +0.3pt</span></div>
+            </div>
+          </div>
+          <div class="widget col-3" style="border-top:3px solid var(--indigo-500)">
+            <div class="w-h"><span class="material-symbols-rounded">family_restroom</span>保護者連絡 受信
+              <div class="right"><button><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <div class="w-num">12<small style="font-size:12px; color:var(--ink-3); font-weight:500">件</small></div>
+              <div class="w-delta">未対応 4件 <a href="#">確認</a></div>
+            </div>
+          </div>
+
+          <!-- アラート -->
+          <div class="widget col-6">
+            <div class="w-h"><span class="material-symbols-rounded" style="color:var(--vermilion)">notifications_active</span>アラート（正常値から外れたデータ）
+              <div class="right"><button title="しきい値"><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <div class="alert-item">
+                <span class="material-symbols-rounded" style="color:var(--vermilion)">error</span>
+                <div class="a-body"><b>鈴木 一郎（6年1組）— 連続欠席 4日</b><span>直近30日: 出欠 26日 / 欠席 4日 / 病欠 0</span></div>
+                <button class="btn sm" onclick="location.href='roster-detail.html'"><span class="material-symbols-rounded">arrow_forward</span>名簿</button>
+              </div>
+              <div class="alert-item">
+                <span class="material-symbols-rounded" style="color:var(--vermilion)">error</span>
+                <div class="a-body"><b>中村 葵（6年1組）— 遅刻 5回 / 月</b><span>クラス平均 1.2回 / 月を大幅に上回る</span></div>
+                <button class="btn sm"><span class="material-symbols-rounded">arrow_forward</span>名簿</button>
+              </div>
+              <div class="alert-item gold">
+                <span class="material-symbols-rounded">warning</span>
+                <div class="a-body"><b>田中 花子（6年1組）— 保健室利用 4回 / 月</b><span>担任連携の閾値（3回 / 月）を超過</span></div>
+                <button class="btn sm"><span class="material-symbols-rounded">arrow_forward</span>名簿</button>
+              </div>
+              <div class="alert-item sky">
+                <span class="material-symbols-rounded">info</span>
+                <div class="a-body"><b>クラス全体 — 今週の提出物 未提出 8名</b><span>通知済 4名 / 未通知 4名</span></div>
+                <button class="btn sm ghost"><span class="material-symbols-rounded">campaign</span>通知する</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- グラフ -->
+          <div class="widget col-6">
+            <div class="w-h"><span class="material-symbols-rounded">bar_chart_4_bars</span>出席率 推移（直近30日）
+              <div class="right"><button><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <div style="display:flex; align-items:flex-end; gap:4px; height:90px; padding:6px 4px">
+                <div style="flex:1; background:var(--indigo-100); height:62%; border-radius:3px 3px 0 0"></div>
+                <div style="flex:1; background:var(--indigo-100); height:78%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:55%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:88%"></div>
+                <div style="flex:1; background:var(--indigo-200); height:92%"></div>
+                <div style="flex:1; background:var(--indigo-200); height:96%"></div>
+                <div style="flex:1; background:var(--vermilion-50); height:32%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:71%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:84%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:80%"></div>
+                <div style="flex:1; background:var(--gold-50); height:48%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:76%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:90%"></div>
+                <div style="flex:1; background:var(--indigo-100); height:85%"></div>
+              </div>
+              <div class="row between" style="font-size:10.5px; color:var(--ink-3); margin-top:4px"><span>5/13</span><span>5/27</span><span>6/10</span></div>
+            </div>
+          </div>
+
+          <!-- リスト：要注意児童 -->
+          <div class="widget col-7">
+            <div class="w-h"><span class="material-symbols-rounded" style="color:var(--vermilion)">priority_high</span>要注意の児童（自分のクラス）
+              <div class="right"><button><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body">
+              <table class="tbl">
+                <thead><tr><th>氏名</th><th>種別</th><th>状況</th><th>最終更新</th><th></th></tr></thead>
+                <tbody>
+                  <tr class="clickable" onclick="location.href='roster-detail.html'">
+                    <td><div class="person"><span class="avatar a2 sm">鈴</span><div><b>鈴木 一郎</b><span>6年1組・S-2026-04412</span></div></div></td>
+                    <td><span class="chip red">連続欠席</span></td>
+                    <td class="muted">連続 4日 / 30日</td>
+                    <td class="mono">06-11 14:20</td>
+                    <td><button class="btn sm"><span class="material-symbols-rounded">arrow_forward</span></button></td>
+                  </tr>
+                  <tr class="clickable" onclick="location.href='roster-detail.html'">
+                    <td><div class="person"><span class="avatar a3 sm">中</span><div><b>中村 葵</b><span>6年1組・S-2026-04418</span></div></div></td>
+                    <td><span class="chip gold">遅刻多数</span></td>
+                    <td class="muted">5回 / 月</td>
+                    <td class="mono">06-10 09:15</td>
+                    <td><button class="btn sm"><span class="material-symbols-rounded">arrow_forward</span></button></td>
+                  </tr>
+                  <tr class="clickable" onclick="location.href='roster-detail.html'">
+                    <td><div class="person"><span class="avatar a4 sm">田</span><div><b>田中 花子</b><span>6年1組・S-2026-04413</span></div></div></td>
+                    <td><span class="chip gold">保健室利用増</span></td>
+                    <td class="muted">4回 / 月</td>
+                    <td class="mono">06-09 11:42</td>
+                    <td><button class="btn sm"><span class="material-symbols-rounded">arrow_forward</span></button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- カレンダー：予定 -->
+          <div class="widget col-5">
+            <div class="w-h"><span class="material-symbols-rounded">event</span>今週の予定
+              <div class="right"><button><span class="material-symbols-rounded">tune</span></button><button><span class="material-symbols-rounded">close</span></button></div>
+            </div>
+            <div class="w-body" style="font-size:11.5px; display:flex; flex-direction:column; gap:6px">
+              <div class="row" style="gap:8px"><span class="mono muted">06/12 金</span><span class="chip indigo">6限</span><span>学級活動（進路懇談事前）</span></div>
+              <div class="row" style="gap:8px"><span class="mono muted">06/12 金</span><span class="chip gold">16:00</span><span>保護者面談 山田花子様</span></div>
+              <div class="row" style="gap:8px"><span class="mono muted">06/15 月</span><span class="chip green">終日</span><span>体力測定（6年）</span></div>
+              <div class="row" style="gap:8px"><span class="mono muted">06/16 火</span><span class="chip plum">5限</span><span>避難訓練</span></div>
+              <div class="row" style="gap:8px"><span class="mono muted">06/19 金</span><span class="chip red">提出</span><span>通知表 所見ドラフト締切</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 割り当て詳細（組織別） -->
+        <div class="mt-2">
+          <div class="row between mb-1">
+            <div><span class="material-symbols-rounded" style="color:var(--sky); vertical-align:-3px">account_tree</span><b style="font-size:13px">組織別の割り当て（下位優先で継承）</b></div>
+            <button class="btn sm" onclick="Composer.toast('組織割り当てモーダルを開きます')"><span class="material-symbols-rounded">add</span>組織に割り当てる</button>
+          </div>
+          <div class="card" style="box-shadow:none; border:1px solid var(--line)">
+            <div class="assign-list" style="padding:8px 14px">
+              <div class="row-line">
+                <span class="material-symbols-rounded" style="color:var(--indigo-500)">flag</span>
+                <div style="flex:1"><b>テナント全体（長野県）</b><div class="muted" style="font-size:11px">デフォルトで全教員が対象</div></div>
+                <span class="inherit-tag tenant">テナント定義</span>
+                <span class="status ok">214,387人</span>
+              </div>
+              <div class="row-line">
+                <span class="material-symbols-rounded" style="color:var(--ink-3)">location_city</span>
+                <div style="flex:1"><b>長野市</b><div class="muted" style="font-size:11px">テナントから継承</div></div>
+                <span class="inherit-tag tenant">継承</span>
+                <span class="status ok">68,420人</span>
+              </div>
+              <div class="row-line">
+                <span class="material-symbols-rounded" style="color:var(--vermilion)">location_city</span>
+                <div style="flex:1"><b>松本市</b><div class="muted" style="font-size:11px">この市町村は「教育委員会ダッシュボード」を上書き適用</div></div>
+                <span class="inherit-tag over">組織上書き</span>
+                <span class="status warn">上書き</span>
+              </div>
+              <div class="row-line">
+                <span class="material-symbols-rounded" style="color:var(--ink-3)">school</span>
+                <div style="flex:1"><b>長野市立城山小学校</b><div class="muted" style="font-size:11px">テナントから継承</div></div>
+                <span class="inherit-tag tenant">継承</span>
+                <span class="status ok">412人</span>
+              </div>
+              <div class="row-line">
+                <span class="material-symbols-rounded" style="color:var(--gold)">school</span>
+                <div style="flex:1"><b>松本市立開成中学校</b><div class="muted" style="font-size:11px">学級フォーカスから<b>学校全体</b>スコープに拡張</div></div>
+                <span class="inherit-tag org">組織独自</span>
+                <span class="status warn">拡張</span>
+              </div>
+            </div>
+          </div>
+          <div class="callout warn mt-1">
+            <span class="material-symbols-rounded">layers</span>
+            <div><b>下位優先の継承</b>: テナントで定義 → 各組織が継承 → 組織で個別設定があれば上書き。下流で上書きされた設定はテナント側に「取消線」付きで表示されます。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- パターン作成モーダル -->
+  <div class="modal-backdrop" id="modal-dash-add">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>ダッシュボード・パターンを作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-dash-add')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>パターン名<span class="req">必須</span></label><input class="input" placeholder="例: 保健室利用ダッシュボード"></div>
+        <div class="field"><label>説明</label><textarea class="input" rows="2" placeholder="このパターンが想定するユーザーと目的"></textarea></div>
+        <div class="field">
+          <label>テンプレートから作成</label>
+          <select class="select">
+            <option>空のキャンバスで開始</option>
+            <option>校長ダッシュボード（標準）</option>
+            <option>担任ダッシュボード（学級フォーカス）</option>
+            <option>県教委ダッシュボード（エリア俯瞰）</option>
+          </select>
+          <div class="hint">既存パターンを複製して個別最適化する運用を推奨します。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-dash-add')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-dash-add'); Composer.toast('パターンを作成しました。続けて適用対象とウィジェットを設定してください')"><span class="material-symbols-rounded">check</span>作成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 適用対象編集モーダル -->
+  <div class="modal-backdrop" id="modal-audience">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">target</span>適用対象を編集 — 担任ダッシュボード</h3>
+        <button class="x" onclick="Composer.closeModal('modal-audience')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout mb-2">
+          <span class="material-symbols-rounded">info</span>
+          <div>権限式と同じ「サブジェクト × 組織スコープ」の組み合わせで対象を決定します。<b>AND条件</b>を重ねることも可能（例: 「担任」AND「3学年以上」）。</div>
+        </div>
+        <div class="field">
+          <label>サブジェクト条件（職種・役割）</label>
+          <select class="select"><option>職種 = 担任（学級担任）</option><option>学年主任</option><option>教務主任</option><option>複数選択（AND）…</option></select>
+        </div>
+        <div class="field">
+          <label>組織スコープ</label>
+          <select class="select"><option>自分の担任クラス</option><option>自分の学年</option><option>自分の学校</option><option>同一市町村・同一学校種</option><option>配下の全組織</option><option>テナント全体</option></select>
+        </div>
+        <div class="field">
+          <label>追加条件（任意）</label>
+          <input class="input" placeholder="例: 学級規模 ≥ 25名 ／ 教科 = 算数">
+        </div>
+        <div class="callout warn">
+          <span class="material-symbols-rounded">schedule</span>
+          <div>割り当ての変更は、対象ユーザーの次回ログイン（または明示リフレッシュ操作）から反映されます。即時反映はオプションです。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-audience')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-audience'); Composer.toast('適用対象を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

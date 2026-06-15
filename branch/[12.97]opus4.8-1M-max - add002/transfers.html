@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>所属変更申請 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="transfers">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">所属変更申請</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile warning" style="width:38px;height:38px"><i data-ic="swap" data-size="20"></i></span> 所属変更申請</h1>
+          <p class="page-subtitle">異動・転入出は承認フローを経て、発効日にバッチ処理で自動反映されます。発効前は取り消しが可能です。</p>
+        </div>
+        <div class="page-head__actions"><button class="btn btn--primary" data-open="newTransferModal"><i data-ic="plus" data-size="16"></i> 変更を申請</button></div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="clock"></i></span><span class="stat__label">承認待ち</span></div><div class="stat__value" style="color:var(--warning)">4</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile info"><i data-ic="calendar"></i></span><span class="stat__label">実行待ち（予約）</span></div><div class="stat__value">8</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile success"><i data-ic="checkCircle"></i></span><span class="stat__label">今月反映</span></div><div class="stat__value">26</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile danger"><i data-ic="xCircle"></i></span><span class="stat__label">却下</span></div><div class="stat__value">2</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><span class="card__title">申請一覧</span>
+          <div class="pills spacer" data-pill-group><span class="pill active">すべて</span><span class="pill">承認待ち</span><span class="pill">実行待ち</span><span class="pill">完了</span><span class="pill">却下</span></div>
+        </div>
+        <div class="table-wrap"><table class="tbl tbl-clickable" id="trTable"><thead>
+          <tr><th>申請ID</th><th>対象者</th><th>変更（元 → 先）</th><th>発効日</th><th>申請者</th><th>進捗</th><th>状態</th><th class="col-actions"></th></tr>
+        </thead><tbody id="trBody"></tbody></table></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Approval drawer -->
+  <div class="overlay drawer-right" id="approveDrawer"><div class="drawer">
+    <div class="drawer__head"><span class="ico-tile warning"><i data-ic="swap"></i></span><div class="grow"><div class="fw-7" style="font-size:16px" id="apTitle">吉田 葵 さんの所属変更</div><div class="text-3 text-sm">T-512 ・ 申請者: 伊藤 学</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="drawer__body">
+      <div class="card mb-16" style="background:var(--surface-2)"><div class="card__body">
+        <div class="flex items-center justify-between">
+          <div class="center" style="flex:1"><div class="text-3 text-sm">変更元</div><div class="fw-7 mt-4">青葉第一中学校</div><div class="text-3 text-sm">3年A組</div></div>
+          <span class="ico-tile brand" style="width:40px;height:40px"><i data-ic="arrowRight" data-size="20"></i></span>
+          <div class="center" style="flex:1"><div class="text-3 text-sm">変更先</div><div class="fw-7 mt-4">緑川中央中学校</div><div class="text-3 text-sm">3年1組</div></div>
+        </div>
+      </div></div>
+
+      <div class="fw-7 mb-12">承認フロー</div>
+      <div class="timeline mb-16">
+        <div class="tl-item"><span class="tl-dot success"></span><div class="tl-time">2026-06-13 10:20</div><div class="tl-title">申請（伊藤 学 / 青葉第一中学校）</div><div class="tl-text">発効希望日: 2026-07-01</div></div>
+        <div class="tl-item"><span class="tl-dot" style="border-color:var(--warning)"></span><div class="tl-time">対応待ち</div><div class="tl-title">変更先（緑川中央中学校）の承認 <span class="badge badge--warning">あなたの承認待ち</span></div></div>
+        <div class="tl-item"><span class="tl-dot muted"></span><div class="tl-time">2026-07-01 予定</div><div class="tl-title">バッチ処理による自動反映</div><div class="tl-text">発効前であれば取り消し可能</div></div>
+      </div>
+
+      <div class="field"><label class="label">承認コメント <span class="opt">（任意）</span></label><textarea class="textarea" placeholder="コメントを入力…"></textarea></div>
+    </div>
+    <div class="drawer__foot"><button class="btn btn--danger-soft" data-close data-toast="申請を却下しました（デモ）" data-toast-type="error"><i data-ic="x" data-size="16"></i> 却下</button><span class="spacer"></span><button class="btn btn--ghost" data-close>あとで</button><button class="btn btn--success" data-close data-toast="承認しました（デモ）" data-toast-text="2026-07-01にバッチで反映されます"><i data-ic="check" data-size="16"></i> 承認する</button></div>
+  </div></div>
+
+  <!-- New transfer modal -->
+  <div class="overlay modal-center" id="newTransferModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile warning"><i data-ic="swap"></i></span><div><div class="modal__title">所属変更を申請</div><div class="modal__desc">対象者・変更先・発効日を指定します</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">対象者 <span class="req">*</span></label><div class="input-icon"><i data-ic="search" data-size="16"></i><input class="input" placeholder="氏名・IDで検索" /></div></div>
+      <div class="field-row"><div class="field"><label class="label">変更先組織 <span class="req">*</span></label><select class="select"><option>緑川中央中学校</option><option>青葉第二中学校</option></select></div><div class="field"><label class="label">クラス/役割</label><select class="select"><option>3年1組</option><option>—</option></select></div></div>
+      <div class="field"><label class="label">発効日 <span class="req">*</span></label><input class="input" type="date" value="2026-07-01" /></div>
+      <label class="check" style="align-items:flex-start"><input type="checkbox" /><span class="check__box" style="margin-top:2px"><i data-ic="check" data-size="13"></i></span><span>承認をスキップして即時反映（要権限）<div class="help" style="margin-top:2px">教育委員会など権限の強いユーザーは承認フローなしで変更できます。</div></span></label>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="所属変更を申請しました（デモ）" data-toast-text="変更先組織の承認待ちになりました">申請する</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, TR = window.DATA.transfers, U = window.UI;
+      function steps(active) {
+        var labels = ['申請', '承認', '反映'];
+        return '<div class="flex items-center gap-4">' + labels.map(function (l, i) {
+          var n = i + 1, done = n <= active;
+          return '<span class="badge ' + (done ? 'badge--success' : 'badge--neutral') + '" style="height:20px">' + (done ? I('check', { size: 11 }) : n) + ' ' + l + '</span>' + (i < 2 ? '<span class="text-3">›</span>' : '');
+        }).join('') + '</div>';
+      }
+      document.getElementById('trBody').innerHTML = TR.map(function (t) {
+        var actions = t.status === 'pending'
+          ? '<button class="btn btn--sm btn--success" onclick="event.stopPropagation();openOverlay(\'approveDrawer\')">承認</button>'
+          : t.status === 'scheduled'
+            ? '<button class="btn btn--sm btn--danger-soft" onclick="event.stopPropagation()" data-toast="申請を取り消しました（デモ）" data-toast-type="error">取消</button>'
+            : '<div class="dropdown" data-dropdown onclick="event.stopPropagation()"><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item">' + I('eye', { size: 16 }) + '詳細</div></div></div>';
+        return '<tr onclick="openOverlay(\'approveDrawer\')"><td class="mono">' + t.id + '</td>' +
+          '<td class="cell-main">' + t.name + '</td>' +
+          '<td><span class="text-2 text-sm">' + t.from + '</span> <span class="text-3">→</span> <span class="fw-6">' + t.to + '</span></td>' +
+          '<td class="mono">' + t.date + '</td><td class="text-2">' + t.applicant + '</td>' +
+          '<td>' + steps(t.step) + '</td><td>' + U.statusBadge(t.status) + '</td>' +
+          '<td class="col-actions">' + actions + '</td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('trBody'));
+    })();
+  </script>
+</body>
+</html>

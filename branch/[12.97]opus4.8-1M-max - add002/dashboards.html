@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ダッシュボード管理 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .db-card { padding: 0; overflow: hidden; transition: .16s; }
+    .db-card:hover { box-shadow: var(--sh-lg); transform: translateY(-2px); border-color: var(--c-300); }
+    .db-prev { height: 132px; background: linear-gradient(135deg, var(--surface-2), var(--c-100)); padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
+    .db-w { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 7px 9px; display: flex; flex-direction: column; justify-content: center; gap: 4px; box-shadow: var(--sh-xs); }
+    .db-w b { font-size: 13px; line-height: 1; }
+    .db-w span { font-size: 8px; color: var(--text-3); }
+    .db-w .mini-bars { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
+    .db-w .mini-bars i { flex: 1; background: var(--brand-300); border-radius: 1px; display: block; }
+    .db-w .mini-donut { width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(var(--brand-500) 65%, var(--c-200) 0); }
+    .rule-row { display: grid; grid-template-columns: 34px 1.4fr 1.2fr 90px 70px; align-items: center; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--border); }
+    .rule-row:last-child { border-bottom: none; }
+  </style>
+</head>
+<body data-page="dashboards">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">ダッシュボード管理</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile teal" style="width:38px;height:38px"><i data-ic="dashboard" data-size="20"></i></span> ダッシュボード管理</h1>
+          <p class="page-subtitle">立場ごとに注視すべき情報は異なります。複数のダッシュボードを作成し、「誰にどれを表示するか」を設定できます。</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-open="assignModal"><i data-ic="userCheck" data-size="16"></i> 適用ルール</button>
+          <a class="btn btn--primary" href="dashboard-builder.html"><i data-ic="plus" data-size="16"></i> 新規ダッシュボード</a>
+        </div>
+      </div>
+
+      <div class="alert alert--info mb-20"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span>
+        <div class="alert__text">担任は受け持ち学級に、校長は自校に、教育委員会はエリア全体に注目します。各ダッシュボードは表示する情報とレイアウトを自由にカスタマイズでき、<b>正常値から外れたデータをアラート表示</b>できます。</div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile teal"><i data-ic="dashboard"></i></span><span class="stat__label">ダッシュボード</span></div><div class="stat__value">4 <small>種類</small></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile brand"><i data-ic="userCheck"></i></span><span class="stat__label">適用ルール</span></div><div class="stat__value">5 <small>件</small></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile danger"><i data-ic="bellRing"></i></span><span class="stat__label">アクティブなアラート</span></div><div class="stat__value" style="color:var(--danger)">7</div><div class="stat__delta down"><i data-ic="alert" data-size="15"></i> 要確認 2 <span class="muted">重大</span></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile violet"><i data-ic="grid"></i></span><span class="stat__label">ウィジェット種類</span></div><div class="stat__value">14</div></div>
+      </div>
+
+      <div class="flex items-center mb-12" style="gap:10px">
+        <h2 style="font-size:16px;font-weight:720">ダッシュボード一覧</h2>
+        <span class="text-3 text-sm">カードの「編集」からウィジェットとレイアウトを変更できます</span>
+      </div>
+      <div class="grid grid-3 mb-24" id="dbGrid"></div>
+
+      <!-- Assignment rules -->
+      <div class="card">
+        <div class="card__head"><span class="card__title"><i data-ic="userCheck" data-size="18"></i> 適用ルール（誰にどのダッシュボードを表示するか）</span>
+          <button class="btn btn--sm btn--secondary spacer" data-open="assignModal"><i data-ic="plus" data-size="14"></i> ルール追加</button>
+        </div>
+        <div class="rule-row" style="background:var(--surface-2);font-size:11.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em">
+          <span>順位</span><span>対象（サブジェクト条件）</span><span>表示するダッシュボード</span><span>状態</span><span></span>
+        </div>
+        <div id="ruleBody"></div>
+        <div class="card__foot"><span class="text-3 text-sm"><i data-ic="info" data-size="14" style="vertical-align:-2px"></i> 上から順に評価し、最初に一致したルールが適用されます。一致しない場合は「全社員 既定」が使われます。</span></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Assign modal -->
+  <div class="overlay modal-center" id="assignModal"><div class="modal modal--lg">
+    <div class="modal__head"><span class="modal__icon ico-tile brand"><i data-ic="userCheck"></i></span><div><div class="modal__title">適用ルールを追加</div><div class="modal__desc">条件に一致するユーザーにダッシュボードを割り当てます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><span class="label">対象の条件（サブジェクト）</span>
+        <div style="border:1px solid var(--border);border-radius:10px;padding:14px">
+          <div class="flex items-center gap-8 wrap"><span class="badge badge--violet">職種</span><span class="text-2">＝</span><span class="tag tag--brand">一般教員 <span class="x"><i data-ic="x" data-size="12"></i></span></span>
+            <span class="cond-and" style="color:var(--brand-600);font-weight:700;font-size:11px">AND</span>
+            <span class="badge badge--teal">属性「担任」</span><span class="text-2">に値あり</span>
+            <button class="btn btn--sm btn--ghost"><i data-ic="plus" data-size="14"></i> 条件追加</button>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label class="label">割り当てるダッシュボード</label><select class="select"><option>担任 向け</option><option>校長・管理職 向け</option><option>教育委員会 標準</option><option>養護教諭 向け</option></select></div>
+        <div class="field"><label class="label">優先順位</label><select class="select"><option>3（担任）</option><option>1（最優先）</option><option>最後（既定）</option></select></div>
+      </div>
+      <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 対象ユーザーによる切替・カスタマイズを許可する</label>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="適用ルールを保存しました（デモ）">保存</button></div>
+  </div></div>
+
+  <!-- Preview drawer -->
+  <div class="overlay drawer-right" id="prevDrawer"><div class="drawer drawer--lg">
+    <div class="drawer__head"><span class="ico-tile brand" id="pvIco"><i data-ic="users"></i></span><div class="grow"><div class="fw-7" style="font-size:16px" id="pvName">担任 向け</div><div class="text-3 text-sm" id="pvRole">プレビュー（ダミーデータ）</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="drawer__body" style="background:var(--surface-2)">
+      <div class="grid grid-3 mb-14">
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">担当クラス在籍</div><div class="fw-7" style="font-size:22px">34</div></div>
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">本日の欠席</div><div class="fw-7" style="font-size:22px;color:var(--warning)">3</div></div>
+        <div class="card" style="padding:14px"><div class="text-3 text-xs">要対応アラート</div><div class="fw-7" style="font-size:22px;color:var(--danger)">2</div></div>
+      </div>
+      <div class="card mb-14"><div class="card__head" style="padding:13px 16px"><span class="card__title" style="font-size:13.5px"><i data-ic="bellRing" data-size="16" data-cls="text-3"></i> 閾値を超えた生徒</span></div>
+        <div class="card__body" style="padding:0" id="pvAlerts"></div>
+      </div>
+      <div class="card"><div class="card__head" style="padding:13px 16px"><span class="card__title" style="font-size:13.5px">クラスの出欠推移（直近2週）</span></div>
+        <div class="card__body"><div class="bars" id="pvBars" style="height:110px"></div></div>
+      </div>
+    </div>
+    <div class="drawer__foot"><a href="dashboard-builder.html" class="btn btn--secondary spacer"><i data-ic="edit" data-size="16"></i> このダッシュボードを編集</a><button class="btn btn--primary" data-close>閉じる</button></div>
+  </div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, D = window.DATA.dashboards;
+
+      function previewWidgets() {
+        return '<div class="db-w"><span>在籍</span><b>34</b></div>' +
+          '<div class="db-w"><span>欠席</span><div class="mini-bars"><i style="height:40%"></i><i style="height:70%"></i><i style="height:30%"></i><i style="height:90%"></i><i style="height:50%"></i></div></div>' +
+          '<div class="db-w" style="align-items:center"><div class="mini-donut"></div></div>' +
+          '<div class="db-w" style="background:var(--danger-bg);border-color:var(--danger-border)"><span style="color:var(--danger)">アラート</span><b style="color:var(--danger)">2</b></div>' +
+          '<div class="db-w" style="grid-column:span 2"><span>保健室来室</span><div class="mini-bars"><i style="height:30%;background:var(--pink)"></i><i style="height:50%;background:var(--pink)"></i><i style="height:80%;background:var(--pink)"></i><i style="height:60%;background:var(--pink)"></i></div></div>';
+      }
+
+      document.getElementById('dbGrid').innerHTML = D.map(function (d) {
+        return '<div class="card db-card">' +
+          '<div class="db-prev">' + previewWidgets() + '</div>' +
+          '<div style="padding:16px">' +
+          '<div class="flex items-center gap-10"><span class="ico-tile ' + d.c + '" style="width:38px;height:38px">' + I(d.ic, { size: 19 }) + '</span>' +
+          '<div class="grow"><div class="flex items-center gap-6"><span class="fw-7" style="font-size:15px">' + d.name + '</span>' + (d.isDefault ? '<span class="badge badge--success" style="height:18px">既定</span>' : '') + '</div>' +
+          '<div class="text-3 text-xs">' + d.role + ' ・ ' + d.widgets + ' ウィジェット</div></div></div>' +
+          '<div class="text-3 text-sm mt-12" style="line-height:1.5;min-height:38px">' + d.desc + '</div>' +
+          '<div class="flex items-center gap-6 mt-8 text-xs text-3"><i data-ic="userCheck" data-size="14"></i> ' + d.applied + '</div>' +
+          '<div class="flex gap-8 mt-14">' +
+          '<a class="btn btn--sm btn--primary grow" href="dashboard-builder.html" style="justify-content:center"><i data-ic="edit" data-size="14"></i> 編集</a>' +
+          '<button class="btn btn--sm btn--secondary" data-open="prevDrawer" data-name="' + d.name + '" data-role="' + d.role + '" data-ic="' + d.ic + '" data-c="' + d.c + '"><i data-ic="eye" data-size="14"></i> プレビュー</button>' +
+          '<div class="dropdown" data-dropdown><button class="btn btn--sm btn--icon btn--secondary">' + I('moreV', { size: 15 }) + '</button>' +
+          '<div class="menu right"><div class="menu__item">' + I('copy', { size: 16 }) + '複製</div><div class="menu__item">' + I('userCheck', { size: 16 }) + '適用先を設定</div><div class="menu__item">' + I('star', { size: 16 }) + '既定にする</div><div class="menu__sep"></div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div>' +
+          '</div></div></div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('dbGrid'));
+
+      var rules = [
+        { p: 1, cond: [['violet', '職種'], ['', '＝ 教育委員会']], db: '教育委員会 標準', dbc: 'teal', on: true },
+        { p: 2, cond: [['violet', '職種'], ['', '＝ 校長・教頭']], db: '校長・管理職 向け', dbc: 'warning', on: true },
+        { p: 3, cond: [['teal', '属性「担任」'], ['', 'に値あり']], db: '担任 向け', dbc: 'brand', on: true },
+        { p: 4, cond: [['violet', '職種'], ['', '＝ 養護教諭']], db: '養護教諭 向け', dbc: 'pink', on: true },
+        { p: '—', cond: [['', 'その他すべて（既定）']], db: '教育委員会 標準', dbc: 'teal', on: true },
+      ];
+      document.getElementById('ruleBody').innerHTML = rules.map(function (r) {
+        var cond = r.cond.map(function (c) { return c[0] ? '<span class="badge badge--' + c[0] + '">' + c[1] + '</span>' : '<span class="text-2">' + c[1] + '</span>'; }).join(' ');
+        return '<div class="rule-row">' +
+          '<span class="flex items-center gap-4 text-3">' + (r.p === '—' ? '' : I('gripVertical', { size: 15 })) + '<b class="text-2">' + r.p + '</b></span>' +
+          '<span class="flex items-center gap-6 wrap">' + cond + '</span>' +
+          '<span><span class="badge badge--' + r.dbc + '"><i data-ic="dashboard" data-size="12"></i> ' + r.db + '</span></span>' +
+          '<span><label class="toggle"><input type="checkbox"' + (r.on ? ' checked' : '') + ' /><span class="toggle__track"></span></label></span>' +
+          '<span class="right"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item" onclick="openOverlay(\'assignModal\')">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></span>' +
+          '</div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('ruleBody'));
+
+      // preview drawer
+      var pvAlerts = [
+        { c: 'danger', t: '鈴木 太郎（2年A組）', d: '欠席が連続5日。閾値（3日）超過' },
+        { c: 'warning', t: '高橋 美咲（2年B組）', d: '保健室来室 週5回・閾値超過' },
+      ];
+      document.getElementById('pvAlerts').innerHTML = pvAlerts.map(function (a) {
+        return '<div class="flex items-center gap-10" style="padding:11px 16px;border-bottom:1px solid var(--border)"><span class="ico-tile ' + a.c + '" style="width:32px;height:32px">' + I('alert', { size: 15 }) + '</span><div class="grow"><div class="fw-6 text-sm">' + a.t + '</div><div class="text-3 text-xs">' + a.d + '</div></div><i data-ic="chevronRight" data-size="16" data-cls="text-3"></i></div>';
+      }).join('');
+      var pv = [40, 60, 30, 80, 55, 70, 45, 90, 50, 65];
+      document.getElementById('pvBars').innerHTML = pv.map(function (v, i) {
+        return '<div class="bars__col"><div class="bars__bar' + (v > 75 ? '' : ' alt') + '" style="height:' + v + '%' + (v > 75 ? ';background:var(--warning)' : '') + '"></div><span class="bars__label">' + (i + 1) + '</span></div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('pvAlerts'));
+
+      document.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-open="prevDrawer"]'); if (!b) return;
+        document.getElementById('pvName').textContent = b.dataset.name;
+        document.getElementById('pvRole').textContent = b.dataset.role + ' ・ プレビュー（ダミーデータ）';
+        var ico = document.getElementById('pvIco'); ico.className = 'ico-tile ' + b.dataset.c; ico.innerHTML = I(b.dataset.ic, { size: 20 });
+      });
+    })();
+  </script>
+</body>
+</html>

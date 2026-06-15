@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>取込マッピング・変換 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .mp-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
+
+  /* 設定プリセット（左） */
+  .preset-list .p-item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; font-size: 12.5px; transition: background .1s;
+  }
+  .preset-list .p-item:hover { background: var(--indigo-50); }
+  .preset-list .p-item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .preset-list .p-item b { display: block; }
+  .preset-list .p-item span { font-size: 10.5px; color: var(--ink-3); font-family: var(--mono); }
+
+  /* ルールエディタ */
+  .rule-block {
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+    margin-bottom: 10px; overflow: hidden;
+  }
+  .rule-block .r-h {
+    display: flex; align-items: center; gap: 9px; padding: 11px 14px;
+    background: #fbfaf8; border-bottom: 1px solid var(--line); font-size: 12px;
+  }
+  .rule-block .r-h b { font-weight: 600; }
+  .rule-block .r-h .when { color: var(--ink-3); font-size: 11.5px; font-family: var(--mono); }
+  .rule-block .r-h .right { margin-left: auto; display: flex; gap: 6px; }
+  .rule-block .r-b { padding: 12px 14px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); line-height: 1.6; }
+  .rule-block .r-b .kw { color: var(--indigo-700); font-weight: 700; }
+  .rule-block .r-b .str { color: var(--pine); }
+  .rule-block .r-b .num { color: var(--vermilion-dark); }
+  .rule-block .r-b .fn { color: var(--plum); font-weight: 700; }
+  .rule-block .r-b .cm { color: var(--ink-3); font-style: italic; }
+
+  /* 識別子リスト */
+  .ident-row { display: grid; grid-template-columns: 26px 1fr 1fr 90px 90px 60px; gap: 8px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 12px; }
+  .ident-row:last-child { border-bottom: 0; }
+  .ident-row .pri { font-family: var(--mono); font-weight: 700; color: var(--indigo-700); }
+  .ident-row .mono { font-family: var(--mono); font-size: 11px; color: var(--ink-2); background: var(--paper-2); padding: 3px 8px; border-radius: 5px; display: inline-block; }
+
+  /* サンドボックス */
+  .sandbox {
+    display: grid; grid-template-columns: 1fr 36px 1fr; gap: 0;
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    background: var(--surface); font-family: var(--mono); font-size: 11px;
+  }
+  .sandbox .col { padding: 12px 14px; }
+  .sandbox .col.in { background: var(--indigo-50); }
+  .sandbox .col.out { background: var(--pine-50); }
+  .sandbox .col.mid { display: grid; place-items: center; background: #fbfaf8; }
+  .sandbox .col.mid .material-symbols-rounded { color: var(--indigo-500); font-size: 20px; }
+  .sandbox .col h5 { font-family: var(--font); font-size: 11px; font-weight: 700; color: var(--ink-3); letter-spacing: .08em; margin-bottom: 8px; }
+  .sandbox pre { white-space: pre-wrap; line-height: 1.5; }
+  .sandbox .hl { background: #fff8c5; padding: 0 3px; border-radius: 2px; }
+
+  /* マッピングテーブル */
+  .mp-tbl th { white-space: normal; }
+  .mp-tbl .arrow { color: var(--ink-3); }
+  .mp-tbl .alias { display: inline-block; font-family: var(--mono); font-size: 10.5px; background: var(--paper-2); padding: 1px 6px; border-radius: 4px; margin: 1px 2px 1px 0; color: var(--ink-2); }
+
+  /* エクスポートプリセット */
+  .ex-card { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin-bottom: 8px; }
+  .ex-card .ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+  .ex-card b { display: block; font-size: 12.5px; }
+  .ex-card .sub { font-size: 10.5px; color: var(--ink-3); display: block; margin-top: 1px; }
+  .ex-card .right { margin-left: auto; }
+</style>
+</head>
+<body data-page="import-mappings">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="import.html">CSVインポート</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">取込マッピング・変換</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">rule</span>取込マッピング・変換</h1>
+      <div class="desc">CSV/TSVの <b>ヘッダ判定文字列</b>、<b>識別子</b>、<b>レコード変換</b>、<b>ファイル全体変換</b> をプリセットとして保存し、<a href="import.html">CSVインポート</a> から呼び出します。エクスポート変換は下段。</div>
+    </div>
+    <div class="actions">
+      <button class="btn"><span class="material-symbols-rounded">history</span>変更履歴</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-mp-new')"><span class="material-symbols-rounded">add</span>プリセットを追加</button>
+    </div>
+  </div>
+
+  <section class="kpi-grid mb-3">
+    <div class="kpi" style="--accent:var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">bookmark</span>登録プリセット</div>
+      <div class="k-value">8<small>件</small></div>
+      <div class="k-delta">教員定期更新 / 生徒年度更新 / OneRoster取込 / 他 5</div>
+    </div>
+    <div class="kpi" style="--accent:var(--pine)">
+      <div class="k-label"><span class="material-symbols-rounded">fingerprint</span>識別子</div>
+      <div class="k-value">3<small>本</small></div>
+      <div class="k-delta">職員番号 / 学籍番号 / メール</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">code_blocks</span>登録中の変換ルール</div>
+      <div class="k-value">27<small>件</small></div>
+      <div class="k-delta">レコード 19 / ファイル 4 / コードマップ 4</div>
+    </div>
+    <div class="kpi" style="--accent:var(--vermilion)">
+      <div class="k-label"><span class="material-symbols-rounded">cloud_upload</span>エクスポート</div>
+      <div class="k-value">4<small>形式</small></div>
+      <div class="k-delta">OneRoster / 学校保健統計 / 汎用CSV / 教委報告用</div>
+    </div>
+  </section>
+
+  <div class="tabs mb-2" data-tabs="im">
+    <button class="tab active" data-tab="header"><span class="material-symbols-rounded">join_inner</span>ヘッダ判定</button>
+    <button class="tab" data-tab="ident"><span class="material-symbols-rounded">fingerprint</span>識別子</button>
+    <button class="tab" data-tab="file"><span class="material-symbols-rounded">data_object</span>ファイル全体変換</button>
+    <button class="tab" data-tab="rec"><span class="material-symbols-rounded">transform</span>レコード変換</button>
+    <button class="tab" data-tab="out"><span class="material-symbols-rounded">cloud_upload</span>エクスポート変換</button>
+  </div>
+
+  <div class="mp-layout">
+    <!-- 左：プリセット一覧 -->
+    <aside class="card">
+      <div class="card-h">
+        <span class="material-symbols-rounded">bookmarks</span>プリセット
+        <span class="sub">8件</span>
+      </div>
+      <div class="preset-list">
+        <div class="p-item active">
+          <div class="ic" style="background:var(--indigo-100); color:var(--indigo-700); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">upload_file</span></div>
+          <div style="min-width:0"><b>教員定期更新（独自CSV）</b><span>MP-001・最終更新 06/05</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--pine-50); color:var(--pine); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">school</span></div>
+          <div style="min-width:0"><b>生徒年度更新（学籍会CSV）</b><span>MP-002・最終更新 04/12</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--vermilion-50); color:var(--vermilion); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">lan</span></div>
+          <div style="min-width:0"><b>OneRoster 取込</b><span>MP-003・最終更新 05/28</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--gold-50); color:var(--gold); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">health_and_safety</span></div>
+          <div style="min-width:0"><b>学校保健統計 取込</b><span>MP-004・最終更新 05/12</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--plum-50); color:var(--plum); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">workspaces</span></div>
+          <div style="min-width:0"><b>Google Workspace 連絡先同期</b><span>MP-005・最終更新 04/30</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--sky-50); color:var(--sky); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">domain</span></div>
+          <div style="min-width:0"><b>市町村教委 異動連絡票</b><span>MP-006・最終更新 06/01</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--indigo-100); color:var(--indigo-700); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">contact_page</span></div>
+          <div style="min-width:0"><b>緊急連絡先 教員</b><span>MP-007・最終更新 05/20</span></div>
+        </div>
+        <div class="p-item">
+          <div class="ic" style="background:var(--pine-50); color:var(--pine); width:32px; height:32px; border-radius:8px; display:grid; place-items:center"><span class="material-symbols-rounded" style="font-size:16px">psychology</span></div>
+          <div style="min-width:0"><b>いじめ調査票 取込</b><span>MP-008・最終更新 05/15</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右：選択プリセットの詳細 -->
+    <div>
+      <section class="card mb-2">
+        <div class="card-h">
+          <span class="material-symbols-rounded">upload_file</span>教員定期更新（独自CSV）
+          <span class="chip mono" style="font-family:var(--mono)">MP-001</span>
+          <span class="sub">最終更新 2026-06-05 by 山田太郎</span>
+          <div class="right">
+            <span class="sync pending"><span class="material-symbols-rounded">sync</span>反映タイミング: 即時 / 04:00 同期</span>
+            <button class="btn sm"><span class="material-symbols-rounded">file_copy</span>複製</button>
+            <button class="btn sm primary"><span class="material-symbols-rounded">check</span>保存</button>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="grid-3">
+            <div class="field" style="margin:0"><label>プリセット名</label><input class="input" value="教員定期更新（独自CSV）"></div>
+            <div class="field" style="margin:0"><label>取り込み種別</label>
+              <select class="select"><option>教職員名簿の登録・更新</option><option>生徒名簿の登録・更新</option><option>所属変更</option></select>
+            </div>
+            <div class="field" style="margin:0"><label>既定の承認フロー</label>
+              <select class="select"><option>県教委：直接変更可</option><option>市町村教委へ承認依頼</option><option>学校管理職へ承認依頼</option></select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: ヘッダ判定 -->
+      <div class="tab-panel active" data-tab-panel="im" data-tab="header">
+        <section class="card mb-2">
+          <div class="card-h">
+            <span class="material-symbols-rounded">join_inner</span>ヘッダ判定（CSV列 → 名簿項目）
+            <span class="sub">複数の判定文字列を設定可（大文字小文字・全半角は無視）</span>
+            <div class="right"><button class="btn sm"><span class="material-symbols-rounded">add</span>列を追加</button></div>
+          </div>
+          <div class="card-b" style="padding:0">
+            <table class="tbl mp-tbl">
+              <thead>
+                <tr><th>CSV列（判定文字列）</th><th>名簿項目</th><th>役割</th><th>変換</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="alias">staff_no</span><span class="alias">職員番号</span><span class="alias">StaffNo</span><span class="alias">職員No</span>
+                  </td>
+                  <td><b>職員番号</b><span class="muted" style="font-size:10.5px; display:block">（教職員）</span></td>
+                  <td><span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><span class="alias">email</span><span class="alias">mail</span><span class="alias">mailaddress</span><span class="alias">メールアドレス</span></td>
+                  <td><b>メールアドレス</b></td>
+                  <td><span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><span class="alias">name</span><span class="alias">氏名</span><span class="alias">お名前</span></td>
+                  <td><b>氏名</b></td>
+                  <td><span class="chip gold"><span class="material-symbols-rounded sm">check_circle</span>一致確認</span></td>
+                  <td><a href="#rec">スペース分割（後段）</a></td>
+                </tr>
+                <tr>
+                  <td><span class="alias">mobile_private</span><span class="alias">自家用携帯</span><span class="alias">私物電話</span></td>
+                  <td><b>自家用携帯番号</b></td>
+                  <td><span class="chip green"><span class="material-symbols-rounded sm">edit</span>更新</span></td>
+                  <td>数字のみ抽出</td>
+                </tr>
+                <tr>
+                  <td><span class="alias">license_no</span><span class="alias">教員免許番号</span><span class="alias">免状番号</span></td>
+                  <td><b>教員免許番号</b></td>
+                  <td><span class="chip green"><span class="material-symbols-rounded sm">edit</span>更新</span></td>
+                  <td>正規表現: <span class="mono">^[A-Z]{2}-\d{8}$</span></td>
+                </tr>
+                <tr>
+                  <td><span class="alias">club_advisor</span><span class="alias">部活顧問</span><span class="alias">顧問</span></td>
+                  <td><b>部活顧問</b></td>
+                  <td><span class="chip green"><span class="material-symbols-rounded sm">edit</span>更新</span></td>
+                  <td><a href="#rec">コードマップ（後段）</a></td>
+                </tr>
+                <tr style="opacity:.6">
+                  <td><span class="alias">memo</span><span class="alias">備考</span></td>
+                  <td><b>（取り込まない）</b></td>
+                  <td><span class="chip line">スキップ</span></td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: 識別子 -->
+      <div class="tab-panel" data-tab-panel="im" data-tab="ident">
+        <section class="card mb-2">
+          <div class="card-h">
+            <span class="material-symbols-rounded">fingerprint</span>識別子（同一人物判定）
+            <span class="sub">優先度順に上から評価。複数一致すればその人物。</span>
+            <div class="right"><button class="btn sm"><span class="material-symbols-rounded">add</span>識別子を追加</button></div>
+          </div>
+          <div class="card-b" style="padding:8px 0">
+            <div class="ident-row" style="background:#faf9f6; font-size:10.5px; color:var(--ink-3); font-weight:600; letter-spacing:.07em">
+              <span>優先</span><span>項目</span><span>判定ヘッダ文字列</span><span>役割</span><span>対象</span><span></span>
+            </div>
+            <div class="ident-row">
+              <span class="pri">1</span>
+              <b>職員番号</b>
+              <div>
+                <span class="mono">staff_no</span>
+                <span class="mono">職員番号</span>
+                <span class="mono">StaffNo</span>
+              </div>
+              <span class="chip indigo">識別子</span>
+              <span class="chip">教員・教委</span>
+              <button class="btn sm ghost"><span class="material-symbols-rounded">more_horiz</span></button>
+            </div>
+            <div class="ident-row">
+              <span class="pri">2</span>
+              <b>学籍番号</b>
+              <div>
+                <span class="mono">student_no</span>
+                <span class="mono">学籍番号</span>
+                <span class="mono">S-20..</span>
+              </div>
+              <span class="chip indigo">識別子</span>
+              <span class="chip indigo">生徒</span>
+              <button class="btn sm ghost"><span class="material-symbols-rounded">more_horiz</span></button>
+            </div>
+            <div class="ident-row">
+              <span class="pri">3</span>
+              <b>メールアドレス</b>
+              <div>
+                <span class="mono">email</span>
+                <span class="mono">mail</span>
+                <span class="mono">mailaddress</span>
+              </div>
+              <span class="chip indigo">識別子</span>
+              <span class="chip">全員</span>
+              <button class="btn sm ghost"><span class="material-symbols-rounded">more_horiz</span></button>
+            </div>
+            <div class="ident-row" style="background:#fbfaf8; color:var(--ink-3)">
+              <span class="pri">—</span>
+              <b>氏名 + 生年月日</b>
+              <div>
+                <span class="mono">name</span> + <span class="mono">birth</span>
+              </div>
+              <span class="chip gold">一致確認</span>
+              <span class="chip">全員</span>
+              <button class="btn sm ghost"><span class="material-symbols-rounded">more_horiz</span></button>
+            </div>
+          </div>
+          <div class="callout" style="margin:14px">
+            <span class="material-symbols-rounded">groups</span>
+            <div>
+              <b>所属と1対1のデータ</b>（例: XさんはA小学校では校長、B小学校では教頭）は、識別子 + <b>組織コード</b> の組み合わせで人物と所属の組を判別します。
+              組織コードの判定ヘッダ文字列は <a href="attributes.html">属性項目定義</a> で設定します。
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: ファイル全体変換 -->
+      <div class="tab-panel" data-tab-panel="im" data-tab="file">
+        <section class="card mb-2">
+          <div class="card-h">
+            <span class="material-symbols-rounded">data_object</span>ファイル全体変換
+            <span class="sub">CSV読み込み前にファイル全体に対して実行されます。例: 先頭3行の削除・全置換</span>
+            <div class="right"><button class="btn sm"><span class="material-symbols-rounded">add</span>ステップを追加</button></div>
+          </div>
+          <div class="card-b">
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--vermilion)">filter_alt</span>
+                <b>STEP 1: 先頭メタ行を削除</b>
+                <span class="when">WHEN: 取り込み種別 = 教職員名簿 / ファイル先頭に文字列「#SYSTEM:」を含む</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="cm">// 先頭から「#SYSTEM:」で始まる行が出現しなくなるまで削除する</span>
+<span class="kw">function</span> <span class="fn">transform</span>(file) {
+  <span class="kw">let</span> lines = file.split(<span class="str">"\n"</span>);
+  <span class="kw">while</span> (lines[<span class="num">0</span>]?.startsWith(<span class="str">"#SYSTEM:"</span>)) lines.shift();
+  <span class="kw">return</span> lines.join(<span class="str">"\n"</span>);
+}
+              </div>
+            </div>
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--vermilion)">find_replace</span>
+                <b>STEP 2: 文字コード補正</b>
+                <span class="when">WHEN: ファイル先頭バイト列が Shift_JIS と判定された場合</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="cm">// エンコーディング自動判定 (UTF-8 / Shift_JIS / CP932)</span>
+<span class="kw">const</span> enc = <span class="fn">detect</span>(file);  <span class="cm">// 'utf-8' | 'shift_jis' | 'cp932'</span>
+<span class="kw">return</span> file.toString(<span class="str">'utf-8'</span>);
+              </div>
+            </div>
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--vermilion)">data_array</span>
+                <b>STEP 3: 改行コード統一</b>
+                <span class="when">常に実行</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="kw">return</span> file.<span class="fn">replace</span>(/\r\n/g, <span class="str">"\n"</span>).<span class="fn">replace</span>(/\r/g, <span class="str">"\n"</span>);
+              </div>
+            </div>
+            <div class="rule-block" style="opacity:.6">
+              <div class="r-h">
+                <span class="material-symbols-rounded">add</span>
+                <b>STEP 4:（未使用）全行の空白トリム</b>
+                <span class="when">—</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox"><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b"><span class="cm">// 有効化すると、各行の前後の空白を削除してから CSV 解析に渡します</span></div>
+            </div>
+            <div class="callout">
+              <span class="material-symbols-rounded">code_blocks</span>
+              <div>変換は <b>JavaScript</b> で記述します。実行はサンドボックス内で行われ、ファイルI/O・ネットワーク・タイマーは利用できません。テスト実行で挙動を確認できます。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: レコード変換 -->
+      <div class="tab-panel" data-tab-panel="im" data-tab="rec" id="rec">
+        <section class="card mb-2">
+          <div class="card-h">
+            <span class="material-symbols-rounded">transform</span>レコード変換
+            <span class="sub">各レコード（行）に対して順次適用。組織タイプや自治体による条件分岐も可能</span>
+            <div class="right"><button class="btn sm"><span class="material-symbols-rounded">add</span>ルールを追加</button></div>
+          </div>
+          <div class="card-b">
+
+            <!-- ルール1: 姓名分割 -->
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--indigo-500)">splitscreen</span>
+                <b>氏名（姓名連結）→ 姓・名（必要ならミドルネーム）に分割</b>
+                <span class="when">APPLY TO: name（氏名）</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="cm">// 半角/全角スペース1つ: 姓名分割 / 2つ: 姓・ミドル・名</span>
+<span class="kw">const</span> v = row.name?.<span class="fn">trim</span>();
+<span class="kw">if</span> (!v) <span class="kw">return</span> { family_name: <span class="str">""</span>, middle_name: <span class="str">""</span>, given_name: <span class="str">""</span> };
+<span class="kw">const</span> parts = v.<span class="fn">split</span>(/\s+/);
+<span class="kw">if</span> (parts.length === <span class="num">1</span>) <span class="kw">return</span> { family_name: parts[<span class="num">0</span>], middle_name: <span class="str">""</span>, given_name: <span class="str">""</span> };
+<span class="kw">if</span> (parts.length === <span class="num">2</span>) <span class="kw">return</span> { family_name: parts[<span class="num">0</span>], middle_name: <span class="str">""</span>, given_name: parts[<span class="num">1</span>] };
+<span class="kw">return</span> { family_name: parts[<span class="num">0</span>], middle_name: parts[<span class="num">1</span>], given_name: parts[<span class="num">2</span>] };
+              </div>
+            </div>
+
+            <!-- ルール2: 性別正規化 + 括弧書き展開 -->
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--indigo-500)">transgender</span>
+                <b>性別の英語/記号表記をコードに正規化 + 括弧書き展開</b>
+                <span class="when">APPLY TO: sex / 「山田 花子（女性）」のような括弧書きを姓・名・性別に振り分け</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="cm">// 例: "Female" → "女性", "M" → "男性", "山田 花子（女性）" → { name: "山田 花子", sex: "女性" }</span>
+<span class="kw">const</span> map = { Female:<span class="str">"女性"</span>, F:<span class="str">"女性"</span>, ♀:<span class="str">"女性"</span>, Male:<span class="str">"男性"</span>, M:<span class="str">"男性"</span>, ♂:<span class="str">"男性"</span> };
+<span class="kw">let</span> raw = row.sex ?? row.name;
+<span class="kw">const</span> m = raw.<span class="fn">match</span>(/^(.+?)[ 　]*(?:（(.+?)）|\((.+?)\))?$/);
+<span class="kw">if</span> (m && (m[<span class="num">2</span>] || m[<span class="num">3</span>])) {
+  row.name = m[<span class="num">1</span>].<span class="fn">trim</span>();
+  row.sex  = map[m[<span class="num">2</span>] ?? m[<span class="num">3</span>]] ?? m[<span class="num">2</span>] ?? m[<span class="num">3</span>];
+}
+              </div>
+            </div>
+
+            <!-- ルール3: 学年変換 (組織条件) -->
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--indigo-500)">school</span>
+                <b>学年: 中学校では「3」を内部「9」に変換</b>
+                <span class="when">APPLY TO: grade WHEN: org.school_type = 中学校</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="kw">if</span> (row.org?.school_type === <span class="str">"中学校"</span> && row.grade === <span class="str">"3"</span>) {
+  row.grade_internal = <span class="str">"9"</span>;
+  row.grade_external = <span class="str">"3"</span>;
+} <span class="kw">else</span> {
+  row.grade_internal = row.grade;
+  row.grade_external = row.grade;
+}
+              </div>
+            </div>
+
+            <!-- ルール4: コードマップ -->
+            <div class="rule-block">
+              <div class="r-h">
+                <span class="material-symbols-rounded" style="color:var(--plum)">data_object</span>
+                <b>「ICT支援員」 → 内部保持 + 出力時のみ「その他の職員」にマップ</b>
+                <span class="when">APPLY TO: job_type / 外部コードへの変換は <a href="code-standards.html">コード標準マッピング</a> で定義</span>
+                <div class="right">
+                  <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+                </div>
+              </div>
+              <div class="r-b">
+<span class="cm">// 内部: 自由入力として保持（属性で許可済・<a href="code-standards.html">code-standards</a> 参照）</span>
+row.job_type_internal = row.job_type;   <span class="cm">// "ICT支援員" のまま</span>
+row.job_type_external = <span class="fn">lookup</span>(<span class="str">"mext-staff-role"</span>, row.job_type) ?? <span class="str">"90:その他の職員"</span>;
+              </div>
+            </div>
+
+            <div class="callout">
+              <span class="material-symbols-rounded">terminal</span>
+              <div><b>サンドボックス</b>: 各ルールは入力1行・出力1行（または複数列）を受け取る純粋関数として書きます。例外を投げると <a href="jobs.html">ジョブ</a> の <b>「要確認」</b> 行として記録され、処理は継続します。</div>
+            </div>
+
+            <!-- サンドボックス -->
+            <div class="sandbox mt-2">
+              <div class="col in">
+                <h5>入力（CSV 1行目）</h5>
+<pre>name: <span class="hl">"山田 花子（女性）"</span>
+grade: <span class="hl">"3"</span>
+org.school_type: <span class="hl">"中学校"</span>
+job_type: <span class="hl">"ICT支援員"</span>
+staff_no: "T-0331"</pre>
+              </div>
+              <div class="col mid"><span class="material-symbols-rounded">east</span></div>
+              <div class="col out">
+                <h5>出力（内部モデル）</h5>
+<pre>family_name: <span class="hl">"山田"</span>
+given_name:  <span class="hl">"花子"</span>
+sex:         <span class="hl">"女性"</span>
+grade_internal: <span class="hl">"9"</span>
+grade_external: <span class="hl">"3"</span>
+job_type_internal: <span class="hl">"ICT支援員"</span>
+job_type_external: <span class="hl">"90:その他の職員"</span></pre>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: エクスポート変換 -->
+      <div class="tab-panel" data-tab-panel="im" data-tab="out">
+        <section class="card mb-2">
+          <div class="card-h">
+            <span class="material-symbols-rounded">cloud_upload</span>エクスポート変換
+            <span class="sub">各サードパーティ／外部システムへの出力時に、保持データをどう変換するかを定義します</span>
+            <div class="right">
+              <button class="btn sm"><span class="material-symbols-rounded">add</span>エクスポート先を追加</button>
+            </div>
+          </div>
+          <div class="card-b">
+
+            <div class="ex-card">
+              <div class="ic bg-indigo" style="background:var(--indigo-100); color:var(--indigo-700)"><span class="material-symbols-rounded">lan</span></div>
+              <div style="min-width:0">
+                <b>OneRoster (Japan Profile) CSV 出力</b>
+                <span class="sub">学年 internal「9」→ external「09」/ 役職マッピング / 識別子変換</span>
+                <div class="row mt-1" style="gap:6px">
+                  <span class="chip indigo">12列</span>
+                  <span class="chip green">組織条件分岐 2</span>
+                  <span class="chip gold">コードマップ 5</span>
+                </div>
+              </div>
+              <div class="right">
+                <span class="status ok">接続済</span>
+                <button class="btn sm"><span class="material-symbols-rounded">play_arrow</span>書き出し</button>
+                <button class="btn sm"><span class="material-symbols-rounded">edit</span>編集</button>
+              </div>
+            </div>
+
+            <div class="ex-card">
+              <div class="ic" style="background:var(--gold-50); color:var(--gold)"><span class="material-symbols-rounded">health_and_safety</span></div>
+              <div style="min-width:0">
+                <b>学校保健統計調査票 出力</b>
+                <span class="sub">疾病区分マップ / 学年表現の修正 / 個人情報マスク（個人ID のみ）</span>
+                <div class="row mt-1" style="gap:6px">
+                  <span class="chip gold">学期末自動</span>
+                  <span class="chip">24列</span>
+                </div>
+              </div>
+              <div class="right">
+                <span class="status ok">接続済</span>
+                <button class="btn sm"><span class="material-symbols-rounded">play_arrow</span>書き出し</button>
+                <button class="btn sm"><span class="material-symbols-rounded">edit</span>編集</button>
+              </div>
+            </div>
+
+            <div class="ex-card">
+              <div class="ic" style="background:var(--pine-50); color:var(--pine)"><span class="material-symbols-rounded">workspaces</span></div>
+              <div style="min-width:0">
+                <b>Google Workspace 連絡先（CSV）</b>
+                <span class="sub">社外向け連絡帳 / 教職員限定</span>
+                <div class="row mt-1" style="gap:6px">
+                  <span class="chip green">Workspace</span>
+                  <span class="chip">8列</span>
+                </div>
+              </div>
+              <div class="right">
+                <span class="status ok">接続済</span>
+                <button class="btn sm"><span class="material-symbols-rounded">play_arrow</span>書き出し</button>
+                <button class="btn sm"><span class="material-symbols-rounded">edit</span>編集</button>
+              </div>
+            </div>
+
+            <div class="ex-card">
+              <div class="ic" style="background:var(--vermilion-50); color:var(--vermilion)"><span class="material-symbols-rounded">domain</span></div>
+              <div style="min-width:0">
+                <b>県教委 報告用（汎用CSV）</b>
+                <span class="sub">テナント全体の任意の列を抽出 / 毎月1日 自動生成</span>
+                <div class="row mt-1" style="gap:6px">
+                  <span class="chip red">月次自動</span>
+                </div>
+              </div>
+              <div class="right">
+                <span class="status ok">接続済</span>
+                <button class="btn sm"><span class="material-symbols-rounded">play_arrow</span>書き出し</button>
+                <button class="btn sm"><span class="material-symbols-rounded">edit</span>編集</button>
+              </div>
+            </div>
+
+            <div class="callout">
+              <span class="material-symbols-rounded">cloud_upload</span>
+              <div>エクスポートは <b>取込の逆関数</b> です。コードマップは <a href="code-standards.html">コード標準マッピング</a> と共通で、組織条件分岐（学校種・自治体）も同様に書けます。書き出しは <a href="jobs.html">ジョブ</a> として実行され、<a href="audit-log.html">監査ログ</a> にすべての出力が記録されます。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 監査 -->
+  <section class="card mt-3">
+    <div class="card-h">
+      <span class="material-symbols-rounded">history</span>このプリセットの直近の変更
+      <span class="sub">来歴は7年保持</span>
+      <div class="right"><a class="btn sm ghost" href="audit-log.html">監査ログへ</a></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>日時</th><th>変更者</th><th>変更内容</th><th>影響範囲</th><th>適用期間</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">2026-06-05 16:42</td>
+          <td><div class="person"><span class="avatar a5 sm">山</span><div><b>山田 太郎</b><span>県教委</span></div></div></td>
+          <td>レコード変換: 「ICT支援員 → 90:その他の職員」のマッピングを追加（学校種=中学校のときのみ）</td>
+          <td>長野県（テナント全体）</td>
+          <td class="muted">2026-06-05 16:42 〜 （継続中）</td>
+          <td><span class="status ok">有効</span></td>
+        </tr>
+        <tr>
+          <td class="mono">2026-05-12 11:08</td>
+          <td><div class="person"><span class="avatar a2 sm">佐</span><div><b>佐藤 健一</b><span>県教委・データ利活用</span></div></div></td>
+          <td>識別子: 「学籍番号」を <span class="mono">S-20..</span> 形式に限定する正規表現を追加</td>
+          <td>生徒名簿 全件</td>
+          <td class="muted">2026-05-12 11:08 〜 2026-06-05 16:42</td>
+          <td><span class="status wait">上書き済</span></td>
+        </tr>
+        <tr>
+          <td class="mono">2026-04-01 00:00</td>
+          <td><div class="person"><span class="avatar a4 sm">坂</span><div><b>坂本 由美子</b><span>県教委</span></div></div></td>
+          <td>令和8年度向けにプリセット「教員定期更新（独自CSV）」を公開</td>
+          <td>長野県（テナント全体）</td>
+          <td class="muted">2026-04-01 〜 2026-05-12 11:08</td>
+          <td><span class="status wait">上書き済</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 新規プリセットモーダル -->
+  <div class="modal-backdrop" id="modal-mp-new">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>取込プリセットを新規作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-mp-new')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>プリセット名<span class="req">必須</span></label><input class="input" placeholder="例: 教員異動連絡票"></div>
+          <div class="field"><label>取り込み種別</label>
+            <select class="select"><option>教職員名簿の登録・更新</option><option>生徒名簿の登録・更新</option><option>所属変更</option><option>クラス編成</option><option>属性項目の一括更新</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>ベースにするプリセット</label>
+          <select class="select"><option>（白紙から作成）</option><option>教員定期更新（独自CSV）</option><option>OneRoster 取込</option></select>
+          <div class="hint">ベースに選んだプリセットの全設定を引き継いで編集できます</div>
+        </div>
+        <div class="callout">
+          <span class="material-symbols-rounded">info</span>
+          <div>作成したプリセットは <a href="import.html">CSVインポート</a> のステップ2「項目マッピング」で「保存済み設定を適用」から呼び出せます。テスト実行（ドライラン）で挙動を確認してから公開してください。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-mp-new')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-mp-new'); Composer.toast('プリセットを作成しました')"><span class="material-symbols-rounded">check</span>作成</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

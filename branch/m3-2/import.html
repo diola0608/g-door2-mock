@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSVインポート | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .dropzone {
+    border: 2px dashed var(--line-2); border-radius: 14px; padding: 44px 20px;
+    text-align: center; background: #fbfaf8; cursor: pointer; transition: all .15s;
+  }
+  .dropzone:hover { border-color: var(--indigo-500); background: var(--indigo-50); }
+  .dropzone .material-symbols-rounded { font-size: 44px; color: var(--indigo-500); }
+  .dropzone b { display: block; margin-top: 10px; font-size: 14px; }
+  .dropzone p { font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+  .file-pill {
+    display: inline-flex; align-items: center; gap: 9px; margin-top: 16px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px;
+    font-size: 12.5px; box-shadow: var(--shadow-sm);
+  }
+  .file-pill .material-symbols-rounded { color: var(--pine); }
+  .map-row { display: grid; grid-template-columns: 1fr 36px 1fr 120px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .map-row:last-child { border-bottom: 0; }
+  .map-row .csv-col {
+    font-family: var(--mono); font-size: 11.5px; background: var(--paper-2); border-radius: 7px;
+    padding: 7px 11px; color: var(--ink-2); display: flex; align-items: center; gap: 7px;
+  }
+  .map-row .csv-col .material-symbols-rounded { font-size: 14px; color: var(--ink-3); }
+  .map-row .arr { text-align: center; color: var(--line-2); }
+  .map-row.id-row .csv-col { background: var(--indigo-100); color: var(--indigo-800); }
+  .wizard-step { display: none; }
+  .wizard-step.active { display: block; animation: fadein .2s; }
+  .wizard-foot { display: flex; justify-content: space-between; margin-top: 20px; }
+</style>
+</head>
+<body data-page="import">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">CSVインポート</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">upload_file</span>CSVインポート</h1>
+      <div class="desc">名簿・属性・所属の一括登録/更新。実行はバックグラウンドのバッチ処理で行われ、結果は<a href="jobs.html">処理状況・ログ</a>で確認できます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('テンプレートCSVをダウンロードしました')"><span class="material-symbols-rounded">download</span>テンプレート</button>
+      <a class="btn" href="import-mappings.html"><span class="material-symbols-rounded">rule</span>取込マッピング・変換</a>
+      <a class="btn" href="jobs.html"><span class="material-symbols-rounded">manage_history</span>過去のインポート</a>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper">
+    <div class="step done" data-step="1"><span class="s-num">1</span><span class="s-meta"><b>ファイル選択</b><span>CSVのアップロード</span></span></div>
+    <div class="step now" data-step="2"><span class="s-num">2</span><span class="s-meta"><b>項目マッピング</b><span>CSV列 → 名簿項目</span></span></div>
+    <div class="step" data-step="3"><span class="s-num">3</span><span class="s-meta"><b>本人一致確認</b><span>識別子による照合</span></span></div>
+    <div class="step" data-step="4"><span class="s-num">4</span><span class="s-meta"><b>実行オプション</b><span>確認・ジョブ登録</span></span></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <section class="card wizard-step" id="ws-1">
+    <div class="card-h"><span class="material-symbols-rounded">upload_file</span>ステップ1: ファイル選択</div>
+    <div class="card-b">
+      <div class="grid-2 mb-2">
+        <div class="field">
+          <label>インポートの種類<span class="req">必須</span></label>
+          <select class="select">
+            <option>教職員名簿の登録・更新</option>
+            <option>生徒名簿の登録・更新</option>
+            <option>属性項目の一括更新</option>
+            <option>所属変更（異動・転校）</option>
+            <option>クラス編成</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>対象スコープ</label>
+          <select class="select"><option>長野県（テナント全体）</option><option>長野市</option><option>長野市立城山小学校</option></select>
+        </div>
+      </div>
+      <div class="dropzone" onclick="wiz.go(2)">
+        <span class="material-symbols-rounded">cloud_upload</span>
+        <b>CSVファイルをドラッグ＆ドロップ</b>
+        <p>またはクリックして選択（UTF-8 / Shift_JIS 自動判定・最大50MB）</p>
+      </div>
+      <div style="text-align:center">
+        <div class="file-pill"><span class="material-symbols-rounded">check_circle</span>teachers_update_202606.csv<span class="muted">2,418行・14列</span>
+          <button class="btn sm ghost" onclick="Composer.toast('ファイルを削除しました')"><span class="material-symbols-rounded sm">close</span></button>
+        </div>
+      </div>
+      <div class="wizard-foot">
+        <span></span>
+        <button class="btn primary" onclick="wiz.go(2)">マッピングへ進む<span class="material-symbols-rounded">arrow_forward</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card wizard-step active" id="ws-2">
+    <div class="card-h"><span class="material-symbols-rounded">join_inner</span>ステップ2: 項目マッピング
+      <span class="sub">CSVのどの列が名簿のどの情報に対応するかを設定します</span>
+      <div class="right"><button class="btn sm" onclick="Composer.toast('保存済みマッピング「教員定期更新」を適用しました')"><span class="material-symbols-rounded">bookmark</span>保存済み設定を適用</button></div>
+    </div>
+    <div class="card-b">
+      <div class="callout mb-2">
+        <span class="material-symbols-rounded">fingerprint</span>
+        <div><b>識別子（本人一致のキー）</b>には「職員番号」と「メールアドレス」が設定されています。マッピングでこの2列を指定してください。識別設定は<a href="attributes.html">属性項目定義</a>で変更できます。</div>
+      </div>
+      <div class="map-row" style="border-bottom:2px solid var(--line); padding-bottom:6px">
+        <span class="muted" style="font-size:10.5px; letter-spacing:.08em">CSV列（1行目ヘッダー）</span><span></span>
+        <span class="muted" style="font-size:10.5px; letter-spacing:.08em">名簿の項目</span>
+        <span class="muted" style="font-size:10.5px; letter-spacing:.08em">役割</span>
+      </div>
+      <div class="map-row id-row">
+        <span class="csv-col"><span class="material-symbols-rounded">tag</span>staff_no</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>職員番号（基本情報）</option><option>学籍番号</option></select>
+        <span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span>
+      </div>
+      <div class="map-row id-row">
+        <span class="csv-col"><span class="material-symbols-rounded">mail</span>email</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>メールアドレス（連絡先）</option></select>
+        <span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span>
+      </div>
+      <div class="map-row">
+        <span class="csv-col"><span class="material-symbols-rounded">text_fields</span>name</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>氏名（基本情報）</option></select>
+        <span class="chip">一致確認</span>
+      </div>
+      <div class="map-row">
+        <span class="csv-col"><span class="material-symbols-rounded">smartphone</span>mobile_private</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>自家用携帯番号（連絡先）</option><option>自宅電話（連絡先）</option></select>
+        <span class="chip green">更新</span>
+      </div>
+      <div class="map-row">
+        <span class="csv-col"><span class="material-symbols-rounded">workspace_premium</span>license_no</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>教員免許番号（基本情報）</option></select>
+        <span class="chip green">更新</span>
+      </div>
+      <div class="map-row">
+        <span class="csv-col"><span class="material-symbols-rounded">sports_soccer</span>club_advisor</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>部活顧問（学籍・部活）</option></select>
+        <span class="chip green">更新</span>
+      </div>
+      <div class="map-row">
+        <span class="csv-col" style="opacity:.55"><span class="material-symbols-rounded">block</span>memo</span>
+        <span class="arr"><span class="material-symbols-rounded">east</span></span>
+        <select class="select"><option>（取り込まない）</option><option>備考</option></select>
+        <span class="chip line">スキップ</span>
+      </div>
+      <div class="wizard-foot">
+        <button class="btn" onclick="wiz.go(1)"><span class="material-symbols-rounded">arrow_back</span>戻る</button>
+        <div class="row">
+          <button class="btn ghost" onclick="Composer.toast('マッピング設定を保存しました')"><span class="material-symbols-rounded">bookmark_add</span>この設定を保存</button>
+          <button class="btn primary" onclick="wiz.go(3)">一致確認へ進む<span class="material-symbols-rounded">arrow_forward</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card wizard-step" id="ws-3">
+    <div class="card-h"><span class="material-symbols-rounded">fingerprint</span>ステップ3: 本人一致確認
+      <span class="sub">識別子で既存名簿と照合した結果のプレビュー</span>
+    </div>
+    <div class="card-b">
+      <div class="kpi-grid mb-2" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi" style="--accent:var(--pine)"><div class="k-label"><span class="material-symbols-rounded">how_to_reg</span>一致（更新）</div><div class="k-value">2,361<small>行</small></div></div>
+        <div class="kpi" style="--accent:var(--sky)"><div class="k-label"><span class="material-symbols-rounded">person_add</span>新規登録</div><div class="k-value">42<small>行</small></div></div>
+        <div class="kpi" style="--accent:var(--gold)"><div class="k-label"><span class="material-symbols-rounded">quiz</span>要確認</div><div class="k-value">3<small>行</small></div></div>
+        <div class="kpi" style="--accent:var(--vermilion)"><div class="k-label"><span class="material-symbols-rounded">error</span>エラー</div><div class="k-value">12<small>行</small></div></div>
+      </div>
+      <div class="callout warn mb-2">
+        <span class="material-symbols-rounded">quiz</span>
+        <div><b>要確認 3行</b> — 識別子は一致しましたが、一致確認用の「氏名」がCSVと名簿で異なります。本人のデータか確認してください。</div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>行</th><th>識別子</th><th>CSVの氏名</th><th>名簿の氏名</th><th>判定</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">214</td><td class="mono">T-0331 / k.sato@…</td>
+            <td>佐藤 慶子</td><td>佐藤 恵子</td>
+            <td><span class="status warn">氏名不一致</span></td>
+            <td>
+              <button class="btn sm" onclick="Composer.toast('行214: 本人として取込みます')">本人として取込</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('行214 をスキップします', 'err')">スキップ</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="mono">871</td><td class="mono">T-1502 / y.mori@…</td>
+            <td>森 雄太</td><td>森 裕太</td>
+            <td><span class="status warn">氏名不一致</span></td>
+            <td>
+              <button class="btn sm" onclick="Composer.toast('行871: 本人として取込みます')">本人として取込</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('行871 をスキップします', 'err')">スキップ</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="mono">1,490</td><td class="mono">T-2210 / a.kubo@…</td>
+            <td>久保 亜美</td><td>久保田 亜美</td>
+            <td><span class="status warn">氏名不一致</span></td>
+            <td>
+              <button class="btn sm" onclick="Composer.toast('行1490: 本人として取込みます')">本人として取込</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('行1490 をスキップします', 'err')">スキップ</button>
+            </td>
+          </tr>
+          <tr class="masked">
+            <td class="mono">88 ほか11行</td><td class="mono">（識別子不一致）</td>
+            <td colspan="2"><span class="masked-cell"><span class="material-symbols-rounded">error</span>職員番号が名簿に存在しません — エラーとして除外されます</span></td>
+            <td><span class="status err">エラー</span></td>
+            <td><button class="btn sm" onclick="Composer.toast('エラー行CSVをダウンロードしました')"><span class="material-symbols-rounded">download</span>エラー行DL</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="wizard-foot">
+        <button class="btn" onclick="wiz.go(2)"><span class="material-symbols-rounded">arrow_back</span>戻る</button>
+        <button class="btn primary" onclick="wiz.go(4)">実行オプションへ<span class="material-symbols-rounded">arrow_forward</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card wizard-step" id="ws-4">
+    <div class="card-h"><span class="material-symbols-rounded">rocket_launch</span>ステップ4: 実行オプションと確認</div>
+    <div class="card-b">
+      <div class="grid-2">
+        <div>
+          <div class="field">
+            <label>実行タイミング</label>
+            <select class="select"><option>すぐにバックグラウンドで実行</option><option>夜間バッチ（本日 26:00）で実行</option><option>日時を指定して実行</option></select>
+          </div>
+          <label class="checkbox-row">
+            <input type="checkbox" checked>
+            <span><b>所属変更の承認が不要</b><span>あなたの権限「県教委・CSV直接変更」により承認フローを経ずに反映します。チェックを外すと各受入組織に承認依頼が送られます。</span></span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" checked>
+            <span><b>Workspace 同期を実行後すぐに行う</b><span>通常は次回の定期同期（04:00）で反映されます</span></span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox">
+            <span><b>テストモード（ドライラン）</b><span>データを変更せず、結果レポートのみ作成します</span></span>
+          </label>
+        </div>
+        <div class="card" style="box-shadow:none; background:#fbfaf8">
+          <div class="card-h" style="background:none"><span class="material-symbols-rounded">summarize</span>実行サマリー</div>
+          <div class="card-b" style="font-size:12px">
+            <dl style="display:grid; grid-template-columns:110px 1fr; gap:7px 10px">
+              <dt class="muted">ファイル</dt><dd class="mono">teachers_update_202606.csv</dd>
+              <dt class="muted">種類</dt><dd>教職員名簿の登録・更新</dd>
+              <dt class="muted">更新</dt><dd><b>2,361行</b>（属性: 自家用携帯番号・免許番号・部活顧問）</dd>
+              <dt class="muted">新規</dt><dd><b>42行</b>（Workspaceアカウント自動発行）</dd>
+              <dt class="muted">スキップ</dt><dd>3行（要確認のうち未解決分）</dd>
+              <dt class="muted">エラー除外</dt><dd style="color:var(--vermilion-dark)"><b>12行</b>（識別子不一致）</dd>
+              <dt class="muted">承認フロー</dt><dd><span class="chip red">省略（権限により直接変更）</span></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+      <div class="wizard-foot">
+        <button class="btn" onclick="wiz.go(3)"><span class="material-symbols-rounded">arrow_back</span>戻る</button>
+        <button class="btn accent" onclick="Composer.openModal('modal-run')"><span class="material-symbols-rounded">rocket_launch</span>ジョブを登録して実行</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 実行確認モーダル -->
+  <div class="modal-backdrop" id="modal-run">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">rocket_launch</span>インポートを実行しますか？</h3>
+        <button class="x" onclick="Composer.closeModal('modal-run')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p><b>2,403行</b>（更新2,361 / 新規42）をバックグラウンドで処理します。承認フローは<b>省略</b>されます。</p>
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">manage_history</span>
+          <div>処理はジョブとして登録され、進捗・結果は「処理状況・ログ」で確認できます。完了時には通知が届きます。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-run')">キャンセル</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-run'); Composer.toast('ジョブ #JOB-20260612-007 を登録しました'); setTimeout(()=>location.href='jobs.html', 1200)"><span class="material-symbols-rounded">check</span>実行する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+<script>
+  const wiz = {
+    go(n) {
+      document.querySelectorAll(".wizard-step").forEach(s => s.classList.remove("active"));
+      document.getElementById("ws-" + n).classList.add("active");
+      document.querySelectorAll("#stepper .step").forEach(st => {
+        const k = +st.dataset.step;
+        st.classList.toggle("done", k < n);
+        st.classList.toggle("now", k === n);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+</script>
+</body>
+</html>

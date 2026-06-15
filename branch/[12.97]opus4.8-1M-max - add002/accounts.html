@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>アカウント管理 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="accounts">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">アカウント管理</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile info" style="width:38px;height:38px"><i data-ic="user" data-size="20"></i></span> アカウント管理</h1>
+          <p class="page-subtitle">メールアカウントとGoogle Workspaceの連携状況を管理します。同期は本システム→Workspaceの一方向です。</p>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary" data-toast="同期を開始しました（デモ）" data-toast-text="バックグラウンドで処理します"><i data-ic="refresh" data-size="16"></i> 今すぐ同期</button>
+          <button class="btn btn--primary" data-open="inviteModal"><i data-ic="mail" data-size="16"></i> アカウント招待</button>
+        </div>
+      </div>
+
+      <div class="alert alert--info mb-20"><span class="alert__ico"><i data-ic="google" data-size="18"></i></span><div class="alert__text"><b>一方向同期:</b> 本システムに登録された項目（氏名・所属・組織OUなど）がGoogle Workspaceのアカウントに反映されます。Workspace側の変更は本システムには戻りません。</div></div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile brand"><i data-ic="user"></i></span><span class="stat__label">総アカウント</span></div><div class="stat__value">22,106</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile success"><i data-ic="checkCircle"></i></span><span class="stat__label">同期済</span></div><div class="stat__value">20,114</div><div class="stat__delta up"><i data-ic="trendUp" data-size="15"></i> 91% <span class="muted">同期率</span></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="clock"></i></span><span class="stat__label">保留 / 招待中</span></div><div class="stat__value" style="color:var(--warning)">312</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile neutral" style="background:var(--c-100);color:var(--c-500)"><i data-ic="ban"></i></span><span class="stat__label">アカウント無</span></div><div class="stat__value">1,680</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><span class="card__title">アカウント一覧</span>
+          <div class="pills spacer" data-pill-group><span class="pill active">すべて</span><span class="pill">同期済</span><span class="pill">保留中</span><span class="pill">アカウント無</span></div>
+        </div>
+        <div class="table-wrap"><table class="tbl"><thead><tr>
+          <th class="col-check"><label class="check"><input type="checkbox" data-check-all /><span class="check__box"><i data-ic="check" data-size="13"></i></span></label></th>
+          <th>ユーザー</th><th>メールアドレス</th><th>種別</th><th>所属組織 (OU)</th><th>同期状態</th><th>最終ログイン</th><th class="col-actions"></th>
+        </tr></thead><tbody id="accBody"></tbody></table></div>
+        <div class="table-foot"><span>全 22,106 件中 1–12 件</span><div class="pagination"><button disabled><i data-ic="chevronLeft" data-size="16"></i></button><button class="active">1</button><button>2</button><button>3</button><button><i data-ic="chevronRight" data-size="16"></i></button></div></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay modal-center" id="inviteModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile info"><i data-ic="mail"></i></span><div><div class="modal__title">アカウントを招待</div><div class="modal__desc">Workspaceアカウントを作成・連携します</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">対象</label><select class="select"><option>アカウント未作成の保留者（312名）</option><option>特定の組織</option><option>個別に指定</option></select></div>
+      <div class="field"><label class="label">メール命名規則</label><select class="select"><option>{姓のローマ字頭文字}.{名}@s.aoba-edu.ed.jp</option><option>{職員番号}@aoba-edu.ed.jp</option></select></div>
+      <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 初回ログイン時にパスワード変更を要求</label>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="312件の招待を作成しました（デモ）">招待を作成</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, P = window.DATA.people, U = window.UI;
+      var ou = { '青葉第一中学校': '/青葉市/中学校/青葉第一中', '青葉第二中学校': '/青葉市/中学校/青葉第二中', '青葉市教育委員会 学校教育課': '/青葉市/教委/学校教育課' };
+      document.getElementById('accBody').innerHTML = P.map(function (p) {
+        var login = p.sync === '同期済' ? '2026-06-1' + (Math.floor(Math.random() * 3) + 1) + ' ' + (8 + Math.floor(Math.random() * 9)) + ':30' : '—';
+        var act = p.sync === 'アカウント無'
+          ? '<button class="btn btn--sm btn--secondary" data-toast="招待しました（デモ）">招待</button>'
+          : p.sync === '保留' ? '<button class="btn btn--sm btn--secondary" data-toast="再同期しました（デモ）">再同期</button>'
+          : '<div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item">' + I('refresh', { size: 16 }) + '再同期</div><div class="menu__item">' + I('key', { size: 16 }) + 'パスワード再設定</div><div class="menu__item danger">' + I('ban', { size: 16 }) + '停止</div></div></div>';
+        return '<tr><td class="col-check"><label class="check"><input type="checkbox" data-row-check /><span class="check__box">' + I('check', { size: 13 }) + '</span></label></td>' +
+          '<td><div class="cell-person">' + U.avatar(p.name, { size: 'sm', color: p.color }) + '<div class="cell-person__meta"><div class="cell-person__name">' + p.name + '</div><div class="cell-person__sub">' + p.kana + '</div></div></div></td>' +
+          '<td>' + (p.email ? '<span class="mono text-sm">' + p.email + '</span>' : '<span class="text-3">未割当</span>') + '</td>' +
+          '<td>' + U.typeBadge(p.type) + '</td><td class="mono text-sm text-2">' + (ou[p.org] || '/青葉県') + '</td>' +
+          '<td>' + U.statusBadge(p.sync) + '</td><td class="mono text-sm">' + login + '</td>' +
+          '<td class="col-actions">' + act + '</td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('accBody'));
+    })();
+  </script>
+</body>
+</html>

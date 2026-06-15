@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コード標準・連携マッピング | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* レイアウト用のみ */
+  .std-layout { display: grid; grid-template-columns: 300px 1fr; gap: 14px; align-items: start; }
+  .std-list .item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; font-size: 12.5px;
+  }
+  .std-list .item:hover { background: var(--indigo-50); }
+  .std-list .item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .std-list .item b { display: block; line-height: 1.3; }
+  .std-list .item span.meta { font-size: 10px; color: var(--ink-3); font-family: var(--mono); }
+  /* マッピング文章トークン（permissions.html の語彙を流用） */
+  .map-sentence { font-size: 12.5px; line-height: 1.9; }
+  .pol-token {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 6px;
+    font-weight: 600; font-size: 11.5px; margin: 0 2px; white-space: nowrap;
+  }
+  .pol-token .material-symbols-rounded { font-size: 13px; }
+  .pol-token.internal { background: var(--indigo-100); color: var(--indigo-700); }
+  .pol-token.standard { background: var(--plum-50); color: var(--plum); }
+  .pol-token.dir { background: var(--pine-50); color: var(--pine); }
+  .pol-token.fallback { background: var(--gold-50); color: var(--gold); }
+  @media (max-width: 1100px) { .std-layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-page="code-standards">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="codes.html">コードマスター</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">コード標準・連携マッピング</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">import_export</span>コード標準・連携マッピング</h1>
+      <div class="desc">アプリ内のコード値と、OneRoster や文科省コードなどの外部規格との対応表を管理します。アプリ内の表示と書き出すデータが異なる場合に変換します。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('マッピングをCSVで書き出しました')"><span class="material-symbols-rounded">download</span>マッピング書出</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-std-add')"><span class="material-symbols-rounded">add</span>規格を追加</button>
+    </div>
+  </div>
+
+  <div class="callout mb-3">
+    <span class="material-symbols-rounded">sync_alt</span>
+    <div><b>変換の向き</b>: <b>エクスポート</b>時は アプリ内の値 → 標準コード へ変換、<b>インポート</b>時は 標準コード → アプリ内の値 へ逆変換します。外部規格との連携は <b>Composer → 外部システム の一方向</b>が基本で、書き出したデータが外部側へ反映されます。実際の変換は<a href="import-settings.html">取込・連携設定</a>の変換ルールから呼び出されます。</div>
+  </div>
+
+  <div class="std-layout">
+    <!-- 左：規格レジストリ -->
+    <aside class="card std-list">
+      <div class="card-h"><span class="material-symbols-rounded">folder_special</span>登録済みの規格<span class="sub">5件</span></div>
+      <div class="item active">
+        <span class="material-symbols-rounded" style="color:var(--vermilion)">badge</span>
+        <div style="flex:1"><b>文科省 職種コード</b><span class="meta">MEXT-JOB・連携: 双方向</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--ink-3)">hub</span>
+        <div style="flex:1"><b>OneRoster v1.1</b><span class="meta">ONEROSTER・role / orgType</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--ink-3)">school</span>
+        <div style="flex:1"><b>文科省 学校種別コード</b><span class="meta">MEXT-SCHOOL</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--ink-3)">grade</span>
+        <div style="flex:1"><b>文科省 学年コード</b><span class="meta">MEXT-GRADE</span></div>
+      </div>
+      <div class="item">
+        <span class="material-symbols-rounded" style="color:var(--ink-3)">dns</span>
+        <div style="flex:1"><b>校務支援システムX 連携</b><span class="meta">VENDOR-X・エクスポートのみ</span></div>
+      </div>
+    </aside>
+
+    <!-- 右：選択中の規格 × コードマスターのマッピング -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">badge</span>文科省 職種コード
+          <span class="chip mono" style="font-family:var(--mono)">MEXT-JOB</span>
+          <span class="chip sky">双方向</span>
+          <div class="right">
+            <select class="select" style="width:200px; padding:5px 28px 5px 11px; font-size:11.5px">
+              <option>対象マスター: 職種（CODE-002）</option>
+              <option>対象マスター: 出欠状況（CODE-031）</option>
+            </select>
+          </div>
+        </div>
+        <div class="callout" style="margin:14px 14px 0">
+          <span class="material-symbols-rounded">info</span>
+          <div>アプリ内の表示名（例:「一般教員」）と標準の名称（例:「教諭」）が異なってもかまいません。アプリ内では独自の表示で運用し、書き出し時に標準コードへ変換します。標準に存在しない値は<b>フォールバック先</b>へ寄せます。</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>アプリ内コード</th><th>アプリ内表示名</th><th></th><th>標準コード</th><th>標準ラベル</th><th>状態</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">JOB-01</td>
+              <td><span class="chip indigo">一般教員</span></td>
+              <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">sync_alt</span></td>
+              <td class="mono">01</td>
+              <td>教諭 <span class="chip line" style="margin-left:4px">表示名相違</span></td>
+              <td><span class="status ok">対応済</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-map')">編集</button></td>
+            </tr>
+            <tr>
+              <td class="mono">JOB-03</td>
+              <td><span class="chip indigo">校長</span></td>
+              <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">sync_alt</span></td>
+              <td class="mono">03</td>
+              <td>校長</td>
+              <td><span class="status ok">対応済</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-map')">編集</button></td>
+            </tr>
+            <tr>
+              <td class="mono">JOB-16</td>
+              <td><span class="chip green">養護教諭</span></td>
+              <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">sync_alt</span></td>
+              <td class="mono">16</td>
+              <td>養護教諭</td>
+              <td><span class="status ok">対応済</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-map')">編集</button></td>
+            </tr>
+            <tr style="background:var(--gold-50)">
+              <td class="mono">JOB-40</td>
+              <td><span class="chip sky">ICT支援員</span></td>
+              <td style="text-align:center; color:var(--gold)"><span class="material-symbols-rounded">trending_flat</span></td>
+              <td class="mono">99</td>
+              <td>その他の職員 <span class="chip gold" style="margin-left:4px"><span class="material-symbols-rounded sm">call_split</span>フォールバック</span></td>
+              <td><span class="status warn">標準に該当なし</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-map')">編集</button></td>
+            </tr>
+            <tr style="background:var(--gold-50)">
+              <td class="mono">JOB-41</td>
+              <td><span class="chip sky">スクールカウンセラー</span></td>
+              <td style="text-align:center; color:var(--gold)"><span class="material-symbols-rounded">trending_flat</span></td>
+              <td class="mono">99</td>
+              <td>その他の職員 <span class="chip gold" style="margin-left:4px"><span class="material-symbols-rounded sm">call_split</span>フォールバック</span></td>
+              <td><span class="status warn">標準に該当なし</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-map')">編集</button></td>
+            </tr>
+            <tr class="masked">
+              <td class="mono">JOB-42</td>
+              <td><span class="chip">部活動指導員</span></td>
+              <td style="text-align:center; color:var(--line-2)"><span class="material-symbols-rounded">help</span></td>
+              <td colspan="2"><span class="masked-cell"><span class="material-symbols-rounded">link_off</span>マッピング未設定 — 書き出し時はエラーになります</span></td>
+              <td><span class="status err">未対応</span></td>
+              <td><button class="btn sm" onclick="Composer.openModal('modal-map')"><span class="material-symbols-rounded">add_link</span>対応付け</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="card-b" style="border-top:1px solid var(--line); background:#fbfaf8">
+          <div class="map-sentence">
+            <b>書き出しの読み方</b>:
+            アプリ内の <span class="pol-token internal"><span class="material-symbols-rounded">badge</span>ICT支援員</span> は
+            <span class="pol-token dir"><span class="material-symbols-rounded">trending_flat</span>エクスポート時</span>
+            <span class="pol-token standard"><span class="material-symbols-rounded">badge</span>その他の職員（99）</span> として書き出され、
+            画面・検索・名簿上では <span class="pol-token internal">ICT支援員</span> のまま扱われます。
+          </div>
+        </div>
+      </section>
+
+      <div class="callout warn">
+        <span class="material-symbols-rounded">layers</span>
+        <div><b>組織別の上書き</b>: 上田市では「ICT支援員」を独自規格上「14: 情報技術支援員」へマッピングしています（テナント既定のフォールバックを上書き・下位優先）。<a href="permissions.html">権限・継承</a>と同じく、組織単位・学校種単位で上書きできます。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- マッピング編集モーダル -->
+  <div class="modal-backdrop" id="modal-map">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add_link</span>コードマッピングの編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-map')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>アプリ内コード</label><input class="input mono" value="JOB-40" style="font-family:var(--mono)" readonly></div>
+          <div class="field"><label>アプリ内表示名</label><input class="input" value="ICT支援員" readonly></div>
+        </div>
+        <div class="field">
+          <label>標準コード（文科省 職種コード）<span class="req">必須</span></label>
+          <select class="select"><option>99 — その他の職員</option><option>01 — 教諭</option><option>16 — 養護教諭</option><option>—（マッピングしない）</option></select>
+          <div class="hint">標準に直接対応する値がない場合は、もっとも近い区分（その他の職員 等）へ寄せます。</div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>フォールバックとして扱う</b><span>標準側に厳密な対応がないことを明示します（書き出しログに注記されます）</span></span></label>
+        <div class="field">
+          <label>変換の向き</label>
+          <select class="select"><option>双方向（取込・書出の両方）</option><option>エクスポートのみ（内部→標準）</option><option>インポートのみ（標準→内部）</option></select>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>逆変換時の取込先に既定する</b><span>標準コード「99」を取り込んだ際、複数の内部値が該当する場合の既定先にします</span></span></label>
+        <div class="callout">
+          <span class="material-symbols-rounded">history</span>
+          <div>マッピングの変更は履歴として保存され、以後の書き出しジョブに適用されます。過去に書き出したデータは変更されません。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-map')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-map'); Composer.toast('マッピングを保存しました（次回の書き出しから適用）')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 規格追加モーダル -->
+  <div class="modal-backdrop" id="modal-std-add">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>規格を追加</h3>
+        <button class="x" onclick="Composer.closeModal('modal-std-add')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>規格の種類</label>
+          <select class="select"><option>OneRoster v1.1</option><option>OneRoster v1.2</option><option>文科省コード（職種・学校種・学年 等）</option><option>校務支援システム独自フォーマット</option></select></div>
+        <div class="grid-2">
+          <div class="field"><label>規格名<span class="req">必須</span></label><input class="input" placeholder="例: 県統合DB 連携コード"></div>
+          <div class="field"><label>規格ID</label><input class="input mono" placeholder="自動採番" style="font-family:var(--mono)"></div>
+        </div>
+        <div class="field"><label>連携方向</label>
+          <select class="select"><option>双方向（取込・書出）</option><option>エクスポートのみ</option><option>インポートのみ</option></select></div>
+        <div class="field"><label>対応付けるコードマスター</label>
+          <select class="select"><option>職種（CODE-002）</option><option>性別（CODE-001）</option><option>出欠状況（CODE-031）</option><option>通学方法（CODE-014）</option></select></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-std-add')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-std-add'); Composer.toast('規格を追加しました。続けてマッピングを設定してください')"><span class="material-symbols-rounded">check</span>追加</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

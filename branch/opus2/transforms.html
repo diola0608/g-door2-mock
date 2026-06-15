@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>取込・変換ルール | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* レイアウト用＋小装飾のみ */
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  .match-chip { font-family: var(--mono); font-size: 10.5px; background: var(--paper-2); border-radius: 5px; padding: 2px 7px; color: var(--ink-2); margin: 2px 3px 2px 0; display: inline-block; }
+  .match-chip.id { background: var(--indigo-100); color: var(--indigo-800); }
+  .code-block { font-family: var(--mono); font-size: 11px; line-height: 1.7; background: var(--indigo-900); color: #cdd8ea; border-radius: 8px; padding: 11px 13px; overflow-x: auto; white-space: pre; }
+  .code-block .k { color: #f0916f; } .code-block .s { color: #8fd3a8; } .code-block .c { color: #6e7f9e; }
+  .tf-row { border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; }
+  .tf-row + .tf-row { margin-top: 10px; }
+  .ba { display: grid; grid-template-columns: 1fr 28px 1fr; gap: 8px; align-items: center; margin-top: 8px; }
+  .ba .box { font-size: 11px; background: #fbfaf8; border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; }
+  .ba .box .mono { font-size: 11px; }
+  .ba .ar { text-align: center; color: var(--vermilion); }
+  .ba .box.out { background: var(--pine-50); border-color: #bfe0cf; }
+  .rule-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  @media (max-width: 1100px) { .ba { grid-template-columns: 1fr; } .ba .ar { transform: rotate(90deg); } }
+</style>
+</head>
+<body data-page="transforms">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="import.html">CSVインポート</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">取込・変換ルール</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">rule</span>取込・変換ルール</h1>
+      <div class="desc">CSV/TSV取込時のヘッダー判定とデータ変換、外部システムへのエクスポート変換を定義します。ルールは<a href="import.html">CSVインポート</a>のウィザードとエクスポートで再利用されます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.openModal('modal-test')"><span class="material-symbols-rounded">science</span>変換をテスト</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">add</span>ルールを追加</button>
+    </div>
+  </div>
+
+  <div class="callout mb-2">
+    <span class="material-symbols-rounded">conversion_path</span>
+    <div>変換は<b>インポートジョブ内</b>で実行され、結果は<a href="jobs.html">処理状況・ログ</a>で確認できます。エクスポートは <b>Composer → 外部システムへの一方向</b>で、出力前にドライランで差分を確認できます。</div>
+  </div>
+
+  <div class="tab-wrap">
+    <div class="tabs" data-tabs="t">
+      <button class="tab active" data-tab="dict"><span class="material-symbols-rounded">manage_search</span>ヘッダー判定辞書</button>
+      <button class="tab" data-tab="file"><span class="material-symbols-rounded">description</span>ファイル全体の変換（3）</button>
+      <button class="tab" data-tab="rec"><span class="material-symbols-rounded">format_list_numbered</span>レコード変換（4）</button>
+      <button class="tab" data-tab="exp"><span class="material-symbols-rounded">ios_share</span>エクスポート（3）</button>
+    </div>
+
+    <!-- 辞書 -->
+    <div class="tab-panel active" data-tab-panel="t" data-tab="dict">
+      <div class="toolbar" style="border:0; border-radius:0; border-bottom:1px solid var(--line); box-shadow:none">
+        <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="名簿項目・判定文字列で検索"></div>
+        <span class="muted">ヘッダー行と照合して自動マッピング（大文字小文字・全半角を無視）</span>
+        <button class="btn sm" style="margin-left:auto" onclick="Composer.openModal('modal-dict')"><span class="material-symbols-rounded">add</span>項目を追加</button>
+      </div>
+      <table class="tbl">
+        <thead><tr><th style="width:170px">名簿項目</th><th>ヘッダー判定文字列（1項目に複数可）</th><th style="width:110px">役割</th><th style="width:60px"></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>職員番号</b> / <b>学籍番号</b></td>
+            <td><span class="match-chip id">staff_no</span><span class="match-chip id">職員番号</span><span class="match-chip id">employee_code</span><span class="match-chip id">社員番号</span><span class="match-chip id">student_no</span><span class="match-chip id">学籍番号</span></td>
+            <td><span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>メールアドレス</b></td>
+            <td><span class="match-chip id">email</span><span class="match-chip id">mail</span><span class="match-chip id">mailaddress</span><span class="match-chip id">Eメール</span><span class="match-chip id">メール</span></td>
+            <td><span class="chip indigo"><span class="material-symbols-rounded sm">fingerprint</span>識別子</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>組織コード</b></td>
+            <td><span class="match-chip">org_code</span><span class="match-chip">学校コード</span><span class="match-chip">school_id</span><span class="match-chip">所属コード</span></td>
+            <td><span class="chip sky"><span class="material-symbols-rounded sm">apartment</span>所属識別</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>氏名</b></td>
+            <td><span class="match-chip">name</span><span class="match-chip">氏名</span><span class="match-chip">名前</span><span class="match-chip">fullname</span><span class="match-chip">氏名（漢字）</span></td>
+            <td><span class="chip gold">一致確認</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>性別</b></td>
+            <td><span class="match-chip">gender</span><span class="match-chip">sex</span><span class="match-chip">性別</span></td>
+            <td><span class="chip green">更新</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>学年</b></td>
+            <td><span class="match-chip">grade</span><span class="match-chip">学年</span><span class="match-chip">年</span><span class="match-chip">gakunen</span></td>
+            <td><span class="chip green">更新</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+          <tr>
+            <td><b>職種</b></td>
+            <td><span class="match-chip">job_title</span><span class="match-chip">職種</span><span class="match-chip">role</span><span class="match-chip">職名</span></td>
+            <td><span class="chip green">更新</span> <span class="chip plum"><span class="material-symbols-rounded sm">data_object</span>コード</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dict')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ファイル全体 -->
+    <div class="tab-panel" data-tab-panel="t" data-tab="file">
+      <div class="card-b">
+        <div class="callout mb-2"><span class="material-symbols-rounded">info</span>
+          <div>サードパーティの出力ファイルをそのまま取り込めるよう、<b>マッピング前</b>にファイル全体へ適用する変換です。実行順に処理されます。</div>
+        </div>
+
+        <div class="tf-row">
+          <div class="rule-meta">
+            <b>先頭メタ行の除去</b>
+            <span class="chip plum"><span class="material-symbols-rounded sm">code</span>JavaScript</span>
+            <span class="chip line">実行順 1</span>
+            <span class="chip">適用: ファイル名 <span class="mono">^export_.*\.csv</span></span>
+            <span class="status ok" style="margin-left:auto">有効</span>
+            <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+          </div>
+          <p class="muted mt-1">校務システムの出力は先頭3行にシステム名・出力日時が入るため、ヘッダー行の前で除去します。</p>
+          <div class="code-block mt-1"><span class="c">// 先頭3行（メタ情報）を捨ててヘッダー行から開始</span>
+<span class="k">return</span> rows.slice(<span class="s">3</span>);</div>
+          <div class="mt-1"><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">edit</span>編集</button><button class="btn sm ghost" onclick="Composer.toast('変更履歴: v3（2026-05-12 山田 太郎）/ v2 / v1')"><span class="material-symbols-rounded">history</span>変更履歴 v3</button></div>
+        </div>
+
+        <div class="tf-row">
+          <div class="rule-meta">
+            <b>文字コード・BOM 正規化</b>
+            <span class="chip plum"><span class="material-symbols-rounded sm">code</span>JavaScript</span>
+            <span class="chip line">実行順 2</span>
+            <span class="chip">適用: 全ファイル</span>
+            <span class="status ok" style="margin-left:auto">有効</span>
+            <label class="toggle"><input type="checkbox" checked><span class="tr"></span></label>
+          </div>
+          <div class="code-block mt-1"><span class="c">// Shift_JIS / UTF-8 を自動判定し UTF-8 へ。BOM・全角空白を除去</span>
+text = stripBOM(text).<span class="k">replace</span>(<span class="s">/　/g</span>, <span class="s">' '</span>);</div>
+          <div class="mt-1"><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">edit</span>編集</button><button class="btn sm ghost" onclick="Composer.toast('変更履歴 v5')"><span class="material-symbols-rounded">history</span>変更履歴 v5</button></div>
+        </div>
+
+        <div class="tf-row" style="opacity:.7">
+          <div class="rule-meta">
+            <b>合計行（末尾）の除去</b>
+            <span class="chip plum"><span class="material-symbols-rounded sm">code</span>JavaScript</span>
+            <span class="chip line">実行順 3</span>
+            <span class="chip">適用: 出欠インポート</span>
+            <span class="status wait" style="margin-left:auto">無効</span>
+            <label class="toggle"><input type="checkbox"><span class="tr"></span></label>
+          </div>
+          <p class="muted mt-1">最終行の「合計」行を取り込み対象から除外します。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- レコード変換 -->
+    <div class="tab-panel" data-tab-panel="t" data-tab="rec">
+      <div class="card-b">
+        <div class="callout mb-2"><span class="material-symbols-rounded">info</span>
+          <div>1行（1レコード）ごとに値を変換します。<b>正規表現</b>・<b>JavaScript</b>・<b>コード変換</b>を、組織タイプや自治体の条件付きで適用できます。</div>
+        </div>
+
+        <div class="tf-row">
+          <div class="rule-meta">
+            <b>氏名の分割</b>
+            <span class="chip sky"><span class="material-symbols-rounded sm">regular_expression</span>正規表現</span>
+            <span class="chip">適用: 全種類</span>
+            <span class="status ok" style="margin-left:auto">有効</span>
+          </div>
+          <p class="muted mt-1">スペース1つは「姓・名」、スペース2つは「姓・ミドルネーム・名」に分割します。</p>
+          <div class="ba">
+            <div class="box"><span class="muted">入力</span><br><span class="mono">山田 太郎</span></div>
+            <div class="ar"><span class="material-symbols-rounded">east</span></div>
+            <div class="box out"><span class="muted">出力</span><br><span class="mono">姓=山田 / 名=太郎</span></div>
+          </div>
+          <div class="ba">
+            <div class="box"><span class="mono">山田 ジョン 太郎</span></div>
+            <div class="ar"><span class="material-symbols-rounded">east</span></div>
+            <div class="box out"><span class="mono">姓=山田 / ミドル=ジョン / 名=太郎</span></div>
+          </div>
+          <div class="mt-1"><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">edit</span>編集</button></div>
+        </div>
+
+        <div class="tf-row">
+          <div class="rule-meta">
+            <b>性別の正規化・抽出</b>
+            <span class="chip plum"><span class="material-symbols-rounded sm">code</span>JavaScript</span>
+            <span class="chip">適用: 全種類</span>
+            <span class="status ok" style="margin-left:auto">有効</span>
+          </div>
+          <p class="muted mt-1">英語表記を日本語へ正規化し、氏名に括弧書きされた性別を抽出します。</p>
+          <div class="ba">
+            <div class="box"><span class="mono">Female</span></div><div class="ar"><span class="material-symbols-rounded">east</span></div><div class="box out"><span class="mono">女性</span></div>
+          </div>
+          <div class="ba">
+            <div class="box"><span class="mono">山田 花子（女性）</span></div><div class="ar"><span class="material-symbols-rounded">east</span></div><div class="box out"><span class="mono">姓=山田 / 名=花子 / 性別=女性</span></div>
+          </div>
+          <div class="mt-1"><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">edit</span>編集</button></div>
+        </div>
+
+        <div class="tf-row">
+          <div class="rule-meta">
+            <b>学年の規格変換（OneRoster）</b>
+            <span class="chip gold"><span class="material-symbols-rounded sm">tune</span>条件付きマッピング</span>
+            <span class="chip">適用: 組織タイプ = 中学校</span>
+            <span class="status ok" style="margin-left:auto">有効</span>
+          </div>
+          <p class="muted mt-1">中学校の学年「1〜3」を、通し学年「7〜9」として認識・出力します。</p>
+          <div class="ba">
+            <div class="box"><span class="mono">学年 3（中学校）</span></div><div class="ar"><span class="material-symbols-rounded">east</span></div><div class="box out"><span class="mono">grade = 9</span></div>
+          </div>
+          <div class="mt-1"><button class="btn sm ghost" onclick="Composer.openModal('modal-rule')"><span class="material-symbols-rounded">edit</span>編集</button></div>
+        </div>
+
+        <div class="tf-row">
+          <div class="rule-meta">
+            <b>職種の値→コード変換</b>
+            <span class="chip plum"><span class="material-symbols-rounded sm">data_object</span>コード変換</span>
+            <span class="chip">適用: 教職員</span>
+            <span class="status ok" style="margin-left:auto">有効</span>
+          </div>
+          <p class="muted mt-1">取込値をコードマスター「職種」に突合します。マスターに無い値は<b>自由値</b>として登録（属性設定で許可時）。表示と出力は<a href="codes.html">規格マッピング</a>に従います。</p>
+          <div class="ba">
+            <div class="box"><span class="mono">ICT支援員</span></div><div class="ar"><span class="material-symbols-rounded">east</span></div><div class="box out"><span class="mono">アプリ内: ICT支援員</span> / <span class="muted">出力: その他の職員</span></div>
+          </div>
+          <div class="mt-1"><a class="btn sm ghost" href="codes.html"><span class="material-symbols-rounded">data_object</span>コードマスターで確認</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- エクスポート -->
+    <div class="tab-panel" data-tab-panel="t" data-tab="exp">
+      <div class="card-b">
+        <div class="callout mb-2"><span class="material-symbols-rounded">ios_share</span>
+          <div>名簿データを各システムの規格へ<b>逆変換</b>して出力します。出力は <b>Composer → 外部システムの一方向</b>。個人情報のマスク・ドライランに対応します。</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>プロファイル</th><th>出力先 / 規格</th><th>主な変換（逆マッピング）</th><th>スケジュール</th><th>状態</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>OneRoster v1.1</b><div class="muted" style="font-size:10.5px">users.csv / orgs.csv</div></td>
+              <td>学習eポータル<br><span class="chip plum">OneRoster CSV</span></td>
+              <td class="muted">一般教員→<span class="mono">teacher</span> / ICT支援員→<span class="mono">aide</span>（その他の職員）/ 中3→<span class="mono">grade 9</span></td>
+              <td class="mono">毎日 04:30</td>
+              <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>前回成功</span><div class="muted" style="font-size:10px">#JOB-20260615-002</div></td>
+              <td><button class="btn sm" onclick="Composer.openModal('modal-export')"><span class="material-symbols-rounded">download</span>出力</button></td>
+            </tr>
+            <tr>
+              <td><b>文科省 学校基本調査</b><div class="muted" style="font-size:10.5px">指定様式</div></td>
+              <td>文科省 提出様式<br><span class="chip sky">固定長 / Excel</span></td>
+              <td class="muted">アプリ職種→<span class="mono">文科省職種コード</span> / 高校は「副校長」、小中は「教頭」へ整理</td>
+              <td>手動</td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm" onclick="Composer.openModal('modal-export')"><span class="material-symbols-rounded">download</span>出力</button></td>
+            </tr>
+            <tr>
+              <td><b>給食システム連携</b><div class="muted" style="font-size:10.5px">アレルギー区分</div></td>
+              <td>給食管理システム<br><span class="chip gold">CSV (Shift_JIS)</span></td>
+              <td class="muted">アレルギーコード→給食側区分 / 学籍番号以外は<span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>マスク</span></td>
+              <td class="mono">毎日 05:00</td>
+              <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>前回成功</span></td>
+              <td><button class="btn sm" onclick="Composer.openModal('modal-export')"><span class="material-symbols-rounded">download</span>出力</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 変換テスト -->
+  <div class="modal-backdrop" id="modal-test">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">science</span>変換テスト（サンドボックス）</h3>
+        <button class="x" onclick="Composer.closeModal('modal-test')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2" style="align-items:start">
+          <div class="field">
+            <label>入力データ（CSV/TSV を貼り付け）</label>
+            <textarea class="input mono" rows="7" style="font-size:11px">#システム: 校務すぐる  出力日:2026-06-12
+#対象: 松本市立開成中学校
+氏名,gender,学年,職種
+山田 花子（女性）,,3,ICT支援員
+George Smith,Male,2,教諭</textarea>
+            <div class="hint">取込種類「教職員」・組織タイプ「中学校」で評価します。</div>
+          </div>
+          <div>
+            <label class="field" style="margin-bottom:6px"><span style="display:block;font-size:11.5px;font-weight:600;color:var(--ink-2)">変換後プレビュー</span></label>
+            <table class="tbl" style="font-size:11.5px">
+              <thead><tr><th>姓</th><th>名</th><th>性別</th><th>学年</th><th>職種</th></tr></thead>
+              <tbody>
+                <tr><td>山田</td><td>花子</td><td><span class="chip green">女性</span></td><td class="mono">9</td><td>ICT支援員 <span class="muted">→出力:その他の職員</span></td></tr>
+                <tr><td>George</td><td>Smith</td><td><span class="chip sky">男性</span></td><td class="mono">8</td><td>一般教員 <span class="muted">←教諭</span></td></tr>
+              </tbody>
+            </table>
+            <div class="callout mt-2"><span class="material-symbols-rounded">task_alt</span><div>先頭2行のメタ情報を除去、氏名分割・性別抽出・学年規格変換・職種コード変換を適用しました。</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-test')">閉じる</button>
+        <button class="btn primary" onclick="Composer.toast('変換結果をプレビューしました（データは変更されていません）')"><span class="material-symbols-rounded">play_arrow</span>再実行</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ルール編集 -->
+  <div class="modal-backdrop" id="modal-rule">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">rule</span>変換ルールの編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-rule')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>ルール名<span class="req">必須</span></label><input class="input" value="性別の正規化・抽出"></div>
+          <div class="field"><label>種別</label><select class="select"><option>JavaScript</option><option>正規表現</option><option>条件付きマッピング</option><option>コード変換</option></select></div>
+          <div class="field"><label>適用対象（取込種類）</label><select class="select"><option>全種類</option><option>教職員</option><option>生徒</option></select></div>
+          <div class="field"><label>適用条件（組織タイプ／自治体）</label><select class="select"><option>条件なし</option><option>組織タイプ = 中学校</option><option>自治体 = 松本市</option></select></div>
+        </div>
+        <div class="field">
+          <label>変換スクリプト</label>
+          <div class="code-block"><span class="c">// record: 1行分のオブジェクト。返り値で上書き</span>
+<span class="k">const</span> map = { <span class="s">'Female'</span>:<span class="s">'女性'</span>, <span class="s">'F'</span>:<span class="s">'女性'</span>, <span class="s">'Male'</span>:<span class="s">'男性'</span>, <span class="s">'M'</span>:<span class="s">'男性'</span> };
+<span class="k">const</span> m = record.氏名.<span class="k">match</span>(<span class="s">/（(.+?)）/</span>);
+<span class="k">if</span> (m) { record.性別 = m[<span class="s">1</span>]; record.氏名 = record.氏名.<span class="k">replace</span>(m[<span class="s">0</span>], <span class="s">''</span>).trim(); }
+record.性別 = map[record.gender] ?? record.性別;
+<span class="k">return</span> record;</div>
+          <div class="hint">DBに登録され、インポートジョブ実行時にサンドボックスで評価されます。バリデーションは変換後に行われます。</div>
+        </div>
+        <div class="field">
+          <label>適用開始日（履歴として保存）</label>
+          <input class="input" type="date" value="2026-06-15" style="width:200px">
+        </div>
+      </div>
+      <div class="modal-f">
+        <div class="left"><button class="btn ghost" onclick="Composer.closeModal('modal-rule'); Composer.openModal('modal-test')"><span class="material-symbols-rounded">science</span>テストで確認</button></div>
+        <button class="btn" onclick="Composer.closeModal('modal-rule')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-rule'); Composer.toast('変換ルールを保存しました（v6）。次回の取込から適用されます')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 辞書編集 -->
+  <div class="modal-backdrop" id="modal-dict">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">manage_search</span>ヘッダー判定文字列の編集 — メールアドレス</h3>
+        <button class="x" onclick="Composer.closeModal('modal-dict')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field">
+          <label>判定文字列（Enterで追加・1項目に複数可）</label>
+          <div style="border:1px solid var(--line-2); border-radius:7px; padding:8px">
+            <span class="match-chip id">email <span class="material-symbols-rounded sm" style="cursor:pointer;vertical-align:-2px">close</span></span>
+            <span class="match-chip id">mail <span class="material-symbols-rounded sm" style="cursor:pointer;vertical-align:-2px">close</span></span>
+            <span class="match-chip id">mailaddress <span class="material-symbols-rounded sm" style="cursor:pointer;vertical-align:-2px">close</span></span>
+            <span class="match-chip id">Eメール <span class="material-symbols-rounded sm" style="cursor:pointer;vertical-align:-2px">close</span></span>
+            <span class="match-chip id">メール <span class="material-symbols-rounded sm" style="cursor:pointer;vertical-align:-2px">close</span></span>
+            <input class="input" placeholder="文字列を追加…" style="border:0; padding:4px; width:140px; display:inline-block">
+          </div>
+          <div class="hint">取込時にヘッダー行と照合します。大文字小文字・全角半角は無視されます。</div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>本人識別子として使う</b><span>同一人物の同定キーにします（属性項目定義の識別子設定と連動）</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-dict')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-dict'); Composer.toast('判定文字列を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エクスポート実行 -->
+  <div class="modal-backdrop" id="modal-export">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">ios_share</span>エクスポート — OneRoster v1.1</h3>
+        <button class="x" onclick="Composer.closeModal('modal-export')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout mb-2"><span class="material-symbols-rounded">north_east</span><div>出力は <b>Composer → 学習eポータル の一方向</b>です。外部側の変更は取り込まれません。</div></div>
+        <div class="field"><label>対象スコープ</label><select class="select"><option>長野県（テナント全体）</option><option>松本市</option></select></div>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>逆変換を適用</b><span>一般教員→teacher、ICT支援員→aide（その他の職員）等の規格マッピング</span></span></label>
+        <label class="checkbox-row"><input type="checkbox" checked><span><b>ドライラン（差分プレビュー）</b><span>追加 312 / 更新 1,204 / 削除 18 を出力前に確認</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-export')">キャンセル</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-export'); Composer.toast('エクスポートジョブ #JOB-20260615-011 を登録しました')"><span class="material-symbols-rounded">rocket_launch</span>出力を実行</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

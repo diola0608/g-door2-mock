@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>データ利活用 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>.hbar { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; } .hbar__track { flex: 1; height: 22px; border-radius: 6px; background: var(--c-100); overflow: hidden; } .hbar__fill { height: 100%; border-radius: 6px; }</style>
+</head>
+<body data-page="analytics">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">データ利活用</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile pink" style="width:38px;height:38px"><i data-ic="chart" data-size="20"></i></span> データ利活用</h1>
+          <p class="page-subtitle">名簿・フォーム回答を横断的に集計・可視化します。権限で許可された範囲のデータのみ対象になります。</p>
+        </div>
+        <div class="page-head__actions">
+          <select class="select" style="width:auto"><option>対象: 青葉県全体</option><option>青葉市</option></select>
+          <button class="btn btn--primary" data-open="reportModal"><i data-ic="plus" data-size="16"></i> レポート作成</button>
+        </div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile brand"><i data-ic="users"></i></span><span class="stat__label">児童生徒数</span></div><div class="stat__value">44,082</div><div class="stat__delta up"><i data-ic="trendUp" data-size="15"></i> +1.2% <span class="muted">前年比</span></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile violet"><i data-ic="briefcase"></i></span><span class="stat__label">教職員数</span></div><div class="stat__value">4,128</div><div class="stat__delta up"><i data-ic="trendUp" data-size="15"></i> +0.4%</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile teal"><i data-ic="school"></i></span><span class="stat__label">学校数</span></div><div class="stat__value">218</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="forms"></i></span><span class="stat__label">フォーム平均回答率</span></div><div class="stat__value">78<small>%</small></div><div class="stat__delta up"><i data-ic="trendUp" data-size="15"></i> +6pt</div></div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1.4fr 1fr">
+        <div class="card"><div class="card__head"><span class="card__title">児童生徒数の推移</span><div class="segmented spacer"><button>月</button><button class="active">年度</button></div></div><div class="card__body"><div class="bars" style="height:180px" id="trend"></div></div></div>
+        <div class="card"><div class="card__head"><span class="card__title">種別構成</span></div><div class="card__body flex items-center gap-20">
+          <div class="donut" style="--val:91;--col:var(--brand-500)"><div class="donut__label"><div class="fw-7" style="font-size:18px">48,210</div><div class="text-3 text-xs">総数</div></div></div>
+          <div class="grow">
+            <div class="flex items-center justify-between mb-10 text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--brand-500);display:inline-block"></span>児童生徒</span><b>44,082</b></div>
+            <div class="flex items-center justify-between mb-10 text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--violet);display:inline-block"></span>教員</span><b>3,944</b></div>
+            <div class="flex items-center justify-between text-sm"><span class="flex items-center gap-8"><span style="width:10px;height:10px;border-radius:3px;background:var(--teal);display:inline-block"></span>教育委員会</span><b>184</b></div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="grid mt-18" style="grid-template-columns:1fr 1fr">
+        <div class="card"><div class="card__head"><span class="card__title">市町村別 児童生徒数</span></div><div class="card__body" id="byMuni"></div></div>
+        <div class="card"><div class="card__head"><span class="card__title">クロス集計：部活動 × 学年</span><a href="#" class="muted-link spacer text-sm">条件を編集</a></div><div class="card__body card__body--flush">
+          <div class="table-wrap"><table class="tbl tbl--compact"><thead><tr><th>部活動</th><th class="num">1年</th><th class="num">2年</th><th class="num">3年</th><th class="num">計</th></tr></thead><tbody id="cross"></tbody></table></div>
+        </div></div>
+      </div>
+
+      <div class="card mt-18"><div class="card__head"><span class="card__title">保存済みレポート</span></div><div class="card__body"><div class="grid grid-3" id="reports"></div></div></div>
+    </div>
+  </main>
+
+  <div class="overlay modal-center" id="reportModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile pink"><i data-ic="chart"></i></span><div><div class="modal__title">レポートを作成</div><div class="modal__desc">集計対象と軸を選びます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">データソース</label><select class="select"><option>名簿（児童生徒）</option><option>名簿（教職員）</option><option>フォーム回答</option></select></div>
+      <div class="field-row"><div class="field"><label class="label">行（縦軸）</label><select class="select"><option>所属組織</option><option>学年</option><option>部活動</option></select></div><div class="field"><label class="label">列（横軸）</label><select class="select"><option>学年</option><option>性別</option><option>なし</option></select></div></div>
+      <div class="field"><label class="label">集計方法</label><div class="pills" data-pill-group><span class="pill active">件数</span><span class="pill">比率</span><span class="pill">平均</span></div></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="レポートを作成しました（デモ）">作成</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon;
+      var trend = [{ l: 'R3', v: 60 }, { l: 'R4', v: 66 }, { l: 'R5', v: 72 }, { l: 'R6', v: 80 }, { l: 'R7', v: 88 }, { l: 'R8', v: 95 }];
+      document.getElementById('trend').innerHTML = trend.map(function (b, i) {
+        return '<div class="bars__col"><div class="bars__bar' + (i === trend.length - 1 ? '' : ' alt') + '" style="height:' + b.v + '%"></div><span class="bars__label">' + b.l + '</span></div>';
+      }).join('');
+
+      var muni = [{ l: '青葉市', v: 100, n: '18,420', c: 'var(--brand-500)' }, { l: '緑川市', v: 67, n: '12,380', c: 'var(--teal)' }, { l: '県立学校', v: 50, n: '9,210', c: 'var(--violet)' }, { l: 'その他', v: 44, n: '8,200', c: 'var(--c-300)' }];
+      document.getElementById('byMuni').innerHTML = muni.map(function (m) {
+        return '<div class="hbar"><span style="width:80px;font-size:13px" class="text-2">' + m.l + '</span><div class="hbar__track"><div class="hbar__fill" style="width:' + m.v + '%;background:' + m.c + '"></div></div><b style="width:60px;text-align:right" class="mono text-sm">' + m.n + '</b></div>';
+      }).join('');
+
+      var cross = [['サッカー部', 42, 38, 35], ['吹奏楽部', 28, 31, 26], ['バスケ部', 22, 25, 20], ['美術部', 18, 16, 19], ['陸上部', 30, 28, 24]];
+      document.getElementById('cross').innerHTML = cross.map(function (r) {
+        var sum = r[1] + r[2] + r[3];
+        return '<tr><td class="cell-main">' + r[0] + '</td><td class="num">' + r[1] + '</td><td class="num">' + r[2] + '</td><td class="num">' + r[3] + '</td><td class="num fw-7">' + sum + '</td></tr>';
+      }).join('');
+
+      var reports = [
+        { ic: 'users', c: 'brand', t: '学年別 在籍状況', d: '更新: 毎朝 6:00' },
+        { ic: 'forms', c: 'violet', t: 'ICT活用度 推移', d: 'フォーム連動' },
+        { ic: 'pieChart', c: 'teal', t: '部活動 加入率', d: '更新: 週次' },
+      ];
+      document.getElementById('reports').innerHTML = reports.map(function (r) {
+        return '<a href="#" class="card clickable" style="padding:16px"><div class="flex items-center gap-12"><span class="ico-tile ' + r.c + '" style="width:40px;height:40px">' + I(r.ic, { size: 20 }) + '</span><div><div class="fw-6">' + r.t + '</div><div class="text-3 text-sm">' + r.d + '</div></div></div></a>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('reports'));
+    })();
+  </script>
+</body>
+</html>

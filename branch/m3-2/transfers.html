@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>所属変更申請 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  .flow {
+    display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--ink-2);
+    background: #fbfaf8; border: 1px dashed var(--line-2); border-radius: 8px; padding: 8px 12px;
+  }
+  .flow .material-symbols-rounded { font-size: 14px; color: var(--ink-3); }
+  .flow b { color: var(--indigo-700); }
+  .move { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+  .move .material-symbols-rounded { color: var(--vermilion); font-size: 16px; }
+  .move .from { color: var(--ink-3); }
+  .move .to { font-weight: 600; }
+</style>
+</head>
+<body data-page="transfers">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">所属変更申請</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">swap_horiz</span>所属変更申請</h1>
+      <div class="desc">申請 → 受入側の承認 → 指定日のバッチ実行、の順で所属が切り替わります。実行前であれば取消が可能です。</div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="import.html"><span class="material-symbols-rounded">upload_file</span>CSVで一括変更（承認不要権限）</a>
+      <button class="btn primary" onclick="Composer.openModal('modal-new')"><span class="material-symbols-rounded">add</span>新規申請</button>
+    </div>
+  </div>
+
+  <div class="flow mb-2">
+    <span class="material-symbols-rounded">draw</span><b>① 申請</b>（送出側の組織が作成）
+    <span class="material-symbols-rounded">arrow_forward</span>
+    <span class="material-symbols-rounded">approval</span><b>② 承認</b>（受入側の組織が承認）
+    <span class="material-symbols-rounded">arrow_forward</span>
+    <span class="material-symbols-rounded">schedule</span><b>③ 実行予約</b>（取消可能）
+    <span class="material-symbols-rounded">arrow_forward</span>
+    <span class="material-symbols-rounded">bolt</span><b>④ バッチ実行</b>（指定日 04:00 に自動反映 → Workspace同期）
+  </div>
+
+  <section class="kpi-grid mb-2" style="grid-template-columns: repeat(4,1fr)">
+    <div class="kpi" style="--accent: var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">approval</span>あなたの承認待ち</div>
+      <div class="k-value">4<small>件</small></div>
+    </div>
+    <div class="kpi" style="--accent: var(--sky)">
+      <div class="k-label"><span class="material-symbols-rounded">outbox</span>申請中（相手の承認待ち）</div>
+      <div class="k-value">2<small>件</small></div>
+    </div>
+    <div class="kpi" style="--accent: var(--pine)">
+      <div class="k-label"><span class="material-symbols-rounded">event_upcoming</span>実行予約中</div>
+      <div class="k-value">7<small>件</small></div>
+    </div>
+    <div class="kpi" style="--accent: var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">task_alt</span>今月の実行完了</div>
+      <div class="k-value">23<small>件</small></div>
+    </div>
+  </section>
+
+  <div class="tab-wrap">
+    <div class="tabs" data-tabs="tr">
+      <button class="tab active" data-tab="inbox"><span class="material-symbols-rounded">approval</span>承認待ち（受信）<span class="chip red" style="margin-left:4px">4</span></button>
+      <button class="tab" data-tab="outbox"><span class="material-symbols-rounded">outbox</span>申請中（送信）</button>
+      <button class="tab" data-tab="scheduled"><span class="material-symbols-rounded">event_upcoming</span>実行予約中</button>
+      <button class="tab" data-tab="done"><span class="material-symbols-rounded">history</span>完了・取消履歴</button>
+    </div>
+
+    <!-- inbox -->
+    <div class="tab-panel active" data-tab-panel="tr" data-tab="inbox">
+      <table class="tbl">
+        <thead><tr><th>申請ID</th><th>対象者</th><th>変更内容</th><th>希望日</th><th>申請元</th><th>経過</th><th style="width:180px"></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">TR-0291</td>
+            <td><div class="person"><span class="avatar a2 sm">高</span><div><b>高橋 美咲</b><span>教員・T-1187</span></div></div></td>
+            <td><div class="move"><span class="from">長野市立城山小</span><span class="material-symbols-rounded">east</span><span class="to">松本市立開成中</span></div></td>
+            <td class="mono">2026-07-01</td>
+            <td class="muted">長野市立城山小学校<br>渡辺 修（校長）</td>
+            <td><span class="chip red">3日経過</span></td>
+            <td>
+              <button class="btn sm primary" onclick="Composer.openModal('modal-approve')"><span class="material-symbols-rounded">check</span>承認</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('差戻しコメント入力へ（モック）', 'err')">差戻し</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0292</td>
+            <td><div class="person"><span class="avatar a3 sm">木</span><div><b>木村 拓海</b><span>生徒・S-2026-08812</span></div></div></td>
+            <td><div class="move"><span class="from">松本市立鎌田中</span><span class="material-symbols-rounded">east</span><span class="to">松本市立開成中</span></div></td>
+            <td class="mono">2026-09-01</td>
+            <td class="muted">松本市立鎌田中学校<br>教務主任</td>
+            <td><span class="chip gold">1日経過</span></td>
+            <td>
+              <button class="btn sm primary" onclick="Composer.openModal('modal-approve')"><span class="material-symbols-rounded">check</span>承認</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('差戻しコメント入力へ（モック）', 'err')">差戻し</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0293</td>
+            <td><div class="person"><span class="avatar a5 sm">林</span><div><b>林 美優</b><span>生徒・S-2026-07731</span></div></div></td>
+            <td><div class="move"><span class="from">安曇野市立豊科北中</span><span class="material-symbols-rounded">east</span><span class="to">松本市立開成中</span></div></td>
+            <td class="mono">2026-09-01</td>
+            <td class="muted">安曇野市立豊科北中学校</td>
+            <td><span class="chip">6時間経過</span></td>
+            <td>
+              <button class="btn sm primary" onclick="Composer.openModal('modal-approve')"><span class="material-symbols-rounded">check</span>承認</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('差戻しコメント入力へ（モック）', 'err')">差戻し</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0294</td>
+            <td><div class="person"><span class="avatar sm">斎</span><div><b>斎藤 誠</b><span>教員・T-0928</span></div></div></td>
+            <td><div class="move"><span class="from">塩尻市立広陵中</span><span class="material-symbols-rounded">east</span><span class="to">松本市立開成中</span></div></td>
+            <td class="mono">2026-08-01</td>
+            <td class="muted">塩尻市教育委員会</td>
+            <td><span class="chip">2時間経過</span></td>
+            <td>
+              <button class="btn sm primary" onclick="Composer.openModal('modal-approve')"><span class="material-symbols-rounded">check</span>承認</button>
+              <button class="btn sm danger-ghost" onclick="Composer.toast('差戻しコメント入力へ（モック）', 'err')">差戻し</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- outbox -->
+    <div class="tab-panel" data-tab-panel="tr" data-tab="outbox">
+      <table class="tbl">
+        <thead><tr><th>申請ID</th><th>対象者</th><th>変更内容</th><th>希望日</th><th>承認者（受入側）</th><th>状態</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">TR-0288</td>
+            <td><div class="person"><span class="avatar a4 sm">松</span><div><b>松本 蓮</b><span>生徒</span></div></div></td>
+            <td><div class="move"><span class="from">長野市立城山小</span><span class="material-symbols-rounded">east</span><span class="to">長野市立後町小</span></div></td>
+            <td class="mono">2026-07-21</td>
+            <td class="muted">長野市立後町小学校</td>
+            <td><span class="status wait">承認待ち</span></td>
+            <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel')">申請を取下げ</button></td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0285</td>
+            <td><div class="person"><span class="avatar a2 sm">井</span><div><b>井上 千夏</b><span>教員</span></div></div></td>
+            <td><div class="move"><span class="from">県立長野高</span><span class="material-symbols-rounded">east</span><span class="to">県立松本深志高</span></div></td>
+            <td class="mono">2026-10-01</td>
+            <td class="muted">県立松本深志高等学校</td>
+            <td><span class="status wait">承認待ち</span></td>
+            <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel')">申請を取下げ</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- scheduled -->
+    <div class="tab-panel" data-tab-panel="tr" data-tab="scheduled">
+      <div class="callout" style="margin:14px 14px 0">
+        <span class="material-symbols-rounded">schedule</span>
+        <div>承認済みの変更は<b>実行日の 04:00 にバッチで自動反映</b>されます。実行前であればこの画面から取消できます。</div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>申請ID</th><th>実行日</th><th>対象者</th><th>変更内容</th><th>承認</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">TR-0271</td>
+            <td><span class="chip indigo mono" style="font-family:var(--mono)">07-01 04:00</span></td>
+            <td><div class="person"><span class="avatar a2 sm">高</span><div><b>高橋 美咲</b><span>教員</span></div></div></td>
+            <td><div class="move"><span class="from">長野市立城山小</span><span class="material-symbols-rounded">east</span><span class="to">松本市立開成中</span></div></td>
+            <td class="muted">06-09 承認<br>開成中・教頭</td>
+            <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel')"><span class="material-symbols-rounded">cancel</span>実行を取消</button></td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0272</td>
+            <td><span class="chip indigo mono" style="font-family:var(--mono)">07-01 04:00</span></td>
+            <td><div class="person"><span class="avatar a3 sm">佐</span><div><b>佐藤 健一</b><span>教員</span></div></div></td>
+            <td><div class="move"><span class="from">上田市立第二中</span><span class="material-symbols-rounded">east</span><span class="to">上田市立第一中</span></div></td>
+            <td class="muted">06-08 承認<br>第一中・校長</td>
+            <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel')"><span class="material-symbols-rounded">cancel</span>実行を取消</button></td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0268</td>
+            <td><span class="chip indigo mono" style="font-family:var(--mono)">09-01 04:00</span></td>
+            <td><div class="person"><span class="avatar a4 sm">伊</span><div><b>伊藤 さくら</b><span>生徒</span></div></div></td>
+            <td><div class="move"><span class="from">飯田市立緑ヶ丘中</span><span class="material-symbols-rounded">east</span><span class="to">飯田市立旭ヶ丘中</span></div></td>
+            <td class="muted">06-05 承認<br>旭ヶ丘中・教務主任</td>
+            <td><button class="btn sm danger-ghost" onclick="Composer.openModal('modal-cancel')"><span class="material-symbols-rounded">cancel</span>実行を取消</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- done -->
+    <div class="tab-panel" data-tab-panel="tr" data-tab="done">
+      <table class="tbl">
+        <thead><tr><th>申請ID</th><th>対象者</th><th>変更内容</th><th>結果</th><th>実行日時 / 経路</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">TR-0254</td>
+            <td><b>吉田 葵</b>（生徒）</td>
+            <td><div class="move"><span class="from">岡谷市立岡谷東部中</span><span class="material-symbols-rounded">east</span><span class="to">諏訪市立上諏訪中</span></div></td>
+            <td><span class="status ok">実行完了</span></td>
+            <td class="muted mono">2026-06-01 04:00 / バッチ #JOB-20260601-001</td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0251</td>
+            <td><b>山口 大和</b>（教員）</td>
+            <td><div class="move"><span class="from">長野市立柳町中</span><span class="material-symbols-rounded">east</span><span class="to">長野市教委 学校教育課</span></div></td>
+            <td><span class="status ok">実行完了</span></td>
+            <td class="muted mono">2026-06-01 04:00 / バッチ #JOB-20260601-001</td>
+          </tr>
+          <tr>
+            <td class="mono">—</td>
+            <td><b>教員 84名</b>（一括）</td>
+            <td class="muted">春の定期人事異動（CSV直接変更・承認フロー省略）</td>
+            <td><span class="status ok">実行完了</span></td>
+            <td class="muted mono">2026-04-01 04:00 / CSV #JOB-20260401-002・県教委権限</td>
+          </tr>
+          <tr>
+            <td class="mono">TR-0248</td>
+            <td><b>近藤 莉子</b>（生徒）</td>
+            <td><div class="move"><span class="from">伊那市立東部中</span><span class="material-symbols-rounded">east</span><span class="to">伊那市立春富中</span></div></td>
+            <td><span class="status err">実行前に取消</span></td>
+            <td class="muted mono">2026-05-28 取消（申請元の依頼）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新規申請モーダル -->
+  <div class="modal-backdrop" id="modal-new">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">swap_horiz</span>所属変更を申請</h3>
+        <button class="x" onclick="Composer.closeModal('modal-new')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field">
+          <label>対象者<span class="req">必須</span></label>
+          <div class="row" style="border:1px solid var(--line-2); border-radius:8px; padding:8px 11px; background:#fbfaf8">
+            <span class="avatar a2 sm">高</span>
+            <div style="flex:1"><b style="font-size:12.5px">高橋 美咲</b><span class="muted" style="margin-left:8px">教員・T-1187・長野市立城山小学校</span></div>
+            <button class="btn sm ghost" onclick="Composer.toast('名簿から検索（モック）')">変更</button>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>移動先の組織<span class="req">必須</span></label>
+            <select class="select"><option>松本市立開成中学校</option><option>長野市立後町小学校</option><option>長野市教委 学校教育課</option></select>
+            <div class="hint">移動先の組織に承認依頼が送信されます</div>
+          </div>
+          <div class="field">
+            <label>所属変更日<span class="req">必須</span></label>
+            <input class="input" type="date" value="2026-07-01">
+            <div class="hint">当日の 04:00 にバッチ処理で反映されます</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>申請理由</label>
+          <textarea class="input" rows="3" placeholder="例: 定期人事異動のため">人事異動（中学校理科教員の補充）のため。</textarea>
+        </div>
+        <div class="callout warn">
+          <span class="material-symbols-rounded">approval</span>
+          <div><b>承認フロー</b>: 松本市立開成中学校の承認権限者（校長・教頭）の承認後に実行予約されます。あなたは「承認不要」の権限を持っていますが、個別申請では承認フローが推奨されます。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-new')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-new'); Composer.toast('申請 TR-0295 を送信しました。受入側の承認をお待ちください')"><span class="material-symbols-rounded">send</span>申請を送信</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 承認モーダル -->
+  <div class="modal-backdrop" id="modal-approve">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">approval</span>所属変更を承認 — TR-0291</h3>
+        <button class="x" onclick="Composer.closeModal('modal-approve')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <dl style="display:grid; grid-template-columns:110px 1fr; gap:6px 12px; font-size:12.5px" class="mb-2">
+          <dt class="muted">対象者</dt><dd><b>高橋 美咲</b>（教員・T-1187）</dd>
+          <dt class="muted">変更内容</dt><dd>長野市立城山小学校 → <b>松本市立開成中学校</b></dd>
+          <dt class="muted">実行日</dt><dd class="mono">2026-07-01 04:00（バッチ）</dd>
+          <dt class="muted">申請理由</dt><dd>人事異動（中学校理科教員の補充）のため。</dd>
+        </dl>
+        <div class="callout">
+          <span class="material-symbols-rounded">info</span>
+          <div>承認すると<b>実行予約</b>に移ります。7/1 の実行前までは取消が可能です。実行時にクラス担任設定・Workspace OU も自動で更新されます。</div>
+        </div>
+        <div class="field mt-2"><label>承認コメント（任意）</label><input class="input" placeholder="例: 受入準備済みです"></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-approve')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-approve'); Composer.toast('TR-0291 を承認しました。2026-07-01 のバッチで実行されます')"><span class="material-symbols-rounded">check</span>承認する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 取消モーダル -->
+  <div class="modal-backdrop" id="modal-cancel">
+    <div class="modal danger">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">cancel</span>実行予約を取消しますか？</h3>
+        <button class="x" onclick="Composer.closeModal('modal-cancel')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p>この所属変更のバッチ実行を取消します。取消後に再度変更したい場合は、新しい申請が必要です。</p>
+        <div class="field mt-2"><label>取消理由<span class="req">必須</span></label>
+          <select class="select"><option>異動の中止・延期</option><option>申請内容の誤り</option><option>その他</option></select></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-cancel')">戻る</button>
+        <button class="btn accent" onclick="Composer.closeModal('modal-cancel'); Composer.toast('実行予約を取消しました。関係者に通知されます')"><span class="material-symbols-rounded">delete_forever</span>取消を確定</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>組織管理 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="org">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">組織管理</span></div>
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile teal" style="width:38px;height:38px"><i data-ic="sitemap" data-size="20"></i></span> 組織管理</h1>
+          <p class="page-subtitle">テナントをルートとした階層構造。各組織は上位の設定を継承し、独自に上書き・追加できます。</p>
+        </div>
+        <div class="page-head__actions"><button class="btn btn--primary" data-open="addOrgModal"><i data-ic="plus" data-size="16"></i> 組織を追加</button></div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:380px 1fr;align-items:start">
+        <!-- Tree -->
+        <div class="card">
+          <div class="card__head"><span class="card__title">組織階層</span><div class="input-icon spacer" style="width:140px"><i data-ic="search" data-size="15"></i><input class="input btn--sm" style="height:32px" placeholder="組織名" /></div></div>
+          <div class="card__body" style="padding:10px"><div class="tree" id="orgTree"></div></div>
+        </div>
+
+        <!-- Detail -->
+        <div class="flex col gap-18">
+          <div class="card"><div class="card__body">
+            <div class="flex items-center gap-14">
+              <span class="ico-tile brand" style="width:52px;height:52px"><i data-ic="school" data-size="26"></i></span>
+              <div class="grow"><div class="flex items-center gap-10"><h2 style="font-size:19px;font-weight:740" id="orgName">青葉第一中学校</h2><span class="badge badge--info">学校</span></div>
+                <div class="text-3 text-sm mt-4" id="orgPath">青葉県 › 青葉市 › 中学校 › 青葉第一中学校</div></div>
+              <button class="btn btn--secondary btn--sm"><i data-ic="edit" data-size="15"></i> 編集</button>
+            </div>
+            <div class="grid grid-4 mt-20">
+              <div><div class="text-3 text-sm">所属者</div><div class="fw-7" style="font-size:19px">612</div></div>
+              <div><div class="text-3 text-sm">教職員</div><div class="fw-7" style="font-size:19px">48</div></div>
+              <div><div class="text-3 text-sm">クラス</div><div class="fw-7" style="font-size:19px">18</div></div>
+              <div><div class="text-3 text-sm">組織コード</div><div class="fw-7 mono" style="font-size:15px">SCH-0012</div></div>
+            </div>
+          </div></div>
+
+          <div class="card" data-tabs>
+            <div class="tabs" style="padding:0 8px">
+              <button class="tab active" data-tab="members">所属者</button>
+              <button class="tab" data-tab="children">下位組織・クラス</button>
+              <button class="tab" data-tab="settings"><i data-ic="layers" data-size="15"></i> 設定の継承</button>
+            </div>
+            <div class="card__body card__body--flush">
+              <div data-tab-panel="members" class="tab-pane active">
+                <div class="table-wrap"><table class="tbl"><thead><tr><th>氏名</th><th>種別</th><th>クラス/役割</th><th>状態</th></tr></thead><tbody id="memBody"></tbody></table></div>
+                <div class="table-foot"><span>48名中 6名を表示</span><a href="roster-list.html" class="muted-link">名簿で全件表示 →</a></div>
+              </div>
+              <div data-tab-panel="children" class="tab-pane">
+                <div class="card__body"><div class="grid grid-3" id="clsGrid"></div></div>
+              </div>
+              <div data-tab-panel="settings" class="tab-pane">
+                <div class="card__body">
+                  <div class="alert alert--info mb-16"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text">この組織は上位組織（青葉市）の設定を継承しています。独自に上書き・追加した設定は配下の組織にも波及します。下位組織の設定が優先されます。</div></div>
+                  <div id="settingsList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay modal-center" id="addOrgModal"><div class="modal"><div class="modal__head"><span class="modal__icon ico-tile teal"><i data-ic="sitemap"></i></span><div><div class="modal__title">組織を追加</div><div class="modal__desc">親組織の配下に新しい組織を作成します</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">親組織</label><select class="select"><option>青葉市 › 中学校</option><option>青葉県（テナント全体）</option></select></div>
+      <div class="field"><label class="label">組織種別</label><select class="select"><option>学校</option><option>学校種</option><option>教育委員会</option><option>部署</option></select></div>
+      <div class="field"><label class="label">組織名 <span class="req">*</span></label><input class="input" placeholder="例: 青葉第三中学校" /></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="組織を追加しました（デモ）">追加</button></div></div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, T = window.DATA.orgTree;
+      var typeIc = { tenant: ['globe', 'brand'], municipality: ['building2', 'teal'], schooltype: ['layers', 'violet'], school: ['school', 'info'], board: ['briefcase', 'warning'], dept: ['folder', 'neutral'] };
+      function nodeHtml(n, depth) {
+        var hasChildren = n.children && n.children.length;
+        var ic = typeIc[n.type] || ['folder', 'neutral'];
+        var open = depth < 2;
+        var h = '<div class="tree__node">' +
+          '<div class="tree__row' + (n.name === '青葉第一中学校' ? ' active' : '') + '" onclick="selectOrg(this,\'' + n.name + '\')">' +
+          '<span class="tree__toggle ' + (hasChildren ? (open ? 'open' : '') : 'leaf') + '">' + I('chevronRight', { size: 15 }) + '</span>' +
+          '<span class="tree__label">' + I(ic[0], { size: 16, class: 'text-2' }) + '<span>' + n.name + '</span></span>' +
+          '<span class="tree__count">' + n.count.toLocaleString() + '</span></div>';
+        if (hasChildren) {
+          h += '<div class="tree__children' + (open ? '' : ' collapsed') + '">' + n.children.map(function (c) { return nodeHtml(c, depth + 1); }).join('') + '</div>';
+        }
+        return h + '</div>';
+      }
+      document.getElementById('orgTree').innerHTML = nodeHtml(T, 0);
+      window.hydrateIcons(document.getElementById('orgTree'));
+
+      window.selectOrg = function (el, name) {
+        document.querySelectorAll('.tree__row').forEach(function (r) { r.classList.remove('active'); });
+        el.classList.add('active');
+        document.getElementById('orgName').textContent = name;
+      };
+
+      var P = window.DATA.people.filter(function (p) { return p.org === '青葉第一中学校'; }).slice(0, 6);
+      var U = window.UI;
+      document.getElementById('memBody').innerHTML = P.map(function (p) {
+        return '<tr><td><div class="cell-person">' + U.avatar(p.name, { size: 'sm', color: p.color }) + '<div class="cell-person__meta"><div class="cell-person__name">' + p.name + '</div><div class="cell-person__sub">' + p.kana + '</div></div></div></td><td>' + U.typeBadge(p.type) + '</td><td>' + p.cls + '</td><td>' + U.statusBadge(p.status) + '</td></tr>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('memBody'));
+
+      var classes = ['1年A組', '1年B組', '2年A組', '2年B組', '3年A組', '3年B組'];
+      document.getElementById('clsGrid').innerHTML = classes.map(function (c) {
+        return '<div class="card" style="padding:14px"><div class="flex items-center gap-10"><span class="ico-tile info" style="width:34px;height:34px">' + I('users', { size: 16 }) + '</span><div><div class="fw-6">' + c + '</div><div class="text-3 text-sm">34名 ・ 担任あり</div></div></div></div>';
+      }).join('');
+
+      var settings = [
+        { name: '権限ポリシー', inherited: 12, own: 2, label: '上位から12件継承 ＋ 独自2件' },
+        { name: '属性項目の表示制限', inherited: 8, own: 1, label: '上位から8件継承 ＋ 独自1件' },
+        { name: '承認フロー設定', inherited: 1, own: 0, label: '青葉市の設定を継承' },
+        { name: 'コードマスター制限', inherited: 3, own: 0, label: 'テナント既定を継承' },
+      ];
+      document.getElementById('settingsList').innerHTML = settings.map(function (s) {
+        return '<div class="flex items-center gap-12" style="padding:13px 0;border-bottom:1px solid var(--border)"><span class="ico-tile violet" style="width:36px;height:36px">' + I('layers', { size: 17 }) + '</span><div class="grow"><div class="fw-6">' + s.name + '</div><div class="text-3 text-sm">' + s.label + '</div></div>' + (s.own ? '<span class="badge badge--violet">独自設定 ' + s.own + '</span>' : '<span class="badge badge--neutral">継承のみ</span>') + '<button class="btn btn--sm btn--secondary">編集</button></div>';
+      }).join('');
+      window.hydrateIcons(document.getElementById('clsGrid'));
+      window.hydrateIcons(document.getElementById('settingsList'));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード管理 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* ==== dashboard library layout ==== */
+  .db-layout { display: grid; grid-template-columns: 320px 1fr; gap: 14px; align-items: start; }
+
+  .db-list { display: flex; flex-direction: column; }
+  .db-list .db-item {
+    display: flex; gap: 12px; padding: 14px 16px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s;
+  }
+  .db-list .db-item:hover { background: var(--indigo-50); }
+  .db-list .db-item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .db-list .db-item .d-ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+  .db-list .db-item b { display: block; line-height: 1.3; }
+  .db-list .db-item .sub { font-size: 10.5px; color: var(--ink-3); display: block; margin-top: 2px; }
+  .db-list .db-item .right { margin-left: auto; text-align: right; }
+  .db-list .db-item .right .cnt { font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+
+  /* preview canvas (mimic grid of tiles) */
+  .preview {
+    background: repeating-linear-gradient(0deg, transparent 0 31px, rgba(28,36,48,.04) 31px 32px),
+                repeating-linear-gradient(90deg, transparent 0 31px, rgba(28,36,48,.04) 31px 32px),
+                #fbfaf8;
+    border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-height: 460px;
+  }
+  .preview-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .preview-h b { font-size: 14px; }
+  .preview-h .who { margin-left: auto; font-size: 11.5px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+  .grid-12 { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
+
+  .tile {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; min-height: 84px; box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column; gap: 6px; position: relative;
+  }
+  .tile .t-h { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+  .tile .t-h .material-symbols-rounded { font-size: 15px; color: var(--indigo-600); }
+  .tile .t-b { font-size: 17px; font-weight: 700; font-family: var(--mono); }
+  .tile .t-b small { font-size: 10.5px; color: var(--ink-3); font-family: var(--font); font-weight: 500; margin-left: 3px; }
+  .tile .t-f { font-size: 10.5px; color: var(--ink-3); margin-top: auto; }
+  .tile .alert { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; }
+  .tile .alert.err { color: var(--vermilion-dark); }
+  .tile .alert.warn { color: var(--gold); }
+  .tile .alert.ok { color: var(--pine); }
+  .tile .alert .material-symbols-rounded { font-size: 14px; }
+  .tile .t-tool {
+    position: absolute; right: 8px; top: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity .12s;
+  }
+  .tile:hover .t-tool { opacity: 1; }
+  .tile .t-tool button { width: 22px; height: 22px; border-radius: 5px; border: 0; background: var(--paper-2); cursor: pointer; display: grid; place-items: center; }
+  .tile .t-tool button:hover { background: var(--indigo-100); }
+  .tile .t-tool .material-symbols-rounded { font-size: 14px; color: var(--ink-2); }
+
+  .tile.alert-card { border-left: 3px solid var(--vermilion); }
+  .tile.chart-card { grid-column: span 6; min-height: 140px; }
+  .tile.list-card { grid-column: span 6; min-height: 140px; }
+  .tile.k-3 { grid-column: span 3; }
+  .tile.k-4 { grid-column: span 4; }
+  .tile.k-6 { grid-column: span 6; }
+  .tile.k-8 { grid-column: span 8; }
+  .tile.k-12 { grid-column: span 12; }
+
+  .micro-bars { display: flex; align-items: end; gap: 4px; height: 38px; margin-top: auto; }
+  .micro-bars .mb { flex: 1; background: var(--indigo-500); border-radius: 2px 2px 0 0; min-height: 3px; }
+  .micro-bars .mb.acc { background: var(--vermilion); }
+  .micro-bars .mb.gld { background: var(--gold); }
+
+  /* role/audience panel */
+  .audience {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 12px;
+  }
+  .audience .a-row { display: flex; align-items: center; gap: 6px; padding: 4px 0; }
+  .audience .a-row .ic { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; }
+  .audience .a-row b { font-weight: 600; }
+  .audience .a-row .num { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); }
+  .toggle { display: inline-block; }
+
+  /* 配色（カテゴリ別） */
+  .bg-red { background: var(--vermilion-50); color: var(--vermilion); }
+  .bg-indigo { background: var(--indigo-100); color: var(--indigo-700); }
+  .bg-pine { background: var(--pine-50); color: var(--pine); }
+  .bg-gold { background: var(--gold-50); color: var(--gold); }
+  .bg-sky { background: var(--sky-50); color: var(--sky); }
+  .bg-plum { background: var(--plum-50); color: var(--plum); }
+  .bg-gray { background: var(--paper-2); color: var(--ink-2); }
+</style>
+</head>
+<body data-page="dashboards">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">ダッシュボード管理</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">dashboard_customize</span>ダッシュボード管理</h1>
+      <div class="desc">複数パターンのダッシュボードを作成し、<b>誰にどれを見せるか</b>を割り当てます。タイルは後で並び替え／差し替え／追加できます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn"><span class="material-symbols-rounded">history</span>変更履歴</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-db-new')"><span class="material-symbols-rounded">add</span>新規パターン</button>
+    </div>
+  </div>
+
+  <!-- 全体 KPI -->
+  <section class="kpi-grid mb-3">
+    <div class="kpi" style="--accent:var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">dashboard</span>登録パターン</div>
+      <div class="k-value">5<small>件</small></div>
+      <div class="k-delta">県教委 1 / 校長 1 / 担任 1 / 学年主任 1 / 教頭 1</div>
+    </div>
+    <div class="kpi" style="--accent:var(--pine)">
+      <div class="k-label"><span class="material-symbols-rounded">visibility</span>適用対象ユーザー</div>
+      <div class="k-value">27,961<small>人</small></div>
+      <div class="k-delta up">県教委 38 / 学校管理職 612 / 担任 4,221 / 学年主任 1,108</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">notifications_active</span>アラート表示中</div>
+      <div class="k-value">14<small>タイル</small></div>
+      <div class="k-delta down">3日経過の承認依頼 4 / 同期失敗 6 / 閾値超過 4</div>
+    </div>
+    <div class="kpi" style="--accent:var(--vermilion)">
+      <div class="k-label"><span class="material-symbols-rounded">sync_problem</span>タイル読込失敗</div>
+      <div class="k-value">0<small>件</small></div>
+      <div class="k-delta">次回 04:00 同期で反映予定</div>
+    </div>
+  </section>
+
+  <div class="db-layout">
+    <!-- ===== 左：パターン一覧 ===== -->
+    <aside class="card db-list">
+      <div class="card-h">
+        <span class="material-symbols-rounded">apps</span>パターン一覧
+        <span class="sub">5件</span>
+        <div class="right">
+          <button class="btn sm ghost" onclick="Composer.toast('並び順を保存しました')"><span class="material-symbols-rounded">sort</span></button>
+        </div>
+      </div>
+      <div class="db-item active">
+        <div class="d-ic bg-indigo"><span class="material-symbols-rounded">domain</span></div>
+        <div style="min-width:0">
+          <b>県教委 全体概況</b>
+          <span class="sub">12タイル / 38ユーザー</span>
+        </div>
+        <div class="right"><span class="chip indigo">県教委</span></div>
+      </div>
+      <div class="db-item">
+        <div class="d-ic bg-red"><span class="material-symbols-rounded">school</span></div>
+        <div style="min-width:0">
+          <b>校長 1校まるごと</b>
+          <span class="sub">14タイル / 612ユーザー</span>
+        </div>
+        <div class="right"><span class="chip red">校長</span></div>
+      </div>
+      <div class="db-item">
+        <div class="d-ic bg-pine"><span class="material-symbols-rounded">contact_page</span></div>
+        <div style="min-width:0">
+          <b>担任 受け持ち学級フォーカス</b>
+          <span class="sub">9タイル / 4,221ユーザー</span>
+        </div>
+        <div class="right"><span class="chip green">担任</span></div>
+      </div>
+      <div class="db-item">
+        <div class="d-ic bg-gold"><span class="material-symbols-rounded">group_work</span></div>
+        <div style="min-width:0">
+          <b>学年主任 学年サマリー</b>
+          <span class="sub">11タイル / 1,108ユーザー</span>
+        </div>
+        <div class="right"><span class="chip gold">学年主任</span></div>
+      </div>
+      <div class="db-item">
+        <div class="d-ic bg-sky"><span class="material-symbols-rounded">support_agent</span></div>
+        <div style="min-width:0">
+          <b>教頭 日常運用</b>
+          <span class="sub">10タイル / 489ユーザー</span>
+        </div>
+        <div class="right"><span class="chip sky">教頭</span></div>
+      </div>
+      <div style="padding:12px 14px; background:#fbfaf8; border-top:1px solid var(--line); font-size:11px; color:var(--ink-3);">
+        <span class="material-symbols-rounded sm" style="vertical-align:-2px; color:var(--indigo-500)">info</span>
+        同じユーザーが複数のロールを持つ場合、<b>より狭い組織スコープ</b>のパターンが優先されます（例: 校長 &gt; 学年主任 &gt; 担任）。
+      </div>
+    </aside>
+
+    <!-- ===== 右：プレビュー + 編集 ===== -->
+    <div>
+      <!-- パターン名 + 適用対象 + アクション -->
+      <section class="card mb-2">
+        <div class="card-h" style="gap:12px">
+          <span class="material-symbols-rounded">edit_note</span>
+          <div style="display:flex; flex-direction:column; line-height:1.3">
+            <b style="font-size:13.5px">県教委 全体概況</b>
+            <span class="sub" style="font-weight:500">最終更新 2026-06-12 09:14 by 山田太郎 / タイル 12件 / 同期 04:00</span>
+          </div>
+          <div class="right" style="gap:8px">
+            <span class="sync pending"><span class="material-symbols-rounded">sync</span>編集中（自動保存済）</span>
+            <button class="btn sm"><span class="material-symbols-rounded">preview</span>プレビュー</button>
+            <button class="btn sm primary"><span class="material-symbols-rounded">check</span>公開</button>
+          </div>
+        </div>
+        <div class="card-b" style="padding-top:10px">
+          <div class="grid-3">
+            <div class="field" style="margin:0">
+              <label>パターン名</label>
+              <input class="input" value="県教委 全体概況">
+            </div>
+            <div class="field" style="margin:0">
+              <label>優先度</label>
+              <select class="select">
+                <option>1（最優先・テナント最上位）</option>
+                <option>2</option><option>3</option>
+              </select>
+              <div class="hint">同じユーザーが複数パターンに該当する場合、優先度が高い方を表示</div>
+            </div>
+            <div class="field" style="margin:0">
+              <label>公開スコープ</label>
+              <select class="select"><option>テナント全体（長野県）</option><option>指定組織のみ</option></select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 適用対象（オーディエンス） -->
+      <section class="card mb-2">
+        <div class="card-h">
+          <span class="material-symbols-rounded">group</span>このパターンを表示する対象
+          <span class="sub">条件は AND 評価。下にいくほど狭いスコープ</span>
+          <div class="right">
+            <button class="btn sm" onclick="Composer.toast('シミュレーターを実行します（モック）')"><span class="material-symbols-rounded">play_circle</span>シミュレーター</button>
+            <button class="btn sm"><span class="material-symbols-rounded">add</span>条件を追加</button>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="audience">
+            <div class="a-row">
+              <span class="ic bg-indigo"><span class="material-symbols-rounded" style="font-size:14px">person</span></span>
+              <div><b>職種</b><span class="sub" style="display:block">教育委員会職員・指導主事</span></div>
+              <span class="num">38</span>
+            </div>
+            <div class="a-row">
+              <span class="ic bg-gray"><span class="material-symbols-rounded" style="font-size:14px">account_tree</span></span>
+              <div><b>組織スコープ</b><span class="sub" style="display:block">長野県（テナント全体）</span></div>
+              <span class="num">38</span>
+            </div>
+            <div class="a-row">
+              <span class="ic bg-gold"><span class="material-symbols-rounded" style="font-size:14px">admin_panel_settings</span></span>
+              <div><b>権限</b><span class="sub" style="display:block">県全域 データ参照 (POL-001)</span></div>
+              <span class="num">38</span>
+            </div>
+            <div class="a-row">
+              <span class="ic bg-pine"><span class="material-symbols-rounded" style="font-size:14px">add_box</span></span>
+              <div><b>論理</b><span class="sub" style="display:block">AND（すべての条件を満たすユーザー）</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- タイル プレビュー（編集グリッド） -->
+      <section class="card">
+        <div class="card-h">
+          <span class="material-symbols-rounded">grid_view</span>タイル レイアウト
+          <span class="sub">12タイル・行 2</span>
+          <div class="right">
+            <span class="chip indigo"><span class="material-symbols-rounded sm">schedule</span>次回 04:00 同期</span>
+            <button class="btn sm"><span class="material-symbols-rounded">add</span>タイルを追加</button>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="preview">
+            <div class="preview-h">
+              <span class="material-symbols-rounded" style="color:var(--indigo-600)">preview</span>
+              <b>プレビュー</b>
+              <span class="chip">県教委 全体概況 / 12タイル</span>
+              <div class="who">
+                <span class="avatar sm a5">山</span> 山田 太郎（県教委・システム管理者）として表示
+              </div>
+            </div>
+
+            <div class="grid-12">
+              <!-- Row 1 -->
+              <div class="tile k-3">
+                <div class="t-h"><span class="material-symbols-rounded">groups</span>名簿登録人数</div>
+                <div class="t-b">214,387<small>人</small></div>
+                <div class="t-f">生徒 186,420 / 教職員 27,967</div>
+                <div class="t-tool">
+                  <button title="編集"><span class="material-symbols-rounded">edit</span></button>
+                  <button title="移動"><span class="material-symbols-rounded">drag_indicator</span></button>
+                  <button title="削除"><span class="material-symbols-rounded">close</span></button>
+                </div>
+              </div>
+              <div class="tile k-3">
+                <div class="t-h"><span class="material-symbols-rounded">sync</span>Workspace 同期率</div>
+                <div class="t-b">99.8<small>%</small></div>
+                <div class="t-f">未同期 248件 → 次回 04:00</div>
+              </div>
+              <div class="tile k-3">
+                <div class="t-h"><span class="material-symbols-rounded">approval</span>承認待ち</div>
+                <div class="t-b">4<small>件</small></div>
+                <div class="alert warn"><span class="material-symbols-rounded">schedule</span>最長 3日経過</div>
+              </div>
+              <div class="tile k-3 alert-card">
+                <div class="t-h"><span class="material-symbols-rounded" style="color:var(--vermilion)">error</span>処理エラー</div>
+                <div class="t-b">12<small>行</small></div>
+                <div class="alert err"><span class="material-symbols-rounded">arrow_forward</span>CSV #JOB-003</div>
+              </div>
+
+              <!-- Row 2 -->
+              <div class="tile chart-card k-6">
+                <div class="t-h"><span class="material-symbols-rounded">show_chart</span>市町村別 不登校発生率（直近30日）</div>
+                <div class="micro-bars">
+                  <div class="mb" style="height:38%"></div>
+                  <div class="mb" style="height:42%"></div>
+                  <div class="mb acc" style="height:78%"></div>
+                  <div class="mb" style="height:35%"></div>
+                  <div class="mb" style="height:50%"></div>
+                  <div class="mb" style="height:48%"></div>
+                  <div class="mb acc" style="height:90%"></div>
+                  <div class="mb" style="height:38%"></div>
+                  <div class="mb" style="height:44%"></div>
+                  <div class="mb gld" style="height:62%"></div>
+                  <div class="mb" style="height:33%"></div>
+                  <div class="mb" style="height:40%"></div>
+                  <div class="mb" style="height:46%"></div>
+                  <div class="mb" style="height:51%"></div>
+                </div>
+                <div class="t-f">赤 = 閾値（1.0%）超過 2市 / 金 = 警戒域 1町</div>
+              </div>
+
+              <div class="tile list-card k-6">
+                <div class="t-h"><span class="material-symbols-rounded">warning</span>要注意（直近7日）</div>
+                <div style="display:flex; flex-direction:column; gap:5px; font-size:11.5px; margin-top:2px">
+                  <div class="row" style="gap:8px"><span class="chip red sm">不登校</span> 長野市立北部中 2年 <b>増田 結衣</b> <span class="muted mono" style="margin-left:auto;font-size:10px">3日連続欠席</span></div>
+                  <div class="row" style="gap:8px"><span class="chip gold sm">いじめ</span> 松本市立開成中 1年 <b>小林 颯太</b> <span class="muted mono" style="margin-left:auto;font-size:10px">申告あり</span></div>
+                  <div class="row" style="gap:8px"><span class="chip red sm">転出</span> 上田市立第二小 5年 <b>清水 玲奈</b> <span class="muted mono" style="margin-left:auto;font-size:10px">届出受理</span></div>
+                  <div class="row" style="gap:8px"><span class="chip plum sm">長期欠席</span> 飯田市立緑ヶ丘中 3年 <b>原田 拓海</b> <span class="muted mono" style="margin-left:auto;font-size:10px">30日連続</span></div>
+                </div>
+              </div>
+
+              <!-- Row 3 -->
+              <div class="tile k-4">
+                <div class="t-h"><span class="material-symbols-rounded">dynamic_form</span>フォーム 回答率</div>
+                <div class="t-b">80.2<small>%</small></div>
+                <div class="t-f">ICT活用状況調査 1,022 / 1,274</div>
+              </div>
+              <div class="tile k-4">
+                <div class="t-h"><span class="material-symbols-rounded">health_and_safety</span>健康診断 受診率</div>
+                <div class="t-b">94.1<small>%</small></div>
+                <div class="alert warn"><span class="material-symbols-rounded">schedule</span>未受診 11,602</div>
+              </div>
+              <div class="tile k-4">
+                <div class="t-h"><span class="material-symbols-rounded">how_to_reg</span>本日ログイン</div>
+                <div class="t-b">3,108<small>人</small></div>
+                <div class="t-f">ピーク 09:30 / 業務時間帯 78%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 監査・来歴カード -->
+  <section class="card mt-3">
+    <div class="card-h">
+      <span class="material-symbols-rounded">history</span>このパターンへの直近の変更
+      <span class="sub">来歴は7年保持</span>
+      <div class="right"><a class="btn sm ghost" href="audit-log.html">監査ログへ</a></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>日時</th><th>変更者</th><th>変更内容</th><th>影響範囲</th><th>適用期間</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">2026-06-12 09:14</td>
+          <td><div class="person"><span class="avatar a5 sm">山</span><div><b>山田 太郎</b><span>県教委</span></div></div></td>
+          <td>タイル「要注意（直近7日）」を追加。データソース: <span class="mono">roster.events WHERE severity IN (high, critical) AND created_at &gt; NOW()-7d</span></td>
+          <td><b>38</b> ユーザー（県教委・指導主事）</td>
+          <td class="muted">2026-06-12 09:14 〜 （継続中）</td>
+          <td><span class="status ok">有効</span></td>
+        </tr>
+        <tr>
+          <td class="mono">2026-06-05 14:00</td>
+          <td><div class="person"><span class="avatar a2 sm">佐</span><div><b>佐藤 健一</b><span>県教委・データ利活用</span></div></div></td>
+          <td>タイル「市町村別 不登校発生率」の閾値を <span class="mono">1.2%</span> → <span class="mono">1.0%</span> に変更</td>
+          <td><b>38</b> ユーザー</td>
+          <td class="muted">2026-06-05 14:00 〜 2026-06-12 09:14</td>
+          <td><span class="status wait">上書き済</span></td>
+        </tr>
+        <tr>
+          <td class="mono">2026-04-01 00:00</td>
+          <td><div class="person"><span class="avatar a4 sm">坂</span><div><b>坂本 由美子</b><span>県教委・健康教育</span></div></div></td>
+          <td>令和8年度向けにタイル「健康診断 受診率」を公開</td>
+          <td><b>38</b> ユーザー</td>
+          <td class="muted">2026-04-01 〜 2026-06-05 14:00</td>
+          <td><span class="status wait">上書き済</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 新規パターン作成モーダル -->
+  <div class="modal-backdrop" id="modal-db-new">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>ダッシュボードパターンを新規作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-db-new')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>パターン名<span class="req">必須</span></label><input class="input" placeholder="例: 教頭 日常運用"></div>
+          <div class="field"><label>対象ロール</label>
+            <select class="select"><option>校長</option><option>教頭</option><option>学年主任</option><option>担任</option><option>養護教諭</option><option>県教委職員</option><option>指導主事</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>ベースにする既存パターン</label>
+          <select class="select"><option>（白紙から作成）</option><option>県教委 全体概況（12タイル）</option><option>校長 1校まるごと（14タイル）</option><option>担任 受け持ち学級フォーカス（9タイル）</option></select>
+          <div class="hint">ベースを複製するとタイル配置・データソースが引き継がれます。タイルは後で個別に編集できます。</div>
+        </div>
+        <div class="callout">
+          <span class="material-symbols-rounded">info</span>
+          <div>作成直後は <b>下書き</b> 状態となり、ユーザーに表示されません。「公開」を押した時点から、適用対象ユーザーに即時反映されます（次回の定期同期を待ちません）。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-db-new')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-db-new'); Composer.toast('新規パターンを作成しました（編集画面へ遷移します）')"><span class="material-symbols-rounded">add</span>作成して編集</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

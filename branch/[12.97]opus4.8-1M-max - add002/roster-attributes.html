@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>属性項目 | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="roster-attributes">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">属性項目</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile teal" style="width:38px;height:38px"><i data-ic="sliders" data-size="20"></i></span> 属性項目</h1>
+          <p class="page-subtitle">テナント独自の保持データを定義します。データ形式・バリデーション・表示カテゴリ・閲覧権限を項目ごとに設定できます。</p>
+        </div>
+        <div class="page-head__actions">
+          <a class="btn btn--secondary" href="org-settings.html"><i data-ic="layers" data-size="16"></i> 組織別の上書き</a>
+          <button class="btn btn--secondary"><i data-ic="copy" data-size="16"></i> 他テナントから複製</button>
+          <button class="btn btn--primary" data-open="addAttrModal"><i data-ic="plus" data-size="16"></i> 項目を追加</button>
+        </div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile brand"><i data-ic="sliders"></i></span><span class="stat__label">属性項目</span></div><div class="stat__value">37</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile violet"><i data-ic="layers"></i></span><span class="stat__label">カテゴリ（タブ）</span></div><div class="stat__value">5</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="lock"></i></span><span class="stat__label">権限制限あり</span></div><div class="stat__value">12</div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile info"><i data-ic="history"></i></span><span class="stat__label">履歴保持</span></div><div class="stat__value">37</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <span class="card__title">項目一覧</span>
+          <div class="spacer flex gap-8">
+            <div class="input-icon" style="width:240px"><i data-ic="search" data-size="16"></i><input class="input btn--sm" style="height:34px" placeholder="項目名で検索" /></div>
+            <select class="select btn--sm" style="width:auto;height:34px"><option>カテゴリ別に表示</option><option>形式別</option></select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl tbl-clickable" id="attrTable"><thead>
+            <tr><th>項目名</th><th>データ形式</th><th>バリデーション</th><th>表示カテゴリ</th><th>閲覧権限</th><th>必須</th><th>履歴</th><th class="col-actions"></th></tr>
+          </thead><tbody id="attrBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add attribute modal -->
+  <div class="overlay modal-center" id="addAttrModal">
+    <div class="modal modal--lg">
+      <div class="modal__head"><span class="modal__icon ico-tile teal"><i data-ic="plus"></i></span><div><div class="modal__title">属性項目を追加</div><div class="modal__desc">データ形式に応じて登録時のバリデーションが適用されます</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+      <div class="modal__body">
+        <div class="field-row">
+          <div class="field"><label class="label">項目名 <span class="req">*</span></label><input class="input" placeholder="例: 部活顧問" /></div>
+          <div class="field"><label class="label">表示カテゴリ <span class="req">*</span></label><select class="select"><option>基本情報</option><option>連絡先情報</option><option>学校生活</option><option>機微情報</option><option>教員情報</option><option>＋ 新しいカテゴリ</option></select></div>
+        </div>
+        <div class="field"><span class="label">データ形式 <span class="req">*</span></span>
+          <div class="grid grid-3" style="gap:10px" id="typePicker">
+            <label class="card clickable type-opt active" data-type="number"><span class="flex items-center gap-8"><span class="ico-tile info" style="width:32px;height:32px"><i data-ic="hash" data-size="16"></i></span><b>数値</b></span><div class="text-3 text-sm mt-4">整数・小数。範囲指定可</div></label>
+            <label class="card clickable type-opt" data-type="string"><span class="flex items-center gap-8"><span class="ico-tile violet" style="width:32px;height:32px"><i data-ic="type" data-size="16"></i></span><b>単一の文字列</b></span><div class="text-3 text-sm mt-4">1行テキスト</div></label>
+            <label class="card clickable type-opt" data-type="multistring"><span class="flex items-center gap-8"><span class="ico-tile teal" style="width:32px;height:32px"><i data-ic="list" data-size="16"></i></span><b>複数の文字列</b></span><div class="text-3 text-sm mt-4">複数値を保持</div></label>
+            <label class="card clickable type-opt" data-type="date"><span class="flex items-center gap-8"><span class="ico-tile warning" style="width:32px;height:32px"><i data-ic="calendar" data-size="16"></i></span><b>日付</b></span><div class="text-3 text-sm mt-4">YYYY-MM-DD</div></label>
+            <label class="card clickable type-opt" data-type="code"><span class="flex items-center gap-8"><span class="ico-tile pink" style="width:32px;height:32px"><i data-ic="tag" data-size="16"></i></span><b>コード</b></span><div class="text-3 text-sm mt-4">マスターから選択</div></label>
+          </div>
+        </div>
+        <div class="field" id="codeSetField" style="display:none"><label class="label">コードマスター <span class="req">*</span></label><select class="select"><option>GENDER（性別）</option><option>CLUB（部活動）</option><option>FEATURE（人物の特徴）</option></select>
+          <label class="check mt-12" style="align-items:flex-start"><input type="checkbox" /><span class="check__box" style="margin-top:2px"><i data-ic="check" data-size="13"></i></span> <span><b>選択肢にない値の登録を許可する</b><div class="help" style="margin-top:2px">ONにすると、CSVインポートなどでコードマスターに存在しない値が来ても、検証エラーにせず登録します。OFFの場合はマスター内の値のみ受け付けます。</div></span></label>
+          <div class="help mt-8"><a href="codes.html" class="muted-link">コードマスターを管理 →</a></div></div>
+        <div class="field-row">
+          <div class="field"><label class="label">バリデーション</label><input class="input" placeholder="例: 0〜100 / 必須 / 正規表現" /></div>
+          <div class="field"><label class="label">閲覧権限ロール</label><select class="select"><option>全員</option><option>所属校教職員</option><option>担任・学年主任のみ</option><option>管理職・教育委員会</option></select></div>
+        </div>
+        <div class="flex gap-20 mt-8">
+          <label class="check"><input type="checkbox" /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 入力必須にする</label>
+          <label class="check"><input type="checkbox" checked /><span class="check__box"><i data-ic="check" data-size="13"></i></span> 変更履歴を保持する</label>
+        </div>
+      </div>
+      <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="属性項目を追加しました（デモ）">追加する</button></div>
+    </div>
+  </div>
+
+  <!-- Attribute detail drawer -->
+  <div class="overlay drawer-right" id="attrDrawer">
+    <div class="drawer">
+      <div class="drawer__head"><span class="ico-tile pink"><i data-ic="tag"></i></span><div class="grow"><div class="fw-7" style="font-size:16px">人物の特徴</div><div class="text-3 text-sm">コード形式 ・ 機微情報カテゴリ ・ 権限制限あり</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+      <div class="drawer__body">
+        <div class="alert alert--warning mb-16"><span class="alert__ico"><i data-ic="shieldAlert" data-size="18"></i></span><div class="alert__text">この項目は機微情報です。さらに、<b>選択肢（コード）ごと</b>に閲覧できる権限を細かく制限できます。</div></div>
+        <div class="fw-7 mb-8">選択肢ごとの閲覧権限</div>
+        <div class="card"><div class="table-wrap"><table class="tbl tbl--compact"><thead><tr><th>コード</th><th>選択肢</th><th>閲覧できる権限</th></tr></thead><tbody id="choiceBody"></tbody></table></div></div>
+        <div class="help mt-8">例:「いじめ加害」の選択肢は<b>学年主任のみ</b>に表示されます。コードの権限は<a href="codes.html" class="muted-link">コードマスター</a>で管理します。</div>
+        <div class="divider"></div>
+        <dl class="def-list"><dt>項目ID</dt><dd class="mono">A030</dd><dt>データ形式</dt><dd>コード（FEATURE）</dd><dt>表示カテゴリ</dt><dd>機微情報</dd><dt>履歴保持</dt><dd>有効</dd></dl>
+      </div>
+      <div class="drawer__foot"><a href="codes.html" class="btn btn--secondary spacer"><i data-ic="list" data-size="16"></i> コードを編集</a><button class="btn btn--primary" data-close data-toast="保存しました（デモ）">保存</button></div>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, A = window.DATA.attributes, FC = window.DATA.featureCodes;
+      var typeInfo = {
+        number: { l: '数値', i: 'hash', c: 'info' }, string: { l: '単一文字列', i: 'type', c: 'violet' },
+        multistring: { l: '複数文字列', i: 'list', c: 'teal' }, date: { l: '日付', i: 'calendar', c: 'warning' }, code: { l: 'コード', i: 'tag', c: 'pink' },
+      };
+      // group by category
+      var groups = {};
+      A.forEach(function (a) { (groups[a.group] = groups[a.group] || []).push(a); });
+      var html = '';
+      Object.keys(groups).forEach(function (g) {
+        html += '<tr style="background:var(--surface-2)"><td colspan="8" style="padding:9px 16px"><span class="fw-7">' + g + '</span> <span class="text-3 text-sm">（' + groups[g].length + '項目）</span></td></tr>';
+        groups[g].forEach(function (a) {
+          var t = typeInfo[a.type];
+          html += '<tr onclick="openOverlay(\'attrDrawer\')">' +
+            '<td class="cell-main">' + a.name + (a.protected ? ' ' + I('lock', { size: 13, class: 'text-3' }) : '') + '</td>' +
+            '<td><span class="badge badge--' + t.c + '">' + I(t.i, { size: 13 }) + ' ' + t.l + '</span></td>' +
+            '<td class="text-2 text-sm">' + a.validation + '</td>' +
+            '<td><span class="chip">' + a.group + '</span></td>' +
+            '<td class="text-2 text-sm">' + (a.protected ? I('lock', { size: 13, class: 'text-3' }) + ' ' : '') + a.vis + '</td>' +
+            '<td>' + (a.required ? '<span class="badge badge--neutral">必須</span>' : '<span class="text-3">任意</span>') + '</td>' +
+            '<td>' + I('checkCircle', { size: 17, class: 'text-3' }) + '</td>' +
+            '<td class="col-actions" onclick="event.stopPropagation()"><div class="dropdown" data-dropdown><button class="btn btn--icon btn--sm btn--ghost">' + I('moreV', { size: 16 }) + '</button><div class="menu right"><div class="menu__item">' + I('edit', { size: 16 }) + '編集</div><div class="menu__item">' + I('eye', { size: 16 }) + '権限設定</div><div class="menu__item danger">' + I('trash', { size: 16 }) + '削除</div></div></div></td></tr>';
+        });
+      });
+      document.getElementById('attrBody').innerHTML = html;
+
+      document.getElementById('choiceBody').innerHTML = FC.map(function (f) {
+        return '<tr><td class="mono">' + f.code + '</td><td><span class="badge badge--' + f.color + '">' + f.label + '</span></td><td class="text-2 text-sm">' + f.restrict + '</td></tr>';
+      }).join('');
+
+      // type picker
+      document.querySelectorAll('.type-opt').forEach(function (el) {
+        el.addEventListener('click', function () {
+          document.querySelectorAll('.type-opt').forEach(function (x) { x.classList.remove('active'); x.style.borderColor = ''; x.style.background = ''; });
+          el.classList.add('active'); el.style.borderColor = 'var(--brand-400)'; el.style.background = 'var(--brand-50)';
+          document.getElementById('codeSetField').style.display = el.dataset.type === 'code' ? 'block' : 'none';
+        });
+      });
+      var first = document.querySelector('.type-opt.active'); if (first) { first.style.borderColor = 'var(--brand-400)'; first.style.background = 'var(--brand-50)'; }
+      window.hydrateIcons(document.getElementById('attrTable'));
+      window.hydrateIcons(document.getElementById('choiceBody'));
+    })();
+  </script>
+</body>
+</html>

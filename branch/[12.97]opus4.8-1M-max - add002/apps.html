@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>機能・アドオン | EduConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .addon-card { display: flex; flex-direction: column; gap: 12px; padding: 18px; transition: .16s; }
+    .addon-card:hover { box-shadow: var(--sh-md); border-color: var(--c-300); }
+    .addon-card.is-off { background: var(--surface-2); }
+    .addon-card.is-off .ico-tile { filter: grayscale(.4); opacity: .85; }
+    .roadmap { display: flex; gap: 0; overflow-x: auto; padding-bottom: 4px; }
+    .roadmap__col { flex: 1; min-width: 150px; padding: 0 14px; border-left: 2px solid var(--border); position: relative; }
+    .roadmap__q { font-size: 12px; font-weight: 700; color: var(--brand-600); margin-bottom: 10px; }
+  </style>
+</head>
+<body data-page="apps">
+  <main id="main" class="main">
+    <div class="page page--wide">
+      <div class="breadcrumb"><a href="index.html">ホーム</a><span class="sep">/</span><span class="cur">機能・アドオン</span></div>
+
+      <div class="page-head">
+        <div class="page-head__main">
+          <h1 class="page-title"><span class="ico-tile violet" style="width:38px;height:38px"><i data-ic="puzzle" data-size="20"></i></span> 機能・アドオン</h1>
+          <p class="page-subtitle">名簿管理を起点に、総合情報管理・データ利活用へ拡張する各機能を管理します。テナント／自治体ごとに利用する機能を選べます。</p>
+        </div>
+        <div class="page-head__actions">
+          <a class="btn btn--secondary" href="dashboards.html"><i data-ic="dashboard" data-size="16"></i> ダッシュボード</a>
+          <button class="btn btn--primary" data-toast="機能の追加をリクエストしました（デモ）"><i data-ic="sparkles" data-size="16"></i> 機能をリクエスト</button>
+        </div>
+      </div>
+
+      <div class="grid grid-4 mb-20">
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile success"><i data-ic="checkCircle"></i></span><span class="stat__label">利用中の機能</span></div><div class="stat__value">6 <small>件</small></div><div class="stat__delta up"><i data-ic="trendUp" data-size="15"></i> +2 <span class="muted">今年度</span></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile warning"><i data-ic="bolt"></i></span><span class="stat__label">試用中</span></div><div class="stat__value">2 <small>件</small></div><div class="stat__delta down"><i data-ic="clock" data-size="15"></i> 残り14日 <span class="muted">最短</span></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile info"><i data-ic="grid"></i></span><span class="stat__label">追加できる機能</span></div><div class="stat__value">5 <small>件</small></div></div>
+        <div class="stat"><div class="stat__top"><span class="stat__ico ico-tile violet"><i data-ic="layers"></i></span><span class="stat__label">適用範囲</span></div><div class="stat__value">テナント<small>＋自治体別</small></div></div>
+      </div>
+
+      <!-- Scope + filter -->
+      <div class="card mb-20"><div class="card__body flex items-center gap-16 wrap" style="padding:14px 18px">
+        <span class="fw-6 text-2"><i data-ic="layers" data-size="16" data-cls="text-3" style="vertical-align:-3px"></i> 利用可否の設定スコープ</span>
+        <div class="segmented" id="scopeSeg"><button class="active">テナント全体</button><button>青葉市</button><button>緑川市</button><button>県立学校</button></div>
+        <span class="text-3 text-sm">自治体ごとに個別の利用可否を上書きできます</span>
+        <div class="spacer pills" data-pill-group id="catPills">
+          <span class="pill active">すべて</span><span class="pill">コア機能</span><span class="pill">学校生活</span><span class="pill">保健</span><span class="pill">学籍</span><span class="pill">連絡</span>
+        </div>
+      </div></div>
+
+      <div class="grid grid-3" id="addonGrid"></div>
+
+      <!-- Roadmap -->
+      <div class="card mt-24"><div class="card__head"><span class="card__title"><i data-ic="sparkles" data-size="18"></i> 今後の提供予定（ロードマップ）</span><span class="text-3 text-sm spacer">予定は変更される場合があります</span></div>
+        <div class="card__body"><div class="roadmap">
+          <div class="roadmap__col"><div class="roadmap__q">2026 Q3</div><div class="flex col gap-8"><span class="chip"><i data-ic="activity" data-size="13"></i> 体力測定</span><span class="chip"><i data-ic="bookOpen" data-size="13"></i> 指導要録（β）</span></div></div>
+          <div class="roadmap__col"><div class="roadmap__q">2026 Q4</div><div class="flex col gap-8"><span class="chip"><i data-ic="messageCircle" data-size="13"></i> スクールカウンセラー</span><span class="chip"><i data-ic="shuffle" data-size="13"></i> クラス替え支援</span></div></div>
+          <div class="roadmap__col"><div class="roadmap__q">2027 Q1</div><div class="flex col gap-8"><span class="chip"><i data-ic="smartphone" data-size="13"></i> 保護者アプリ連携</span></div></div>
+          <div class="roadmap__col"><div class="roadmap__q">構想中</div><div class="flex col gap-8"><span class="chip text-3">AI 早期支援アラート</span><span class="chip text-3">学習eポートフォリオ</span></div></div>
+        </div></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Enable modal -->
+  <div class="overlay modal-center" id="enableModal"><div class="modal">
+    <div class="modal__head"><span class="modal__icon ico-tile violet" id="enIco"><i data-ic="puzzle"></i></span><div><div class="modal__title" id="enTitle">機能を有効化</div><div class="modal__desc">適用範囲と注意事項を確認してください</div></div><button class="modal__close" data-close><i data-ic="x"></i></button></div>
+    <div class="modal__body">
+      <div class="field"><label class="label">適用範囲</label>
+        <div class="pills" data-pill-group><span class="pill active">テナント全体</span><span class="pill">青葉市のみ</span><span class="pill">学校種を指定</span></div>
+      </div>
+      <div class="field"><label class="label">開始方法</label>
+        <div class="flex col gap-8">
+          <label class="check check--radio"><input type="radio" name="enstart" checked /><span class="check__box"></span> 30日間の試用ではじめる</label>
+          <label class="check check--radio"><input type="radio" name="enstart" /><span class="check__box"></span> 本契約として有効化する</label>
+        </div>
+      </div>
+      <div class="alert alert--info"><span class="alert__ico"><i data-ic="info" data-size="18"></i></span><div class="alert__text" id="enNote">有効化すると、対象組織のダッシュボードとメニューにこの機能が表示されます。機微情報を扱う機能は、別途<a href="permissions.html" class="muted-link">権限設定</a>が必要です。</div></div>
+    </div>
+    <div class="modal__foot"><button class="btn btn--ghost spacer" data-close>キャンセル</button><button class="btn btn--primary" data-close data-toast="機能を有効化しました（デモ）" data-toast-text="メニューとダッシュボードに反映されました">有効化する</button></div>
+  </div></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      var I = window.icon, A = window.DATA.addons;
+      var statusMeta = {
+        enabled: { badge: 'success', label: '利用中' },
+        trial: { badge: 'warning', label: '試用中' },
+        available: { badge: 'neutral', label: '未導入' },
+      };
+      function render(cat) {
+        var list = cat && cat !== 'すべて' ? A.filter(function (a) { return a.cat === cat; }) : A;
+        document.getElementById('addonGrid').innerHTML = list.map(function (a) {
+          var s = statusMeta[a.status];
+          var on = a.status !== 'available';
+          var toggle = a.core
+            ? '<span class="badge badge--neutral"><i data-ic="lock" data-size="12"></i> 必須</span>'
+            : '<label class="toggle" onclick="event.stopPropagation()"><input type="checkbox"' + (on ? ' checked' : '') + ' /><span class="toggle__track"></span></label>';
+          var cta = a.status === 'available'
+            ? '<button class="btn btn--sm btn--secondary" data-open="enableModal" data-name="' + a.name + '" data-ic="' + a.ic + '" data-c="' + a.c + '"><i data-ic="plus" data-size="14"></i> 導入する</button>'
+            : '<a class="btn btn--sm btn--ghost" href="' + a.href + '">開く <i data-ic="arrowRight" data-size="14"></i></a>';
+          return '<div class="card addon-card' + (on ? '' : ' is-off') + '">' +
+            '<div class="flex items-center justify-between"><span class="ico-tile ' + a.c + '" style="width:46px;height:46px">' + I(a.ic, { size: 23 }) + '</span>' + toggle + '</div>' +
+            '<div><div class="flex items-center gap-8"><span style="font-weight:720;font-size:15.5px">' + a.name + '</span><span class="badge badge--' + s.badge + '" style="height:19px"><span class="dot-s"></span>' + s.label + '</span></div>' +
+            '<div class="text-3 text-sm mt-4" style="line-height:1.5;min-height:38px">' + a.desc + '</div></div>' +
+            '<div class="flex items-center justify-between" style="margin-top:auto;padding-top:4px;border-top:1px solid var(--border)">' +
+            '<span class="text-3 text-xs"><span class="chip" style="background:var(--c-100)">' + a.cat + '</span></span>' + cta + '</div>' +
+            '<div class="text-3 text-xs">適用: ' + a.orgs + '</div></div>';
+        }).join('');
+        window.hydrateIcons(document.getElementById('addonGrid'));
+      }
+      render('すべて');
+
+      document.getElementById('catPills').addEventListener('click', function (e) {
+        var p = e.target.closest('.pill'); if (p) render(p.textContent.trim());
+      });
+
+      // enable modal personalization
+      document.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-open="enableModal"]'); if (!b) return;
+        document.getElementById('enTitle').textContent = b.dataset.name + ' を導入';
+        var ico = document.getElementById('enIco');
+        ico.className = 'modal__icon ico-tile ' + b.dataset.c;
+        ico.innerHTML = I(b.dataset.ic, { size: 20 });
+      });
+    })();
+  </script>
+</body>
+</html>
