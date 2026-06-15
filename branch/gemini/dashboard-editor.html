@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>レイアウト編集: エリア全体サマリ版 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* レイアウトエディタ固有のスタイル */
+  .editor-layout { display: flex; gap: 24px; height: calc(100vh - 200px); min-height: 600px; }
+  .widget-palette { width: 280px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; }
+  .palette-h { padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--line); font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .palette-b { padding: 16px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  
+  .widget-item { border: 1px dashed var(--line-2); background: var(--paper); padding: 12px; border-radius: 8px; cursor: grab; display: flex; align-items: center; gap: 10px; transition: border-color .15s, background .15s; }
+  .widget-item:hover { border-color: var(--indigo-500); background: var(--indigo-50); }
+  .widget-item .material-symbols-rounded { color: var(--ink-3); }
+  .widget-item b { font-size: 12px; color: var(--ink-2); display: block; line-height: 1.3; }
+  .widget-item span { font-size: 10.5px; color: var(--ink-3); }
+
+  .canvas-area { flex: 1; background: var(--paper-2); border: 2px dashed var(--line-2); border-radius: var(--radius); padding: 24px; overflow-y: auto; position: relative; }
+  .canvas-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; grid-auto-rows: minmax(120px, auto); }
+  
+  .mock-widget { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); position: relative; }
+  .mock-widget.w-12 { grid-column: span 12; }
+  .mock-widget.w-6 { grid-column: span 6; }
+  .mock-widget.w-8 { grid-column: span 8; }
+  .mock-widget.w-4 { grid-column: span 4; }
+  
+  .mock-widget-h { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; cursor: move; }
+  .mock-widget-h b { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+  .mock-widget-h .acts { display: flex; gap: 4px; }
+  .mock-widget-h .acts button { background: none; border: 0; color: var(--ink-3); cursor: pointer; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; }
+  .mock-widget-h .acts button:hover { background: var(--paper); color: var(--ink-2); }
+  
+  .mock-widget-b { padding: 16px; min-height: 80px; display: flex; align-items: center; justify-content: center; color: var(--ink-3); font-size: 12px; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.015) 10px, rgba(0,0,0,.015) 20px); }
+
+  .empty-slot { grid-column: span 12; border: 2px dashed #b7c2d6; border-radius: 8px; display: flex; align-items: center; justify-content: center; height: 120px; color: #7d8eab; font-size: 13px; font-weight: 500; }
+</style>
+</head>
+<body data-page="tenant-config">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="tenant-config.html">高度なテナント運用設定</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">レイアウト編集: エリア全体サマリ版</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">dashboard_customize</span>レイアウト編集: エリア全体サマリ版</h1>
+      <div class="desc">ダッシュボードに表示するウィジェットの配置やサイズをカスタマイズします。変更は次回バッチ処理後または次回ログイン時に反映されます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" onclick="window.location.href='tenant-config.html'">キャンセル</button>
+      <button class="btn primary" onclick="Composer.toast('レイアウトを保存しました'); setTimeout(() => window.location.href='tenant-config.html', 1500);"><span class="material-symbols-rounded">check</span>保存して戻る</button>
+    </div>
+  </div>
+
+  <div class="editor-layout">
+    <!-- パレット -->
+    <div class="widget-palette">
+      <div class="palette-h"><span class="material-symbols-rounded sm">widgets</span>利用可能なウィジェット</div>
+      <div class="palette-b">
+        <div class="widget-item">
+          <span class="material-symbols-rounded">timeline</span>
+          <div><b>クラス出欠推移グラフ</b><span>過去30日の傾向</span></div>
+        </div>
+        <div class="widget-item">
+          <span class="material-symbols-rounded">crisis_alert</span>
+          <div><b>要注意生徒リスト</b><span>閾値を超えた生徒</span></div>
+        </div>
+        <div class="widget-item">
+          <span class="material-symbols-rounded">map</span>
+          <div><b>市町村別ヒートマップ</b><span>管轄エリアの異常値分布</span></div>
+        </div>
+        <div class="widget-item">
+          <span class="material-symbols-rounded">pie_chart</span>
+          <div><b>保健室利用内訳</b><span>利用理由の割合</span></div>
+        </div>
+        <div class="widget-item">
+          <span class="material-symbols-rounded">notifications_active</span>
+          <div><b>教育委員会からのお知らせ</b><span>テキストボード</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- キャンバス -->
+    <div class="canvas-area">
+      <div class="callout mb-2" style="background:#fff; border-color:var(--line);">
+        <span class="material-symbols-rounded">info</span>
+        <div>左のパレットからウィジェットをドラッグ＆ドロップして配置します。このレイアウトは「教育委員会 管理職員」に適用される予定です。</div>
+      </div>
+      
+      <div class="canvas-grid">
+        <!-- 既存配置済みウィジェット -->
+        <div class="mock-widget w-12">
+          <div class="mock-widget-h">
+            <b><span class="material-symbols-rounded sm">drag_indicator</span>KPI指標 (4カラム)</b>
+            <div class="acts">
+              <button title="設定"><span class="material-symbols-rounded sm">settings</span></button>
+              <button title="削除"><span class="material-symbols-rounded sm">close</span></button>
+            </div>
+          </div>
+          <div class="mock-widget-b">
+            (KPIカードが4つ並ぶ領域)
+          </div>
+        </div>
+
+        <div class="mock-widget w-8">
+          <div class="mock-widget-h">
+            <b><span class="material-symbols-rounded sm">drag_indicator</span>市町村別 不登校・長期欠席ヒートマップ</b>
+            <div class="acts">
+              <button title="設定"><span class="material-symbols-rounded sm">settings</span></button>
+              <button title="削除"><span class="material-symbols-rounded sm">close</span></button>
+            </div>
+          </div>
+          <div class="mock-widget-b" style="height: 280px;">
+            (地図またはグリッド形式のヒートマップ表示領域)
+          </div>
+        </div>
+
+        <div class="mock-widget w-4">
+          <div class="mock-widget-h">
+            <b><span class="material-symbols-rounded sm">drag_indicator</span>長期欠席 警戒校ランキング</b>
+            <div class="acts">
+              <button title="設定"><span class="material-symbols-rounded sm">settings</span></button>
+              <button title="削除"><span class="material-symbols-rounded sm">close</span></button>
+            </div>
+          </div>
+          <div class="mock-widget-b" style="height: 280px;">
+            (リスト形式のランキング表示領域)
+          </div>
+        </div>
+
+        <div class="empty-slot">
+          + ここにウィジェットをドロップ
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

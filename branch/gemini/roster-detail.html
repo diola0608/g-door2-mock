@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>田中 花子 | 名簿レジストリ | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .profile-head {
+    display: flex; gap: 18px; align-items: center; padding: 20px 24px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: var(--shadow-sm); margin-bottom: 16px; position: relative; overflow: hidden;
+  }
+  .profile-head::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+    background: linear-gradient(90deg, var(--indigo-600), var(--vermilion));
+  }
+  .profile-head .avatar.big { width: 60px; height: 60px; font-size: 20px; border-radius: 16px; }
+  .profile-head h2 { font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .profile-head .kana { font-size: 11px; color: var(--ink-3); letter-spacing: .12em; }
+  .profile-head .facts { display: flex; gap: 18px; margin-top: 7px; font-size: 11.5px; color: var(--ink-2); flex-wrap: wrap; }
+  .profile-head .facts .material-symbols-rounded { font-size: 15px; color: var(--ink-3); }
+  .detail-layout { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; }
+  .dl { display: grid; grid-template-columns: 150px 1fr; font-size: 12.5px; }
+  .dl dt { padding: 9px 0; color: var(--ink-3); font-weight: 600; font-size: 11.5px; border-bottom: 1px solid var(--line); }
+  .dl dd { padding: 9px 0; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .dl dt:last-of-type, .dl dd:last-of-type { border-bottom: 0; }
+  .hist-btn { font-size: 10px; color: var(--indigo-600); cursor: pointer; display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; font-family: var(--font); font-weight: 600; }
+  .hist-btn:hover { text-decoration: underline; }
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  .tab-wrap .tab-panel { padding: 18px 22px; }
+</style>
+</head>
+<body data-page="roster">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <a href="roster.html">名簿レジストリ</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">田中 花子</span>
+  </div>
+
+  <div class="profile-head">
+    <span class="avatar a4 big">田</span>
+    <div style="flex:1">
+      <div class="kana">たなか はなこ</div>
+      <h2>田中 花子
+        <span class="chip indigo">生徒</span>
+        <span class="chip mono" style="font-family:var(--mono)">S-2026-04413</span>
+        <span class="sync on"><span class="material-symbols-rounded">cloud_done</span>Workspace同期済</span>
+      </h2>
+      <div class="facts">
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">school</span>長野市立城山小学校</span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">door_front</span>6年1組 18番</span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">cake</span>2014-11-02（11歳）</span>
+        <span class="row" style="gap:5px"><span class="material-symbols-rounded">mail</span><span class="mono" style="font-size:11px">h.tanaka26@nagano-edu.jp</span></span>
+      </div>
+    </div>
+    <div class="row" style="gap:8px">
+      <a class="btn" href="transfers.html"><span class="material-symbols-rounded">swap_horiz</span>所属変更を申請</a>
+      <button class="btn primary" onclick="Composer.openModal('modal-edit')"><span class="material-symbols-rounded">edit</span>編集</button>
+    </div>
+  </div>
+
+  <div class="detail-layout">
+    <div class="tab-wrap">
+      <div class="tabs" data-tabs="d">
+        <button class="tab active" data-tab="basic"><span class="material-symbols-rounded">id_card</span>基本情報</button>
+        <button class="tab" data-tab="contact"><span class="material-symbols-rounded">call</span>連絡先情報</button>
+        <button class="tab" data-tab="school"><span class="material-symbols-rounded">history_edu</span>学籍・部活</button>
+        <button class="tab" data-tab="sensitive"><span class="material-symbols-rounded">lock</span>機微情報<span class="material-symbols-rounded lock">shield_lock</span></button>
+        <button class="tab" data-tab="history"><span class="material-symbols-rounded">history</span>変更履歴</button>
+      </div>
+
+      <div class="tab-panel active" data-tab-panel="d" data-tab="basic">
+        <dl class="dl">
+          <dt>氏名 / かな</dt><dd>田中 花子（たなか はなこ）</dd>
+          <dt>生年月日</dt><dd class="mono">2014-11-02 <button class="hist-btn" onclick="Composer.openModal('modal-history')"><span class="material-symbols-rounded sm">history</span>履歴</button></dd>
+          <dt>性別</dt><dd>女</dd>
+          <dt>所属組織</dt><dd>長野県 › 長野市 › 小学校 › <b>長野市立城山小学校</b> <button class="hist-btn" onclick="Composer.openModal('modal-history')"><span class="material-symbols-rounded sm">history</span>履歴</button></dd>
+          <dt>クラス / 出席番号</dt><dd class="mono">2026年度 6年1組 / 18番（担任: 高橋 美咲）</dd>
+          <dt>学籍番号</dt><dd class="mono">S-2026-04413</dd>
+          <dt>入学年度</dt><dd class="mono">2021（令和3年度）</dd>
+        </dl>
+      </div>
+
+      <div class="tab-panel" data-tab-panel="d" data-tab="contact">
+        <dl class="dl">
+          <dt>メールアドレス</dt><dd class="mono">h.tanaka26@nagano-edu.jp <span class="chip green sm">Workspace連携</span></dd>
+          <dt>自宅電話</dt><dd class="mono">026-26X-XXXX</dd>
+          <dt>住所</dt><dd>〒380-0803 長野市三輪9丁目43-12 <button class="hist-btn" onclick="Composer.openModal('modal-history')"><span class="material-symbols-rounded sm">history</span>履歴</button></dd>
+          <dt>緊急連絡先 1</dt><dd class="mono">080-44XX-XXXX（父・田中 健太）</dd>
+          <dt>緊急連絡先 2</dt><dd class="mono">090-55XX-XXXX（祖母・田中 文江）</dd>
+          <dt>関係者</dt><dd><a href="roster-detail.html">田中 健太（父・G-8822）</a></dd>
+        </dl>
+      </div>
+
+      <div class="tab-panel" data-tab-panel="d" data-tab="school">
+        <dl class="dl">
+          <dt>部活動</dt><dd><span class="chip plum">吹奏楽部</span><span class="muted">2024-04-01 〜 現在</span></dd>
+          <dt>通学方法</dt><dd>自転車</dd>
+          <dt>給食アレルギー</dt><dd class="muted">なし</dd>
+          <dt>出欠（2026年度）</dt><dd class="mono">出席 41 / 欠席 3 / 遅刻 1</dd>
+        </dl>
+      </div>
+
+      <div class="tab-panel" data-tab-panel="d" data-tab="sensitive">
+        <div class="callout warn mb-2">
+          <span class="material-symbols-rounded">shield_lock</span>
+          <div><b>機微情報</b> — この閲覧は監査ログに記録されました（2026-06-12 13:52 / 山田 太郎）。</div>
+        </div>
+        <dl class="dl">
+          <dt>人物の特徴</dt>
+          <dd>
+            <span class="chip green">リーダーシップ</span>
+            <span class="masked-cell"><span class="material-symbols-rounded">key</span>学年主任のみ閲覧可の選択肢 1件</span>
+          </dd>
+          <dt>不登校歴</dt><dd><span class="chip gold">2025年度 12日</span><button class="hist-btn" onclick="Composer.openModal('modal-history')"><span class="material-symbols-rounded sm">history</span>履歴</button></dd>
+          <dt>支援記録</dt><dd>スクールカウンセラー面談 3件（最終 2026-05-30）</dd>
+        </dl>
+      </div>
+
+      <div class="tab-panel" data-tab-panel="d" data-tab="history">
+        <div class="timeline mt-1">
+          <div class="tl-item now">
+            <div class="tl-date">2026-04-01 〜 現在</div>
+            <div class="tl-body"><b>クラス</b>: 6年1組 18番 に変更（年度更新バッチ #JOB-20260401-001）</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2026-05-30</div>
+            <div class="tl-body"><b>支援記録</b> 追加（記録者: 高橋 美咲）</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2025-04-01 〜 2026-03-31</div>
+            <div class="tl-body"><b>クラス</b>: 5年2組 16番</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2024-09-12</div>
+            <div class="tl-body"><b>住所</b> 変更: 長野市吉田3丁目 → 長野市三輪9丁目（CSVインポート #JOB-20240912-002）</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">2021-04-01</div>
+            <div class="tl-body"><b>入学</b>: 長野市立城山小学校（1年3組）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right pane -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">cloud_sync</span>Workspace 連携</div>
+        <div class="card-b" style="font-size:12px">
+          <dl class="dl" style="grid-template-columns: 90px 1fr">
+            <dt>状態</dt><dd><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>同期済</span></dd>
+            <dt>OU</dt><dd class="mono" style="font-size:10.5px">/長野市/小学校/城山小/生徒/2021入学</dd>
+            <dt>最終同期</dt><dd class="mono">2026-06-12 04:00</dd>
+          </dl>
+          <div class="callout mt-2" style="font-size:11px">
+            <span class="material-symbols-rounded">arrow_right_alt</span>
+            <div>同期は <b>Composer → Workspace の一方向</b>です。本システムの変更が次回バッチで反映されます。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">shield_person</span>この名簿へのあなたの権限</div>
+        <div class="card-b" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+          <div class="row between"><span>基本情報</span><span class="chip green">閲覧・編集</span></div>
+          <div class="row between"><span>連絡先情報</span><span class="chip green">閲覧・編集</span></div>
+          <div class="row between"><span>学籍・部活</span><span class="chip green">閲覧・編集</span></div>
+          <div class="row between"><span>機微情報</span><span class="chip gold">閲覧のみ</span></div>
+          <div class="muted mt-1">根拠: ポリシー「県教委システム管理者は全組織を管理できる」（テナント全体設定）</div>
+          <a class="btn sm ghost" href="permissions.html" style="align-self:flex-start"><span class="material-symbols-rounded">admin_panel_settings</span>ポリシーを確認</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><span class="material-symbols-rounded">dynamic_form</span>関連フォーム回答</div>
+        <div class="card-b" style="font-size:12px; display:flex; flex-direction:column; gap:10px;">
+          <div class="row between"><a href="form-results.html">タブレット持ち帰りアンケート</a><span class="chip green">回答済</span></div>
+          <div class="row between"><a href="form-results.html">学校生活アンケート 1学期</a><span class="chip gold">未回答</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 属性履歴モーダル -->
+  <div class="modal-backdrop" id="modal-history">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">history</span>属性値の履歴 — 「不登校歴」</h3>
+        <button class="x" onclick="Composer.closeModal('modal-history')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p class="muted mb-2">属性値は期間付きで保持されます。「いつからいつまでがその値だったか」を確認できます。</p>
+        <table class="tbl">
+          <thead><tr><th>適用期間</th><th>値</th><th>登録者 / 経路</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">2026-04-01 〜 現在</td>
+              <td><span class="chip green">経過観察（登校安定）</span></td>
+              <td class="muted">高橋 美咲 / UI編集</td>
+            </tr>
+            <tr>
+              <td class="mono">2025-09-01 〜 2026-03-31</td>
+              <td><span class="chip gold">断続的欠席（12日）</span></td>
+              <td class="muted">学年主任 / UI編集</td>
+            </tr>
+            <tr>
+              <td class="mono">2021-04-01 〜 2025-08-31</td>
+              <td class="muted">該当なし</td>
+              <td class="muted">初期登録 / CSVインポート</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-history')">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 編集モーダル -->
+  <div class="modal-backdrop" id="modal-edit">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">edit</span>基本情報を編集 — 田中 花子</h3>
+        <button class="x" onclick="Composer.closeModal('modal-edit')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>氏名<span class="req">必須</span></label><input class="input" value="田中 花子"></div>
+          <div class="field"><label>かな<span class="req">必須</span></label><input class="input" value="たなか はなこ"></div>
+          <div class="field"><label>生年月日（データ型: 日付）</label><input class="input" type="date" value="2014-11-02"></div>
+          <div class="field"><label>性別（データ型: コード「性別」）</label>
+            <select class="select"><option>女</option><option>男</option><option>回答しない</option></select></div>
+          <div class="field"><label>クラス / 出席番号</label><input class="input" value="6年1組 / 18"></div>
+          <div class="field"><label>部活動（データ型: 複数文字列）</label><input class="input" value="吹奏楽部"></div>
+        </div>
+        <div class="field">
+          <label>変更の適用開始日<span class="req">必須</span></label>
+          <input class="input" type="date" value="2026-06-12" style="width:200px">
+          <div class="hint">履歴として保存されます。過去の値は適用期間とともに保持されます。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <span class="muted left row" style="gap:5px"><span class="material-symbols-rounded sm">verified_user</span>バリデーション: 日付形式 / コード整合性 を保存時に確認します</span>
+        <button class="btn" onclick="Composer.closeModal('modal-edit')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-edit'); Composer.toast('保存しました。Workspaceへは次回同期（04:00）で反映されます')"><span class="material-symbols-rounded">check</span>保存する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

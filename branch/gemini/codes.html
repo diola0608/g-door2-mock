@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コードマスター | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .code-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
+  .code-list .item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; font-size: 12.5px;
+  }
+  .code-list .item:hover { background: var(--indigo-50); }
+  .code-list .item.active { background: var(--indigo-100); border-right: 3px solid var(--vermilion); }
+  .code-list .item b { display: block; }
+  .code-list .item span { font-size: 10.5px; color: var(--ink-3); font-family: var(--mono); }
+</style>
+</head>
+<body data-page="codes">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">コードマスター</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">data_object</span>コードマスター</h1>
+      <div class="desc">コード型属性の選択肢を管理します。コード（選択肢）ごとに表示・利用できる職種を制限できます。</div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="Composer.openModal('modal-code-add')"><span class="material-symbols-rounded">add</span>コードマスターを作成</button>
+    </div>
+  </div>
+
+  <div class="code-layout">
+    <aside class="card code-list">
+      <div class="card-h"><span class="material-symbols-rounded">folder</span>マスター一覧<span class="sub">12件</span></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">wc</span><div><b>性別</b><span>CODE-001・3コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">directions_bus</span><div><b>通学方法</b><span>CODE-014・5コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">event_busy</span><div><b>出欠状況</b><span>CODE-031・6コード</span></div></div>
+      <div class="item active"><span class="material-symbols-rounded" style="color:var(--vermilion)">psychology</span><div><b>人物特徴</b><span>CODE-049・5コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">medical_services</span><div><b>アレルギー区分</b><span>CODE-052・9コード</span></div></div>
+      <div class="item"><span class="material-symbols-rounded" style="color:var(--ink-3)">work</span><div><b>職種</b><span>CODE-002・11コード</span></div></div>
+    </aside>
+
+    <section class="card">
+      <div class="card-h">
+        <span class="material-symbols-rounded">psychology</span>人物特徴
+        <span class="chip mono" style="font-family:var(--mono)">CODE-049</span>
+        <span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>機微・コード別制限あり</span>
+        <div class="right">
+          <button class="btn sm" onclick="Composer.toast('利用箇所: 属性「人物の特徴」（生徒・機微情報タブ）')"><span class="material-symbols-rounded">link</span>利用箇所</button>
+          <button class="btn sm primary" onclick="Composer.openModal('modal-code-perm')"><span class="material-symbols-rounded">add</span>コードを追加</button>
+        </div>
+      </div>
+      <div class="callout" style="margin:14px 14px 0">
+        <span class="material-symbols-rounded">visibility_lock</span>
+        <div>「表示制限」が設定されたコードは、条件に合わない利用者には<b>選択肢自体が表示されません</b>。既に登録済みの値も同様にマスクされます。</div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>コード値</th><th>表示名</th><th>表示制限（職種条件）</th><th>利用数</th><th>状態</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">P-01</td>
+            <td><span class="chip green">優良生徒</span></td>
+            <td><span class="muted">制限なし（属性自体の制限: 担任・学年主任）</span></td>
+            <td class="num">1,842</td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-perm')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">P-02</td>
+            <td><span class="chip sky">リーダーシップ</span></td>
+            <td><span class="muted">制限なし</span></td>
+            <td class="num">2,310</td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-perm')">編集</button></td>
+          </tr>
+          <tr style="background:var(--vermilion-50)">
+            <td class="mono">P-04</td>
+            <td><span class="chip red">いじめ加害者</span></td>
+            <td><span class="chip red"><span class="material-symbols-rounded sm">key</span>学年主任のみ表示・選択可</span></td>
+            <td class="num">37</td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-perm')">編集</button></td>
+          </tr>
+          <tr>
+            <td class="mono">P-05</td>
+            <td><span class="chip gold">要見守り</span></td>
+            <td><span class="chip gold"><span class="material-symbols-rounded sm">key</span>担任・学年主任・管理職</span></td>
+            <td class="num">412</td>
+            <td><span class="status ok">有効</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-perm')">編集</button></td>
+          </tr>
+          <tr class="masked">
+            <td class="mono">P-03</td>
+            <td><span class="chip">転校予定（旧）</span></td>
+            <td class="muted">—</td>
+            <td class="num">0</td>
+            <td><span class="status wait">廃止</span></td>
+            <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-perm')">編集</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout warn" style="margin:14px">
+        <span class="material-symbols-rounded">layers</span>
+        <div><b>組織別の上書き</b>: 松本市立開成中学校では P-05「要見守り」の表示条件を「担任のみ」へ上書きしています。<a href="permissions.html">権限ポリシー</a>から確認できます。</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- コード権限モーダル -->
+  <div class="modal-backdrop" id="modal-code-perm">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">key</span>コードの編集 — P-04「いじめ加害者」</h3>
+        <button class="x" onclick="Composer.closeModal('modal-code-perm')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>コード値</label><input class="input mono" value="P-04" style="font-family:var(--mono)"></div>
+          <div class="field"><label>表示名</label><input class="input" value="いじめ加害者"></div>
+        </div>
+        <div class="field">
+          <label>表示制限（サブジェクト条件）</label>
+          <select class="select"><option>職種 = 学年主任 のみ表示・選択可</option><option>担任・学年主任・管理職</option><option>制限なし</option></select>
+          <div class="hint">条件に合わない利用者には、入力フォームの選択肢にも、登録済みの値にも表示されません。</div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>このコードの付与・解除を監査ログに記録</b></span></label>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>有効</b><span>オフにすると新規選択できなくなります（既存値は保持）</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-code-perm')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-code-perm'); Composer.toast('コード設定を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- マスター作成モーダル -->
+  <div class="modal-backdrop" id="modal-code-add">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">add</span>コードマスターを作成</h3>
+        <button class="x" onclick="Composer.closeModal('modal-code-add')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>マスター名<span class="req">必須</span></label><input class="input" placeholder="例: 進路区分"></div>
+          <div class="field"><label>マスターID</label><input class="input mono" placeholder="自動採番（CODE-053）" style="font-family:var(--mono)"></div>
+        </div>
+        <div class="field"><label>説明</label><textarea class="input" rows="2" placeholder="このマスターの用途"></textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-code-add')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-code-add'); Composer.toast('コードマスターを作成しました。続けてコードを追加してください')"><span class="material-symbols-rounded">check</span>作成</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

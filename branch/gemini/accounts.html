@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アカウント管理 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .sync-banner {
+    display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 12px;
+    background: linear-gradient(100deg, var(--indigo-900), var(--indigo-700)); color: #dce6f5;
+    margin-bottom: 16px; font-size: 12px; box-shadow: var(--shadow-md);
+  }
+  .sync-banner .material-symbols-rounded.big { font-size: 32px; color: #6fd0a2; }
+  .sync-banner b { color: #fff; }
+  .sync-banner .flowline { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 11px; color: #9fb3d4; }
+  .sync-banner .flowline .node { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: 8px; padding: 5px 11px; color: #fff; font-weight: 600; }
+</style>
+</head>
+<body data-page="accounts">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">アカウント管理</span>
+  </div>
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">badge</span>アカウント管理</h1>
+      <div class="desc">ログインアカウントと Google Workspace の連携状態を管理します。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('手動同期ジョブ #JOB-20260612-008 を登録しました')"><span class="material-symbols-rounded">sync</span>今すぐ同期</button>
+      <button class="btn primary" onclick="Composer.openModal('modal-issue')"><span class="material-symbols-rounded">person_add</span>アカウント発行</button>
+    </div>
+  </div>
+
+  <div class="sync-banner">
+    <span class="material-symbols-rounded big">cloud_done</span>
+    <div>
+      <b>Workspace 同期は正常です</b> — 最終同期 2026-06-12 04:00 / 更新 248件・スキップ 3件<br>
+      同期は <b>Composer → Google Workspace の一方向</b>です。Workspace側での変更は次回同期で上書きされます。
+    </div>
+    <div class="flowline">
+      <span class="node">Composer 名簿</span>
+      <span class="material-symbols-rounded">arrow_right_alt</span>
+      <span class="node">Workspace<br>nagano-edu.jp</span>
+    </div>
+  </div>
+
+  <section class="kpi-grid mb-2">
+    <div class="kpi" style="--accent:var(--indigo-600)"><div class="k-label"><span class="material-symbols-rounded">badge</span>総アカウント数</div><div class="k-value">198,442</div><div class="k-delta">メール保有率 92.6%</div></div>
+    <div class="kpi" style="--accent:var(--pine)"><div class="k-label"><span class="material-symbols-rounded">cloud_done</span>同期済</div><div class="k-value">198,194</div></div>
+    <div class="kpi" style="--accent:var(--gold)"><div class="k-label"><span class="material-symbols-rounded">sync</span>反映待ち</div><div class="k-value">248</div><div class="k-delta">次回バッチ 04:00</div></div>
+    <div class="kpi" style="--accent:var(--vermilion)"><div class="k-label"><span class="material-symbols-rounded">no_accounts</span>停止中</div><div class="k-value">1,205</div><div class="k-delta">卒業・退職保留分</div></div>
+  </section>
+
+  <div class="toolbar mb-2">
+    <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="メールアドレス・氏名で検索"></div>
+    <select class="select" style="width:140px"><option>すべての状態</option><option>有効</option><option>停止中</option><option>未発行</option></select>
+    <select class="select" style="width:160px"><option>すべての組織</option><option>長野市立城山小学校</option></select>
+  </div>
+
+  <section class="card">
+    <table class="tbl">
+      <thead><tr><th>アカウント</th><th>種別</th><th>所属 / OU</th><th>ライセンス</th><th>同期</th><th>状態</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="person"><span class="avatar a2 sm">高</span><div><b>m.takahashi@nagano-edu.jp</b><span>高橋 美咲（教員）</span></div></div></td>
+          <td><span class="chip green">教員</span></td>
+          <td class="muted mono" style="font-size:10.5px">/長野市/小学校/城山小/教職員</td>
+          <td><span class="chip sky">Education Plus</span></td>
+          <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>04:00</span></td>
+          <td><span class="status ok">有効</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-acc')">操作</button></td>
+        </tr>
+        <tr>
+          <td><div class="person"><span class="avatar a4 sm">田</span><div><b>h.tanaka26@nagano-edu.jp</b><span>田中 花子（生徒）</span></div></div></td>
+          <td><span class="chip indigo">生徒</span></td>
+          <td class="muted mono" style="font-size:10.5px">/長野市/小学校/城山小/生徒/2021入学</td>
+          <td><span class="chip">Fundamentals</span></td>
+          <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>04:00</span></td>
+          <td><span class="status ok">有効</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-acc')">操作</button></td>
+        </tr>
+        <tr>
+          <td><div class="person"><span class="avatar a3 sm">小</span><div><b>h.kobayashi26@nagano-edu.jp</b><span>小林 大翔（生徒）</span></div></div></td>
+          <td><span class="chip indigo">生徒</span></td>
+          <td class="muted mono" style="font-size:10.5px">/長野市/小学校/城山小/生徒/2021入学</td>
+          <td><span class="chip">Fundamentals</span></td>
+          <td><span class="sync pending"><span class="material-symbols-rounded">sync</span>反映待ち（クラス変更）</span></td>
+          <td><span class="status ok">有効</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-acc')">操作</button></td>
+        </tr>
+        <tr>
+          <td><div class="person"><span class="avatar sm">山</span><div><b>—（メール未保有）</b><span>山本 恵子（関係者・保護者）</span></div></div></td>
+          <td><span class="chip gold">関係者</span></td>
+          <td class="muted">鈴木 一郎の保護者</td>
+          <td class="muted">—</td>
+          <td><span class="sync off"><span class="material-symbols-rounded">cloud_off</span>対象外</span></td>
+          <td><span class="status wait">未発行</span></td>
+          <td><button class="btn sm" onclick="Composer.openModal('modal-issue')"><span class="material-symbols-rounded">person_add</span>発行</button></td>
+        </tr>
+        <tr class="masked">
+          <td><div class="person"><span class="avatar a5 sm">退</span><div><b>s.matsui@nagano-edu.jp</b><span>松井 慎二（2026-03退職）</span></div></div></td>
+          <td><span class="chip green">教員</span></td>
+          <td class="muted mono" style="font-size:10.5px">/退職者保留</td>
+          <td class="muted">解除済</td>
+          <td><span class="sync on"><span class="material-symbols-rounded">cloud_done</span>—</span></td>
+          <td><span class="status err">停止中</span></td>
+          <td><button class="btn sm ghost" onclick="Composer.openModal('modal-acc')">操作</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <span style="margin-right:auto">198,442件中 1–5件</span>
+      <button><span class="material-symbols-rounded sm">chevron_left</span></button>
+      <button class="cur">1</button><button>2</button><button>3</button><span>…</span>
+      <button><span class="material-symbols-rounded sm">chevron_right</span></button>
+    </div>
+  </section>
+
+  <!-- アカウント操作モーダル -->
+  <div class="modal-backdrop" id="modal-acc">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">manage_accounts</span>アカウント操作</h3>
+        <button class="x" onclick="Composer.closeModal('modal-acc')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b" style="display:flex; flex-direction:column; gap:8px">
+        <button class="btn" style="justify-content:flex-start" onclick="Composer.closeModal('modal-acc'); Composer.toast('パスワード再発行メールを送信しました')"><span class="material-symbols-rounded">lock_reset</span>パスワードを再発行</button>
+        <button class="btn" style="justify-content:flex-start" onclick="Composer.closeModal('modal-acc'); Composer.toast('同期キューに追加しました（次回バッチで反映）')"><span class="material-symbols-rounded">sync</span>このアカウントのみ再同期</button>
+        <button class="btn" style="justify-content:flex-start" onclick="Composer.closeModal('modal-acc'); Composer.toast('OU移動はバッチ反映されます')"><span class="material-symbols-rounded">drive_file_move</span>OUを変更</button>
+        <button class="btn danger-ghost" style="justify-content:flex-start" onclick="Composer.closeModal('modal-acc'); Composer.toast('アカウントを停止しました', 'err')"><span class="material-symbols-rounded">no_accounts</span>アカウントを停止</button>
+      </div>
+      <div class="modal-f"><button class="btn" onclick="Composer.closeModal('modal-acc')">閉じる</button></div>
+    </div>
+  </div>
+
+  <!-- 発行モーダル -->
+  <div class="modal-backdrop" id="modal-issue">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">person_add</span>Workspace アカウント発行</h3>
+        <button class="x" onclick="Composer.closeModal('modal-issue')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>対象者</label>
+          <input class="input" value="山本 恵子（関係者・G-8821）" readonly style="background:#fbfaf8"></div>
+        <div class="grid-2">
+          <div class="field"><label>メールアドレス</label><input class="input" value="k.yamamoto@nagano-edu.jp">
+            <div class="hint">命名規則（名イニシャル.姓）から自動生成</div></div>
+          <div class="field"><label>ライセンス</label>
+            <select class="select"><option>Fundamentals（無償）</option><option>Education Plus</option></select></div>
+        </div>
+        <label class="checkbox-row"><input type="checkbox" checked>
+          <span><b>初回パスワードを保護者向け文書で出力</b><span>PDFが帳票キューに登録されます</span></span></label>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-issue')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-issue'); Composer.toast('発行ジョブを登録しました。次回同期でWorkspaceに作成されます')"><span class="material-symbols-rounded">check</span>発行する</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

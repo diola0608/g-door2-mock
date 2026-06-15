@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高度なテナント運用設定 | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .policy-sentence { font-size: 12.5px; line-height: 1.9; }
+  .pol-token {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 6px;
+    font-weight: 600; font-size: 11.5px; margin: 0 2px; white-space: nowrap;
+  }
+  .pol-token .material-symbols-rounded { font-size: 13px; }
+  .pol-token.subj { background: var(--indigo-100); color: var(--indigo-700); }
+  .pol-token.cond { background: var(--gold-50); color: var(--gold); }
+  .pol-token.obj { background: var(--plum-50); color: var(--plum); }
+  .pol-token.scope { background: var(--sky-50); color: var(--sky); }
+  .pol-token.act { background: var(--pine-50); color: var(--pine); }
+
+  .tab-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .tab-wrap .tabs { padding: 6px 12px 0; background: #fbfaf8; }
+  
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 8px; font-family: var(--mono); font-size: 12px; white-space: pre-wrap; margin-top: 8px;}
+  .js-keyword { color: #569cd6; }
+  .js-string { color: #ce9178; }
+</style>
+</head>
+<body data-page="tenant-config">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span>テナント設定</span><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">高度なテナント運用設定</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">settings_suggest</span>高度なテナント運用設定</h1>
+      <div class="desc">ダッシュボード適用ルール、データ連携時のマッピング変換、組織別の制約オーバーライドを一元管理します。</div>
+    </div>
+    <div class="actions">
+      <div class="callout gold" style="margin:0; padding: 8px 12px;">
+        <span class="material-symbols-rounded">shield_person</span>
+        <div>システム管理者権限で閲覧中。設定の変更は監査ログに記録されます。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-wrap">
+    <div class="tabs" data-tabs="settings-tabs">
+      <button class="tab active" data-tab="dashboard"><span class="material-symbols-rounded">space_dashboard</span>ダッシュボード・アラート</button>
+      <button class="tab" data-tab="import"><span class="material-symbols-rounded">sync_alt</span>インポート・データ変換</button>
+      <button class="tab" data-tab="codes"><span class="material-symbols-rounded">data_object</span>コードマッピング・規格</button>
+      <button class="tab" data-tab="overrides"><span class="material-symbols-rounded">account_tree</span>組織別ルール上書き</button>
+    </div>
+
+    <!-- ダッシュボード設定 -->
+    <div class="tab-panel active" data-tab-panel="settings-tabs" data-tab="dashboard">
+      
+      <div class="card-b" style="border-bottom: 1px solid var(--line);">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">ダッシュボードパターン（レイアウト管理）</h3>
+        <p class="muted mb-2">目的に応じたダッシュボードのレイアウトパターンを作成します。グラフの配置やアラート表示など、画面構成をカスタマイズできます。</p>
+        
+        <table class="tbl mb-2">
+          <thead><tr><th>パターン名</th><th>ウィジェット構成（レイアウト）</th><th>状態</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>エリア全体サマリ版</b></td>
+              <td class="muted">KPI指標(4) / 市町村別不登校ヒートマップ / 長期欠席ランキング</td>
+              <td><span class="status ok">有効</span></td>
+              <td>
+                <button class="btn sm ghost" onclick="window.location.href='dashboard-editor.html'"><span class="material-symbols-rounded">dashboard_customize</span>レイアウト編集</button>
+              </td>
+            </tr>
+            <tr>
+              <td><b>学級フォーカス版</b></td>
+              <td class="muted">要注意生徒アラートリスト / クラス出欠推移グラフ / 保健室利用ヒートマップ</td>
+              <td><span class="status ok">有効</span></td>
+              <td>
+                <button class="btn sm ghost" onclick="window.location.href='dashboard-editor.html'"><span class="material-symbols-rounded">dashboard_customize</span>レイアウト編集</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn sm" onclick="window.location.href='dashboard-editor.html'"><span class="material-symbols-rounded">add</span>新しいパターンを作成</button>
+      </div>
+
+      <div class="card-b" style="border-bottom: 1px solid var(--line);">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">ダッシュボード適用ルール</h3>
+        <p class="muted mb-2">上記で作成したダッシュボードパターンを、職種や所属組織に応じて誰に初期表示するかを出し分けます。</p>
+        
+        <table class="tbl mb-2">
+          <thead><tr><th style="width:90px">優先度</th><th>ポリシー（条件式）</th><th style="width:70px">状態</th><th style="width:110px"></th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">高 (1)</td>
+              <td class="policy-sentence">
+                <span class="pol-token subj"><span class="material-symbols-rounded">person</span>教育委員会 管理職員</span>には、
+                <span class="pol-token obj"><span class="material-symbols-rounded">space_dashboard</span>エリア全体サマリ版</span>を適用する
+              </td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dashboard-rule')">編集</button></td>
+            </tr>
+            <tr>
+              <td class="mono">中 (2)</td>
+              <td class="policy-sentence">
+                <span class="pol-token subj"><span class="material-symbols-rounded">person</span>一般教員（担任）</span>には、
+                <span class="pol-token obj"><span class="material-symbols-rounded">space_dashboard</span>学級フォーカス版</span>を適用する
+              </td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-dashboard-rule')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn sm" onclick="Composer.openModal('modal-dashboard-rule')"><span class="material-symbols-rounded">add</span>新しい適用ルールを作成</button>
+      </div>
+
+      <div class="card-b">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">アラート閾値設定</h3>
+        <table class="tbl">
+          <thead>
+            <tr><th>アラート種別</th><th>判定条件</th><th>ダッシュボード通知対象</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>長期欠席兆候</b></td>
+              <td>連続欠席日数が <input type="number" class="input" value="3" style="width:60px; padding:4px;"> 日以上</td>
+              <td><span class="chip indigo">担任</span> <span class="chip indigo">副担任</span> <span class="chip indigo">学年主任</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-alert-threshold')">編集</button></td>
+            </tr>
+            <tr>
+              <td><b>保健室利用頻度</b></td>
+              <td>週の保健室利用が <input type="number" class="input" value="4" style="width:60px; padding:4px;"> 回以上</td>
+              <td><span class="chip indigo">担任</span> <span class="chip indigo">養護教諭</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-alert-threshold')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">info</span>
+          <div>アラート閾値の変更は即時反映されません。<b>毎日 02:00 のデータ集計バッチ</b>実行時に再評価され、該当者のダッシュボード上の「要注意生徒アラートリスト」ウィジェット等に反映されます。</div>
+        </div>
+        <div class="mt-2" style="text-align: right;">
+          <button class="btn primary" onclick="Composer.toast('アラート閾値を保存しました。次回 02:00 のバッチから適用されます。')">保存する</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- インポート・データ変換 -->
+    <div class="tab-panel" data-tab-panel="settings-tabs" data-tab="import">
+      <div class="card-b" style="border-bottom: 1px solid var(--line);">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">人物識別キー（キーマッチング）</h3>
+        <p class="muted mb-2">名簿CSVインポート時、誰のデータかを特定するための優先キーを設定します。システムは上から順に一致を試みます。</p>
+        <table class="tbl mb-2">
+          <thead><tr><th>優先順位</th><th>システム項目</th><th>CSV想定列名（カンマ区切り）</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="chip indigo">1</span></td>
+              <td><b>Eメール</b></td>
+              <td class="mono">Email, メールアドレス, mailaddress</td>
+            </tr>
+            <tr>
+              <td><span class="chip indigo">2</span></td>
+              <td><b>職員番号 / 学籍番号</b></td>
+              <td class="mono">従業員コード, 職員番号, 社員番号, 学籍番号</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout sky">
+          <span class="material-symbols-rounded">group_add</span>
+          <div><b>兼務・副所属の扱い:</b> キーが一致し、かつCSV内の組織情報（学校名など）が異なる場合、システムは新しい人物を作らず、別組織での「兼務・副所属」としてデータを統合します。</div>
+        </div>
+      </div>
+
+      <div class="card-b">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">インポートデータ変換スクリプト（レコード単位）</h3>
+        <p class="muted mb-2">サードパーティ製のデータを取り込む際、CSVの行データをシステム形式に柔軟に変換します。</p>
+        
+        <table class="tbl mb-2">
+          <thead><tr><th>変換ルール名</th><th>対象</th><th>状態</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>姓名分割・性別正規化</b></td>
+              <td>全CSVインポート</td>
+              <td><span class="status ok">有効</span></td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-transform-script')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--radius); padding:16px;">
+          <div style="display:flex; justify-content:space-between;">
+            <b style="font-size:13px;">姓名分割・性別正規化 (プレビュー)</b>
+            <span class="chip green">有効</span>
+          </div>
+          <p class="muted" style="margin-top:4px;">「氏名」列のスペース区切りを姓・名に分割し、「Female」などの性別表記を標準化します。</p>
+          <div class="code-block">
+<span class="js-keyword">function</span> transformRecord(row) {
+  <span class="js-keyword">if</span> (row[<span class="js-string">'氏名'</span>]) {
+    <span class="js-keyword">const</span> parts = row[<span class="js-string">'氏名'</span>].split(<span class="js-string">' '</span>);
+    row[<span class="js-string">'姓'</span>] = parts[0];
+    <span class="js-keyword">if</span> (parts.length > 1) row[<span class="js-string">'名'</span>] = parts[1];
+  }
+  <span class="js-keyword">if</span> (row[<span class="js-string">'性別'</span>] === <span class="js-string">'Female'</span> || row[<span class="js-string">'性別'</span>] === <span class="js-string">'F'</span>) row[<span class="js-string">'性別'</span>] = <span class="js-string">'女性'</span>;
+  <span class="js-keyword">return</span> row;
+}</div>
+        </div>
+        <div class="mt-2"><button class="btn sm" onclick="Composer.openModal('modal-transform-script')"><span class="material-symbols-rounded">add</span>変換スクリプトを追加</button></div>
+      </div>
+    </div>
+
+    <!-- コードマッピング -->
+    <div class="tab-panel" data-tab-panel="settings-tabs" data-tab="codes">
+      <div class="card-b" style="border-bottom: 1px solid var(--line);">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">コードマスター未登録値の許容</h3>
+        <label class="checkbox-row">
+          <input type="checkbox" checked>
+          <span><b style="color:var(--ink)">インポート時に未登録のコード値を許容し、自動で一時追加する</b>
+          ONの場合、CSVで送られてきた「コードマスターに存在しない値」もエラーにせず名簿に登録します。登録された新コードはマスターに自動追加され、監査ログに記録されます。</span>
+        </label>
+      </div>
+
+      <div class="card-b">
+        <h3 style="font-size:14px; font-weight:700; margin-bottom: 8px;">コード標準化マッピング (外部連携・エクスポート用)</h3>
+        <p class="muted mb-2">システム内部で独自に拡張したコード値を、外部連携用の標準規格にマッピングして出力します。</p>
+        
+        <table class="tbl mb-2">
+          <thead>
+            <tr><th>属性項目</th><th>システム内部コード (表示用)</th><th>出力マッピング (OneRoster / Workspace等)</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="chip plum">職種</span></td>
+              <td><b>ICT支援員</b> <span class="chip indigo">独自追加</span></td>
+              <td class="mono"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:16px; color:var(--line-2);">arrow_forward</span> その他の職員 (Other)</td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-mapping')">編集</button></td>
+            </tr>
+            <tr>
+              <td><span class="chip plum">職種</span></td>
+              <td><b>一般教員</b></td>
+              <td class="mono"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:16px; color:var(--line-2);">arrow_forward</span> 教諭 (Teacher)</td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-mapping')">編集</button></td>
+            </tr>
+            <tr>
+              <td><span class="chip plum">性別</span></td>
+              <td><b>回答しない</b> <span class="chip indigo">独自追加</span></td>
+              <td class="mono"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:16px; color:var(--line-2);">arrow_forward</span> 適用不能 (NotApplicable)</td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-code-mapping')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <span class="material-symbols-rounded">sync</span>
+          <div>
+            <b>Workspaceへの一方向同期:</b> ここで設定されたマッピングは、Google Workspace のディレクトリ属性への同期時にも適用されます（例：Google側の役職フィールドに「その他の職員」として連携）。同期は Composer → Workspace の一方向です。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 組織別ルール上書き -->
+    <div class="tab-panel" data-tab-panel="settings-tabs" data-tab="overrides">
+      <div class="card-b">
+        <p class="muted mb-2">テナント全体の共通設定に対し、特定の自治体や学校種別単位でバリデーションルールを上書き（オーバーライド）します。下流の設定が優先されます。</p>
+        
+        <table class="tbl mb-2">
+          <thead><tr><th>対象組織・スコープ</th><th>オーバーライド内容</th><th>影響範囲</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="chip sky">学校種別: 小・中学校</span></td>
+              <td class="policy-sentence"><span class="pol-token obj">属性「役職」</span>の選択肢から<b>「副校長」を除外し「教頭」のみ</b>に制限</td>
+              <td class="muted">松本市立開成中学校 ほか計128校</td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-org-override')">編集</button></td>
+            </tr>
+            <tr>
+              <td><span class="chip sky">学校種別: 高等学校</span></td>
+              <td class="policy-sentence"><span class="pol-token obj">属性「役職」</span>の選択肢から<b>「教頭」を除外し「副校長」のみ</b>に制限</td>
+              <td class="muted">県立長野高等学校 ほか計42校</td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-org-override')">編集</button></td>
+            </tr>
+            <tr>
+              <td><span class="chip sky">テナント全体</span></td>
+              <td class="policy-sentence">標準では任意項目の<span class="pol-token obj">属性「性別」</span>を<b>必須項目</b>に変更</td>
+              <td class="muted">すべての管轄組織</td>
+              <td><button class="btn sm ghost" onclick="Composer.openModal('modal-org-override')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <button class="btn sm" onclick="Composer.openModal('modal-org-override')"><span class="material-symbols-rounded">add</span>組織別オーバーライドを追加</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= モーダル群 ================= -->
+
+  <!-- ダッシュボード適用ルールビルダー -->
+  <div class="modal-backdrop" id="modal-dashboard-rule">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">construction</span>ダッシュボード適用ルール</h3>
+        <button class="x" onclick="Composer.closeModal('modal-dashboard-rule')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <p class="muted mb-2">誰がログインした時に、どのダッシュボードレイアウトを初期表示するかを定義します。</p>
+        
+        <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px dashed var(--line);">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--ink-2); padding-top: 8px; display: flex; align-items: center; gap: 6px;"><span class="material-symbols-rounded" style="color:var(--indigo-600)">person</span>対象者</div>
+          <div>
+            <div class="row mb-1">
+              <select class="select" style="width:160px"><option>職種が一致</option><option>役割が一致</option><option>組織階層</option></select>
+              <select class="select" style="width:180px"><option>教育委員会 管理職員</option><option>一般教員</option><option>校長</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: start; padding: 12px 0; border-bottom: 1px dashed var(--line);">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--ink-2); padding-top: 8px; display: flex; align-items: center; gap: 6px;"><span class="material-symbols-rounded" style="color:var(--sky)">space_dashboard</span>適用レイアウト</div>
+          <div class="row">
+            <select class="select" style="width:240px">
+              <option>エリア全体サマリ版</option>
+              <option>学級フォーカス版</option>
+              <option>学校管理者版</option>
+            </select>
+            <a href="dashboard-editor.html" class="btn sm ghost"><span class="material-symbols-rounded">edit</span>レイアウトを編集</a>
+          </div>
+        </div>
+
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">preview</span>
+          <div class="policy-sentence"><b>プレビュー</b>:
+            <span class="pol-token subj">教育委員会 管理職員</span>には、
+            <span class="pol-token obj">エリア全体サマリ版</span>を適用する
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-dashboard-rule')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-dashboard-rule'); Composer.toast('適用ルールを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- アラート閾値設定 -->
+  <div class="modal-backdrop" id="modal-alert-threshold">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">crisis_alert</span>アラート閾値の設定</h3>
+        <button class="x" onclick="Composer.closeModal('modal-alert-threshold')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>アラート種別</label><input class="input" value="長期欠席兆候" readonly style="background:var(--paper-2)"></div>
+        <div class="field"><label>判定条件</label>
+          <div class="row">連続欠席日数が <input type="number" class="input" value="3" style="width:80px"> 日以上</div>
+        </div>
+        <div class="field"><label>ダッシュボード通知対象（複数選択可）</label>
+          <div class="row" style="flex-wrap:wrap; gap:12px;">
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>担任</b></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>副担任</b></span></label>
+            <label class="checkbox-row"><input type="checkbox" checked><span><b>学年主任</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>養護教諭</b></span></label>
+            <label class="checkbox-row"><input type="checkbox"><span><b>校長・教頭</b></span></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-alert-threshold')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-alert-threshold'); Composer.toast('アラート閾値を保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- データ変換スクリプトエディタ -->
+  <div class="modal-backdrop" id="modal-transform-script">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">code</span>データ変換スクリプトの編集</h3>
+        <button class="x" onclick="Composer.closeModal('modal-transform-script')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="grid-2">
+          <div class="field"><label>ルール名</label><input class="input" value="姓名分割・性別正規化"></div>
+          <div class="field"><label>適用対象</label><select class="select"><option>全CSVインポート</option><option>特定のサードパーティフォーマット</option></select></div>
+        </div>
+        <div class="field"><label>変換スクリプト (JavaScript)</label>
+          <textarea class="input mono" rows="8" style="background:#1e1e1e; color:#d4d4d4; font-size:12px; padding:12px;">function transformRecord(row) {
+  if (row['氏名']) {
+    const parts = row['氏名'].split(' ');
+    row['姓'] = parts[0];
+    if (parts.length > 1) row['名'] = parts[1];
+  }
+  if (row['性別'] === 'Female' || row['性別'] === 'F') row['性別'] = '女性';
+  return row;
+}</textarea>
+        </div>
+        <div class="card-b" style="background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <b style="font-size:12px;">スクリプトのテスト実行</b>
+            <button class="btn sm" onclick="Composer.toast('テストを実行し、エラーがないことを確認しました')"><span class="material-symbols-rounded">play_arrow</span>テスト実行</button>
+          </div>
+          <div class="grid-2">
+            <div><span class="muted">入力 (Mock Row)</span><div class="mono" style="font-size:11px; background:#fff; padding:6px; border:1px solid var(--line); border-radius:4px;">{ "氏名": "山田 花子", "性別": "F" }</div></div>
+            <div><span class="muted">出力プレビュー</span><div class="mono" style="font-size:11px; background:#fff; padding:6px; border:1px solid var(--line); border-radius:4px; color:var(--pine);">{ "氏名": "山田 花子", "性別": "女性", "姓": "山田", "名": "花子" }</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-transform-script')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-transform-script'); Composer.toast('スクリプトを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- コードマッピングエディタ -->
+  <div class="modal-backdrop" id="modal-code-mapping">
+    <div class="modal">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">data_object</span>コード出力マッピング</h3>
+        <button class="x" onclick="Composer.closeModal('modal-code-mapping')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="field"><label>属性項目</label><input class="input" value="職種" readonly style="background:var(--paper-2)"></div>
+        <div class="field"><label>システム内部コード</label>
+          <div class="row"><input class="input" value="ICT支援員" readonly style="background:var(--paper-2)"><span class="chip indigo">独自追加</span></div>
+        </div>
+        <div style="text-align:center; margin: 16px 0; color:var(--ink-3);"><span class="material-symbols-rounded">arrow_downward</span></div>
+        <div class="field"><label>出力マッピング (OneRoster / Workspace)</label>
+          <select class="select">
+            <option>選択してください</option>
+            <option>校長 (Principal)</option>
+            <option>教諭 (Teacher)</option>
+            <option selected>その他の職員 (Other)</option>
+          </select>
+          <div class="hint">この内部コードを持つユーザーが外部出力される際、指定した標準規格のコードとして変換・出力されます。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-code-mapping')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-code-mapping'); Composer.toast('マッピングを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 組織別ルール上書き -->
+  <div class="modal-backdrop" id="modal-org-override">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">account_tree</span>組織別ルール上書き</h3>
+        <button class="x" onclick="Composer.closeModal('modal-org-override')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout mb-2">
+          <span class="material-symbols-rounded">info</span>
+          <div>ここで設定したバリデーションの制限・上書きは、対象スコープ配下の組織にのみ適用されます。テナント全体設定より優先されます。</div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="field"><label>対象組織スコープ</label>
+            <select class="select"><option>学校種別: 小・中学校</option><option>学校種別: 高等学校</option><option>特定の自治体（長野市など）</option></select>
+          </div>
+          <div class="field"><label>対象の属性項目</label>
+            <select class="select"><option>役職</option><option>性別</option><option>部活</option></select>
+          </div>
+        </div>
+
+        <div class="field"><label>上書き（オーバーライド）の内容</label>
+          <div class="row mb-1">
+            <select class="select" style="width:200px"><option>選択肢を制限する</option><option>必須項目にする</option><option>利用不可にする</option></select>
+          </div>
+          <div style="background:var(--paper-2); padding:12px; border-radius:8px; border:1px solid var(--line);">
+            <p class="muted mb-1">「役職」属性で許可する選択肢の指定：</p>
+            <div class="row" style="flex-wrap:wrap; gap:8px;">
+              <label class="checkbox-row" style="padding:0"><input type="checkbox" checked><span><b>校長</b></span></label>
+              <label class="checkbox-row" style="padding:0"><input type="checkbox" checked><span><b>教頭</b></span></label>
+              <label class="checkbox-row" style="padding:0"><input type="checkbox"><span><b class="muted">副校長</b></span></label>
+              <label class="checkbox-row" style="padding:0"><input type="checkbox" checked><span><b>主幹教諭</b></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="policy-sentence mt-2">
+          <b>要約</b>: <span class="pol-token scope">学校種別: 小・中学校</span> において、<span class="pol-token obj">属性「役職」</span>の選択肢から<b>「副校長」を除外し「教頭」等のみ</b>に制限する
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="Composer.closeModal('modal-org-override')">キャンセル</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-org-override'); Composer.toast('組織別オーバーライドを保存しました')"><span class="material-symbols-rounded">check</span>保存</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!--
+  実証ページ: 監査ログ。
+  既存mockが繰り返し「機微情報の閲覧は監査ログに記録されます」と言及するのに、それを“見る”画面が
+  無かった。県教委・システム管理者(山田太郎)にとって必須の画面として、深掘りで補完したもの。
+  このキットの作法(docs/00-03)と base.css/app.js のみで構築（独自CSSは tbl-scroll のレイアウト用1つだけ）。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>監査ログ | Composer EDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  /* レイアウト用のみ。見た目のパーツは base.css */
+  .tbl-scroll { overflow-x: auto; }
+</style>
+</head>
+<body data-page="audit">
+<main>
+  <div class="breadcrumb">
+    <a href="index.html">ホーム</a><span class="material-symbols-rounded">chevron_right</span>
+    <span class="here">監査ログ</span>
+  </div>
+
+  <div class="page-head">
+    <div>
+      <h1><span class="material-symbols-rounded">policy</span>監査ログ</h1>
+      <div class="desc">誰が・いつ・どのデータに何をしたかの記録です。あなたの権限スコープ（県教委・システム管理者＝全組織）の操作を表示しています。</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="Composer.toast('アラート条件を編集します（モック）')"><span class="material-symbols-rounded">notifications_active</span>異常検知の設定</button>
+      <button class="btn" onclick="Composer.toast('監査ログのエクスポートをジョブに登録しました（#JOB-20260612-008）')"><span class="material-symbols-rounded">download</span>エクスポート</button>
+    </div>
+  </div>
+
+  <div class="callout mb-2">
+    <span class="material-symbols-rounded">verified_user</span>
+    <div><b>改ざん防止</b>: 監査ログは追記専用で、各記録はハッシュ連鎖で保護されます（編集・削除不可）。<b>保管期間 7年</b>。機微情報の「値そのもの」は記録に残さず、アクセスの事実のみを記録します。</div>
+  </div>
+
+  <!-- KPI -->
+  <section class="kpi-grid mb-3">
+    <div class="kpi" style="--accent: var(--indigo-600)">
+      <div class="k-label"><span class="material-symbols-rounded">history</span>本日の記録</div>
+      <div class="k-value">3,482<small>件</small></div>
+      <div class="k-delta">うち自動処理（バッチ）2,914件</div>
+    </div>
+    <div class="kpi" style="--accent: var(--gold)">
+      <div class="k-label"><span class="material-symbols-rounded">shield_lock</span>機微情報の閲覧</div>
+      <div class="k-value">47<small>件</small></div>
+      <div class="k-delta">教職員 31名による閲覧（本日）</div>
+    </div>
+    <div class="kpi" style="--accent: var(--plum)">
+      <div class="k-label"><span class="material-symbols-rounded">admin_panel_settings</span>権限・ポリシー変更</div>
+      <div class="k-value">5<small>件</small></div>
+      <div class="k-delta">ポリシー2・コード制限1・識別子設定2</div>
+    </div>
+    <div class="kpi" style="--accent: var(--vermilion)">
+      <div class="k-label"><span class="material-symbols-rounded">gpp_maybe</span>要確認（拒否・異常）</div>
+      <div class="k-value">3<small>件</small></div>
+      <div class="k-delta down">権限外アクセス2・ログイン失敗1</div>
+    </div>
+  </section>
+
+  <div class="callout warn mb-2">
+    <span class="material-symbols-rounded">notification_important</span>
+    <div><b>異常検知 2件</b> — 松本市立開成中の学年主任が短時間に機微情報を多数閲覧（08:50頃）。不明端末からのログイン失敗が5回連続（08:30・アカウントを一時ロック）。<a href="#" onclick="Composer.toast('該当記録に絞り込みました');return false;">該当記録を表示</a></div>
+  </div>
+
+  <!-- フィルタ -->
+  <div class="toolbar mb-2">
+    <div class="search"><span class="material-symbols-rounded">search</span><input placeholder="実行者・対象者・対象リソースで検索"></div>
+    <select class="select" style="width:120px"><option>本日</option><option>過去7日</option><option>過去30日</option><option>期間を指定…</option></select>
+    <select class="select" style="width:150px">
+      <option>すべての操作</option>
+      <option>機微情報の閲覧</option>
+      <option>権限・ポリシー変更</option>
+      <option>データ出力（エクスポート）</option>
+      <option>名簿の編集</option>
+      <option>所属変更の承認</option>
+      <option>認証（ログイン）</option>
+    </select>
+    <select class="select" style="width:120px"><option>すべての結果</option><option>許可・成功</option><option>要確認</option><option>拒否・失敗</option></select>
+    <div class="sep"></div>
+    <select class="select" style="width:170px"><option>スコープ: テナント全体</option><option>長野市</option><option>長野市立城山小学校</option><option>松本市立開成中学校</option></select>
+    <span class="muted" style="margin-left:auto">3,482件中 1–10件</span>
+  </div>
+
+  <!-- ログ本体 -->
+  <section class="card">
+    <div class="tbl-scroll">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width:150px">日時</th>
+            <th>実行者</th>
+            <th>操作</th>
+            <th>対象</th>
+            <th>組織スコープ</th>
+            <th style="width:120px">結果</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 13:52:11</td>
+            <td><div class="person"><span class="avatar sm">山</span><div><b>山田 太郎</b><span>県教委・システム管理者</span></div></div></td>
+            <td><span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>機微情報の閲覧</span></td>
+            <td>田中 花子（生徒）の <b>「人物の特徴」</b></td>
+            <td class="muted">長野市立城山小学校</td>
+            <td><span class="status ok">許可</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 13:48:02</td>
+            <td><div class="person"><span class="avatar a2 sm">高</span><div><b>高橋 美咲</b><span>一般教員・T-1187</span></div></div></td>
+            <td><span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>機微情報の閲覧</span></td>
+            <td>小林 大翔（生徒）の <b>「不登校歴」</b></td>
+            <td class="muted">長野市立城山小学校</td>
+            <td><span class="status err">拒否（権限外）</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 11:20:33</td>
+            <td><div class="person"><span class="avatar sm">山</span><div><b>山田 太郎</b><span>県教委・システム管理者</span></div></div></td>
+            <td><span class="chip plum"><span class="material-symbols-rounded sm">admin_panel_settings</span>権限ポリシー変更</span></td>
+            <td>POL-002 を上書き作成（部活顧問の連絡先閲覧を制限）</td>
+            <td class="muted">長野市立城山小学校 <span class="chip line">組織独自</span></td>
+            <td><span class="status ok">成功</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 10:05:19</td>
+            <td><div class="person"><span class="avatar a4 sm">加</span><div><b>加藤 直樹</b><span>教委職員・B-0094</span></div></div></td>
+            <td><span class="chip sky"><span class="material-symbols-rounded sm">download</span>データ出力</span></td>
+            <td>名簿エクスポート <b>412件</b>（基本情報）</td>
+            <td class="muted">長野市立城山小学校</td>
+            <td><span class="status ok">許可 / #JOB-…006</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 09:33:48</td>
+            <td><div class="person"><span class="avatar a3 sm">渡</span><div><b>渡辺 修</b><span>校長・T-0412</span></div></div></td>
+            <td><span class="chip gold"><span class="material-symbols-rounded sm">key</span>コード付与</span></td>
+            <td>田中 花子（生徒）に <span class="chip gold">要見守り（P-05）</span> を付与</td>
+            <td class="muted">長野市立城山小学校</td>
+            <td><span class="status ok">成功</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 09:15:02</td>
+            <td><div class="person"><span class="avatar a5 sm"><span class="material-symbols-rounded sm">smart_toy</span></span><div><b>システム</b><span>夜間バッチ</span></div></div></td>
+            <td><span class="chip green"><span class="material-symbols-rounded sm">edit</span>名簿の一括編集</span></td>
+            <td>生徒名簿 年度更新 <b>186,420件</b></td>
+            <td class="muted">テナント全体</td>
+            <td><span class="status ok">成功 / #JOB-…001</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 08:50:41</td>
+            <td><div class="person"><span class="avatar a2 sm">佐</span><div><b>佐々木 亮</b><span>学年主任・T-0775</span></div></div></td>
+            <td><span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>機微情報の閲覧</span></td>
+            <td><span class="masked-cell"><span class="material-symbols-rounded">key</span>学年主任のみ閲覧可の選択肢を含む（値は記録対象外）</span></td>
+            <td class="muted">松本市立開成中学校</td>
+            <td><span class="status warn">要確認（多数閲覧）</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable masked" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 08:30:00</td>
+            <td><div class="person"><span class="avatar a3 sm"><span class="material-symbols-rounded sm">help</span></span><div><b>不明な端末</b><span>153.xxx.xxx.18</span></div></div></td>
+            <td><span class="chip"><span class="material-symbols-rounded sm">login</span>認証（ログイン）</span></td>
+            <td>ログイン試行 <b>×5</b>（i.suzuki26@… を騙る）</td>
+            <td class="muted">—</td>
+            <td><span class="status err">拒否（ロック）</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 07:12:27</td>
+            <td><div class="person"><span class="avatar sm">山</span><div><b>山田 太郎</b><span>県教委・システム管理者</span></div></div></td>
+            <td><span class="chip plum"><span class="material-symbols-rounded sm">fingerprint</span>識別子設定の変更</span></td>
+            <td>同一人物の識別子に <b>「メールアドレス」</b> を追加</td>
+            <td class="muted">テナント全体</td>
+            <td><span class="status ok">成功</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+          <tr class="clickable" onclick="Composer.openModal('modal-detail')">
+            <td class="mono">06-12 04:00:05</td>
+            <td><div class="person"><span class="avatar a5 sm"><span class="material-symbols-rounded sm">smart_toy</span></span><div><b>システム</b><span>同期バッチ</span></div></div></td>
+            <td><span class="chip sky"><span class="material-symbols-rounded sm">sync</span>Workspace同期</span></td>
+            <td>Workspaceへ反映 <b>248件</b> / スキップ 3件（一方向）</td>
+            <td class="muted">テナント全体</td>
+            <td><span class="status ok">成功 / #JOB-sync</span></td>
+            <td><span class="material-symbols-rounded" style="color:var(--line-2)">chevron_right</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <span style="margin-right:auto">1ページ / 349ページ</span>
+      <button><span class="material-symbols-rounded sm">chevron_left</span></button>
+      <button class="cur">1</button><button>2</button><button>3</button><span>…</span><button>349</button>
+      <button><span class="material-symbols-rounded sm">chevron_right</span></button>
+    </div>
+  </section>
+
+  <!-- 詳細モーダル -->
+  <div class="modal-backdrop" id="modal-detail">
+    <div class="modal wide">
+      <div class="modal-h">
+        <h3><span class="material-symbols-rounded">receipt_long</span>監査記録の詳細 — AUD-20260612-13:48:02</h3>
+        <button class="x" onclick="Composer.closeModal('modal-detail')"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div class="modal-b">
+        <div class="callout error mb-2">
+          <span class="material-symbols-rounded">block</span>
+          <div><b>拒否（権限外アクセス）</b> — 一般教員が、担任クラス外の生徒の機微情報を閲覧しようとしました。アクセスはブロックされ、値は返されていません。</div>
+        </div>
+        <dl style="display:grid; grid-template-columns:130px 1fr; gap:8px 14px; font-size:12.5px">
+          <dt class="muted">日時</dt><dd class="mono">2026-06-12 13:48:02 JST</dd>
+          <dt class="muted">実行者</dt><dd><div class="person"><span class="avatar a2 sm">高</span><div><b>高橋 美咲</b><span>一般教員・T-1187・長野市立城山小学校</span></div></div></dd>
+          <dt class="muted">端末 / IP</dt><dd class="mono">Chrome / Windows・10.21.x.x（校内LAN）</dd>
+          <dt class="muted">操作</dt><dd><span class="chip red"><span class="material-symbols-rounded sm">shield_lock</span>機微情報の閲覧</span></dd>
+          <dt class="muted">対象</dt><dd>小林 大翔（生徒・S-2026-04414）の属性「不登校歴」（機微情報）</dd>
+          <dt class="muted">対象の組織</dt><dd>長野市立城山小学校 ／ 6年2組（実行者は6年1組担任）</dd>
+          <dt class="muted">結果</dt><dd><span class="status err">拒否</span></dd>
+          <dt class="muted">根拠</dt><dd>ポリシー <span class="mono">POL-004</span>（機微情報は所属校の担任・学年主任のみ閲覧可）。実行者は当該生徒の担任ではないため不許可。<a href="permissions.html">権限ポリシーを確認</a></dd>
+          <dt class="muted">記録ハッシュ</dt><dd class="mono" style="font-size:10.5px; word-break:break-all">sha256:9f2c…a17b（前記録 4e8d…）— 改ざん検知用ハッシュ連鎖</dd>
+        </dl>
+        <div class="callout mt-2">
+          <span class="material-symbols-rounded">privacy_tip</span>
+          <div>監査ログには「誰が・何に・どうアクセスしたか」の事実のみを記録し、機微情報の<b>値そのものは保存しません</b>。この記録の閲覧自体も監査対象です。</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <div class="left">
+          <button class="btn danger-ghost" onclick="Composer.closeModal('modal-detail'); Composer.toast('当該ユーザーの権限を確認します')"><span class="material-symbols-rounded">person_search</span>実行者の権限を確認</button>
+        </div>
+        <button class="btn" onclick="Composer.closeModal('modal-detail')">閉じる</button>
+        <button class="btn primary" onclick="Composer.closeModal('modal-detail'); Composer.toast('この記録を関係者へ共有しました（受付番号 SEC-0091）')"><span class="material-symbols-rounded">flag</span>セキュリティ担当へ報告</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>
