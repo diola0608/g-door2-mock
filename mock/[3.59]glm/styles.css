@@ -421,6 +421,39 @@ table.tbl .linkcell:hover{color:var(--amber-600);text-decoration:underline}
 .seg button.active{background:var(--surface-2);color:var(--navy);box-shadow:var(--sh-1)}
 .seg button:hover:not(.active){color:var(--ink)}
 
+/* Type-colored segmented control (生徒 / 教員 / 職員) */
+.seg-typed .seg-amber.active{background:var(--amber-600);color:#fff;box-shadow:0 1px 2px rgba(168,100,26,.3)}
+.seg-typed .seg-navy.active{background:var(--navy);color:#fff;box-shadow:var(--sh-1)}
+.seg-typed .seg-ok.active{background:var(--ok);color:#fff;box-shadow:0 1px 2px rgba(46,125,91,.3)}
+.seg-typed button{display:inline-flex;align-items:center;gap:5px}
+.seg-typed button svg{opacity:.7}
+.seg-typed button.active svg{opacity:1}
+
+/* Scope bar — makes the currently displayed person type unmistakable */
+.scope-bar{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-left:none;border-radius:var(--r-md);padding:12px 16px 12px 0;margin-bottom:14px;box-shadow:var(--sh-1);overflow:hidden}
+.scope-bar .scope-strip{width:6px;align-self:stretch;border-radius:0}
+.scope-bar .scope-ic{width:44px;height:44px;border-radius:var(--r-md);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.scope-bar .scope-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.scope-bar .scope-label{font-size:11px;color:var(--ink-3);font-weight:600;letter-spacing:.02em}
+.scope-bar .scope-name{font-family:var(--font-display);font-size:19px;font-weight:700;line-height:1.2}
+.scope-bar .scope-count{font-size:13px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--paper-2);color:var(--ink-2)}
+
+/* per-type coloring */
+.scope-amber .scope-strip{background:linear-gradient(180deg,var(--amber-400),var(--amber-600))}
+.scope-amber .scope-ic{background:var(--amber-050);color:var(--amber-600)}
+.scope-amber .scope-name{color:var(--amber-600)}
+.scope-amber .scope-count{background:var(--amber-050);color:var(--amber-600)}
+
+.scope-navy .scope-strip{background:linear-gradient(180deg,var(--navy-400),var(--navy))}
+.scope-navy .scope-ic{background:var(--navy-050);color:var(--navy)}
+.scope-navy .scope-name{color:var(--navy)}
+.scope-navy .scope-count{background:var(--navy-050);color:var(--navy)}
+
+.scope-ok .scope-strip{background:linear-gradient(180deg,#3a9b73,var(--ok))}
+.scope-ok .scope-ic{background:var(--ok-050);color:var(--ok)}
+.scope-ok .scope-name{color:var(--ok)}
+.scope-ok .scope-count{background:var(--ok-050);color:var(--ok)}
+
 /* Org tree */
 .tree{font-size:13px}
 .tree-node{padding:1px 0}

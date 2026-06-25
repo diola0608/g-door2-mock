@@ -2,7 +2,7 @@
 (function(){
   const I = window.Icon, D = window.DUMMY, UI = window.UI;
 
-  const typeMap = { teacher:{label:'教員',cls:'navy'}, student:{label:'生徒',cls:'amber'}, staff:{label:'職員',cls:'ok'} };
+  const typeMap = { teacher:{label:'教員',cls:'navy',icon:'book'}, student:{label:'生徒',cls:'amber',icon:'users'}, staff:{label:'職員',cls:'ok',icon:'building'} };
   const syncMap = { synced:{label:'同期済',cls:'ok'}, pending:{label:'同期待ち',cls:'warn'}, error:{label:'同期エラー',cls:'danger'}, none:{label:'アカウントなし',cls:'neutral'} };
 
   App.group({id:'roster', label:'名簿管理'});
@@ -10,10 +10,34 @@
     path:'/roster', group:'roster', label:'名簿一覧', icon:'users',
     render({el}){
       let activeTab = 'basic';
-      let activeType = 'all';
+      let activeType = 'student';
+
+      const segOrder = ['student','teacher','staff'];
+      function segButtons(){
+        return segOrder.map(id=>{
+          const t = typeMap[id];
+          return `<button class="seg-${t.cls} ${id===activeType?'active':''}" data-seg="${id}">${I.svg(t.icon,13)} ${t.label}</button>`;
+        }).join('');
+      }
+      function typedSeg(){ return `<div class="seg seg-typed">${segButtons()}</div>`; }
+
+      function scopeBar(){
+        const t = typeMap[activeType];
+        const people = D.people.filter(p=>p.type===activeType);
+        return `<div class="scope-bar scope-${t.cls}">
+          <span class="scope-strip"></span>
+          <span class="scope-ic">${I.svg(t.icon,20)}</span>
+          <div class="scope-txt">
+            <div class="scope-label">現在表示中の人物タイプ</div>
+            <div class="scope-name">${t.label}の一覧</div>
+          </div>
+          <div class="grow"></div>
+          <span class="scope-count">${people.length.toLocaleString()}件</span>
+        </div>`;
+      }
 
       function table(){
-        const people = D.people.filter(p=>activeType==='all'||p.type===activeType);
+        const people = D.people.filter(p=>p.type===activeType);
         const group = D.attrGroups.find(g=>g.id===activeTab);
         const cols = group.fields.slice(0,5);
         return `
@@ -88,7 +112,7 @@
           })}
 
           <div class="toolbar">
-            ${UI.seg([{id:'all',label:'全件'},{id:'student',label:'生徒'},{id:'teacher',label:'教員'},{id:'staff',label:'職員'}], activeType)}
+            ${typedSeg()}
             <div class="toolbar-divider"></div>
             <div class="input-icon" style="width:260px"><span class="sicon">${I.svg('search',15)}</span><input class="input" placeholder="氏名・ID・メールで検索…"></div>
             <div class="grow"></div>
@@ -101,10 +125,12 @@
           ${activeTab==='sensitive' ? `
             <div class="banner banner-warn mb-12">${I.svg('shield',18)}<div class="body"><div class="title">機微情報の取り扱い</div>当タブは権限を持つユーザーのみ閲覧・編集できます。アクセスはすべて監査ログに記録されます。</div></div>`:''}
 
+          <div id="roster-scope">${scopeBar()}</div>
+
           <div id="roster-table">${table()}</div>
         `;
         I.scan(el);
-        UI.bindSeg(el.querySelector('.toolbar .seg'), id=>{ activeType=id; el.querySelector('#roster-table').innerHTML=table(); I.scan(el); bindRow(); });
+        UI.bindSeg(el.querySelector('.toolbar .seg'), id=>{ activeType=id; el.querySelector('#roster-scope').innerHTML=scopeBar(); el.querySelector('.toolbar .seg').innerHTML=segButtons(); I.scan(el); el.querySelector('#roster-table').innerHTML=table(); I.scan(el); bindRow(); });
         UI.bindTabs(el.querySelector('.tabs'), id=>{ activeTab=id; el.querySelector('#roster-table').innerHTML=table(); I.scan(el); bindRow(); });
         el.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>location.hash=b.dataset.go));
         el.querySelectorAll('[data-export]').forEach(b=>b.addEventListener('click',()=>UI.toast({title:'エクスポート中',msg:'現在の表示内容を CSV で出力しています。',kind:'info'})));
