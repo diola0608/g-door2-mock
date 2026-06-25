@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>属性項目設定｜Gakuto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-page="attributes">
+  <div class="app">
+    <div id="shell-header"></div>
+    <div class="body">
+      <div id="shell-sidebar"></div>
+      <main class="main"><div class="main__scroll"><div class="page" id="page"></div></div></main>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    const TYPE_META = {
+      "数値":["hash","b-info"], "単一文字列":["type","b-gray"], "複数文字列":["list","b-teal"],
+      "日付":["calendar","b-violet"], "コード":["code","b-brand"]
+    };
+    function render(){
+      const groups = ATTR_GROUPS.map(g=>{
+        const items = ATTRIBUTES.filter(a=>a.group===g);
+        return `
+        <div class="card mb-16">
+          <div class="card__head">
+            ${icon('layers',18)}<h3>${g}</h3><span class="sub">${items.length}項目</span>
+            <div class="right">
+              <span class="badge-s b-gray">タブ表示</span>
+              <button class="btn btn-secondary btn-sm" onclick="openAddAttr('${g}')">${icon('plus',14)} 項目を追加</button>
+            </div>
+          </div>
+          <div class="card__body flush table-wrap">
+            <table class="tbl">
+              <thead><tr><th>項目名</th><th>データ形式</th><th>必須</th><th>バリデーション</th><th>権限制限</th><th>連携</th><th style="width:50px"></th></tr></thead>
+              <tbody>${items.map(a=>row(a)).join('')}</tbody>
+            </table>
+          </div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('page').innerHTML = `
+        <div class="crumb"><a href="index.html">ダッシュボード</a><span class="sep">/</span><span>設定</span><span class="sep">/</span><span>属性項目設定</span></div>
+        <div class="page-head">
+          <div class="page-head__icon" style="background:linear-gradient(135deg,#64748b,#334155)">${icon('sliders',24)}</div>
+          <div><h1>属性項目設定</h1><p>テナントごとに保持する項目を自由に定義。データ形式・バリデーション・履歴保持・権限制限を設定できます。</p></div>
+          <div class="page-head__actions">
+            <button class="btn btn-secondary" onclick="location.href='codes.html'">${icon('code',16)} コードマスター</button>
+            <button class="btn btn-primary" onclick="openAddAttr('基本情報')">${icon('plus',16)} 項目を追加</button>
+          </div>
+        </div>
+
+        <div class="grid grid-4 mb-16">
+          ${miniStat('全項目数', ATTRIBUTES.length, 'sliders','var(--brand-50)','var(--brand-600)')}
+          ${miniStat('カテゴリ(タブ)', ATTR_GROUPS.length, 'layers','var(--teal-50)','var(--teal-700)')}
+          ${miniStat('権限制限あり', ATTRIBUTES.filter(a=>a.restricted).length, 'lock','var(--warn-50)','var(--warn-600)')}
+          ${miniStat('フォーム連携', ATTRIBUTES.filter(a=>a.formLinked).length, 'link','var(--violet-50)','var(--violet-700)')}
+        </div>
+
+        <div class="alert info mb-16"><span class="ai">${icon('clock',16)}</span><div><b>すべての属性値は履歴を保持します</b>「いつからいつまでがその値だったか」を人物詳細のタイムラインで確認できます。</div></div>
+
+        ${groups}
+      `;
+    }
+
+    function row(a){
+      const [ic,cl]=TYPE_META[a.type]||["type","b-gray"];
+      return `<tr class="clickable" onclick="openAttr('${a.id}')">
+        <td><b>${a.name}</b></td>
+        <td><span class="badge-s ${cl}">${icon(ic,12)} ${a.type}</span></td>
+        <td>${a.required?'<span class="badge-s b-err">必須</span>':'<span class="muted">任意</span>'}</td>
+        <td class="muted" style="font-size:12.5px">${a.validation}</td>
+        <td>${a.restricted?`<span class="badge-s b-warn">${icon('lock',11)} 制限あり</span>`:'<span class="muted">なし</span>'}</td>
+        <td>${a.formLinked?`<span class="badge-s b-violet">${icon('link',11)} フォーム</span>`:'<span class="muted">—</span>'}</td>
+        <td onclick="event.stopPropagation()"><button class="icon-btn" style="width:30px;height:30px" onclick="openAttr('${a.id}')">${icon('edit',15)}</button></td>
+      </tr>`;
+    }
+    function miniStat(l,v,ic,bg,col){
+      return `<div class="stat"><div class="stat__ico" style="background:${bg};color:${col}">${icon(ic,18)}</div><div class="stat__val">${v}</div><div class="stat__label">${l}</div></div>`;
+    }
+
+    function openAttr(id){
+      const a = ATTRIBUTES.find(x=>x.id===id);
+      openAddAttr(a.group, a);
+    }
+    function openAddAttr(group, a){
+      const edit = !!a;
+      const types = ["数値","単一文字列","複数文字列","日付","コード"];
+      modalShell({ title: edit?`属性項目「${a.name}」`:"属性項目を追加", sub:"データ形式とバリデーション、履歴保持・権限制限を設定", icon:"sliders", size:"lg",
+        body:`
+          <div class="grid grid-2">
+            <div class="form-row"><label>項目名<span class="req">*</span></label><input class="input" value="${edit?a.name:''}" placeholder="例：部活顧問"></div>
+            <div class="form-row"><label>カテゴリ（タブ）<span class="req">*</span></label><select class="input">${ATTR_GROUPS.map(g=>`<option ${g===group?'selected':''}>${g}</option>`).join('')}</select></div>
+          </div>
+          <div class="form-row"><label>データ形式<span class="req">*</span></label>
+            <div class="grid grid-3" style="gap:8px">
+              ${types.map(t=>{const sel=edit&&a.type===t; const[ic]=TYPE_META[t];
+                return `<label class="scope-row" style="cursor:pointer;justify-content:flex-start;gap:8px;${sel?'border-color:var(--brand-400);background:var(--brand-50)':''}">
+                  <input type="radio" name="atype" class="checkbox" ${sel?'checked':''}>${icon(ic,15)}<span style="font-weight:700">${t}</span></label>`;}).join('')}
+            </div>
+            <div class="hint">「コード」を選ぶと、コードマスターから選択肢を引用しバリデーションします。</div>
+          </div>
+          <div class="grid grid-2">
+            <div class="form-row"><label>バリデーション</label><input class="input" value="${edit?a.validation:''}" placeholder="例：電話形式 / 50文字以内 / コード:GENDER"></div>
+            <div class="form-row"><label>参照コードマスター（コード形式時）</label><select class="input"><option>—</option>${CODE_MASTERS.map(c=>`<option>${c.id}（${c.name}）</option>`).join('')}</select></div>
+          </div>
+          <div class="divider"></div>
+          <div class="scope-row" style="justify-content:space-between"><div><b>必須項目にする</b><div class="hint" style="margin-top:2px">登録時に入力を必須とします</div></div>
+            <label class="switch"><input type="checkbox" ${edit&&a.required?'checked':''}><span class="track"></span></label></div>
+          <div class="scope-row" style="justify-content:space-between;margin-top:8px"><div><b>履歴を保持する</b><div class="hint" style="margin-top:2px">値の有効期間（いつ〜いつ）を記録します</div></div>
+            <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="scope-row" style="justify-content:space-between;margin-top:8px"><div><b>権限制限をかける</b><div class="hint" style="margin-top:2px">閲覧・編集できるロール／スコープを権限管理で指定</div></div>
+            <label class="switch"><input type="checkbox" ${edit&&a.restricted?'checked':''}><span class="track"></span></label></div>
+          ${edit&&a.restricted?`<div class="alert warn mt-8"><span class="ai">${icon('shield',15)}</span><div>この項目には権限制限が設定されています。<a href="permissions.html" style="font-weight:700;text-decoration:underline">権限管理で条件を編集 →</a></div></div>`:''}
+        `,
+        foot:`${edit?`<button class="btn btn-ghost" style="color:var(--err-600);margin-right:auto" onclick="toast('項目を削除しました','info');closeModal()">${icon('trash',16)} 削除</button>`:''}
+          <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+          <button class="btn btn-primary" onclick="toast('${edit?'項目を保存しました':'項目を追加しました'}','ok');closeModal()">${icon('check',16)} 保存</button>` });
+    }
+    render();
+  </script>
+</body>
+</html>

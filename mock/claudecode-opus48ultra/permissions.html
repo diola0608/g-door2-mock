@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>権限設定 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="permissions">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span>管理設定</span><span id="b2"></span><span class="cur">権限設定</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>権限設定</h1><p>主体（誰が）× 対象（何を）× 条件（属性・関係）× スコープ（組織範囲）を組み合わせ、機能単位で権限を付与します</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="権限シミュレーターを開く（モック）"><span id="a0"></span>シミュレート</button>
+        <button class="btn btn-primary" data-modal="m-rule"><span id="a1"></span>ルールを作成</button>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="pp-rules">権限ルール <span class="pill">86</span></div>
+      <div class="ptab" data-tab="pp-roles">ロール（職種） <span class="pill">24</span></div>
+      <div class="ptab" data-tab="pp-inherit">継承マップ</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- rules -->
+    <div data-panel="pp-rules">
+      <!-- scope selector -->
+      <div class="card mb16">
+        <div class="card-pad" style="padding:12px 16px">
+          <div class="row wrap gap10">
+            <span class="tiny muted">適用範囲：</span>
+            <div class="dropdown" data-dropdown>
+              <button class="btn btn-secondary btn-sm" data-dropdown-toggle><span id="sc0"></span><b id="scope-label">テナント全体（神奈川県）</b><span id="sc1"></span></button>
+              <div class="dropdown-menu left" style="min-width:240px">
+                <div class="menu-label">適用範囲を選択</div>
+                <div class="menu-item scope" data-s="テナント全体（神奈川県）">テナント全体（神奈川県）</div>
+                <div class="menu-item scope" data-s="横浜市">横浜市</div>
+                <div class="menu-item scope" data-s="横浜市立旭小学校">横浜市立旭小学校</div>
+              </div>
+            </div>
+            <div class="input-icon" style="width:240px"><span id="si"></span><input class="input btn-sm" style="height:34px" placeholder="ルールを検索" data-mock-input></div>
+            <div class="right"><span class="tiny muted">継承元のルールも表示しています</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info mb16"><span id="i0"></span><div class="body">テナント全体のルールは下位組織に継承されます。各組織で上書き・追加でき、<b>下位組織の設定が優先</b>されます。</div></div>
+
+      <div id="rules"></div>
+    </div>
+
+    <!-- roles -->
+    <div data-panel="pp-roles" style="display:none">
+      <div class="card">
+        <div class="card-head"><h3>ロール（職種）</h3><div class="right"><button class="btn btn-sm btn-soft" data-mock="ロールを追加（モック）"><span id="ri"></span>追加</button></div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>ロール</th><th>説明</th><th>付与ルール数</th><th>対象人数</th><th></th></tr></thead>
+            <tbody id="role-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- inheritance -->
+    <div data-panel="pp-inherit" style="display:none">
+      <div class="alert alert-info mb16"><span id="ii"></span><div class="body">各組織がテナント全体の設定をどう継承・上書きしているかのマップです。</div></div>
+      <div class="card">
+        <div class="card-pad">
+          <div class="timeline">
+            <div class="tl-item"><div class="tl-dot"></div><div class="what">テナント全体（神奈川県） <span class="badge b-info">基準 62ルール</span></div><div class="who">すべての組織へ継承</div></div>
+            <div class="tl-item"><div class="tl-dot warn"></div><div class="what">横浜市 <span class="badge b-warn dot">3件 上書き ・ 5件 追加</span></div><div class="who">継承 62 → 実効 67ルール</div></div>
+            <div class="tl-item"><div class="tl-dot warn"></div><div class="what">横浜市立旭小学校 <span class="badge b-warn dot">2件 上書き ・ 1件 追加</span></div><div class="who">継承 67 → 実効 68ルール ・ 最優先</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- rule builder modal -->
+<div class="modal-root" id="m-rule">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal xl">
+    <div class="modal-head"><span class="mico" style="background:#efe9fb;color:var(--c-admin)" id="mr1"></span><div><h3>権限ルールを作成</h3><p>「誰が・どんな条件で・何を・どうできるか」を組み立てます</p></div><button class="icon-btn x" data-close id="mr2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>ルール名 <span class="req">*</span></label><input class="input" placeholder="例：担任は自クラス生徒の基本情報を編集できる"></div>
+
+      <div class="cond">
+        <div class="row gap8 mb12"><span class="when-tag">WHO ・ 主体</span><span class="tiny muted">誰に権限を与えるか</span></div>
+        <div class="grid g2">
+          <div class="field" style="margin:0"><label>主体の種別</label><select class="select"><option>ロール（職種）</option><option>属性項目の値</option><option>特定の組織・部署</option></select></div>
+          <div class="field" style="margin:0"><label>値</label><select class="select"><option>一般教員</option><option>校長</option><option>学年主任</option></select></div>
+        </div>
+      </div>
+
+      <div class="cond">
+        <div class="row gap8 mb12"><span class="when-tag">IF ・ 関係・条件</span><span class="tiny muted">主体と対象の関係や属性条件（サブジェクト–オブジェクト関係）</span></div>
+        <div class="row wrap gap8 mb8">
+          <span class="tag">対象生徒が「自分が担任のクラス」に所属 <span class="x">✕</span></span>
+        </div>
+        <button class="btn btn-sm btn-secondary" data-mock="条件を追加（モック）"><span id="mr3"></span>条件を追加（属性値・所属関係・スコープ）</button>
+      </div>
+
+      <div class="cond">
+        <div class="row gap8 mb12"><span class="then-tag">WHAT ・ 対象</span><span class="tiny muted">どのデータに対してか</span></div>
+        <div class="grid g3">
+          <div class="field" style="margin:0"><label>対象区分</label><select class="select"><option>生徒</option><option>教員</option><option>職員</option></select></div>
+          <div class="field" style="margin:0"><label>データカテゴリ</label><select class="select"><option>基本情報</option><option>連絡先情報</option><option>機微情報</option><option>特定の属性項目</option></select></div>
+          <div class="field" style="margin:0"><label>組織スコープ</label><select class="select"><option>自分のクラス</option><option>同一学校</option><option>同一市町村・同一学校種</option><option>テナント全体</option></select></div>
+        </div>
+      </div>
+
+      <div class="cond" style="background:#fff;border-color:var(--ok-500)">
+        <div class="row gap8 mb12"><span class="then-tag">CAN ・ 操作（機能）</span><span class="tiny muted">どの機能を許可するか</span></div>
+        <div class="row wrap gap16">
+          <label class="row gap6"><input type="checkbox" class="cb" checked>閲覧</label>
+          <label class="row gap6"><input type="checkbox" class="cb" checked>編集</label>
+          <label class="row gap6"><input type="checkbox" class="cb">CSVインポート</label>
+          <label class="row gap6"><input type="checkbox" class="cb">所属変更を承認不要で実行</label>
+          <label class="row gap6"><input type="checkbox" class="cb">フォーム作成</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot spread">
+      <span class="tiny muted">このルールは選択中の適用範囲（テナント全体）に作成されます</span>
+      <div class="row gap8"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="権限ルールを作成しました（モック）">作成する</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');b2.innerHTML=ic('chevRight');a0.innerHTML=ic('play');a1.innerHTML=ic('plus');
+  sc0.innerHTML=ic('sitemap');sc1.innerHTML=ic('chevDown');si.innerHTML=ic('search');i0.innerHTML=ic('info');
+  ri.innerHTML=ic('plus');ii.innerHTML=ic('info');mr1.innerHTML=ic('shield');mr2.innerHTML=ic('x');mr3.innerHTML=ic('plus');
+
+  document.querySelectorAll('.scope').forEach(s=>s.addEventListener('click',()=>{document.getElementById('scope-label').textContent=s.dataset.s;toast(s.dataset.s+' の権限を表示（モック）','info');}));
+
+  // rule cards
+  const rules=[
+    {
+      name:'担任は自クラス生徒の基本情報を編集できる', on:true, scope:'テナント全体', sb:'継承',
+      who:['ロール：一般教員'], iff:['対象生徒が「自分が担任のクラス」に所属'], what:'生徒 ・ 基本情報', where:'自クラス', can:['閲覧','編集']
+    },
+    {
+      name:'部活顧問は担当部活の生徒の連絡先を閲覧できる', on:true, scope:'テナント全体', sb:'継承',
+      who:['属性：部活顧問 に値あり'], iff:['対象生徒の「部活」= 自分の顧問部活','担当学校に所属'], what:'生徒 ・ 連絡先情報', where:'担当学校', can:['閲覧']
+    },
+    {
+      name:'校長は同一市町村・同一学校種の一般教員の連絡先を閲覧できる', on:true, scope:'テナント全体', sb:'継承',
+      who:['ロール：校長'], iff:['対象が一般教員','同一市町村 かつ 同一学校種'], what:'教員 ・ 連絡先情報', where:'同一市町村・学校種', can:['閲覧']
+    },
+    {
+      name:'学年主任は機微情報「いじめ加害者」コードを閲覧できる', on:true, scope:'横浜市立旭小学校', sb:'この組織で上書き',
+      who:['ロール：学年主任'], iff:['対象がコード「いじめ加害者」を保持'], what:'生徒 ・ 機微情報（特定コード）', where:'自学年', can:['閲覧']
+    },
+    {
+      name:'市教委 学事課は市内全生徒の基本情報を閲覧できる', on:true, scope:'横浜市', sb:'この組織で追加',
+      who:['組織：横浜市教委 学事課'], iff:[], what:'生徒 ・ 基本情報', where:'横浜市内すべて', can:['閲覧']
+    },
+    {
+      name:'システム管理者は全機能を実行できる', on:true, scope:'テナント全体', sb:'継承',
+      who:['ロール：システム管理者'], iff:[], what:'全データ', where:'テナント全体', can:['閲覧','編集','CSVインポート','承認不要の所属変更','フォーム作成']
+    },
+  ];
+  const chip=(t,cls)=>`<span class="badge ${cls}">${t}</span>`;
+  document.getElementById('rules').innerHTML=rules.map(r=>`
+    <div class="card mb16">
+      <div class="card-head">
+        <span class="tile-ico" style="width:36px;height:36px;border-radius:9px;background:#efe9fb;color:var(--c-admin)">${ic('shield')}</span>
+        <div><h3 style="font-size:15px">${r.name}</h3><span class="sub">${r.sb==='継承'?'<span class="badge b-neutral">継承</span>':r.sb==='この組織で上書き'?'<span class="badge b-warn dot">この組織で上書き</span>':'<span class="badge b-info dot">この組織で追加</span>'} ・ 適用：${r.scope}</span></div>
+        <div class="right row gap8">
+          <span class="toggle"><input type="checkbox" ${r.on?'checked':''}><span class="track"></span></span>
+          <div class="dropdown" data-dropdown>
+            <button class="icon-btn btn-sm" style="width:32px;height:32px;border:1px solid var(--line);border-radius:8px" data-dropdown-toggle>${ic('dots')}</button>
+            <div class="dropdown-menu">
+              <div class="menu-item" data-modal="m-rule">${ic('edit')}編集</div>
+              <div class="menu-item" data-mock="複製しました">${ic('copy')}複製</div>
+              <div class="menu-item" data-mock="下位組織で上書き（モック）">${ic('sitemap')}この配下で上書き</div>
+              <div class="menu-sep"></div>
+              <div class="menu-item danger" data-mock="削除（モック）">${ic('trash')}削除</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-pad">
+        <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+          <div><div class="section-label" style="margin-bottom:8px">主体（WHO）</div>${r.who.map(w=>chip(w,'b-info')).join(' ')}</div>
+          <div><div class="section-label" style="margin-bottom:8px">条件（IF）</div>${r.iff.length?r.iff.map(w=>chip(w,'b-neutral')).join(' '):'<span class="muted tiny">条件なし</span>'}</div>
+          <div><div class="section-label" style="margin-bottom:8px">対象（WHAT）・スコープ</div>${chip(r.what,'b-purple')} ${chip(r.where,'b-teal')}</div>
+          <div><div class="section-label" style="margin-bottom:8px">許可する機能（CAN）</div>${r.can.map(c=>chip(c,'b-ok')).join(' ')}</div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // roles
+  const roles=[
+    {n:'システム管理者',d:'テナント全体の全機能',rules:12,ppl:8,av:'av-red'},
+    {n:'教育委員会 管理職',d:'市町村スコープの管理',rules:9,ppl:42,av:'av-purple'},
+    {n:'校長',d:'同一校・関連教員の管理',rules:7,ppl:412,av:'av-teal'},
+    {n:'教頭',d:'所属校の承認・取込',rules:8,ppl:401,av:'av-blue'},
+    {n:'学年主任',d:'学年の機微情報を含む閲覧',rules:6,ppl:1240,av:'av-amber'},
+    {n:'一般教員',d:'自クラス生徒の基本・連絡先',rules:5,ppl:31002,av:'av-green'},
+  ];
+  document.getElementById('role-rows').innerHTML=roles.map(r=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${r.av}" style="width:30px;height:30px">${r.n.slice(0,1)}</span><b>${r.n}</b></div></td>
+      <td class="tiny muted">${r.d}</td>
+      <td class="mono">${r.rules}</td>
+      <td class="mono">${r.ppl.toLocaleString()}</td>
+      <td class="text-r"><button class="btn btn-sm btn-secondary" data-mock="ロールを編集（モック）">編集</button></td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

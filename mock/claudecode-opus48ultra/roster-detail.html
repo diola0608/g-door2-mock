@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>田中 美咲 ｜ 名簿 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="roster-list">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><a href="roster-list.html">名簿一覧</a><span id="b2"></span><span class="cur">田中 美咲</span></div>
+    <div class="page-title-row" style="align-items:center">
+      <div class="row gap16">
+        <span class="avatar av-pink" style="width:60px;height:60px;font-size:22px">田</span>
+        <div class="ttl">
+          <div class="row gap10" style="align-items:center"><h1 style="font-size:22px">田中 美咲</h1><span class="badge b-info">生徒</span><span class="badge b-ok dot">在籍中</span></div>
+          <p>たなか みさき ・ <span class="mono">S-10241</span> ・ 横浜市立旭小学校 4年2組</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="所属変更の申請を作成（モック）"><span id="a1"></span>所属変更を申請</button>
+        <button class="btn btn-primary" data-modal="m-edit"><span id="a2"></span>属性を編集</button>
+        <div class="dropdown" data-dropdown>
+          <button class="icon-btn btn-secondary" data-dropdown-toggle style="border:1px solid var(--line);border-radius:10px" id="a3"></button>
+          <div class="dropdown-menu">
+            <div class="menu-item" data-mock><span id="md1"></span>変更履歴をすべて見る</div>
+            <div class="menu-item" data-mock><span id="md2"></span>関係者（保護者）を表示</div>
+            <div class="menu-item" data-mock><span id="md3"></span>CSVに書き出し</div>
+            <div class="menu-sep"></div>
+            <div class="menu-item danger" data-mock><span id="md4"></span>在籍を終了（卒業処理）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="d-basic">基本情報</div>
+      <div class="ptab" data-tab="d-contact">連絡先情報</div>
+      <div class="ptab" data-tab="d-sensitive">機微情報 <span class="badge b-err dot" style="margin-left:2px">制限</span></div>
+      <div class="ptab" data-tab="d-affil">所属・履歴</div>
+      <div class="ptab" data-tab="d-attr">属性の履歴</div>
+      <div class="ptab" data-tab="d-acl">この人を見られる人</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="grid" style="grid-template-columns: 300px 1fr; align-items:start">
+      <!-- left rail -->
+      <div class="col gap16" style="position:sticky;top:130px">
+        <div class="card">
+          <div class="card-head" style="padding:14px 16px"><h3 style="font-size:14px">アカウント連携</h3></div>
+          <div class="card-pad">
+            <div class="row gap10 mb12">
+              <span class="tile-ico" style="width:38px;height:38px;background:#fff;border:1px solid var(--line);color:#ea4335"><span id="g1"></span></span>
+              <div><b style="display:block;font-size:13px">Google Workspace</b><span class="badge b-neutral dot">メール未保有</span></div>
+            </div>
+            <div class="alert alert-info" style="padding:10px 12px"><span id="g2"></span><div class="body tiny">この生徒はメールアカウントを保有していないため、Workspace同期の対象外です。メールを登録すると自動的に同期対象になります。</div></div>
+            <button class="btn btn-secondary btn-block btn-sm mt12" data-mock="メール登録フォームを開く（モック）">メールを登録</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head" style="padding:14px 16px"><h3 style="font-size:14px">クイック情報</h3></div>
+          <div class="card-pad">
+            <div class="kv"><span class="k">人物ID</span><span class="v mono">S-10241</span></div>
+            <div class="kv"><span class="k">識別子（職員/学籍番号）</span><span class="v mono">2025-Y-0241</span></div>
+            <div class="kv"><span class="k">登録日</span><span class="v mono">2022-04-01</span></div>
+            <div class="kv"><span class="k">最終更新</span><span class="v">2分前 ・ CSV取込</span></div>
+            <div class="kv"><span class="k">保護者</span><span class="v">田中 一郎</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- main panels -->
+      <div>
+        <!-- basic -->
+        <div data-panel="d-basic">
+          <div class="card">
+            <div class="card-head"><h3>基本情報</h3><div class="right"><button class="btn btn-sm btn-secondary" data-modal="m-edit"><span id="e1"></span>編集</button></div></div>
+            <div class="card-pad grid g2" style="gap:0 32px">
+              <div><div class="kv"><span class="k">氏名</span><span class="v">田中 美咲</span></div><div class="kv"><span class="k">ふりがな</span><span class="v">たなか みさき</span></div><div class="kv"><span class="k">性別</span><span class="v">女</span></div><div class="kv"><span class="k">生年月日</span><span class="v mono">2015-04-12（10歳）</span></div></div>
+              <div><div class="kv"><span class="k">所属組織</span><span class="v">横浜市立旭小学校</span></div><div class="kv"><span class="k">クラス</span><span class="v">4年2組</span></div><div class="kv"><span class="k">在籍状態</span><span class="v"><span class="badge b-ok dot">在籍中</span></span></div><div class="kv"><span class="k">区分</span><span class="v"><span class="badge b-info">生徒</span></span></div></div>
+            </div>
+          </div>
+          <div class="card mt16">
+            <div class="card-head"><h3>属性項目（基本情報グループ）</h3><span class="sub">テナント定義のカスタム項目</span></div>
+            <div class="card-pad">
+              <div class="grid g3">
+                <div class="kv col" style="border:1px solid var(--line);border-radius:10px;padding:12px"><span class="dt dt-date"><span id="dt1"></span>日付</span><span class="k mt8" style="width:auto">入学年月日</span><span class="v mono">2022-04-01</span></div>
+                <div class="kv col" style="border:1px solid var(--line);border-radius:10px;padding:12px"><span class="dt dt-code"><span id="dt2"></span>コード</span><span class="k mt8" style="width:auto">血液型</span><span class="v">A型</span></div>
+                <div class="kv col" style="border:1px solid var(--line);border-radius:10px;padding:12px"><span class="dt dt-multi"><span id="dt3"></span>複数選択</span><span class="k mt8" style="width:auto">アレルギー</span><span class="v"><span class="badge b-warn">卵</span> <span class="badge b-warn">乳</span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- contact -->
+        <div data-panel="d-contact" style="display:none">
+          <div class="card">
+            <div class="card-head"><h3>連絡先情報</h3><span class="badge b-warn dot">権限により一部マスク</span></div>
+            <div class="card-pad grid g2" style="gap:0 32px">
+              <div><div class="kv"><span class="k">住所</span><span class="v">横浜市旭区中沢1-2-3</span></div><div class="kv"><span class="k">電話番号</span><span class="v mono">045-***-**12 <button class="icon-btn btn-sm" style="width:24px;height:24px;display:inline-grid" data-mock="表示しました（モック）"><span id="ey1"></span></button></span></div></div>
+              <div><div class="kv"><span class="k">保護者氏名</span><span class="v">田中 一郎（父）</span></div><div class="kv"><span class="k">緊急連絡先</span><span class="v mono">090-****-1234</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- sensitive -->
+        <div data-panel="d-sensitive" style="display:none">
+          <div class="alert alert-warn mb16"><span id="s1"></span><div class="body"><b>機微情報 ・ 閲覧条件：所属校の教員 かつ 担任または学年主任</b>コード「いじめ加害者」は学年主任のみ表示。あなたの閲覧操作はアクセスログに記録されます。</div></div>
+          <div class="card">
+            <div class="card-head"><h3>機微情報</h3></div>
+            <div class="card-pad">
+              <div class="kv"><span class="k">人物の特徴</span><span class="v"><span class="badge b-purple">優良生徒</span></span></div>
+              <div class="kv"><span class="k">不登校傾向</span><span class="v">なし</span></div>
+              <div class="kv"><span class="k">支援要否</span><span class="v">不要</span></div>
+              <div class="kv"><span class="k">いじめ歴</span><span class="v"><span class="row gap6"><span class="mono" style="letter-spacing:2px">••••</span><button class="icon-btn btn-sm" style="width:24px;height:24px;display:inline-grid" data-mock="この項目は学年主任のみ表示可能です"><span id="ey2"></span></button></span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- affiliation history -->
+        <div data-panel="d-affil" style="display:none">
+          <div class="card">
+            <div class="card-head"><h3>所属の履歴</h3><span class="sub">いつからどの組織・クラスに所属していたか</span><div class="right"><button class="btn btn-sm btn-secondary" data-mock="所属変更を申請（モック）"><span id="af1"></span>所属変更を申請</button></div></div>
+            <div class="card-pad">
+              <div class="timeline">
+                <div class="tl-item"><div class="tl-dot"></div><div class="when">2025-04-01 〜 現在</div><div class="what">横浜市立旭小学校 ・ 4年2組</div><div class="who">担任：小林 由美 ・ CSV取込により設定</div></div>
+                <div class="tl-item"><div class="tl-dot muted"></div><div class="when">2024-04-01 〜 2025-03-31</div><div class="what">横浜市立旭小学校 ・ 3年1組</div><div class="who">進級処理（バッチ）</div></div>
+                <div class="tl-item"><div class="tl-dot muted"></div><div class="when">2022-04-01 〜 2024-03-31</div><div class="what">横浜市立旭小学校 ・ 1〜2年</div><div class="who">入学時登録</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- attribute history -->
+        <div data-panel="d-attr" style="display:none">
+          <div class="alert alert-info mb16"><span id="at0"></span><div class="body">各属性項目は履歴を保持します。値ごとに有効期間（いつからいつまで）が記録され、過去時点の値も参照できます。</div></div>
+          <div class="card">
+            <div class="card-head"><h3>属性の変更履歴</h3>
+              <div class="right row gap8">
+                <select class="select btn-sm" style="height:34px;width:auto"><option>すべての項目</option><option>クラス</option><option>アレルギー</option><option>人物の特徴</option></select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead><tr><th>属性項目</th><th>値</th><th>有効期間（自）</th><th>有効期間（至）</th><th>変更者・経路</th><th>状態</th></tr></thead>
+                <tbody>
+                  <tr><td><b>クラス</b></td><td>4年2組</td><td class="mono">2025-04-01</td><td class="mono muted">—（現在）</td><td>バッチ（進級処理）</td><td><span class="badge b-ok dot">現行</span></td></tr>
+                  <tr><td>クラス</td><td>3年1組</td><td class="mono">2024-04-01</td><td class="mono">2025-03-31</td><td>バッチ（進級処理）</td><td><span class="badge b-neutral">過去</span></td></tr>
+                  <tr><td><b>アレルギー</b></td><td><span class="badge b-warn">卵</span> <span class="badge b-warn">乳</span></td><td class="mono">2024-09-01</td><td class="mono muted">—（現在）</td><td>フォーム回答反映</td><td><span class="badge b-ok dot">現行</span></td></tr>
+                  <tr><td>アレルギー</td><td><span class="badge b-warn">卵</span></td><td class="mono">2022-04-01</td><td class="mono">2024-08-31</td><td>入学時登録</td><td><span class="badge b-neutral">過去</span></td></tr>
+                  <tr><td><b>人物の特徴</b></td><td><span class="badge b-purple">優良生徒</span></td><td class="mono">2025-05-10</td><td class="mono muted">—（現在）</td><td>UI編集：小林 由美</td><td><span class="badge b-ok dot">現行</span></td></tr>
+                  <tr><td><b>住所</b></td><td>横浜市旭区中沢1-2-3</td><td class="mono">2023-07-01</td><td class="mono muted">—（現在）</td><td>UI編集：保護者申請</td><td><span class="badge b-ok dot">現行</span></td></tr>
+                  <tr><td>住所</td><td>横浜市旭区今宿...</td><td class="mono">2022-04-01</td><td class="mono">2023-06-30</td><td>入学時登録</td><td><span class="badge b-neutral">過去</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACL -->
+        <div data-panel="d-acl" style="display:none">
+          <div class="alert alert-info mb16"><span id="ac0"></span><div class="body"><b>この人物のデータを閲覧・編集できる主体</b>権限設定（主体×対象×スコープ×属性条件）から算出した実効アクセス権です。</div></div>
+          <div class="card">
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead><tr><th>主体（誰が）</th><th>条件</th><th>閲覧できる範囲</th><th>編集</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="t-name"><span class="avatar av-purple" style="width:30px;height:30px">小</span><b>小林 由美</b></div></td><td>担任（4年2組）</td><td>基本・連絡先・機微（一部）</td><td><span class="badge b-ok">可</span></td></tr>
+                  <tr><td><div class="t-name"><span class="avatar av-pink" style="width:30px;height:30px">伊</span><b>伊藤 さくら</b></div></td><td>学年主任（4年）</td><td>基本・連絡先・機微（全て）</td><td><span class="badge b-ok">可</span></td></tr>
+                  <tr><td><div class="t-name"><span class="avatar av-teal" style="width:30px;height:30px">渡</span><b>渡辺 翔太</b></div></td><td>校長（同一校）</td><td>基本・連絡先</td><td><span class="badge b-neutral">閲覧のみ</span></td></tr>
+                  <tr><td><div class="t-name"><span class="avatar av-slate" style="width:30px;height:30px">学</span><b>学事課（横浜市教委）</b></div></td><td>市町村スコープ</td><td>基本のみ</td><td><span class="badge b-neutral">閲覧のみ</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- edit attribute modal (shows validation by datatype) -->
+<div class="modal-root" id="m-edit">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal lg">
+    <div class="modal-head"><span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="me1"></span><div><h3>属性を編集 ・ 田中 美咲</h3><p>データ形式に応じたバリデーションが適用されます。変更は有効期間付きで履歴に記録されます。</p></div><button class="icon-btn x" data-close id="me2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>クラス <span class="dt dt-code" style="margin-left:6px"><span id="me3"></span>コードマスター</span></label><select class="select"><option>4年2組</option><option>4年1組</option><option>4年3組</option></select></div>
+      <div class="field"><label>アレルギー <span class="dt dt-multi" style="margin-left:6px"><span id="me4"></span>複数選択</span></label>
+        <div class="row wrap gap8" style="border:1px solid var(--line);border-radius:10px;padding:8px"><span class="tag">卵 <span class="x">✕</span></span><span class="tag">乳 <span class="x">✕</span></span><button class="btn btn-sm btn-ghost" data-mock="候補から追加（モック）"><span id="me5"></span>追加</button></div>
+      </div>
+      <div class="field"><label>身長(cm) <span class="dt dt-num" style="margin-left:6px"><span id="me6"></span>数値</span></label><input class="input" type="number" value="138" placeholder="数値のみ"><div class="hint">バリデーション：50〜250 の数値</div></div>
+      <div class="field"><label>適用日（有効期間 自）<span class="dt dt-date" style="margin-left:6px"><span id="me7"></span>日付</span></label><input class="input" type="date" value="2026-06-25"><div class="hint">この日付から新しい値が有効になり、現行値は前日で締められます。</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="変更を保存しました（履歴に記録・モック）">変更を保存</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');b2.innerHTML=ic('chevRight');
+  a1.innerHTML=ic('transfer');a2.innerHTML=ic('edit');a3.innerHTML=ic('dots');
+  md1.innerHTML=ic('history');md2.innerHTML=ic('users');md3.innerHTML=ic('download');md4.innerHTML=ic('flag');
+  g1.innerHTML=ic('at');g2.innerHTML=ic('info');e1.innerHTML=ic('edit');
+  dt1.innerHTML=ic('calendar');dt2.innerHTML=ic('hash');dt3.innerHTML=ic('list');
+  ey1.innerHTML=ic('eye');ey2.innerHTML=ic('eye');s1.innerHTML=ic('lock');af1.innerHTML=ic('transfer');
+  at0.innerHTML=ic('history');ac0.innerHTML=ic('shield');
+  me1.innerHTML=ic('edit');me2.innerHTML=ic('x');me3.innerHTML=ic('hash');me4.innerHTML=ic('list');me5.innerHTML=ic('plus');me6.innerHTML=ic('type');me7.innerHTML=ic('calendar');
+</script>
+</body>
+</html>

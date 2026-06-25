@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コードマスター ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="codes">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span>管理設定</span><span id="b2"></span><span class="cur">コードマスター</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>コードマスター</h1><p>選択肢をコードとして管理します ・ コードごとに表示権限を設定できます</p></div>
+      <div class="actions"><button class="btn btn-primary" data-mock="マスターを追加（モック）"><span id="a1"></span>マスターを追加</button></div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="grid" style="grid-template-columns:300px 1fr;align-items:start">
+      <!-- master list -->
+      <div class="card" style="position:sticky;top:120px">
+        <div class="card-head" style="padding:12px 14px"><div class="input-icon grow"><span id="si"></span><input class="input btn-sm" style="height:36px" placeholder="マスターを検索" data-mock-input></div></div>
+        <div style="padding:8px" id="master-list"></div>
+      </div>
+
+      <!-- codes -->
+      <div class="col gap16">
+        <div class="card">
+          <div class="card-pad">
+            <div class="row between">
+              <div class="row gap12">
+                <span class="tile-ico" style="width:44px;height:44px;background:#fdeede;color:var(--c-form)" id="ci"></span>
+                <div><h2 style="margin:0;font-size:18px">人物の特徴マスター</h2><span class="muted tiny">コード <span class="mono">CM-FEATURE</span> ・ 6コード ・ 属性「人物の特徴」で使用</span></div>
+              </div>
+              <button class="btn btn-secondary btn-sm" data-modal="m-code"><span id="ce"></span>コードを追加</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warn"><span id="i0"></span><div class="body"><b>コード単位の表示権限</b>この属性自体の権限に加えて、選択肢（コード）ごとに「表示できる主体」をさらに絞り込めます。下表の「表示制限」列で設定します。</div></div>
+
+        <div class="card">
+          <div class="card-head"><h3>コード一覧</h3></div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>コード</th><th>ラベル</th><th>表示順</th><th>表示制限（このコードを見られる人）</th><th>状態</th><th></th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- code permission modal -->
+<div class="modal-root" id="m-code">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:var(--err-50);color:var(--err-500)" id="mc1"></span><div><h3>コードの表示制限</h3><p>「いじめ加害者」を表示できる主体を制限します</p></div><button class="icon-btn x" data-close id="mc2"></button></div>
+    <div class="modal-body">
+      <div class="grid g2">
+        <div class="field"><label>コード値</label><input class="input mono" value="HARASSER" ></div>
+        <div class="field"><label>ラベル</label><input class="input" value="いじめ加害者"></div>
+      </div>
+      <div class="field"><label>表示制限の種別</label>
+        <label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">制限なし（属性の権限に従う）</span><input type="radio" name="cp" class="rb"></label>
+        <label class="kv" style="cursor:pointer;background:var(--brand-50);border-radius:8px;padding:10px"><span class="k" style="width:auto;flex:1"><b>特定の役割のみ表示</b></span><input type="radio" name="cp" class="rb" checked></label>
+      </div>
+      <div class="field"><label>表示できる役割</label><div class="row wrap gap8"><span class="tag">学年主任 <span class="x">✕</span></span><button class="btn btn-sm btn-ghost" data-mock="役割を追加（モック）"><span id="mc3"></span>追加</button></div><div class="hint">これ以外の主体には、この選択肢自体が一覧・詳細で非表示になります。</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="表示制限を保存しました（モック）">保存</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');b2.innerHTML=ic('chevRight');a1.innerHTML=ic('plus');si.innerHTML=ic('search');
+  ci.innerHTML=ic('hash');ce.innerHTML=ic('plus');i0.innerHTML=ic('lock');mc1.innerHTML=ic('lock');mc2.innerHTML=ic('x');mc3.innerHTML=ic('plus');
+
+  const masters=[
+    {n:'人物の特徴マスター',c:'CM-FEATURE',cnt:6,sel:true},
+    {n:'部活動マスター',c:'CM-CLUB',cnt:24},
+    {n:'血液型マスター',c:'CM-BLOOD',cnt:4},
+    {n:'役職マスター',c:'CM-ROLE',cnt:12},
+    {n:'状態マスター（不登校等）',c:'CM-STATUS',cnt:5},
+    {n:'アレルギーマスター',c:'CM-ALLERGY',cnt:18},
+    {n:'組織種別マスター',c:'CM-ORGTYPE',cnt:5},
+  ];
+  document.getElementById('master-list').innerHTML=masters.map(m=>`
+    <div class="tree-row ${m.sel?'sel':''}" data-select="${m.n}" style="padding:9px 11px">${ic('hash')}<div style="flex:1"><b style="font-size:13px;display:block">${m.n}</b><span class="tiny muted mono">${m.c}</span></div><span class="cnt">${m.cnt}</span></div>`).join('');
+
+  const codes=[
+    {c:'EXCELLENT',l:'優良生徒',o:1,perm:'制限なし',pb:false,st:true},
+    {c:'SUPPORT',l:'要支援',o:2,perm:'制限なし',pb:false,st:true},
+    {c:'TRUANT',l:'不登校傾向',o:3,perm:'担任・学年主任',pb:true,st:true},
+    {c:'HARASSER',l:'いじめ加害者',o:4,perm:'学年主任のみ',pb:true,st:true},
+    {c:'VICTIM',l:'いじめ被害者',o:5,perm:'学年主任・SC',pb:true,st:true},
+    {c:'GIFTED',l:'特別支援対象',o:6,perm:'制限なし',pb:false,st:false},
+  ];
+  document.getElementById('rows').innerHTML=codes.map(c=>`
+    <tr>
+      <td><span class="mono tiny">${c.c}</span></td>
+      <td><b>${c.l}</b></td>
+      <td class="mono">${c.o}</td>
+      <td>${c.pb?`<span class="badge b-purple">${ic('lock')}${c.perm}</span>`:`<span class="muted tiny">${c.perm}</span>`}</td>
+      <td>${c.st?'<span class="badge b-ok dot">有効</span>':'<span class="badge b-neutral">無効</span>'}</td>
+      <td class="text-r"><div class="row-actions" style="justify-content:flex-end"><button class="icon-btn btn-sm" style="width:30px;height:30px" data-modal="m-code" title="表示制限">${ic('lock')}</button><button class="icon-btn btn-sm" style="width:30px;height:30px" data-modal="m-code">${ic('edit')}</button></div></td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

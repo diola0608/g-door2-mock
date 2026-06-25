@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>フォーム集計 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .bar-row .lbl{width:140px;flex:none;font-size:13px;font-weight:600}
+  .bar-track{flex:1;height:30px;background:var(--surface-2);border-radius:8px;overflow:hidden;position:relative}
+  .bar-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding:0 10px;color:#fff;font-weight:700;font-size:12.5px}
+  .bar-row .val{width:90px;flex:none;text-align:right;font-family:var(--font-mono);font-size:13px;color:var(--ink-600)}
+  .donut{width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--ok-500) 0 86.4%, var(--err-500) 86.4% 100%);display:grid;place-items:center}
+  .donut .hole{width:96px;height:96px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}
+</style>
+</head>
+<body data-page="forms">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><a href="forms-list.html">フォーム</a><span id="b2"></span><span class="cur">教員 自家用携帯番号の登録</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><div class="row gap10"><h1 style="font-size:21px">教員 自家用携帯番号の登録</h1><span class="badge b-ok dot">実施中</span><span class="badge b-teal"><span id="lk"></span>名簿連携</span></div><p>対象：県内全教員 約1,240名 ・ 締切 2026-07-05</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="未回答者へリマインドを送信（モック）"><span id="a0"></span>リマインド</button>
+        <button class="btn btn-secondary" data-mock="CSVで書き出し（モック）"><span id="a1"></span>書き出し</button>
+        <button class="btn btn-primary" data-mock="名簿への反映を実行（モック）"><span id="a2"></span>名簿へ反映</button>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="r-sum">集計</div>
+      <div class="ptab" data-tab="r-ind">個別回答 <span class="pill">1,180</span></div>
+      <div class="ptab" data-tab="r-sync">名簿反映状況</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- 集計 -->
+    <div data-panel="r-sum">
+      <div class="grid g4 mb24" id="stats"></div>
+
+      <div class="grid" style="grid-template-columns:1.4fr 1fr">
+        <div class="card">
+          <div class="card-head"><h3>Q2. 緊急時の連絡を許可しますか？</h3><span class="badge b-info">単一選択</span></div>
+          <div class="card-pad">
+            <div class="bar-row"><span class="lbl">許可する</span><div class="bar-track"><div class="bar-fill" style="width:86%;background:var(--ok-500)">86.4%</div></div><span class="val">1,020</span></div>
+            <div class="bar-row"><span class="lbl">許可しない</span><div class="bar-track"><div class="bar-fill" style="width:14%;background:var(--ink-400)">13.6%</div></div><span class="val">160</span></div>
+            <div class="divider"></div>
+            <h3 style="font-size:14px;margin:0 0 14px">Q3. 希望する連絡手段（複数選択）</h3>
+            <div class="bar-row"><span class="lbl">電話</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--brand-500)">72%</div></div><span class="val">850</span></div>
+            <div class="bar-row"><span class="lbl">SMS</span><div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--c-account)">58%</div></div><span class="val">684</span></div>
+            <div class="bar-row"><span class="lbl">メール</span><div class="bar-track"><div class="bar-fill" style="width:41%;background:var(--c-admin)">41%</div></div><span class="val">484</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>回答率</h3></div>
+          <div class="card-pad text-c">
+            <div class="donut" style="margin:6px auto 16px"><div class="hole"><div><b style="font-size:24px;font-family:var(--font-mono)">95.2%</b><div class="tiny muted">回答済</div></div></div></div>
+            <div class="row" style="justify-content:center;gap:20px">
+              <div><span class="badge b-ok dot">回答 1,180</span></div>
+              <div><span class="badge b-err dot">未回答 60</span></div>
+            </div>
+            <button class="btn btn-secondary btn-sm btn-block mt16" data-mock="未回答者を表示（モック）">未回答者を確認</button>
+          </div>
+          <div class="card-head" style="border-top:1px solid var(--line-2)"><h3 style="font-size:14px">Q1. 自家用携帯番号</h3></div>
+          <div class="card-pad">
+            <div class="kv"><span class="k">回答形式</span><span class="v"><span class="badge b-neutral">記述（短文）</span></span></div>
+            <div class="kv"><span class="k">回答数</span><span class="v">1,180件</span></div>
+            <div class="kv"><span class="k">名簿反映</span><span class="v"><span class="badge b-teal">自家用携帯番号</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 個別回答 -->
+    <div data-panel="r-ind" style="display:none">
+      <div class="alert alert-warn mb16"><span id="i1"></span><div class="body"><b>個別回答の閲覧は権限に従います。</b>校長は自校の教員の回答のみ閲覧できます。あなた（教職員課）は全件閲覧可能です。</div></div>
+      <div class="card">
+        <div class="card-head"><h3>個別回答</h3><div class="right"><div class="input-icon"><span id="si"></span><input class="input btn-sm" style="height:34px" placeholder="氏名・学校で検索" data-mock-input></div></div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>回答者</th><th>所属</th><th>Q1 自家用携帯番号</th><th>Q2 連絡許可</th><th>回答日時</th><th>名簿反映</th></tr></thead>
+            <tbody id="ind-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 名簿反映状況 -->
+    <div data-panel="r-sync" style="display:none">
+      <div class="alert alert-info mb16"><span id="i2"></span><div class="body">回答内容を名簿の属性「自家用携帯番号」へ反映した状況です。詳細は<a href="roster-logs.html" style="text-decoration:underline">処理ログ</a>でも確認できます。</div></div>
+      <div class="grid g4 mb24">
+        <div class="stat"><div class="label">反映対象</div><div class="num">1,180</div></div>
+        <div class="stat"><div class="label">反映済</div><div class="num" style="color:var(--ok-700)">1,170</div></div>
+        <div class="stat"><div class="label">保留</div><div class="num" style="color:var(--warn-700)">8</div></div>
+        <div class="stat"><div class="label">エラー</div><div class="num" style="color:var(--err-700)">2</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>反映ログ</h3></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>回答者</th><th>反映先項目</th><th>反映値</th><th>状態</th><th>処理時刻</th></tr></thead>
+            <tbody id="sync-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');b2.innerHTML=ic('chevRight');lk.innerHTML=ic('link');
+  a0.innerHTML=ic('bell');a1.innerHTML=ic('download');a2.innerHTML=ic('refresh');i1.innerHTML=ic('lock');i2.innerHTML=ic('info');si.innerHTML=ic('search');
+
+  const stats=[
+    {label:'回答数',num:'1,180',ico:'inbox',cls:'av-blue'},
+    {label:'回答率',num:'95.2%',ico:'pie',cls:'av-green'},
+    {label:'未回答',num:'60',ico:'alert',cls:'av-amber'},
+    {label:'名簿反映済',num:'1,170',ico:'refresh',cls:'av-teal'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="top"><div class="ico ${s.cls}" style="color:#fff">${ic(s.ico)}</div></div><div class="label">${s.label}</div><div class="num">${s.num}</div></div>`).join('');
+
+  const inds=[
+    {n:'鈴木 健一',av:'av-blue',org:'川崎市立宮前中',p:'090-****-2211',ok:'許可する',at:'06-24 10:12',sy:'ok'},
+    {n:'伊藤 さくら',av:'av-pink',org:'川崎市立宮前中',p:'080-****-4455',ok:'許可する',at:'06-24 11:30',sy:'ok'},
+    {n:'渡辺 翔太',av:'av-teal',org:'藤沢市立湘南台高',p:'090-****-8800',ok:'許可しない',at:'06-24 14:02',sy:'ok'},
+    {n:'小林 由美',av:'av-purple',org:'横浜市立旭小',p:'080-****-1212',ok:'許可する',at:'06-25 09:01',sy:'hold'},
+    {n:'田村 健',av:'av-amber',org:'横浜市立旭小',p:'090-****-0000',ok:'許可する',at:'06-25 09:20',sy:'err'},
+  ];
+  const syB={ok:'<span class="badge b-ok dot">反映済</span>',hold:'<span class="badge b-warn dot">保留</span>',err:'<span class="badge b-err dot">エラー</span>'};
+  document.getElementById('ind-rows').innerHTML=inds.map(r=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${r.av}" style="width:30px;height:30px">${r.n.slice(0,1)}</span><b>${r.n}</b></div></td>
+      <td class="tiny">${r.org}</td>
+      <td class="mono tiny">${r.p}</td>
+      <td>${r.ok==='許可する'?'<span class="badge b-ok">許可</span>':'<span class="badge b-neutral">不許可</span>'}</td>
+      <td class="tiny mono muted">${r.at}</td>
+      <td>${syB[r.sy]}</td>
+    </tr>`).join('');
+  document.getElementById('sync-rows').innerHTML=inds.map(r=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${r.av}" style="width:30px;height:30px">${r.n.slice(0,1)}</span><b>${r.n}</b></div></td>
+      <td><span class="badge b-teal">自家用携帯番号</span></td>
+      <td class="mono tiny">${r.p}</td>
+      <td>${syB[r.sy]}${r.sy==='err'?' <span class="tiny" style="color:var(--err-700)">電話番号形式エラー</span>':r.sy==='hold'?' <span class="tiny muted">バッチ待ち</span>':''}</td>
+      <td class="tiny mono muted">${r.at}</td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

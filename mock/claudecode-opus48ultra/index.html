@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ダッシュボード ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="dashboard">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><span class="cur">ホーム</span></div>
+    <div class="page-title-row">
+      <div class="ttl">
+        <h1>おはようございます、佐藤さん</h1>
+        <p>2026年6月25日（木）・ 神奈川県教育委員会テナント ｜ 本日の状況とよく使うサービスです</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="期間を変更しました（モック）"><span id="cal"></span>今月</button>
+        <button class="btn btn-primary" data-modal="m-create"><span id="plus"></span>新規作成</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- error banner -->
+    <div class="alert alert-err mb24">
+      <span id="al"></span>
+      <div class="body">
+        <b>CSVインポートで 2件のエラーが発生しています</b>
+        「教員データ_0625.csv」の取り込みで、職員番号の重複と必須項目の欠落を検出しました。内容を確認し、再取り込みまたは管理者へ問い合わせてください。
+      </div>
+      <div class="right">
+        <a class="btn btn-sm btn-secondary" href="roster-logs.html">エラーを確認</a>
+        <button class="btn btn-sm btn-danger" data-modal="m-support">管理者へ問い合わせ</button>
+      </div>
+    </div>
+
+    <!-- stats -->
+    <div class="grid g4 mb24" id="stats"></div>
+
+    <!-- launcher -->
+    <div class="row between mb16">
+      <div class="section-label" style="margin:0">サービス</div>
+      <span class="tiny muted">クリックで各サービスに移動します</span>
+    </div>
+    <div class="grid g3 mb24" id="tiles"></div>
+
+    <!-- tasks + activity -->
+    <div class="grid" style="grid-template-columns: 1.55fr 1fr;">
+      <div class="card">
+        <div class="card-head">
+          <h3>あなたのタスク</h3>
+          <span class="badge b-err dot">要対応 8</span>
+          <div class="right"><a class="btn btn-sm btn-ghost" href="transfers.html">すべて見る</a></div>
+        </div>
+        <div data-tabs class="page-tabs" style="padding:0 18px; border-bottom:1px solid var(--line-2)">
+          <div class="ptab active" data-tab="t-appr">承認待ち <span class="pill">6</span></div>
+          <div class="ptab" data-tab="t-err">エラー対応 <span class="pill">2</span></div>
+          <div class="ptab" data-tab="t-forms">フォーム</div>
+        </div>
+        <div data-panel="t-appr">
+          <div class="table-wrap">
+            <table class="tbl">
+              <tbody id="appr-rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div data-panel="t-err" style="display:none">
+          <div class="card-pad col gap10">
+            <div class="alert alert-err"><span id="e1"></span><div class="body"><b>職員番号の重複（行 142, 287）</b>同一テナント内で既に使用されている職員番号です。識別子の一致確認に失敗しました。</div><div class="right"><a class="btn btn-sm btn-secondary" href="roster-logs.html">詳細</a></div></div>
+            <div class="alert alert-warn"><span id="e2"></span><div class="body"><b>必須項目「所属組織」が空欄（行 51）</b>マッピング設定で所属組織の列が未指定の可能性があります。</div><div class="right"><a class="btn btn-sm btn-secondary" href="roster-import.html">マッピング確認</a></div></div>
+          </div>
+        </div>
+        <div data-panel="t-forms" style="display:none">
+          <div class="card-pad">
+            <div class="kv"><span class="k">勤務実態調査</span><span class="v">回答 312 / 480 ・ 締切まで3日</span></div>
+            <div class="kv"><span class="k">いじめ防止アンケート</span><span class="v">下書き ・ 対象者未確定</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>最近のアクティビティ</h3><div class="right"><button class="icon-btn btn-sm" data-mock="更新しました" id="rf"></button></div></div>
+        <div class="card-pad">
+          <div class="timeline" id="activity"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- create modal -->
+<div class="modal-root" id="m-create">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head">
+      <span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="mc1"></span>
+      <div><h3>新規作成</h3><p>作成したいものを選択してください</p></div>
+      <button class="icon-btn x" data-close id="mc2"></button>
+    </div>
+    <div class="modal-body">
+      <div class="grid g2" id="create-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- support modal -->
+<div class="modal-root" id="m-support">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head">
+      <span class="mico" style="background:var(--err-50);color:var(--err-500)" id="ms1"></span>
+      <div><h3>システム管理者へ問い合わせ</h3><p>エラー内容を添えて問い合わせを送信します</p></div>
+      <button class="icon-btn x" data-close id="ms2"></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-err mb16"><span id="ms3"></span><div class="body"><b>添付されるエラー：教員データ_0625.csv</b>職員番号の重複（2件）・必須項目の欠落（1件）</div></div>
+      <div class="field"><label>問い合わせ区分</label>
+        <select class="select"><option>CSVインポートのエラー</option><option>権限・アクセスについて</option><option>同期の不具合</option><option>その他</option></select>
+      </div>
+      <div class="field"><label>内容 <span class="req">*</span></label>
+        <textarea class="input" rows="4" placeholder="状況や試したことを記入してください">教員データ_0625.csv の取り込みでエラーが発生しました。職員番号の重複について確認をお願いします。</textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" data-close>キャンセル</button>
+      <button class="btn btn-primary" data-mock-confirm="問い合わせを送信しました（モック）"><span id="ms4"></span>送信する</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  // small icon injections
+  const ic = (n)=>icon(n);
+  cal.innerHTML=ic('calendar'); plus.innerHTML=ic('plus'); al.innerHTML=ic('alert');
+  e1.innerHTML=ic('alert'); e2.innerHTML=ic('alert'); rf.innerHTML=ic('refresh');
+  mc1.innerHTML=ic('plus'); mc2.innerHTML=ic('x'); ms1.innerHTML=ic('send'); ms2.innerHTML=ic('x'); ms3.innerHTML=ic('alert'); ms4.innerHTML=ic('send');
+
+  // stats
+  const stats=[
+    {label:'登録人数（生徒・教員・職員）',num:'48,213',ico:'users',cls:'av-blue',d:'+312',dc:'up',dt:'今月'},
+    {label:'同期済みアカウント',num:'39,887',ico:'at',cls:'av-teal',d:'82.7%',dc:'flat',dt:'同期率'},
+    {label:'承認待ちの所属変更',num:'6',ico:'transfer',cls:'av-amber',d:'要対応',dc:'down',dt:''},
+    {label:'今月のCSV処理',num:'1,204',ico:'upload',cls:'av-purple',d:'エラー2',dc:'down',dt:'件'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`
+    <div class="stat">
+      <div class="top">
+        <div class="ico ${s.cls}" style="color:#fff">${ic(s.ico)}</div>
+        <span class="delta ${s.dc}">${s.dc==='up'?ic('arrowUp'):s.dc==='down'?ic('arrowDown'):''}${s.d}</span>
+      </div>
+      <div class="label">${s.label}</div>
+      <div class="num">${s.num}</div>
+    </div>`).join('');
+
+  // tiles
+  const tiles=[
+    {t:'名簿管理',d:'生徒・教員・教育委員会職員の名簿を一元管理。属性項目や履歴も。',ico:'users',c:'var(--c-roster)',href:'roster-list.html',m:[['48,213','登録人数'],['本日 07:00','最終同期']]},
+    {t:'組織管理',d:'県＞市町村＞学校種＞学校／部署の階層構造をツリーで管理。',ico:'sitemap',c:'var(--c-org)',href:'org-structure.html',m:[['412','組織'],['33','市町村']]},
+    {t:'アカウント管理',d:'Google Workspaceのアカウントと一方向で同期・棚卸し。',ico:'at',c:'var(--c-account)',href:'accounts.html',m:[['39,887','同期済'],['142','保留']]},
+    {t:'フォーム',d:'対象者を絞ったアンケート・調査。回答を名簿へ自動反映も可能。',ico:'file',c:'var(--c-form)',href:'forms-list.html',m:[['12','実施中'],['3','下書き']]},
+    {t:'権限設定',d:'主体×対象×組織スコープ×属性条件で、機能単位の権限を付与。',ico:'shield',c:'var(--c-admin)',href:'permissions.html',m:[['86','ルール'],['24','ロール']]},
+    {t:'データ利活用',d:'名簿データを横断分析するBIダッシュボード。近日公開。',ico:'chart',c:'var(--c-data)',href:'#',m:[['Beta','先行登録'],['—','']],beta:true},
+  ];
+  document.getElementById('tiles').innerHTML=tiles.map(t=>`
+    <a class="tile" ${t.beta?`data-mock="データ利活用は近日公開予定です"`:`href="${t.href}"`}>
+      <div class="corner" style="background:${t.c}"></div>
+      <div class="row between">
+        <div class="tile-ico" style="background:${t.c}">${ic(t.ico)}</div>
+        ${t.beta?'<span class="badge b-purple">Beta</span>':''}
+      </div>
+      <div>
+        <h3>${t.t}</h3>
+        <p>${t.d}</p>
+      </div>
+      <div class="stat-mini">
+        ${t.m.map(x=>x[0]?`<div><b>${x[0]}</b><span>${x[1]}</span></div>`:'').join('')}
+      </div>
+      <div class="go">開く ${ic('arrowRight')}</div>
+    </a>`).join('');
+
+  // approval rows
+  const appr=[
+    {n:'田中 美咲',sub:'生徒 ・ 横浜市立旭小学校 4年2組',from:'旭小学校',to:'港北小学校',date:'7/1 適用',av:'av-pink'},
+    {n:'鈴木 健一',sub:'教員 ・ 川崎市立宮前中学校',from:'宮前中学校',to:'高津中学校',date:'7/1 適用',av:'av-blue'},
+    {n:'山本 葵',sub:'生徒 ・ 相模原市立緑が丘小学校 2年1組',from:'緑が丘小',to:'若葉小学校',date:'8/1 適用',av:'av-green'},
+    {n:'伊藤 大輔',sub:'教員 ・ 藤沢市立湘南台高校',from:'湘南台高校',to:'鎌倉高校',date:'9/1 適用',av:'av-amber'},
+  ];
+  document.getElementById('appr-rows').innerHTML=appr.map(a=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${a.av}" style="width:34px;height:34px">${a.n.slice(0,1)}</span><div><b>${a.n}</b><div class="sub">${a.sub}</div></div></div></td>
+      <td><span class="tiny muted">${a.from}</span> ${ic('arrowRight')} <b class="tiny">${a.to}</b></td>
+      <td><span class="badge b-warn">${a.date}</span></td>
+      <td class="text-r"><div class="row gap6" style="justify-content:flex-end"><button class="btn btn-sm btn-secondary" data-mock="差し戻しました（モック）">差戻</button><button class="btn btn-sm btn-primary" data-mock-confirm="承認しました（モック）">承認</button></div></td>
+    </tr>`).join('');
+
+  // activity timeline
+  const act=[
+    {w:'10分前',what:'CSVインポートを開始',who:'教員データ_0625.csv ・ 1,240行',d:'warn'},
+    {w:'1時間前',what:'所属変更を6件承認待ちに追加',who:'横浜市教委 ・ 学事課',d:''},
+    {w:'本日 09:12',what:'フォーム「勤務実態調査」を配信',who:'対象：市内小学校 一般教員',d:'ok'},
+    {w:'本日 07:00',what:'Google Workspaceへ自動同期が完了',who:'39,887件 反映 ・ 失敗0',d:'ok'},
+    {w:'昨日 18:40',what:'属性項目「部活顧問」を追加',who:'テナント全体設定',d:'muted'},
+    {w:'昨日 15:22',what:'権限ルール「校長：連絡先閲覧」を更新',who:'管理者：佐藤 涼太',d:'muted'},
+  ];
+  document.getElementById('activity').innerHTML=act.map(a=>`
+    <div class="tl-item"><div class="tl-dot ${a.d}"></div><div class="when">${a.w}</div><div class="what">${a.what}</div><div class="who">${a.who}</div></div>`).join('');
+
+  // create grid
+  const cg=[
+    {t:'人物を登録',d:'生徒・教員・職員を1名追加',ico:'users',href:'roster-list.html',c:'var(--c-roster)'},
+    {t:'CSVをインポート',d:'一括で名簿を取り込む',ico:'upload',href:'roster-import.html',c:'var(--c-admin)'},
+    {t:'フォームを作成',d:'アンケート・調査を新規作成',ico:'file',href:'form-builder.html',c:'var(--c-form)'},
+    {t:'所属変更を申請',d:'人物の異動を申請',ico:'transfer',href:'transfers.html',c:'var(--c-org)'},
+  ];
+  document.getElementById('create-grid').innerHTML=cg.map(c=>`
+    <a class="card" href="${c.href}" style="padding:16px;display:flex;gap:12px;align-items:center;transition:.15s" onmouseover="this.style.borderColor='var(--brand-300)'" onmouseout="this.style.borderColor='var(--line)'">
+      <span class="tile-ico" style="width:42px;height:42px;background:${c.c}">${ic(c.ico)}</span>
+      <div><b style="display:block;color:var(--ink-900)">${c.t}</b><span class="tiny muted">${c.d}</span></div>
+    </a>`).join('');
+</script>
+</body>
+</html>

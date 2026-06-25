@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>処理ログ ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="logs">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">処理ログ</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>処理ログ</h1><p>CSVインポートや同期などのバックグラウンド処理の状況を確認します ・ 申請した内容が反映されたかをここで追跡できます</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="最新の状態に更新しました"><span id="a0"></span>更新</button>
+        <a class="btn btn-primary" href="roster-import.html"><span id="a1"></span>新規インポート</a>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="lg-all">すべて</div>
+      <div class="ptab" data-tab="lg-run">実行中 <span class="pill">1</span></div>
+      <div class="ptab" data-tab="lg-err">エラー <span class="pill">2</span></div>
+      <div class="ptab" data-tab="lg-done">完了</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="grid g4 mb24" id="stats"></div>
+
+    <div data-panel="lg-all">
+      <div class="card">
+        <div class="card-head"><h3>処理一覧</h3><div class="right"><div class="input-icon"><span id="si"></span><input class="input btn-sm" style="height:34px" placeholder="ファイル名で検索" data-mock-input></div></div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>ジョブ</th><th>種別</th><th>実行者</th><th>開始</th><th style="width:200px">進捗</th><th>結果</th><th>状態</th><th></th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div data-panel="lg-run" style="display:none"><div class="card"><div class="empty"><div class="eico" id="em1"></div><h4>実行中の処理（1件）</h4><p>上のタブ「すべて」で進捗バー付きで確認できます。</p></div></div></div>
+    <div data-panel="lg-err" style="display:none"><div class="card"><div class="empty"><div class="eico" id="em2"></div><h4>エラーのある処理（2件）</h4><p>各行の「詳細」からエラー内容と問い合わせができます。</p></div></div></div>
+    <div data-panel="lg-done" style="display:none"><div class="card"><div class="empty"><div class="eico" id="em3"></div><h4>完了した処理</h4><p>過去30日分の完了ジョブを表示します。</p></div></div></div>
+  </div>
+</main>
+
+<!-- detail drawer -->
+<div class="drawer-root" id="dr-job">
+  <div class="modal-backdrop" data-close></div>
+  <div class="drawer">
+    <div class="modal-head"><span class="mico" style="background:var(--err-50);color:var(--err-500)" id="d1"></span><div><h3>教員データ_0625.csv</h3><p>CSVインポート ・ ジョブ <span class="mono">JOB-20260625-014</span></p></div><button class="icon-btn x" data-close id="d2"></button></div>
+    <div class="modal-body">
+      <div class="grid g2 mb16">
+        <div class="stat" style="box-shadow:none"><div class="label">成功</div><div class="num" style="color:var(--ok-700)">1,238</div></div>
+        <div class="stat" style="box-shadow:none"><div class="label">エラー</div><div class="num" style="color:var(--err-700)">2</div></div>
+      </div>
+      <div class="kv"><span class="k">実行者</span><span class="v">佐藤 涼太</span></div>
+      <div class="kv"><span class="k">開始 / 完了</span><span class="v mono tiny">06-25 09:58 / 10:03</span></div>
+      <div class="kv"><span class="k">承認スキップ</span><span class="v"><span class="badge b-neutral">無効</span></span></div>
+
+      <div class="section-label mt20">エラー詳細</div>
+      <div class="alert alert-err mb12"><span id="d3"></span><div class="body"><b>行 142 ・ 職員番号の重複</b>職員番号 <span class="mono">22018</span> は既存の別人物に割り当て済みです。識別子の一致確認に失敗しました。</div></div>
+      <div class="alert alert-warn mb12"><span id="d4"></span><div class="body"><b>行 51 ・ 必須項目の欠落</b>「所属組織」が空欄です。マッピングまたは元データを確認してください。</div></div>
+
+      <div class="section-label mt20">処理ステップ</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot ok"></div><div class="when">10:03:11</div><div class="what">完了（エラー2件をスキップ）</div></div>
+        <div class="tl-item"><div class="tl-dot ok"></div><div class="when">09:59:40</div><div class="what">名簿への書き込み 1,238件</div></div>
+        <div class="tl-item"><div class="tl-dot warn"></div><div class="when">09:58:22</div><div class="what">バリデーション：2件エラー検出</div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="when">09:58:05</div><div class="what">識別子による照合を実行</div></div>
+        <div class="tl-item"><div class="tl-dot muted"></div><div class="when">09:58:01</div><div class="what">ジョブをキューに登録</div></div>
+      </div>
+    </div>
+    <div class="modal-foot spread">
+      <button class="btn btn-danger" data-modal="m-support"><span id="d5"></span>管理者へ問い合わせ</button>
+      <div class="row gap8"><button class="btn btn-secondary" data-mock="エラー行のCSVを書き出し（モック）">エラー行を書出</button><a class="btn btn-primary" href="roster-import.html">再取り込み</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- support modal -->
+<div class="modal-root" id="m-support">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:var(--err-50);color:var(--err-500)" id="s1"></span><div><h3>システム管理者へ問い合わせ</h3><p>このジョブのエラー情報を添えて送信します</p></div><button class="icon-btn x" data-close id="s2"></button></div>
+    <div class="modal-body">
+      <div class="alert alert-err mb16"><span id="s3"></span><div class="body"><b>添付：JOB-20260625-014</b>職員番号の重複（行142）・必須項目の欠落（行51）</div></div>
+      <div class="field"><label>内容 <span class="req">*</span></label><textarea class="input" rows="4">職員番号 22018 の重複について確認をお願いします。同一人物の可能性があります。</textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="問い合わせを送信しました（モック）"><span id="s4"></span>送信</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');a0.innerHTML=ic('refresh');a1.innerHTML=ic('upload');si.innerHTML=ic('search');
+  em1.innerHTML=ic('clock');em2.innerHTML=ic('alert');em3.innerHTML=ic('checkCircle');
+  d1.innerHTML=ic('file');d2.innerHTML=ic('x');d3.innerHTML=ic('alert');d4.innerHTML=ic('alert');d5.innerHTML=ic('send');
+  s1.innerHTML=ic('send');s2.innerHTML=ic('x');s3.innerHTML=ic('alert');s4.innerHTML=ic('send');
+
+  const stats=[
+    {label:'実行中',num:'1',ico:'clock',cls:'av-blue'},
+    {label:'本日 完了',num:'37',ico:'checkCircle',cls:'av-green'},
+    {label:'エラーあり',num:'2',ico:'alert',cls:'av-red'},
+    {label:'キュー待ち',num:'0',ico:'inbox',cls:'av-slate'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="top"><div class="ico ${s.cls}" style="color:#fff">${ic(s.ico)}</div></div><div class="label">${s.label}</div><div class="num">${s.num}</div></div>`).join('');
+
+  const jobs=[
+    {f:'生徒データ_全市町村.csv',type:'CSVインポート',by:'佐藤 涼太',at:'10:21',prog:42,pc:'',ok:'520',ng:'0',st:'run'},
+    {f:'教員データ_0625.csv',type:'CSVインポート',by:'佐藤 涼太',at:'09:58',prog:100,pc:'err',ok:'1,238',ng:'2',st:'err'},
+    {f:'所属変更バッチ',type:'バッチ実行',by:'システム',at:'03:00',prog:100,pc:'ok',ok:'48',ng:'0',st:'done'},
+    {f:'Workspace同期',type:'自動同期',by:'システム',at:'07:00',prog:100,pc:'ok',ok:'39,887',ng:'0',st:'done'},
+    {f:'職員データ_県教委.csv',type:'CSVインポート',by:'松本 詩織',at:'昨日 16:40',prog:100,pc:'err',ok:'112',ng:'5',st:'err'},
+    {f:'生徒_進級処理',type:'バッチ実行',by:'システム',at:'04-01 03:00',prog:100,pc:'ok',ok:'46,210',ng:'0',st:'done'},
+  ];
+  const stBadge={run:'<span class="badge b-info dot">実行中</span>',err:'<span class="badge b-err dot">エラー</span>',done:'<span class="badge b-ok dot">完了</span>'};
+  document.getElementById('rows').innerHTML=jobs.map(j=>`
+    <tr>
+      <td><div class="t-name"><span class="tile-ico" style="width:32px;height:32px;border-radius:9px;background:${j.type==='CSVインポート'?'var(--brand-50)':'var(--surface-2)'};color:${j.type==='CSVインポート'?'var(--brand-600)':'var(--ink-500)'}">${ic(j.type==='CSVインポート'?'upload':'refresh')}</span><b>${j.f}</b></div></td>
+      <td class="tiny">${j.type}</td>
+      <td class="tiny">${j.by}</td>
+      <td class="tiny mono muted">${j.at}</td>
+      <td><div class="progress ${j.pc}"><span style="width:${j.prog}%"></span></div><span class="tiny muted">${j.prog}%</span></td>
+      <td class="tiny"><span style="color:var(--ok-700)">${j.ok}</span>${j.ng!=='0'?` / <span style="color:var(--err-700)">${j.ng}</span>`:''}</td>
+      <td>${stBadge[j.st]}</td>
+      <td class="text-r">${j.st==='err'?`<button class="btn btn-sm btn-secondary" data-drawer="dr-job">詳細</button>`:`<button class="btn btn-sm btn-ghost" data-drawer="dr-job">詳細</button>`}</td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

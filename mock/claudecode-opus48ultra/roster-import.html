@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSVインポート ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="import">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">CSVインポート</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>CSVインポート</h1><p>CSV列と名簿項目を紐づけ、識別子で同一人物を判定して一括取り込みします</p></div>
+      <div class="actions"><a class="btn btn-secondary" href="roster-logs.html"><span id="a1"></span>処理ログを見る</a></div>
+    </div>
+  </div>
+
+  <div class="page-body narrow">
+    <!-- stepper -->
+    <div class="card mb24">
+      <div class="card-pad">
+        <div class="stepper" data-tabs id="stepper">
+          <div class="step active" data-step="1"><span class="sno">1</span><div class="stxt"><b>ファイル選択</b><span>CSVをアップロード</span></div></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="2"><span class="sno">2</span><div class="stxt"><b>項目マッピング</b><span>列と名簿項目を対応</span></div></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="3"><span class="sno">3</span><div class="stxt"><b>識別・オプション</b><span>同一人物の判定</span></div></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="4"><span class="sno">4</span><div class="stxt"><b>確認・実行</b><span>検証と取り込み</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- step 1 -->
+    <div class="panel" data-p="1">
+      <div class="card">
+        <div class="card-head"><h3>① ファイルを選択</h3></div>
+        <div class="card-pad">
+          <div data-mock="ファイルを選択（モック）" style="border:2px dashed var(--line);border-radius:14px;padding:36px;text-align:center;cursor:pointer;background:var(--surface-2)">
+            <div class="tile-ico" style="width:54px;height:54px;background:var(--brand-50);color:var(--brand-600);margin:0 auto 12px"><span id="up"></span></div>
+            <b style="font-size:15px">CSVファイルをドラッグ＆ドロップ</b>
+            <p class="muted tiny" style="margin:4px 0 0">または クリックして選択 ・ UTF-8 / Shift_JIS 対応 ・ 最大 50MB</p>
+          </div>
+          <div class="row gap12 mt16" style="border:1px solid var(--line);border-radius:12px;padding:12px 14px">
+            <span class="tile-ico" style="width:40px;height:40px;background:#e7f7ee;color:var(--ok-700)" id="fl"></span>
+            <div class="grow"><b>教員データ_0625.csv</b><div class="tiny muted">1,240 行 ・ 18 列 ・ UTF-8 ・ アップロード完了</div></div>
+            <span class="badge b-ok dot">読み込み成功</span>
+            <button class="icon-btn btn-sm" data-mock="削除（モック）" id="fx"></button>
+          </div>
+          <div class="grid g3 mt16">
+            <div class="field" style="margin:0"><label>文字コード</label><select class="select"><option>UTF-8（自動判定）</option><option>Shift_JIS</option></select></div>
+            <div class="field" style="margin:0"><label>区切り文字</label><select class="select"><option>カンマ (,)</option><option>タブ</option></select></div>
+            <div class="field" style="margin:0"><label>ヘッダー行</label><select class="select"><option>1行目</option><option>なし</option></select></div>
+          </div>
+        </div>
+        <div class="card-pad row between" style="border-top:1px solid var(--line-2)">
+          <span></span><button class="btn btn-primary nextbtn"><span class="ico-next"></span>次へ：項目マッピング</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- step 2 -->
+    <div class="panel" data-p="2" style="display:none">
+      <div class="card">
+        <div class="card-head"><h3>② 項目マッピング</h3><span class="sub">CSVの列を名簿の項目に対応づけます</span><div class="right"><button class="btn btn-sm btn-secondary" data-mock="保存済みのマッピングを読込（モック）"><span id="lm"></span>テンプレートを使う</button></div></div>
+        <div class="card-pad">
+          <div class="csv-grid mb16">
+            <table>
+              <thead><tr><th>email</th><th>staff_no</th><th>name</th><th>kana</th><th>org_code</th><th>phone_private</th><th>club</th></tr></thead>
+              <tbody>
+                <tr><td>k.suzuki@…ed.jp</td><td>22018</td><td>鈴木 健一</td><td>すずき…</td><td>ORG-KWS-014</td><td>090-…</td><td>サッカー部</td></tr>
+                <tr><td>s.ito@…ed.jp</td><td>22019</td><td>伊藤 さくら</td><td>いとう…</td><td>ORG-KWS-014</td><td>080-…</td><td>吹奏楽部</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th style="width:30%">CSV列</th><th style="width:6%"></th><th style="width:34%">名簿項目</th><th>データ形式</th><th class="text-c">識別子</th></tr></thead>
+              <tbody id="map-rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-pad row between" style="border-top:1px solid var(--line-2)">
+          <button class="btn btn-secondary backbtn">戻る</button><button class="btn btn-primary nextbtn">次へ：識別・オプション</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- step 3 -->
+    <div class="panel" data-p="3" style="display:none">
+      <div class="card mb16">
+        <div class="card-head"><h3>③ 同一人物の識別設定</h3></div>
+        <div class="card-pad">
+          <div class="alert alert-info mb16"><span id="i3"></span><div class="body">識別子に値がある行は、<b>すべての識別子が一致</b>するかを確認し、本人かどうかを照合します。一致すれば更新、一致しなければ新規候補として扱います。</div></div>
+          <div class="field"><label>識別子（優先順）</label>
+            <div class="row wrap gap8"><span class="tag">1. メールアドレス <span class="x" data-mock="並べ替え（モック）">↕</span></span><span class="tag">2. 職員番号 <span class="x" data-mock>↕</span></span><button class="btn btn-sm btn-ghost" data-mock="識別子を追加（モック）"><span id="i3a"></span>追加</button></div>
+          </div>
+          <div class="field"><label>照合方法</label>
+            <label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">設定された識別子が<b>すべて一致</b>した場合に同一人物とみなす</span><span class="rb"><input type="radio" name="match" class="rb" checked></span></label>
+            <label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">いずれかの識別子が一致した場合（非推奨）</span><span class="rb"><input type="radio" name="match" class="rb"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>取り込みオプション</h3></div>
+        <div class="card-pad">
+          <label class="kv" style="cursor:pointer"><div style="flex:1"><b>新規人物の作成を許可</b><div class="tiny muted">識別子に一致がない行を新規登録します</div></div><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+          <label class="kv" style="cursor:pointer"><div style="flex:1"><b>既存人物の項目を更新</b><div class="tiny muted">一致した人物の値を上書きします</div></div><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+          <label class="kv" style="cursor:pointer"><div style="flex:1"><b>空欄の列は無視</b><div class="tiny muted">CSVが空欄の項目は既存値を保持</div></div><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+          <label class="kv" style="cursor:pointer;background:var(--warn-50);border-radius:10px;padding:12px;border:1px solid #f5d59a"><div style="flex:1"><b class="row gap6"><span style="display:inline-flex;color:var(--warn-700)" id="w3"></span>所属変更の承認をスキップして即時予約</b><div class="tiny" style="color:var(--warn-700)">CSVで所属が変わる行を、承認フローを経ずに直接変更します。この操作には強い権限が必要です。</div></div><span class="toggle"><input type="checkbox"><span class="track"></span></span></label>
+        </div>
+        <div class="card-pad row between" style="border-top:1px solid var(--line-2)">
+          <button class="btn btn-secondary backbtn">戻る</button><button class="btn btn-primary nextbtn">次へ：確認・実行</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- step 4 -->
+    <div class="panel" data-p="4" style="display:none">
+      <div class="card mb16">
+        <div class="card-head"><h3>④ 検証結果</h3><span class="sub">取り込み前のドライラン結果</span></div>
+        <div class="card-pad">
+          <div class="grid g4 mb16">
+            <div class="stat" style="box-shadow:none"><div class="label">対象行</div><div class="num">1,240</div></div>
+            <div class="stat" style="box-shadow:none"><div class="label">新規作成</div><div class="num" style="color:var(--ok-700)">1,180</div></div>
+            <div class="stat" style="box-shadow:none"><div class="label">更新</div><div class="num" style="color:var(--brand-600)">58</div></div>
+            <div class="stat" style="box-shadow:none"><div class="label">エラー</div><div class="num" style="color:var(--err-700)">2</div></div>
+          </div>
+          <div class="alert alert-err"><span id="e4"></span><div class="body"><b>2件のエラーを検出（取り込み対象から除外されます）</b>
+            <div class="mt8 tiny mono">行142：職員番号 22018 が重複（識別の一致確認に失敗）<br>行51：必須項目「所属組織」が空欄</div>
+          </div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>実行設定</h3></div>
+        <div class="card-pad">
+          <div class="kv"><span class="k">処理方式</span><span class="v"><span class="badge b-info">バックグラウンド・バッチ</span> 実行後、処理ログで進捗を確認できます</span></div>
+          <div class="kv"><span class="k">承認スキップ</span><span class="v"><span class="badge b-neutral">無効</span></span></div>
+          <div class="kv"><span class="k">エラー行</span><span class="v">スキップして続行</span></div>
+        </div>
+        <div class="card-pad row between" style="border-top:1px solid var(--line-2)">
+          <button class="btn btn-secondary backbtn">戻る</button>
+          <button class="btn btn-primary btn-lg" id="run"><span id="r4"></span>1,238行を取り込む</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');a1.innerHTML=ic('activity');up.innerHTML=ic('upload');fl.innerHTML=ic('file');fx.innerHTML=ic('x');
+  lm.innerHTML=ic('copy');i3.innerHTML=ic('info');i3a.innerHTML=ic('plus');w3.innerHTML=ic('alert');e4.innerHTML=ic('alert');r4.innerHTML=ic('play');
+  document.querySelectorAll('.ico-next').forEach(e=>e.innerHTML=ic('arrowRight'));
+
+  // mapping rows
+  const dtChip={num:'<span class="dt dt-num">'+ic('type')+'数値</span>',str:'<span class="dt dt-str">'+ic('type')+'文字列</span>',date:'<span class="dt dt-date">'+ic('calendar')+'日付</span>',code:'<span class="dt dt-code">'+ic('hash')+'コード</span>',multi:'<span class="dt dt-multi">'+ic('list')+'複数</span>'};
+  const maps=[
+    ['email','メールアドレス','str',true],
+    ['staff_no','職員番号','str',true],
+    ['name','氏名','str',false],
+    ['kana','ふりがな','str',false],
+    ['org_code','所属組織','code',false],
+    ['phone_private','属性：自家用携帯番号','str',false],
+    ['club','属性：部活顧問','multi',false],
+    ['license_no','属性：教員免許番号','num',false],
+  ];
+  document.getElementById('map-rows').innerHTML=maps.map(([c,f,dt,idf])=>`
+    <tr>
+      <td><span class="mono">${c}</span></td>
+      <td style="color:var(--ink-300)">${ic('arrowRight')}</td>
+      <td><select class="select btn-sm" style="height:36px"><option>${f}</option><option>（取り込まない）</option><option>氏名</option><option>所属組織</option></select></td>
+      <td>${dtChip[dt]}</td>
+      <td class="text-c"><input type="checkbox" class="cb" ${idf?'checked':''}></td>
+    </tr>`).join('');
+
+  // stepper logic
+  let step=1;
+  function goStep(n){
+    step=n;
+    document.querySelectorAll('.panel').forEach(p=>p.style.display=(+p.dataset.p===n)?'':'none');
+    document.querySelectorAll('#stepper .step').forEach(s=>{
+      const sn=+s.dataset.step; s.classList.remove('active','done');
+      if(sn<n)s.classList.add('done'); else if(sn===n)s.classList.add('active');
+      s.querySelector('.sno').innerHTML = sn<n ? ic('check') : sn;
+    });
+    document.querySelectorAll('#stepper .step-line').forEach((l,i)=>l.classList.toggle('done',i< n-1));
+    document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});
+  }
+  document.querySelectorAll('.nextbtn').forEach(b=>b.addEventListener('click',()=>goStep(Math.min(4,step+1))));
+  document.querySelectorAll('.backbtn').forEach(b=>b.addEventListener('click',()=>goStep(Math.max(1,step-1))));
+  document.querySelectorAll('#stepper .step').forEach(s=>s.addEventListener('click',()=>goStep(+s.dataset.step)));
+  document.getElementById('run').addEventListener('click',()=>{toast('取り込みを開始しました。処理ログへ移動します（モック）','ok');setTimeout(()=>location.href='roster-logs.html',1100);});
+</script>
+</body>
+</html>

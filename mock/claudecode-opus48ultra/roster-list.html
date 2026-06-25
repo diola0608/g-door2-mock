@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>名簿一覧 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="roster-list">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">名簿一覧</span></div>
+    <div class="page-title-row">
+      <div class="ttl">
+        <h1>名簿一覧</h1>
+        <p>生徒・教員・教育委員会職員 48,213名 ・ カテゴリ別タブで項目を切り替え、グルーピングして閲覧できます</p>
+      </div>
+      <div class="actions">
+        <a class="btn btn-secondary" href="roster-import.html"><span id="a1"></span>CSVインポート</a>
+        <button class="btn btn-secondary" data-modal="m-cols"><span id="a2"></span>表示項目</button>
+        <button class="btn btn-primary" data-modal="m-add"><span id="a3"></span>人物を追加</button>
+      </div>
+    </div>
+    <!-- category tabs -->
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="p-basic"><span id="tb1"></span>基本情報</div>
+      <div class="ptab" data-tab="p-contact"><span id="tb2"></span>連絡先情報</div>
+      <div class="ptab" data-tab="p-sensitive"><span id="tb3"></span>機微情報 <span class="badge b-err dot" style="margin-left:2px">権限制限</span></div>
+      <div class="ptab" data-tab="p-school"><span id="tb4"></span>学籍・所属</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- toolbar -->
+    <div class="card mb16">
+      <div class="card-pad" style="padding:12px 16px">
+        <div class="row wrap gap10">
+          <div class="segmented" id="seg-type">
+            <button class="active">すべて</button>
+            <button>生徒</button>
+            <button>教員</button>
+            <button>職員</button>
+          </div>
+          <div class="input-icon" style="width:280px">
+            <span id="si"></span>
+            <input class="input" placeholder="氏名・ふりがな・メールで検索" data-mock-input>
+          </div>
+          <button class="btn btn-secondary btn-sm" data-modal="m-filter"><span id="fi"></span>絞り込み <span class="badge b-info" style="margin-left:2px">2</span></button>
+          <div class="dropdown" data-dropdown>
+            <button class="btn btn-secondary btn-sm" data-dropdown-toggle><span id="gi"></span>グルーピング：<b id="grp-label">なし</b><span id="gc"></span></button>
+            <div class="dropdown-menu left" style="min-width:200px">
+              <div class="menu-label">グルーピング</div>
+              <div class="menu-item grp" data-g="none">なし</div>
+              <div class="menu-item grp" data-g="org">所属組織別</div>
+              <div class="menu-item grp" data-g="grade">学年別</div>
+              <div class="menu-item grp" data-g="class">クラス別</div>
+            </div>
+          </div>
+          <div class="right row gap8">
+            <span class="tiny muted" id="count">12件</span>
+            <button class="btn btn-secondary btn-sm" data-mock="エクスポートを開始しました（モック）"><span id="ei"></span>書き出し</button>
+          </div>
+        </div>
+        <!-- active filter chips -->
+        <div class="row wrap gap8 mt12" id="chips">
+          <span class="tag">所属：横浜市 <span class="x" data-mock="フィルタを解除（モック）">✕</span></span>
+          <span class="tag">在籍状態：在籍中 <span class="x" data-mock="フィルタを解除（モック）">✕</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- bulk bar (hidden until selection) -->
+    <div class="alert alert-info mb16" id="bulkbar" style="display:none">
+      <span id="bi"></span>
+      <div class="body"><b><span id="bulk-n">0</span>名を選択中</b></div>
+      <div class="right row gap8">
+        <button class="btn btn-sm btn-secondary" data-modal="m-add" data-mock>属性を一括編集</button>
+        <button class="btn btn-sm btn-secondary" data-mock="所属変更の申請を作成（モック）">所属変更を申請</button>
+        <button class="btn btn-sm btn-secondary" data-mock="書き出しを開始（モック）">選択を書き出し</button>
+        <button class="btn btn-sm btn-ghost" id="bulk-clear">選択解除</button>
+      </div>
+    </div>
+
+    <!-- sensitive notice -->
+    <div class="alert alert-warn mb16" id="sens-note" style="display:none">
+      <span id="sn"></span>
+      <div class="body"><b>機微情報は権限により表示が制限されています</b>あなたの権限（県教委 システム管理者）では一部の値が閲覧可能です。「いじめ加害者」など一部コードは学年主任のみ表示されます。値はマスクされており、目のアイコンで一時表示できます。</div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap" style="max-height:62vh">
+        <table class="tbl" id="tbl"></table>
+      </div>
+      <div class="row between" style="padding:12px 16px;border-top:1px solid var(--line-2)">
+        <span class="tiny muted">48,213件中 1–12 を表示</span>
+        <div class="row gap6">
+          <button class="btn btn-sm btn-secondary" disabled>前へ</button>
+          <button class="btn btn-sm btn-soft">1</button>
+          <button class="btn btn-sm btn-secondary" data-mock>2</button>
+          <button class="btn btn-sm btn-secondary" data-mock>3</button>
+          <span class="muted tiny">…</span>
+          <button class="btn btn-sm btn-secondary" data-mock>4,018</button>
+          <button class="btn btn-sm btn-secondary" data-mock>次へ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- add person modal -->
+<div class="modal-root" id="m-add">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal lg">
+    <div class="modal-head">
+      <span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="ma1"></span>
+      <div><h3>人物を追加</h3><p>基本情報を入力します。属性項目は登録後に追加できます。</p></div>
+      <button class="icon-btn x" data-close id="ma2"></button>
+    </div>
+    <div class="modal-body">
+      <div class="grid g2">
+        <div class="field"><label>区分 <span class="req">*</span></label><select class="select"><option>生徒</option><option>教員</option><option>教育委員会職員</option><option>関係者（保護者等）</option></select></div>
+        <div class="field"><label>メールアカウント</label><input class="input" placeholder="example@pref-kanagawa.ed.jp"><div class="hint">Workspace対象ドメインの場合、登録後に同期されます</div></div>
+        <div class="field"><label>氏名 <span class="req">*</span></label><input class="input" placeholder="山田 太郎"></div>
+        <div class="field"><label>ふりがな</label><input class="input" placeholder="やまだ たろう"></div>
+        <div class="field"><label>所属組織 <span class="req">*</span></label><select class="select"><option>選択してください</option><option>横浜市立旭小学校</option><option>川崎市立宮前中学校</option></select></div>
+        <div class="field"><label>クラス</label><select class="select"><option>未所属</option><option>4年2組</option><option>3年1組</option></select></div>
+      </div>
+      <div class="alert alert-info"><span id="ma3"></span><div class="body">登録時に、属性項目に設定されたデータ形式（数値・日付・コード等）のバリデーションが実行されます。</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" data-close>キャンセル</button>
+      <button class="btn btn-primary" data-mock-confirm="人物を登録しました（モック）">登録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- columns modal -->
+<div class="modal-root" id="m-cols">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="mco1"></span><div><h3>表示項目の設定</h3><p>このタブで表示する属性項目を選択</p></div><button class="icon-btn x" data-close id="mco2"></button></div>
+    <div class="modal-body" id="cols-list"></div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="表示項目を更新しました（モック）">適用</button></div>
+  </div>
+</div>
+
+<!-- filter modal -->
+<div class="modal-root" id="m-filter">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="mf1"></span><div><h3>絞り込み</h3><p>条件を組み合わせて名簿を絞り込みます</p></div><button class="icon-btn x" data-close id="mf2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>市町村</label><select class="select"><option>横浜市</option><option>すべて</option><option>川崎市</option><option>相模原市</option></select></div>
+      <div class="field"><label>学校種</label><select class="select"><option>すべて</option><option>小学校</option><option>中学校</option><option>高等学校</option></select></div>
+      <div class="field"><label>在籍状態</label><select class="select"><option>在籍中</option><option>すべて</option><option>休学・休職</option><option>卒業・退職</option></select></div>
+      <div class="field"><label>属性項目で絞り込み</label><select class="select"><option>部活顧問 = サッカー部</option><option>＋ 条件を追加</option></select></div>
+    </div>
+    <div class="modal-foot spread"><button class="btn btn-ghost" data-close>条件をクリア</button><div class="row gap8"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="絞り込みを適用しました（モック）">適用</button></div></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight'); a1.innerHTML=ic('upload'); a2.innerHTML=ic('columns'); a3.innerHTML=ic('plus');
+  tb1.innerHTML=ic('users'); tb2.innerHTML=ic('phone'); tb3.innerHTML=ic('lock'); tb4.innerHTML=ic('cap');
+  si.innerHTML=ic('search'); fi.innerHTML=ic('filter'); gi.innerHTML=ic('layers'); gc.innerHTML=ic('chevDown'); ei.innerHTML=ic('download');
+  bi.innerHTML=ic('checkCircle'); sn.innerHTML=ic('lock');
+  ma1.innerHTML=ic('users'); ma2.innerHTML=ic('x'); ma3.innerHTML=ic('info');
+  mco1.innerHTML=ic('columns'); mco2.innerHTML=ic('x'); mf1.innerHTML=ic('filter'); mf2.innerHTML=ic('x');
+
+  const people=[
+    {id:'S-10241',name:'田中 美咲',kana:'たなか みさき',type:'生徒',sex:'女',birth:'2015-04-12',org:'横浜市立旭小学校',grade:'4年',klass:'4年2組',status:'在籍中',addr:'横浜市旭区中沢1-2-3',tel:'045-***-**12',email:'—',guardian:'田中 一郎',emg:'090-****-1234',feat:[{c:'優良生徒',r:false}],futoko:'なし',support:'不要',av:'av-pink'},
+    {id:'S-10242',name:'山本 葵',kana:'やまもと あおい',type:'生徒',sex:'女',birth:'2017-08-30',org:'相模原市立緑が丘小学校',grade:'2年',klass:'2年1組',status:'在籍中',addr:'相模原市緑区...',tel:'042-***-**55',email:'—',guardian:'山本 真理',emg:'080-****-7788',feat:[{c:'要支援',r:false}],futoko:'傾向あり',support:'要',av:'av-green'},
+    {id:'S-10243',name:'佐々木 蓮',kana:'ささき れん',type:'生徒',sex:'男',birth:'2014-01-05',org:'横浜市立旭小学校',grade:'5年',klass:'5年3組',status:'在籍中',addr:'横浜市旭区...',tel:'045-***-**21',email:'—',guardian:'佐々木 浩',emg:'090-****-3456',feat:[{c:'いじめ加害者',r:true}],futoko:'なし',support:'要',av:'av-blue'},
+    {id:'S-10244',name:'中村 結菜',kana:'なかむら ゆいな',type:'生徒',sex:'女',birth:'2016-11-19',org:'横浜市立旭小学校',grade:'3年',klass:'3年1組',status:'在籍中',addr:'横浜市旭区...',tel:'045-***-**40',email:'—',guardian:'中村 さやか',emg:'080-****-9090',feat:[],futoko:'なし',support:'不要',av:'av-amber'},
+    {id:'T-22018',name:'鈴木 健一',kana:'すずき けんいち',type:'教員',sex:'男',birth:'1986-03-22',org:'川崎市立宮前中学校',grade:'—',klass:'担任 3年1組',status:'在籍中',addr:'川崎市宮前区...',tel:'044-***-**33',email:'k.suzuki@pref-kanagawa.ed.jp',guardian:'—',emg:'090-****-2211',feat:[{c:'部活顧問：サッカー部',r:false}],futoko:'—',support:'—',av:'av-blue'},
+    {id:'T-22019',name:'伊藤 さくら',kana:'いとう さくら',type:'教員',sex:'女',birth:'1991-07-09',org:'川崎市立宮前中学校',grade:'—',klass:'学年主任 3年',status:'在籍中',addr:'川崎市...',tel:'044-***-**77',email:'s.ito@pref-kanagawa.ed.jp',guardian:'—',emg:'080-****-4455',feat:[{c:'部活顧問：吹奏楽部',r:false}],futoko:'—',support:'—',av:'av-pink'},
+    {id:'T-22020',name:'渡辺 翔太',kana:'わたなべ しょうた',type:'教員',sex:'男',birth:'1979-12-02',org:'藤沢市立湘南台高校',grade:'—',klass:'校長',status:'在籍中',addr:'藤沢市...',tel:'0466-**-**01',email:'s.watanabe@pref-kanagawa.ed.jp',guardian:'—',emg:'090-****-8800',feat:[],futoko:'—',support:'—',av:'av-teal'},
+    {id:'T-22021',name:'小林 由美',kana:'こばやし ゆみ',type:'教員',sex:'女',birth:'1995-05-28',org:'横浜市立旭小学校',grade:'—',klass:'担任 4年2組',status:'育休',addr:'横浜市...',tel:'045-***-**88',email:'y.kobayashi@pref-kanagawa.ed.jp',guardian:'—',emg:'080-****-1212',feat:[],futoko:'—',support:'—',av:'av-purple'},
+    {id:'A-30551',name:'高橋 誠',kana:'たかはし まこと',type:'職員',sex:'男',birth:'1974-09-14',org:'横浜市教育委員会 学事課',grade:'—',klass:'課長',status:'在籍中',addr:'横浜市中区...',tel:'045-***-**00',email:'m.takahashi@pref-kanagawa.ed.jp',guardian:'—',emg:'090-****-5050',feat:[],futoko:'—',support:'—',av:'av-slate'},
+    {id:'A-30552',name:'松本 詩織',kana:'まつもと しおり',type:'職員',sex:'女',birth:'1988-02-17',org:'神奈川県教育委員会 教職員課',grade:'—',klass:'主査',status:'在籍中',addr:'横浜市...',tel:'045-***-**19',email:'s.matsumoto@pref-kanagawa.ed.jp',guardian:'—',emg:'080-****-6363',feat:[],futoko:'—',support:'—',av:'av-red'},
+    {id:'S-10245',name:'加藤 大和',kana:'かとう やまと',type:'生徒',sex:'男',birth:'2013-06-21',org:'川崎市立宮前中学校',grade:'1年',klass:'1年2組',status:'在籍中',addr:'川崎市...',tel:'044-***-**66',email:'—',guardian:'加藤 直樹',emg:'090-****-7474',feat:[{c:'部活：サッカー部',r:false}],futoko:'なし',support:'不要',av:'av-green'},
+    {id:'S-10246',name:'吉田 凛',kana:'よしだ りん',type:'生徒',sex:'女',birth:'2015-10-03',org:'相模原市立緑が丘小学校',grade:'4年',klass:'4年1組',status:'転出予定',addr:'相模原市...',tel:'042-***-**31',email:'—',guardian:'吉田 恵',emg:'080-****-8585',feat:[],futoko:'なし',support:'不要',av:'av-amber'},
+  ];
+
+  const typeBadge=(t)=>{const m={'生徒':'b-info','教員':'b-teal','職員':'b-purple'};return `<span class="badge ${m[t]}">${t}</span>`;};
+  const statusBadge=(s)=>{const m={'在籍中':'b-ok','育休':'b-warn','転出予定':'b-warn'};return `<span class="badge ${m[s]||'b-neutral'} dot">${s}</span>`;};
+
+  let currentTab='p-basic', currentGroup='none';
+
+  const cols={
+    'p-basic':[
+      {h:'氏名',r:p=>nameCell(p)},
+      {h:'区分',r:p=>typeBadge(p.type)},
+      {h:'性別',r:p=>p.sex},
+      {h:'生年月日',r:p=>`<span class="mono">${p.birth}</span>`},
+      {h:'所属組織',r:p=>p.org},
+      {h:'クラス／役割',r:p=>p.klass},
+      {h:'在籍状態',r:p=>statusBadge(p.status)},
+    ],
+    'p-contact':[
+      {h:'氏名',r:p=>nameCell(p)},
+      {h:'住所',r:p=>p.addr},
+      {h:'電話番号',r:p=>`<span class="mono">${p.tel}</span>`},
+      {h:'メール',r:p=>p.email==='—'?'<span class="muted">—</span>':`<span class="mono tiny">${p.email}</span>`},
+      {h:'保護者氏名',r:p=>p.guardian},
+      {h:'緊急連絡先',r:p=>`<span class="mono">${p.emg}</span>`},
+    ],
+    'p-sensitive':[
+      {h:'氏名',r:p=>nameCell(p)},
+      {h:'人物の特徴',r:p=>featCell(p)},
+      {h:'不登校',r:p=>p.futoko==='—'?'<span class="muted">—</span>':maskCell(p.futoko)},
+      {h:'支援要否',r:p=>p.support==='—'?'<span class="muted">—</span>':maskCell(p.support)},
+    ],
+    'p-school':[
+      {h:'氏名',r:p=>nameCell(p)},
+      {h:'人物ID',r:p=>`<span class="mono">${p.id}</span>`},
+      {h:'所属組織',r:p=>p.org},
+      {h:'学年',r:p=>p.grade},
+      {h:'クラス／役割',r:p=>p.klass},
+      {h:'在籍状態',r:p=>statusBadge(p.status)},
+    ],
+  };
+
+  function nameCell(p){return `<a class="t-name" href="roster-detail.html"><span class="avatar ${p.av}" style="width:34px;height:34px">${p.name.slice(0,1)}</span><div><b>${p.name}</b><div class="sub">${p.kana}</div></div></a>`;}
+  function featCell(p){
+    if(!p.feat.length) return '<span class="muted">—</span>';
+    return p.feat.map(f=>{
+      if(f.r) return `<span class="badge b-err"><span style="display:inline-flex">${ic('lock')}</span>${f.c}</span>`;
+      return `<span class="badge b-purple">${f.c}</span>`;
+    }).join(' ');
+  }
+  function maskCell(v){return `<span class="row gap6"><span class="mono" style="letter-spacing:2px">••••</span><button class="icon-btn btn-sm" style="width:26px;height:26px" data-mock="権限内で値を表示しました（モック）">${ic('eye')}</button></span>`;}
+
+  function render(){
+    const c=cols[currentTab];
+    let head=`<thead><tr><th class="checkbox-cell"><input type="checkbox" class="cb" id="cb-all"></th>${c.map(x=>`<th class="sortable">${x.h} <span class="sort">${ic('chevDown')}</span></th>`).join('')}<th></th></tr></thead>`;
+    let rows='';
+    if(currentGroup==='none'){
+      rows=people.map(p=>rowHtml(p,c)).join('');
+    }else{
+      const keyf={org:p=>p.org,grade:p=>p.grade,class:p=>p.klass}[currentGroup];
+      const groups={};
+      people.forEach(p=>{const k=keyf(p)||'未設定';(groups[k]=groups[k]||[]).push(p);});
+      Object.keys(groups).sort().forEach(k=>{
+        rows+=`<tr style="background:var(--surface-2)"><td colspan="${c.length+2}" style="font-weight:800;color:var(--ink-700)"><span class="row gap8">${ic('folder')} ${k} <span class="badge b-neutral">${groups[k].length}名</span></span></td></tr>`;
+        rows+=groups[k].map(p=>rowHtml(p,c)).join('');
+      });
+    }
+    document.getElementById('tbl').innerHTML=head+`<tbody>${rows}</tbody>`;
+    wireRows();
+  }
+  function rowHtml(p,c){
+    return `<tr>
+      <td class="checkbox-cell"><input type="checkbox" class="cb row-cb"></td>
+      ${c.map((x,i)=>`<td>${x.r(p)}</td>`).join('')}
+      <td class="text-r"><div class="row-actions" style="justify-content:flex-end"><a class="icon-btn btn-sm" style="width:30px;height:30px" href="roster-detail.html" title="詳細">${ic('eye')}</a><button class="icon-btn btn-sm" style="width:30px;height:30px" data-mock="編集（モック）" title="編集">${ic('edit')}</button></div></td>
+    </tr>`;
+  }
+  // move checkbox into the checkbox-cell by leaving row-cb in name cell — simpler: handle selection on .row-cb
+  function wireRows(){
+    const cbs=document.querySelectorAll('.row-cb');
+    const all=document.getElementById('cb-all');
+    if(all) all.addEventListener('change',()=>{cbs.forEach(c=>c.checked=all.checked);updateBulk();});
+    cbs.forEach(c=>c.addEventListener('change',updateBulk));
+  }
+  function updateBulk(){
+    const n=document.querySelectorAll('.row-cb:checked').length;
+    const bar=document.getElementById('bulkbar');
+    document.getElementById('bulk-n').textContent=n;
+    bar.style.display=n>0?'flex':'none';
+  }
+  document.getElementById('bulk-clear').addEventListener('click',()=>{document.querySelectorAll('.row-cb,#cb-all').forEach(c=>c.checked=false);updateBulk();});
+
+  // tab change hook
+  document.querySelectorAll('[data-tab]').forEach(t=>t.addEventListener('click',()=>{
+    currentTab=t.dataset.tab;
+    document.getElementById('sens-note').style.display = currentTab==='p-sensitive'?'flex':'none';
+    render();
+  }));
+  // grouping
+  document.querySelectorAll('.grp').forEach(g=>g.addEventListener('click',()=>{
+    currentGroup=g.dataset.g;
+    document.getElementById('grp-label').textContent={none:'なし',org:'所属組織別',grade:'学年別','class':'クラス別'}[currentGroup];
+    render();
+  }));
+  // type segment (mock filter -> just toast already handled; re-render keeps all)
+  render();
+
+  // columns modal content
+  document.getElementById('cols-list').innerHTML=[
+    ['氏名',true],['ふりがな',true],['区分',true],['性別',true],['生年月日',true],['所属組織',true],['クラス／役割',true],['在籍状態',true],['人物ID',false],['メール',false],['電話番号',false],['属性：部活',false],['属性：教員免許番号',false]
+  ].map(([n,on])=>`<label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">${n}</span><span class="toggle"><input type="checkbox" ${on?'checked':''}><span class="track"></span></span></label>`).join('');
+</script>
+</body>
+</html>

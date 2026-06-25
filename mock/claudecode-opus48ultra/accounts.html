@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>アカウント・同期 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="accounts">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">アカウント・同期</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>アカウント・Workspace同期</h1><p>名簿のデータをGoogle Workspaceへ一方向で同期します ・ メールを持たない人物は同期対象外です</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-modal="m-settings"><span id="a0"></span>同期設定</button>
+        <button class="btn btn-primary" data-mock="同期を開始しました（モック）"><span id="a1"></span>今すぐ同期</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <!-- sync direction -->
+    <div class="card mb24">
+      <div class="card-pad">
+        <div class="row between wrap gap16">
+          <div class="row gap16" style="align-items:center">
+            <div class="card" style="padding:14px 18px;box-shadow:none;text-align:center;min-width:150px">
+              <span class="tile-ico" style="width:40px;height:40px;background:linear-gradient(135deg,var(--brand-500),var(--brand-700));margin:0 auto 8px" id="sd1"></span>
+              <b style="font-size:13px">まなびConnect</b><div class="tiny muted">名簿（マスター）</div>
+            </div>
+            <div class="text-c">
+              <div class="badge b-info dot" style="margin-bottom:6px">一方向同期</div>
+              <div style="color:var(--brand-500)" id="sdar"></div>
+              <div class="tiny muted mt8">項目を反映</div>
+            </div>
+            <div class="card" style="padding:14px 18px;box-shadow:none;text-align:center;min-width:150px;border-color:var(--c-account)">
+              <span class="tile-ico" style="width:40px;height:40px;background:#fff;border:1px solid var(--line);color:#ea4335;margin:0 auto 8px" id="sd2"></span>
+              <b style="font-size:13px">Google Workspace</b><div class="tiny muted">pref-kanagawa.ed.jp</div>
+            </div>
+          </div>
+          <div class="row gap24">
+            <div class="text-c"><div class="tiny muted">自動同期</div><b class="row gap6" style="justify-content:center;color:var(--ok-700)"><span id="sd3"></span>有効</b><div class="tiny muted">毎日 07:00</div></div>
+            <div class="text-c"><div class="tiny muted">最終同期</div><b class="mono">07:00</b><div class="tiny muted">失敗 0件</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g4 mb24" id="stats"></div>
+
+    <div class="card">
+      <div class="card-head"><h3>アカウント一覧</h3>
+        <div class="right row gap8">
+          <div class="segmented">
+            <button class="active">すべて</button><button>同期済</button><button>保留</button><button>エラー</button><button>対象外</button>
+          </div>
+          <div class="input-icon"><span id="si"></span><input class="input btn-sm" style="height:34px" placeholder="メール・氏名で検索" data-mock-input></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>氏名</th><th>メールアドレス</th><th>所属（OU）</th><th>区分</th><th>Workspace状態</th><th>最終同期</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- sync detail modal -->
+<div class="modal-root" id="m-detail">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:#e2f6f3;color:var(--c-account)" id="md1"></span><div><h3>同期内容 ・ 鈴木 健一</h3><p>名簿の値がWorkspaceへ反映されます（一方向）</p></div><button class="icon-btn x" data-close id="md2"></button></div>
+    <div class="modal-body">
+      <div class="alert alert-info mb16"><span id="md3"></span><div class="body">Workspace側で直接変更しても、次回同期でこのシステムの値に上書きされます。</div></div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>項目</th><th>まなびConnect</th><th></th><th>Workspace（反映後）</th></tr></thead>
+        <tbody>
+          <tr><td>表示名</td><td>鈴木 健一</td><td><span id="mr1"></span></td><td>鈴木 健一</td></tr>
+          <tr><td>所属OU</td><td>川崎市/宮前中</td><td><span id="mr2"></span></td><td>/川崎市/宮前中学校</td></tr>
+          <tr><td>役職</td><td>教諭</td><td><span id="mr3"></span></td><td>教諭</td></tr>
+          <tr><td>電話（公開）</td><td>044-***-**33</td><td><span id="mr4"></span></td><td>044-***-**33</td></tr>
+          <tr><td>停止状態</td><td>有効</td><td><span id="mr5"></span></td><td>アクティブ</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>閉じる</button><button class="btn btn-primary" data-mock-confirm="この人物を同期しました（モック）">今すぐ同期</button></div>
+  </div>
+</div>
+
+<!-- settings modal -->
+<div class="modal-root" id="m-settings">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal lg">
+    <div class="modal-head"><span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="ms1"></span><div><h3>同期設定</h3><p>対象ドメイン・OUマッピング・同期項目</p></div><button class="icon-btn x" data-close id="ms2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>対象ドメイン</label><input class="input mono" value="pref-kanagawa.ed.jp" disabled></div>
+      <div class="field"><label>自動同期</label><label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">毎日 07:00 に自動実行</span><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label></div>
+      <div class="section-label mt8">組織 → OU マッピング</div>
+      <div class="kv"><span class="k">市町村</span><span class="v mono">/{市町村名}</span></div>
+      <div class="kv"><span class="k">学校</span><span class="v mono">/{市町村}/{学校名}</span></div>
+      <div class="section-label mt12">同期する項目</div>
+      <div class="row wrap gap8"><span class="tag">表示名</span><span class="tag">姓・名</span><span class="tag">所属OU</span><span class="tag">役職</span><span class="tag">公開電話</span><span class="tag">停止状態</span><button class="btn btn-sm btn-ghost" data-mock="項目を追加（モック）"><span id="ms3"></span>追加</button></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="同期設定を保存しました（モック）">保存</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');a0.innerHTML=ic('settings');a1.innerHTML=ic('refresh');si.innerHTML=ic('search');
+  sd1.innerHTML=ic('layers');sd2.innerHTML=ic('at');sd3.innerHTML=ic('checkCircle');sdar.innerHTML=ic('arrowRight');
+  md1.innerHTML=ic('at');md2.innerHTML=ic('x');md3.innerHTML=ic('info');
+  [['mr1'],['mr2'],['mr3'],['mr4'],['mr5']].forEach(([id])=>document.getElementById(id).innerHTML=ic('arrowRight'));
+  ms1.innerHTML=ic('settings');ms2.innerHTML=ic('x');ms3.innerHTML=ic('plus');
+
+  const stats=[
+    {label:'同期対象',num:'40,029',ico:'at',cls:'av-teal'},
+    {label:'同期済み',num:'39,887',ico:'checkCircle',cls:'av-green'},
+    {label:'保留・エラー',num:'142',ico:'alert',cls:'av-amber'},
+    {label:'メール未保有（対象外）',num:'8,184',ico:'users',cls:'av-slate'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="top"><div class="ico ${s.cls}" style="color:#fff">${ic(s.ico)}</div></div><div class="label">${s.label}</div><div class="num">${s.num}</div></div>`).join('');
+
+  const wsBadge={ok:'<span class="badge b-ok dot">同期済</span>',hold:'<span class="badge b-warn dot">保留</span>',err:'<span class="badge b-err dot">エラー</span>',none:'<span class="badge b-neutral">対象外</span>'};
+  const acc=[
+    {n:'鈴木 健一',av:'av-blue',mail:'k.suzuki@pref-kanagawa.ed.jp',ou:'/川崎市/宮前中',type:'教員',st:'ok',at:'07:00'},
+    {n:'伊藤 さくら',av:'av-pink',mail:'s.ito@pref-kanagawa.ed.jp',ou:'/川崎市/宮前中',type:'教員',st:'ok',at:'07:00'},
+    {n:'渡辺 翔太',av:'av-teal',mail:'s.watanabe@pref-kanagawa.ed.jp',ou:'/藤沢市/湘南台高',type:'教員',st:'ok',at:'07:00'},
+    {n:'松本 詩織',av:'av-red',mail:'s.matsumoto@pref-kanagawa.ed.jp',ou:'/県教委/教職員課',type:'職員',st:'hold',at:'—'},
+    {n:'高橋 誠',av:'av-slate',mail:'m.takahashi@pref-kanagawa.ed.jp',ou:'/横浜市/教委',type:'職員',st:'err',at:'失敗'},
+    {n:'田中 美咲',av:'av-pink',mail:'—',ou:'/横浜市/旭小',type:'生徒',st:'none',at:'—'},
+    {n:'山本 葵',av:'av-green',mail:'—',ou:'/相模原市/緑が丘小',type:'生徒',st:'none',at:'—'},
+  ];
+  document.getElementById('rows').innerHTML=acc.map(a=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${a.av}" style="width:32px;height:32px">${a.n.slice(0,1)}</span><b>${a.n}</b></div></td>
+      <td>${a.mail==='—'?'<span class="muted">メールなし</span>':`<span class="mono tiny">${a.mail}</span>`}</td>
+      <td class="mono tiny muted">${a.ou}</td>
+      <td><span class="badge ${a.type==='教員'?'b-teal':a.type==='職員'?'b-purple':'b-info'}">${a.type}</span></td>
+      <td>${wsBadge[a.st]}</td>
+      <td class="tiny mono muted">${a.at}</td>
+      <td class="text-r">${a.st==='none'?'<span class="tiny muted">—</span>':`<button class="btn btn-sm btn-secondary" data-modal="m-detail">同期内容</button>`}</td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

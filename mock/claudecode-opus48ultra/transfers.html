@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>所属変更・承認 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="transfers">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">所属変更・承認</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>所属変更・承認</h1><p>異動の申請から承認、指定日の自動実行（バッチ）までを管理します ・ 実行前であれば取消可能です</p></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-modal="m-new"><span id="a1"></span>変更を申請</button>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="tr-in">承認待ち <span class="pill">6</span></div>
+      <div class="ptab" data-tab="tr-mine">自分の申請 <span class="pill">4</span></div>
+      <div class="ptab" data-tab="tr-sched">予約済み（実行待ち） <span class="pill">14</span></div>
+      <div class="ptab" data-tab="tr-done">履歴</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="grid g4 mb24" id="stats"></div>
+
+    <!-- 承認待ち -->
+    <div data-panel="tr-in">
+      <div class="card">
+        <div class="card-head"><h3>あなた宛の承認依頼</h3><span class="sub">受け入れ先組織として承認/差し戻しを行います</span></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>変更内容</th><th>適用予定日</th><th>申請者</th><th>申請日</th><th class="text-r">操作</th></tr></thead>
+            <tbody id="in-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自分の申請 -->
+    <div data-panel="tr-mine" style="display:none">
+      <div class="card">
+        <div class="card-head"><h3>自分が出した申請</h3></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>変更内容</th><th>適用予定日</th><th>承認者</th><th>状態</th><th class="text-r">操作</th></tr></thead>
+            <tbody>
+              <tr><td><div class="t-name" id="mn1"></div></td><td><span class="muted tiny">宮前中</span> <span id="ar1"></span> <b class="tiny">高津中</b></td><td class="mono">2026-07-01</td><td>高津中 教頭</td><td><span class="badge b-warn dot">承認待ち</span></td><td class="text-r"><button class="btn btn-sm btn-ghost" data-mock="申請を取り下げました（モック）">取下げ</button></td></tr>
+              <tr><td><div class="t-name" id="mn2"></div></td><td><span class="muted tiny">旭小</span> <span id="ar2"></span> <b class="tiny">港北小</b></td><td class="mono">2026-08-01</td><td>港北小 教頭</td><td><span class="badge b-ok dot">承認済（予約）</span></td><td class="text-r"><button class="btn btn-sm btn-secondary" data-mock="実行前のため取消しました（モック）">取消</button></td></tr>
+              <tr><td><div class="t-name" id="mn3"></div></td><td><span class="muted tiny">緑が丘小</span> <span id="ar3"></span> <b class="tiny">若葉小</b></td><td class="mono">2026-04-01</td><td>—</td><td><span class="badge b-err dot">差戻し</span></td><td class="text-r"><button class="btn btn-sm btn-secondary" data-modal="m-new">修正して再申請</button></td></tr>
+              <tr><td><div class="t-name" id="mn4"></div></td><td><span class="muted tiny">湘南台高</span> <span id="ar4"></span> <b class="tiny">鎌倉高</b></td><td class="mono">2026-09-01</td><td>鎌倉高 教頭</td><td><span class="badge b-warn dot">承認待ち</span></td><td class="text-r"><button class="btn btn-sm btn-ghost" data-mock>取下げ</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 予約済み -->
+    <div data-panel="tr-sched" style="display:none">
+      <div class="alert alert-info mb16"><span id="si1"></span><div class="body"><b>承認済みの変更は、適用予定日の早朝バッチで自動的に反映されます。</b>実行前であればこの画面から取消できます。実行後の差戻しはできません。</div></div>
+      <div class="card">
+        <div class="card-head"><h3>実行待ちの予約</h3><div class="right"><span class="tiny muted">次回バッチ：2026-07-01 03:00</span></div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>変更内容</th><th>適用予定日</th><th>残り</th><th>承認者</th><th class="text-r">操作</th></tr></thead>
+            <tbody id="sc-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 履歴 -->
+    <div data-panel="tr-done" style="display:none">
+      <div class="card">
+        <div class="card-head"><h3>実行済みの履歴</h3></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>対象者</th><th>変更内容</th><th>実行日</th><th>経路</th><th>状態</th></tr></thead>
+            <tbody>
+              <tr><td><div class="t-name"><span class="avatar av-blue" style="width:30px;height:30px">青</span><b>青木 健太</b></div></td><td><span class="muted tiny">中原中</span> <span id="dr1"></span> <b class="tiny">幸中</b></td><td class="mono">2026-04-01</td><td><span class="badge b-neutral">承認フロー</span></td><td><span class="badge b-ok dot">完了</span></td></tr>
+              <tr><td><div class="t-name"><span class="avatar av-green" style="width:30px;height:30px">林</span><b>林 さやか</b></div></td><td><span class="muted tiny">—</span> <span id="dr2"></span> <b class="tiny">県教委 学事課</b></td><td class="mono">2026-04-01</td><td><span class="badge b-purple">CSV直接（承認不要）</span></td><td><span class="badge b-ok dot">完了</span></td></tr>
+              <tr><td><div class="t-name"><span class="avatar av-amber" style="width:30px;height:30px">森</span><b>森 大地</b></div></td><td><span class="muted tiny">旭小</span> <span id="dr3"></span> <b class="tiny">今宿小</b></td><td class="mono">2026-04-01</td><td><span class="badge b-neutral">承認フロー</span></td><td><span class="badge b-ok dot">完了</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- approve modal -->
+<div class="modal-root" id="m-approve">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal lg">
+    <div class="modal-head"><span class="mico" style="background:#fff4e2;color:var(--warn-500)" id="ap1"></span><div><h3>所属変更の承認</h3><p>受け入れ先として、この異動を承認します</p></div><button class="icon-btn x" data-close id="ap2"></button></div>
+    <div class="modal-body">
+      <div class="card" style="box-shadow:none;background:var(--surface-2)">
+        <div class="card-pad">
+          <div class="row gap12 mb16">
+            <span class="avatar av-pink" style="width:46px;height:46px;font-size:17px">田</span>
+            <div><b style="font-size:15px">田中 美咲</b><div class="tiny muted">生徒 ・ S-10241</div></div>
+            <div class="right text-r"><div class="tiny muted">適用予定日</div><b class="mono">2026-07-01</b></div>
+          </div>
+          <div class="row gap12" style="align-items:center;justify-content:center">
+            <div class="card" style="padding:12px 16px;text-align:center;box-shadow:none"><div class="tiny muted">変更前</div><b>横浜市立旭小学校</b><div class="tiny">4年2組</div></div>
+            <span style="color:var(--brand-500)" id="apar"></span>
+            <div class="card" style="padding:12px 16px;text-align:center;box-shadow:none;border-color:var(--brand-300);background:var(--brand-50)"><div class="tiny muted">変更後</div><b>横浜市立港北小学校</b><div class="tiny">4年1組（予定）</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label mt20">承認フロー</div>
+      <div class="stepper mb12">
+        <div class="step done"><span class="sno"><span id="st1"></span></span><div class="stxt"><b>申請</b><span>旭小 担任</span></div></div>
+        <div class="step-line done"></div>
+        <div class="step active"><span class="sno">2</span><div class="stxt"><b>承認（あなた）</b><span>港北小 教頭</span></div></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="sno">3</span><div class="stxt"><b>自動実行</b><span>7/1 早朝バッチ</span></div></div>
+      </div>
+      <div class="field"><label>コメント（任意）</label><textarea class="input" rows="2" placeholder="受け入れ承認にあたっての連絡事項があれば記入"></textarea></div>
+    </div>
+    <div class="modal-foot spread">
+      <button class="btn btn-danger" data-mock-confirm="差し戻しました（モック）">差し戻す</button>
+      <div class="row gap8"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="承認しました。7/1に自動実行されます（モック）"><span id="ap3"></span>承認する</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- new application modal -->
+<div class="modal-root" id="m-new">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal lg">
+    <div class="modal-head"><span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="nw1"></span><div><h3>所属変更を申請</h3><p>受け入れ先組織へ承認依頼を送ります</p></div><button class="icon-btn x" data-close id="nw2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>対象者 <span class="req">*</span></label><div class="input-icon"><span id="nws"></span><input class="input" placeholder="氏名・IDで検索" value="田中 美咲（S-10241）"></div></div>
+      <div class="grid g2">
+        <div class="field"><label>現在の所属</label><input class="input" value="横浜市立旭小学校 / 4年2組" disabled></div>
+        <div class="field"><label>変更後の所属 <span class="req">*</span></label><select class="select"><option>横浜市立港北小学校</option><option>川崎市立宮前中学校</option></select></div>
+      </div>
+      <div class="grid g2">
+        <div class="field"><label>適用日 <span class="req">*</span></label><input class="input" type="date" value="2026-07-01"><div class="hint">この日の早朝バッチで自動反映されます</div></div>
+        <div class="field"><label>承認の要否</label>
+          <label class="kv" style="cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px"><span class="k" style="width:auto;flex:1">承認フローを経由する</span><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+          <div class="hint">強い権限を持つ場合のみ、承認不要での即時予約が可能です</div>
+        </div>
+      </div>
+      <div class="field"><label>申請理由</label><textarea class="input" rows="2" placeholder="転居に伴う転校 など"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="承認依頼を送信しました（モック）"><span id="nw3"></span>申請する</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');a1.innerHTML=ic('plus');si1.innerHTML=ic('info');
+  ap1.innerHTML=ic('transfer');ap2.innerHTML=ic('x');ap3.innerHTML=ic('check');apar.innerHTML=ic('arrowRight');st1.innerHTML=ic('check');
+  nw1.innerHTML=ic('transfer');nw2.innerHTML=ic('x');nw3.innerHTML=ic('send');nws.innerHTML=ic('search');
+  [['ar1'],['ar2'],['ar3'],['ar4'],['dr1'],['dr2'],['dr3']].forEach(([id])=>{document.getElementById(id).innerHTML=ic('arrowRight');});
+
+  const stats=[
+    {label:'あなたの承認待ち',num:'6',ico:'inbox',cls:'av-amber'},
+    {label:'予約済み（実行待ち）',num:'14',ico:'clock',cls:'av-blue'},
+    {label:'今月の実行済み',num:'42',ico:'checkCircle',cls:'av-green'},
+    {label:'差し戻し',num:'3',ico:'flag',cls:'av-red'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="top"><div class="ico ${s.cls}" style="color:#fff">${ic(s.ico)}</div></div><div class="label">${s.label}</div><div class="num">${s.num}</div></div>`).join('');
+
+  const inbox=[
+    {n:'田中 美咲',sub:'生徒 ・ S-10241',av:'av-pink',from:'旭小 4-2',to:'港北小 4-1',date:'2026-07-01',by:'旭小 担任',on:'06-20'},
+    {n:'鈴木 健一',sub:'教員 ・ T-22018',av:'av-blue',from:'宮前中',to:'高津中',date:'2026-07-01',by:'宮前中 教頭',on:'06-18'},
+    {n:'山本 葵',sub:'生徒 ・ S-10242',av:'av-green',from:'緑が丘小 2-1',to:'若葉小 2-2',date:'2026-08-01',by:'緑が丘小 担任',on:'06-22'},
+    {n:'加藤 大和',sub:'生徒 ・ S-10245',av:'av-amber',from:'宮前中 1-2',to:'菅中 1-1',date:'2026-07-01',by:'宮前中 担任',on:'06-23'},
+    {n:'吉田 凛',sub:'生徒 ・ S-10246',av:'av-purple',from:'緑が丘小 4-1',to:'相模台小 4-2',date:'2026-09-01',by:'緑が丘小 担任',on:'06-24'},
+    {n:'伊藤 大輔',sub:'教員 ・ T-22030',av:'av-teal',from:'湘南台高',to:'鎌倉高',date:'2026-09-01',by:'湘南台高 教頭',on:'06-24'},
+  ];
+  document.getElementById('in-rows').innerHTML=inbox.map(r=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${r.av}" style="width:34px;height:34px">${r.n.slice(0,1)}</span><div><b>${r.n}</b><div class="sub">${r.sub}</div></div></div></td>
+      <td><span class="muted tiny">${r.from}</span> ${ic('arrowRight')} <b class="tiny">${r.to}</b></td>
+      <td><span class="badge b-warn">${r.date}</span></td>
+      <td class="tiny">${r.by}</td>
+      <td class="tiny mono muted">${r.on}</td>
+      <td class="text-r"><div class="row gap6" style="justify-content:flex-end"><button class="btn btn-sm btn-secondary" data-modal="m-approve">確認</button><button class="btn btn-sm btn-primary" data-modal="m-approve">承認</button></div></td>
+    </tr>`).join('');
+
+  const sched=[
+    {n:'田中 美咲',av:'av-pink',from:'旭小 4-2',to:'港北小 4-1',date:'2026-07-01',left:'6日',by:'港北小 教頭'},
+    {n:'鈴木 健一',av:'av-blue',from:'宮前中',to:'高津中',date:'2026-07-01',left:'6日',by:'高津中 教頭'},
+    {n:'中村 拓海',av:'av-teal',from:'西中',to:'東中',date:'2026-07-01',left:'6日',by:'東中 教頭'},
+    {n:'山本 葵',av:'av-green',from:'緑が丘小 2-1',to:'若葉小 2-2',date:'2026-08-01',left:'37日',by:'若葉小 教頭'},
+  ];
+  document.getElementById('sc-rows').innerHTML=sched.map(r=>`
+    <tr>
+      <td><div class="t-name"><span class="avatar ${r.av}" style="width:30px;height:30px">${r.n.slice(0,1)}</span><b>${r.n}</b></div></td>
+      <td><span class="muted tiny">${r.from}</span> ${ic('arrowRight')} <b class="tiny">${r.to}</b></td>
+      <td><span class="badge b-info">${r.date}</span></td>
+      <td class="tiny">${r.left}</td>
+      <td class="tiny">${r.by}</td>
+      <td class="text-r"><button class="btn btn-sm btn-secondary" data-mock="実行前のため取消しました（モック）"><span style="display:inline-flex">${ic('x')}</span>取消</button></td>
+    </tr>`).join('');
+
+  [['mn1','田中 美咲','av-pink'],['mn2','森田 蓮','av-blue'],['mn3','山本 葵','av-green'],['mn4','伊藤 大輔','av-teal']].forEach(([id,n,av])=>{
+    document.getElementById(id).innerHTML=`<span class="avatar ${av}" style="width:30px;height:30px">${n.slice(0,1)}</span><b>${n}</b>`;
+  });
+</script>
+</body>
+</html>

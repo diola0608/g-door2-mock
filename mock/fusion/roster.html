@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名簿管理｜Gakuto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-page="roster">
+  <div class="app">
+    <div id="shell-header"></div>
+    <div class="body">
+      <div id="shell-sidebar"></div>
+      <main class="main"><div class="main__scroll"><div class="page" id="page"></div></div></main>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    let activeTab = "基本情報";
+    let filterRole = "all";
+
+    // タブごとの表示カラム
+    const TAB_COLS = {
+      "基本情報":   [["name","氏名"],["role","区分"],["org","所属組織"],["cls","クラス"],["gender","性別"],["birth","生年月日"]],
+      "連絡先情報": [["name","氏名"],["org","所属組織"],["email","メール"],["phone","電話番号"],["addr","住所"]],
+      "学籍情報":   [["name","氏名"],["grade","学年"],["cls","クラス"],["club","部活"],["status","在籍状況"]],
+      "機微情報":   [["name","氏名"],["org","所属組織"],["tags","人物の特徴"]],
+    };
+
+    function render() {
+      const tabs = ATTR_GROUPS.map(g=>`
+        <button class="tab ${g===activeTab?'active':''}" onclick="activeTab='${g}';render()">
+          ${g==='機微情報'?`<span class="lock">${icon('lock',13)}</span>`:''}${g}
+          ${g==='機微情報'?'':`<span class="cnt">${ATTRIBUTES.filter(a=>a.group===g).length}</span>`}
+        </button>`).join('');
+
+      const rows = PEOPLE.filter(p=> filterRole==='all'||p.roleType===filterRole).map(p=>renderRow(p)).join('');
+      const cols = TAB_COLS[activeTab];
+
+      document.getElementById('page').innerHTML = `
+        <div class="crumb"><a href="index.html">ダッシュボード</a><span class="sep">/</span><span>名簿管理</span></div>
+        <div class="page-head">
+          <div class="page-head__icon" style="background:linear-gradient(135deg,#3b62e8,#283fa8)">${icon('users',24)}</div>
+          <div><h1>名簿管理</h1><p>教職員・生徒・関係者を横断管理。属性項目はカテゴリ別タブで切り替えて表示します。</p></div>
+          <div class="page-head__actions">
+            <button class="btn btn-secondary" onclick="toast('CSVを書き出しました','ok')">${icon('download',16)} エクスポート</button>
+            <button class="btn btn-secondary" onclick="location.href='import.html'">${icon('upload',16)} インポート</button>
+            <button class="btn btn-primary" onclick="openAddPerson()">${icon('plus',16)} 新規登録</button>
+          </div>
+        </div>
+
+        ${activeTab==='機微情報'?`<div class="alert warn mb-16"><span class="ai">${icon('lock',16)}</span><div><b>このタブには権限による表示制限があります</b>「人物の特徴」は所属校の担任・学年主任のみ、「いじめ加害者」コードは学年主任のみ表示されます。あなたは管理者権限のため全件表示されています。</div></div>`:''}
+
+        <!-- カテゴリタブ -->
+        <div class="tabs">${tabs}</div>
+
+        <!-- ツールバー -->
+        <div class="toolbar">
+          <div class="field-search">${icon('search',16)}<input placeholder="氏名・かな・職員番号で検索"></div>
+          <div class="seg">
+            ${seg('all','すべて')}${seg('student','生徒')}${seg('teacher','教員')}${seg('staff','職員')}
+          </div>
+          <select class="select"><option>組織：すべて</option><option>青葉市</option><option>緑川町</option></select>
+          <button class="chip-filter" onclick="openGroupModal()">${icon('layers',14)} グルーピング</button>
+          <div class="grow"></div>
+          <span class="muted" style="font-size:12.5px">${PEOPLE.filter(p=>filterRole==='all'||p.roleType===filterRole).length}件 / 全18,420件</span>
+        </div>
+
+        <div class="card">
+          <div class="card__body flush table-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th style="width:36px"><input type="checkbox" class="checkbox"></th>
+                ${cols.map(c=>`<th>${c[1]}</th>`).join('')}
+                <th style="width:60px"></th>
+              </tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function seg(v,l){ return `<button class="${filterRole===v?'active':''}" onclick="filterRole='${v}';render()">${l}</button>`; }
+
+    function renderRow(p){
+      const cols = TAB_COLS[activeTab];
+      const cells = cols.map(([k])=>{
+        if(k==='name') return `<td><div class="person-cell"><div class="avatar">${p.name.slice(0,1)}</div><div><b>${p.name}</b><span>${p.kana} ・ ${p.id}</span></div></div></td>`;
+        if(k==='role') return `<td>${roleBadge(p)}</td>`;
+        if(k==='email') return `<td>${p.email?`<span style="font-family:var(--font-num);font-size:12.5px">${p.email}</span> ${p.gsync?`<span class="badge-s b-ok" title="Google同期中">${icon('google',11)}</span>`:''}`:'<span class="muted">未登録</span>'}</td>`;
+        if(k==='tags') return `<td>${(p.tags||[]).map(t=>tagBadge(t)).join(' ')||'<span class="muted">—</span>'}</td>`;
+        if(k==='status') return `<td><span class="badge-s b-ok">${p.status}</span></td>`;
+        return `<td>${p[k]||'<span class="muted">—</span>'}</td>`;
+      }).join('');
+      return `<tr class="clickable" onclick="openPerson('${p.id}')">
+        <td onclick="event.stopPropagation()"><input type="checkbox" class="checkbox"></td>
+        ${cells}
+        <td onclick="event.stopPropagation()"><button class="icon-btn" style="width:30px;height:30px" onclick="openPerson('${p.id}')">${icon('chevron',16)}</button></td>
+      </tr>`;
+    }
+
+    function roleBadge(p){
+      const m={student:['b-info','生徒'],teacher:['b-violet',p.title||'教員'],staff:['b-teal','職員']};
+      const [c,l]=m[p.roleType]; return `<span class="badge-s ${c}">${l}</span>`;
+    }
+    function tagBadge(t){
+      const danger = ['いじめ加害者','いじめ被害者','不登校傾向'];
+      const c = danger.includes(t)?'b-err':'b-brand';
+      return `<span class="badge-s ${c}">${t}</span>`;
+    }
+
+    // 人物詳細モーダル
+    function openPerson(id){
+      const p = PEOPLE.find(x=>x.id===id);
+      modal(`
+        <div class="modal__head">
+          <div class="avatar" style="width:46px;height:46px;font-size:16px">${p.name.slice(0,1)}</div>
+          <div><h3>${p.name} <span class="muted" style="font-size:13px;font-weight:600">${p.kana}</span></h3>
+          <p>${roleBadge(p)} ${p.id} ・ ${p.org}</p></div>
+          <div style="margin-left:auto;display:flex;gap:6px">
+            <button class="btn btn-secondary btn-sm" onclick="openTransferFor('${p.id}')">${icon('swap',14)} 所属変更</button>
+            <button class="icon-btn close" onclick="closeModal()">${icon('x',18)}</button>
+          </div>
+        </div>
+        <div class="modal__body">
+          <div class="tabs" style="margin-bottom:16px">
+            <button class="tab active">プロフィール</button>
+            <button class="tab" onclick="toast('履歴タブは下部に表示しています','info')">変更履歴</button>
+          </div>
+          <div class="grid grid-2" style="margin-bottom:18px">
+            <div class="card"><div class="card__head" style="padding:12px 14px">${icon('user',16)}<h3 style="font-size:13px">基本情報</h3></div><div class="card__body" style="padding:14px">
+              <dl class="kv" style="grid-template-columns:96px 1fr">
+                <dt>性別</dt><dd>${p.gender||'—'}</dd>
+                <dt>生年月日</dt><dd>${p.birth||'—'}</dd>
+                <dt>所属</dt><dd>${p.org}</dd>
+                <dt>クラス</dt><dd>${p.cls}</dd>
+              </dl></div></div>
+            <div class="card"><div class="card__head" style="padding:12px 14px">${icon('mail',16)}<h3 style="font-size:13px">連絡先・連携</h3></div><div class="card__body" style="padding:14px">
+              <dl class="kv" style="grid-template-columns:96px 1fr">
+                <dt>メール</dt><dd style="font-family:var(--font-num);font-size:12.5px">${p.email||'<span class="muted">未登録</span>'}</dd>
+                <dt>Google同期</dt><dd>${p.gsync?`<span class="badge-s b-ok"><span class="dot"></span>同期中</span>`:`<span class="badge-s b-gray">対象外</span>`}</dd>
+                <dt>電話</dt><dd>${p.phone||'—'}</dd>
+                <dt>住所</dt><dd>${p.addr||'—'}</dd>
+              </dl></div></div>
+          </div>
+
+          ${p.gsync?`<div class="alert info mb-16"><span class="ai">${icon('google',16)}</span><div>この人物は管理対象ワークスペースのメールを保有しています。本システムでの変更は Google Workspace へ<b>一方向に同期</b>されます。</div></div>`:''}
+
+          <div class="card">
+            <div class="card__head" style="padding:12px 14px">${icon('clock',16)}<h3 style="font-size:13px">属性「所属組織」の変更履歴</h3><div class="right"><span class="badge-s b-gray">時系列</span></div></div>
+            <div class="card__body" style="padding:18px 18px 6px">
+              <div class="timeline">
+                <div class="tl-item current"><div class="when">2024-04-01 〜 現在</div><div class="val">${p.org}</div><div class="meta">入学・採用時の所属。期間：継続中</div></div>
+                <div class="tl-item"><div class="when">2023-04-01 〜 2024-03-31</div><div class="val">青葉市立さくら幼稚園 年長組</div><div class="meta">CSV取込（JOB-7120）により登録</div></div>
+                <div class="tl-item"><div class="when">2022-09-01 〜 2023-03-31</div><div class="val">転入前（県外）</div><div class="meta">手動登録</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal__foot">
+          <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+          <button class="btn btn-primary" onclick="toast('編集モードを開きました','info')">${icon('edit',16)} 編集</button>
+        </div>
+      `,'lg');
+    }
+
+    function openTransferFor(id){
+      const p = PEOPLE.find(x=>x.id===id);
+      modalShell({ title:"所属変更を申請", sub:`${p.name} の異動申請を作成します`, icon:"swap", iconBg:"var(--warn-50)", iconColor:"var(--warn-600)",
+        body:`
+          <div class="form-row"><label>変更後の所属<span class="req">*</span></label><select class="input"><option>緑川町立中央小学校</option><option>青葉市立桜丘小学校</option><option>青葉市立第一中学校</option></select></div>
+          <div class="form-row"><label>適用日<span class="req">*</span></label><input class="input" type="date" value="2026-07-01"></div>
+          <div class="form-row"><label>申請理由</label><textarea class="textarea" placeholder="異動の理由を入力"></textarea></div>
+          <div class="alert info"><span class="ai">${icon('clock',16)}</span><div>申請は変更先組織の承認後、適用日にバッチ処理で自動反映されます。適用日前であれば取消可能です。</div></div>`,
+        foot:`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('変更先へ申請を送信しました','ok');closeModal()">${icon('send',16)} 申請を送信</button>` });
+    }
+
+    function openAddPerson(){
+      modalShell({ title:"人物を新規登録", sub:"単票で登録します。一括登録はCSVインポートをご利用ください", icon:"user",
+        body:`
+          <div class="grid grid-2">
+            <div class="form-row"><label>氏名<span class="req">*</span></label><input class="input" placeholder="例：山田 太郎"></div>
+            <div class="form-row"><label>かな</label><input class="input" placeholder="やまだ たろう"></div>
+          </div>
+          <div class="grid grid-2">
+            <div class="form-row"><label>区分<span class="req">*</span></label><select class="input"><option>生徒</option><option>教員</option><option>職員</option></select></div>
+            <div class="form-row"><label>所属組織<span class="req">*</span></label><select class="input"><option>青葉市立第一小学校</option><option>青葉市立第一中学校</option></select></div>
+          </div>
+          <div class="form-row"><label>メールアドレス</label><input class="input" placeholder="未保有の場合は空欄"><div class="hint">管理対象ワークスペースのメールを入力すると Google Workspace と同期されます。</div></div>`,
+        foot:`<button class="btn btn-secondary" onclick="closeModal()">キャンセル</button><button class="btn btn-primary" onclick="toast('人物を登録しました','ok');closeModal()">${icon('check',16)} 登録</button>` });
+    }
+
+    function openGroupModal(){
+      modalShell({ title:"属性のグルーピング", sub:"一覧をカテゴリで束ねて表示します", icon:"layers",
+        body:`<p class="muted" style="margin-top:0">表示するカテゴリ（タブ）と項目の組み合わせを定義できます。タブごとに表示する属性項目を切り替えられます。</p>
+          ${ATTR_GROUPS.map(g=>`<div class="scope-row" style="margin-bottom:8px"><span style="font-weight:700">${g}</span><span class="muted" style="margin-left:auto">${ATTRIBUTES.filter(a=>a.group===g).map(a=>a.name).join('、')}</span></div>`).join('')}`,
+        foot:`<button class="btn btn-secondary" onclick="closeModal()">閉じる</button><button class="btn btn-primary" onclick="location.href='attributes.html'">属性項目設定へ</button>` });
+    }
+
+    render();
+  </script>
+</body>
+</html>

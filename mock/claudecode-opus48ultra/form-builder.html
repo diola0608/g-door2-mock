@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>フォーム作成 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="forms">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><a href="forms-list.html">フォーム</a><span id="b2"></span><span class="cur">フォーム作成</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1 contenteditable="true" style="outline:none;border-bottom:2px dashed var(--line);padding-bottom:2px">教員 自家用携帯番号の登録</h1><p>クリックでタイトルを編集 ・ 下書き保存済み（自動）</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="プレビューを開く（モック）"><span id="a0"></span>プレビュー</button>
+        <button class="btn btn-secondary" data-mock="下書きを保存しました（モック）">下書き保存</button>
+        <button class="btn btn-primary" data-modal="m-publish"><span id="a1"></span>配信する</button>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="fb-q"><span id="t1"></span>設問</div>
+      <div class="ptab" data-tab="fb-t"><span id="t2"></span>対象者</div>
+      <div class="ptab" data-tab="fb-l"><span id="t3"></span>名簿連携</div>
+      <div class="ptab" data-tab="fb-p"><span id="t4"></span>権限・公開</div>
+    </div>
+  </div>
+
+  <div class="page-body narrow">
+    <!-- 設問 -->
+    <div data-panel="fb-q">
+      <div class="grid" style="grid-template-columns:1fr 320px;align-items:start">
+        <div class="col gap16">
+          <div class="card"><div class="card-pad"><input class="input" style="font-size:18px;font-weight:800;border:none;padding:0" value="教員 自家用携帯番号の登録"><textarea class="input" rows="2" style="border:none;padding:0;margin-top:8px" placeholder="説明文">緊急連絡網の整備のため、自家用の携帯電話番号のご登録をお願いします。回答内容は名簿に反映されます。</textarea></div></div>
+
+          <div id="questions"></div>
+
+          <button class="btn btn-secondary btn-block" data-modal="m-q"><span id="qa"></span>設問を追加</button>
+        </div>
+
+        <!-- side -->
+        <div class="card" style="position:sticky;top:120px">
+          <div class="card-head" style="padding:14px 16px"><h3 style="font-size:14px">設問タイプ</h3></div>
+          <div class="card-pad col gap8" id="qtypes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 対象者 -->
+    <div data-panel="fb-t" style="display:none">
+      <div class="alert alert-info mb16"><span id="i2"></span><div class="body">対象者のみがこのフォームを閲覧・回答できます。区分・組織スコープ・属性条件を組み合わせて絞り込みます。</div></div>
+      <div class="card">
+        <div class="card-head"><h3>配信対象の条件</h3></div>
+        <div class="card-pad">
+          <div class="cond"><div class="row gap8 mb12"><span class="when-tag">区分</span></div><div class="row wrap gap16"><label class="row gap6"><input type="checkbox" class="cb" checked>教員</label><label class="row gap6"><input type="checkbox" class="cb">生徒</label><label class="row gap6"><input type="checkbox" class="cb">職員</label><label class="row gap6"><input type="checkbox" class="cb">保護者</label></div></div>
+          <div class="cond"><div class="row gap8 mb12"><span class="when-tag">組織スコープ</span></div><div class="grid g2"><select class="select"><option>神奈川県（テナント全体）</option><option>横浜市</option></select><select class="select"><option>すべての学校種</option><option>小学校</option><option>中学校</option></select></div></div>
+          <div class="cond"><div class="row gap8 mb12"><span class="when-tag">属性条件（任意）</span></div><div class="row wrap gap8"><span class="tag">在籍状態 = 在籍中 <span class="x">✕</span></span><button class="btn btn-sm btn-ghost" data-mock="条件を追加（モック）"><span id="i2a"></span>追加</button></div></div>
+          <div class="alert alert-ok"><span style="color:var(--ok-700)" id="i2b"></span><div class="body"><b>対象者：約 1,240名</b>（神奈川県内の全教員 ・ 在籍中）<button class="btn btn-sm btn-secondary" style="margin-left:12px" data-mock="対象者一覧を確認（モック）">対象を確認</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 名簿連携 -->
+    <div data-panel="fb-l" style="display:none">
+      <div class="alert alert-info mb16"><span id="i3"></span><div class="body"><b>回答を名簿へ自動反映できます。</b>本人を特定するキー（メール等）と、各回答を反映する属性項目を対応づけます。</div></div>
+      <div class="card mb16">
+        <div class="card-head"><h3>本人特定キー</h3></div>
+        <div class="card-pad"><div class="field" style="margin:0"><label>回答者を名簿の人物と紐づける項目</label><select class="select"><option>メールアドレス（ログインアカウント）</option><option>職員番号</option></select><div class="hint">回答者のログインアカウントから自動取得し、名簿の同一人物を特定します。</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>回答 → 名簿項目のマッピング</h3></div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>設問</th><th></th><th>反映先の属性項目</th><th>反映方法</th><th>有効化</th></tr></thead>
+          <tbody>
+            <tr><td><b>自家用の携帯番号</b></td><td><span id="m1"></span></td><td><select class="select btn-sm" style="height:34px"><option>自家用携帯番号</option><option>緊急連絡先</option></select></td><td><span class="badge b-info">上書き</span></td><td><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></td></tr>
+            <tr><td>緊急連絡を許可するか</td><td><span id="m2"></span></td><td><select class="select btn-sm" style="height:34px"><option>（反映しない）</option><option>連絡可否フラグ</option></select></td><td><span class="muted tiny">—</span></td><td><span class="toggle"><input type="checkbox"><span class="track"></span></span></td></tr>
+          </tbody>
+        </table></div>
+        <div class="card-pad"><div class="alert alert-warn"><span id="i3b"></span><div class="body tiny">反映は回答送信時にバックグラウンドで実行され、属性の履歴に「フォーム回答反映」として記録されます。処理状況は<a href="roster-logs.html" style="text-decoration:underline">処理ログ</a>で確認できます。</div></div></div>
+      </div>
+    </div>
+
+    <!-- 権限・公開 -->
+    <div data-panel="fb-p" style="display:none">
+      <div class="card mb16">
+        <div class="card-head"><h3>結果の閲覧権限</h3><span class="sub">集計・回答を見られる主体（主体×対象×スコープ）</span></div>
+        <div class="card-pad">
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>主体</th><th>閲覧できる範囲</th><th>個票</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge b-info">作成者・県教委 教職員課</span></td><td>全回答・全項目</td><td><span class="badge b-ok">可</span></td><td class="text-r"><button class="btn btn-sm btn-ghost" data-mock>削除</button></td></tr>
+              <tr><td><span class="badge b-info">ロール：校長</span></td><td>自校の教員の回答のみ（集計）</td><td><span class="badge b-neutral">不可</span></td><td class="text-r"><button class="btn btn-sm btn-ghost" data-mock>削除</button></td></tr>
+            </tbody>
+          </table></div>
+          <button class="btn btn-secondary btn-sm mt12" data-mock="閲覧権限を追加（モック）"><span id="p0"></span>閲覧権限を追加</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>公開設定</h3></div>
+        <div class="card-pad grid g2" style="gap:0 24px">
+          <div><div class="field"><label>受付開始</label><input class="input" type="date" value="2026-06-25"></div><div class="field"><label>締切</label><input class="input" type="date" value="2026-07-05"></div></div>
+          <div>
+            <label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">回答を1人1回に制限</span><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+            <label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">回答後の修正を許可</span><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+            <label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">未回答者へ自動リマインド</span><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- add question modal -->
+<div class="modal-root" id="m-q">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:#fdeede;color:var(--c-form)" id="mq1"></span><div><h3>設問を追加</h3><p>タイプを選んで設問を作成します</p></div><button class="icon-btn x" data-close id="mq2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>設問タイプ</label><select class="select"><option>記述（短文）</option><option>記述（長文）</option><option>単一選択</option><option>複数選択</option><option>数値</option><option>日付</option></select></div>
+      <div class="field"><label>設問文 <span class="req">*</span></label><input class="input" placeholder="例：自家用の携帯番号"></div>
+      <div class="field"><label>必須</label><label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">回答を必須にする</span><span class="toggle"><input type="checkbox" checked><span class="track"></span></span></label></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="設問を追加しました（モック）">追加</button></div>
+  </div>
+</div>
+
+<!-- publish modal -->
+<div class="modal-root" id="m-publish">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:#e7f7ee;color:var(--ok-700)" id="mp1"></span><div><h3>フォームを配信</h3><p>対象者へ通知し、回答受付を開始します</p></div><button class="icon-btn x" data-close id="mp2"></button></div>
+    <div class="modal-body">
+      <div class="kv"><span class="k">対象者</span><span class="v">約 1,240名（県内全教員）</span></div>
+      <div class="kv"><span class="k">設問数</span><span class="v">2問</span></div>
+      <div class="kv"><span class="k">名簿連携</span><span class="v"><span class="badge b-teal">あり（自家用携帯番号）</span></span></div>
+      <div class="kv"><span class="k">締切</span><span class="v mono">2026-07-05</span></div>
+      <div class="alert alert-ok mt12"><span style="color:var(--ok-700)" id="mp3"></span><div class="body tiny">配信すると対象者に通知が届きます。回答は名簿へ自動反映されます。</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="フォームを配信しました（モック）"><span id="mp4"></span>配信する</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');b2.innerHTML=ic('chevRight');a0.innerHTML=ic('eye');a1.innerHTML=ic('send');
+  t1.innerHTML=ic('list');t2.innerHTML=ic('users');t3.innerHTML=ic('link');t4.innerHTML=ic('shield');
+  qa.innerHTML=ic('plus');i2.innerHTML=ic('info');i2a.innerHTML=ic('plus');i2b.innerHTML=ic('checkCircle');
+  i3.innerHTML=ic('link');i3b.innerHTML=ic('alert');m1.innerHTML=ic('arrowRight');m2.innerHTML=ic('arrowRight');p0.innerHTML=ic('plus');
+  mq1.innerHTML=ic('plus');mq2.innerHTML=ic('x');mp1.innerHTML=ic('send');mp2.innerHTML=ic('x');mp3.innerHTML=ic('checkCircle');mp4.innerHTML=ic('send');
+
+  // questions
+  const qs=[
+    {n:1,type:'記述（短文）',q:'自家用の携帯番号',req:true,link:true,note:'名簿「自家用携帯番号」へ反映'},
+    {n:2,type:'単一選択',q:'緊急時の連絡を許可しますか？',req:true,link:false,opts:['許可する','許可しない']},
+  ];
+  document.getElementById('questions').innerHTML=qs.map(q=>`
+    <div class="card">
+      <div class="card-pad">
+        <div class="row between mb8">
+          <div class="row gap8"><span class="badge b-neutral">Q${q.n}</span><span class="badge b-info">${q.type}</span>${q.req?'<span class="badge b-err">必須</span>':''}${q.link?`<span class="badge b-teal">${ic('link')}名簿連携</span>`:''}</div>
+          <div class="row-actions" style="opacity:1"><button class="icon-btn btn-sm" style="width:30px;height:30px" data-mock="複製（モック）">${ic('copy')}</button><button class="icon-btn btn-sm" style="width:30px;height:30px" data-mock="削除（モック）">${ic('trash')}</button></div>
+        </div>
+        <input class="input" value="${q.q}" style="font-weight:700">
+        ${q.opts?`<div class="col gap8 mt12">${q.opts.map(o=>`<label class="row gap8" style="border:1px solid var(--line);border-radius:8px;padding:8px 12px"><input type="radio" class="rb" disabled>${o}</label>`).join('')}<button class="btn btn-sm btn-ghost" data-mock="選択肢を追加（モック）" style="align-self:flex-start">${ic('plus')}選択肢を追加</button></div>`:`<div class="input mt12" style="color:var(--ink-300);background:var(--surface-2)">回答欄（短文）</div>`}
+        ${q.note?`<div class="tiny muted mt8 row gap6">${ic('info')}${q.note}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  const qtypes=[['type','記述（短文）'],['list','記述（長文）'],['hash','単一選択'],['columns','複数選択'],['type','数値'],['calendar','日付']];
+  document.getElementById('qtypes').innerHTML=qtypes.map(([i,l])=>`<button class="btn btn-secondary" style="justify-content:flex-start" data-modal="m-q">${ic(i)}${l}</button>`).join('');
+</script>
+</body>
+</html>

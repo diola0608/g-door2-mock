@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>権限管理｜Gakuto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-page="permissions">
+  <div class="app">
+    <div id="shell-header"></div>
+    <div class="body">
+      <div id="shell-sidebar"></div>
+      <main class="main"><div class="main__scroll"><div class="page" id="page"></div></div></main>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    let scopeOrg = "テナント全体（山田県）";
+    function render(){
+      const roleCards = ROLES.map(r=>`
+        <div class="card" style="cursor:pointer" onclick="openRole('${r.id}')">
+          <div class="card__body" style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:40px;height:40px;border-radius:11px;background:var(--brand-50);color:var(--brand-600);display:grid;place-items:center;flex-shrink:0">${icon('shield',18)}</div>
+            <div style="flex:1">
+              <div class="flex items-center between"><b style="font-size:14.5px;color:var(--ink-900)">${r.name}</b><span class="badge-s b-gray">${r.subjects}名</span></div>
+              <p class="muted" style="margin:4px 0 8px;font-size:12.5px">${r.desc}</p>
+              <div class="flex gap-8" style="flex-wrap:wrap">
+                <span class="badge-s b-brand">${icon('filter',11)} スコープ：${r.scope}</span>
+              </div>
+            </div>
+            ${icon('chevron',16,'muted')}
+          </div>
+        </div>`).join('');
+
+      document.getElementById('page').innerHTML = `
+        <div class="crumb"><a href="index.html">ダッシュボード</a><span class="sep">/</span><span>設定</span><span class="sep">/</span><span>権限管理</span></div>
+        <div class="page-head">
+          <div class="page-head__icon" style="background:linear-gradient(135deg,#0f172a,#334155)">${icon('shield',24)}</div>
+          <div><h1>権限管理</h1><p>サブジェクト（誰が）・オブジェクト（何を）・属性条件・組織スコープを柔軟に組み合わせ、機能ごとに権限を付与します。</p></div>
+          <div class="page-head__actions">
+            <button class="btn btn-secondary" onclick="openSimulate()">${icon('eye',16)} 権限シミュレーション</button>
+            <button class="btn btn-primary" onclick="openRole()">${icon('plus',16)} ロールを追加</button>
+          </div>
+        </div>
+
+        <!-- 組織スコープ（継承/上書き） -->
+        <div class="card mb-16">
+          <div class="card__head">${icon('sitemap',18)}<h3>適用先の組織スコープ</h3><span class="sub">上位の設定を継承し、各組織で上書き・追加できます</span></div>
+          <div class="card__body">
+            <div class="flex items-center gap-8" style="flex-wrap:wrap">
+              <select class="select" onchange="scopeOrg=this.value;render()">
+                <option>テナント全体（山田県）</option>
+                <option>青葉市</option><option>青葉市立第一小学校</option><option>緑川町</option>
+              </select>
+              <span class="cond-op">に対する権限設定を表示中</span>
+              <div class="grow" style="flex:1"></div>
+              ${scopeOrg.includes('テナント')
+                ? `<span class="badge-s b-info">${icon('layers',11)} テナント全体設定（最上位）</span>`
+                : `<span class="badge-s b-violet">${icon('layers',11)} 上位から継承中</span> <button class="btn btn-secondary btn-sm" onclick="toast('この組織用に上書き設定を作成します','info')">${icon('edit',13)} この組織で上書き</button>`}
+            </div>
+            <div class="alert ${scopeOrg.includes('テナント')?'info':'warn'} mt-16"><span class="ai">${icon('layers',16)}</span><div>
+              ${scopeOrg.includes('テナント')
+                ? '<b>テナント全体の基本設定です。</b>ここで定義した権限は配下のすべての組織へ波及します。'
+                : `<b>${scopeOrg} は上位組織の設定を継承しています。</b>独自にロールを追加・上書きすると、その内容が優先され、さらに配下組織へ波及します（下位組織の設定が最優先）。`}
+            </div></div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">${roleCards}</div>
+      `;
+    }
+
+    function openRole(id){
+      const r = id ? ROLES.find(x=>x.id===id) : null;
+      const edit = !!r;
+      modal(`
+        <div class="modal__head">
+          <div class="mi" style="background:var(--ink-100);color:var(--ink-700)">${icon('shield',20)}</div>
+          <div><h3>${edit?r.name:'ロールを追加'}</h3><p>サブジェクト・オブジェクト・条件・割当機能を定義</p></div>
+          <button class="icon-btn close" onclick="closeModal()" style="margin-left:auto">${icon('x',18)}</button>
+        </div>
+        <div class="modal__body">
+          <div class="form-row"><label>ロール名<span class="req">*</span></label><input class="input" value="${edit?r.name:''}" placeholder="例：部活顧問"></div>
+
+          <div class="card" style="margin-bottom:14px"><div class="card__head" style="padding:12px 14px">${icon('user',16)}<h3 style="font-size:13px">サブジェクト（誰が）</h3></div>
+            <div class="card__body" style="padding:14px">
+              <div class="scope-builder">
+                <div class="scope-row"><span class="lbl">職種</span><span class="cond-pill">${edit&&r.name==='校長'?'校長':edit&&r.name==='学年主任'?'学年主任':'一般教員'}</span></div>
+                <div class="scope-row"><span class="lbl">属性条件</span>
+                  <span class="cond-pill">属性「部活顧問」に値あり</span><span class="cond-op">例：サッカー部</span>
+                  <button class="btn btn-ghost btn-sm" onclick="toast('条件を追加します','info')">${icon('plus',12)} 条件追加</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px"><div class="card__head" style="padding:12px 14px">${icon('users',16)}<h3 style="font-size:13px">オブジェクト（誰を / 何を）</h3></div>
+            <div class="card__body" style="padding:14px">
+              <div class="scope-builder">
+                <div class="scope-row"><span class="lbl">対象</span><span class="cond-pill">生徒</span></div>
+                <div class="scope-row"><span class="lbl">S-O関係</span>
+                  <span class="cond-pill">担任しているクラスに所属</span><span class="cond-op">OR</span><span class="cond-pill">担当部に所属</span>
+                </div>
+                <div class="scope-row"><span class="lbl">組織スコープ</span><span class="cond-pill">${icon('building',11)} 担当学校と一致</span><span class="cond-op">AND</span><span class="cond-pill">同一学校種</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px"><div class="card__head" style="padding:12px 14px">${icon('sliders',16)}<h3 style="font-size:13px">割り当てる機能 / 項目（何を・どこまで）</h3></div>
+            <div class="card__body" style="padding:14px">
+              <table class="tbl" style="font-size:12.5px">
+                <thead><tr><th>項目カテゴリ</th><th style="width:70px">閲覧</th><th style="width:70px">編集</th></tr></thead>
+                <tbody>
+                  ${ATTR_GROUPS.map((g,i)=>`<tr><td><b>${g}</b>${g==='機微情報'?` <span class="badge-s b-warn" style="font-size:10px">${icon('lock',9)}</span>`:''}</td>
+                    <td><label class="switch" style="transform:scale(.85)"><input type="checkbox" ${i<2?'checked':''}><span class="track"></span></label></td>
+                    <td><label class="switch" style="transform:scale(.85)"><input type="checkbox" ${i===0?'checked':''}><span class="track"></span></label></td></tr>`).join('')}
+                </tbody>
+              </table>
+              <div class="alert warn mt-8"><span class="ai">${icon('lock',14)}</span><div>機微情報の<b>「人物の特徴」</b>はコード単位でさらに制限されます（例：いじめ加害者は学年主任のみ）。<a href="codes.html" style="font-weight:700;text-decoration:underline">コードマスターで設定 →</a></div></div>
+            </div>
+          </div>
+
+          <div class="scope-row" style="justify-content:space-between"><div><b>CSV直接インポート / 承認スキップを許可</b><div class="hint" style="margin-top:2px">所属変更を承認フローなしで反映できます</div></div>
+            <label class="switch"><input type="checkbox" ${edit&&r.name.includes('管理者')?'checked':''}><span class="track"></span></label></div>
+        </div>
+        <div class="modal__foot">
+          ${edit?`<button class="btn btn-ghost" style="color:var(--err-600);margin-right:auto" onclick="toast('ロールを削除しました','info');closeModal()">${icon('trash',16)} 削除</button>`:''}
+          <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+          <button class="btn btn-primary" onclick="toast('権限を保存しました','ok');closeModal()">${icon('check',16)} 保存</button>
+        </div>
+      `,'xl');
+    }
+
+    function openSimulate(){
+      modalShell({ title:"権限シミュレーション", sub:"特定の人物が、ある対象に何ができるかを検証します", icon:"eye", iconBg:"var(--ok-50)", iconColor:"var(--ok-700)",
+        body:`
+          <div class="grid grid-2">
+            <div class="form-row"><label>サブジェクト（実行者）</label><select class="input"><option>高橋 結衣（一般教員）</option><option>中村 健（学年主任）</option><option>田中 大輔（校長）</option></select></div>
+            <div class="form-row"><label>オブジェクト（対象）</label><select class="input"><option>佐藤 美咲（3年2組 生徒）</option><option>渡辺 颯太（2年1組 生徒）</option></select></div>
+          </div>
+          <div class="card"><div class="card__head" style="padding:12px 14px">${icon('check',16)}<h3 style="font-size:13px">判定結果</h3></div>
+          <div class="card__body flush"><table class="tbl" style="font-size:12.5px">
+            <thead><tr><th>項目カテゴリ</th><th>閲覧</th><th>編集</th><th>判定理由</th></tr></thead>
+            <tbody>
+              <tr><td>基本情報</td><td><span class="badge-s b-ok">可</span></td><td><span class="badge-s b-ok">可</span></td><td class="muted">担任クラスに所属</td></tr>
+              <tr><td>連絡先情報</td><td><span class="badge-s b-ok">可</span></td><td><span class="badge-s b-gray">不可</span></td><td class="muted">閲覧のみ許可</td></tr>
+              <tr><td>機微情報</td><td><span class="badge-s b-err">不可</span></td><td><span class="badge-s b-err">不可</span></td><td class="muted">学年主任ロールが必要</td></tr>
+            </tbody></table></div></div>`,
+        foot:`<button class="btn btn-secondary" onclick="closeModal()">閉じる</button>` });
+    }
+    render();
+  </script>
+</body>
+</html>

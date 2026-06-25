@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>組織管理 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="org">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">組織管理</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>組織管理</h1><p>テナントをルートとした階層構造（県 ＞ 市町村 ＞ 学校種 ＞ 学校／部署）を管理します ・ 全412組織</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="ツリーを展開しました"><span id="a0"></span>すべて展開</button>
+        <button class="btn btn-primary" data-modal="m-org"><span id="a1"></span>組織を追加</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="grid" style="grid-template-columns: 380px 1fr; align-items:start">
+      <!-- tree -->
+      <div class="card" style="position:sticky;top:120px">
+        <div class="card-head" style="padding:12px 14px">
+          <div class="input-icon grow"><span id="si"></span><input class="input btn-sm" style="height:36px" placeholder="組織を検索" data-mock-input></div>
+        </div>
+        <div class="card-pad tree" style="max-height:66vh;overflow:auto;padding:10px 12px">
+          <div class="tree-node">
+            <div data-tree-toggle><div class="tree-row sel" data-select="神奈川県（テナント全体）"><span class="twist"><span class="tw"></span></span><span class="tico" id="ti0"></span><b>神奈川県（テナント全体）</b><span class="cnt">412</span></div></div>
+            <div class="tree-children">
+              <!-- 横浜市 -->
+              <div class="tree-node">
+                <div data-tree-toggle><div class="tree-row" data-select="横浜市"><span class="twist"></span><span class="tico ti-b"></span>横浜市<span class="cnt">186</span></div></div>
+                <div class="tree-children">
+                  <div class="tree-node">
+                    <div data-tree-toggle><div class="tree-row" data-select="横浜市 小学校"><span class="twist"></span><span class="tico ti-c"></span>小学校<span class="cnt">142</span></div></div>
+                    <div class="tree-children">
+                      <div class="tree-row sel2" data-select="横浜市立旭小学校"><span class="twist" style="opacity:0"></span><span class="tico ti-s"></span>旭小学校<span class="cnt">621</span></div>
+                      <div class="tree-row" data-select="横浜市立港北小学校"><span class="twist" style="opacity:0"></span><span class="tico ti-s"></span>港北小学校<span class="cnt">540</span></div>
+                    </div>
+                  </div>
+                  <div class="tree-row" data-select="横浜市 中学校"><span class="twist" style="opacity:0"></span><span class="tico ti-c"></span>中学校<span class="cnt">38</span></div>
+                  <div class="tree-node">
+                    <div data-tree-toggle><div class="tree-row" data-select="横浜市教育委員会"><span class="twist"></span><span class="tico ti-e"></span>教育委員会<span class="cnt">6</span></div></div>
+                    <div class="tree-children">
+                      <div class="tree-row" data-select="横浜市教委 学事課"><span class="twist" style="opacity:0"></span><span class="tico ti-d"></span>学事課<span class="cnt">12</span></div>
+                      <div class="tree-row" data-select="横浜市教委 教職員課"><span class="twist" style="opacity:0"></span><span class="tico ti-d"></span>教職員課<span class="cnt">9</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 川崎市 -->
+              <div class="tree-node">
+                <div data-tree-toggle><div class="tree-row" data-select="川崎市"><span class="twist"></span><span class="tico ti-b"></span>川崎市<span class="cnt">98</span></div></div>
+                <div class="tree-children">
+                  <div class="tree-node">
+                    <div data-tree-toggle><div class="tree-row" data-select="川崎市 中学校"><span class="twist"></span><span class="tico ti-c"></span>中学校<span class="cnt">52</span></div></div>
+                    <div class="tree-children"><div class="tree-row" data-select="川崎市立宮前中学校"><span class="twist" style="opacity:0"></span><span class="tico ti-s"></span>宮前中学校<span class="cnt">410</span></div></div>
+                  </div>
+                </div>
+              </div>
+              <!-- 相模原市 -->
+              <div class="tree-row" data-select="相模原市"><span class="twist"></span><span class="tico ti-b"></span>相模原市<span class="cnt">76</span></div>
+              <!-- 県立（学校種直下） -->
+              <div class="tree-node">
+                <div data-tree-toggle><div class="tree-row" data-select="県立 高等学校"><span class="twist"></span><span class="tico ti-c"></span>県立 高等学校<span class="cnt">52</span></div></div>
+                <div class="tree-children"><div class="tree-row" data-select="藤沢市立湘南台高校"><span class="twist" style="opacity:0"></span><span class="tico ti-s"></span>湘南台高校<span class="cnt">980</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- detail -->
+      <div class="col gap16">
+        <div class="card">
+          <div class="card-pad">
+            <div class="row between">
+              <div class="row gap12">
+                <span class="tile-ico" style="width:48px;height:48px;background:var(--c-org)"><span id="oi"></span></span>
+                <div>
+                  <div class="breadcrumbs" style="margin-bottom:3px"><span>神奈川県</span><span id="p1"></span><span>横浜市</span><span id="p2"></span><span>小学校</span></div>
+                  <h2 style="margin:0;font-size:19px">横浜市立旭小学校</h2>
+                  <span class="muted tiny">組織コード <span class="mono">ORG-YKH-EL-014</span> ・ 学校種：小学校</span>
+                </div>
+              </div>
+              <div class="row gap8">
+                <button class="btn btn-secondary btn-sm" data-mock="組織を編集（モック）"><span id="oe"></span>編集</button>
+                <button class="btn btn-secondary btn-sm" data-mock="下位に組織を追加（モック）"><span id="op"></span>子組織を追加</button>
+              </div>
+            </div>
+            <div class="grid g4 mt20">
+              <div class="stat" style="box-shadow:none"><div class="label">生徒</div><div class="num">596</div></div>
+              <div class="stat" style="box-shadow:none"><div class="label">教員</div><div class="num">25</div></div>
+              <div class="stat" style="box-shadow:none"><div class="label">クラス</div><div class="num">18</div></div>
+              <div class="stat" style="box-shadow:none"><div class="label">同期済アカウント</div><div class="num">23</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- inheritance -->
+        <div class="card">
+          <div class="card-head"><h3>設定の継承と上書き</h3><span class="sub">上位組織の設定を継承し、この組織で上書き・追加できます</span></div>
+          <div class="card-pad">
+            <div class="alert alert-info mb16"><span id="in0"></span><div class="body">テナント全体および横浜市の設定を継承中。この組織で上書きした項目は、配下のクラス・人物に優先適用されます。</div></div>
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead><tr><th>設定項目</th><th>継承元</th><th>現在の値</th><th>状態</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td><b>権限ルール：担任の機微情報閲覧</b></td><td>テナント全体</td><td>担任は自クラスの機微情報を閲覧可</td><td><span class="badge b-neutral">継承</span></td><td class="text-r"><button class="btn btn-sm btn-secondary" data-mock="この組織で上書き（モック）">上書き</button></td></tr>
+                  <tr><td><b>属性項目：人物の特徴</b></td><td>横浜市</td><td>選択肢に「学習支援対象」を追加</td><td><span class="badge b-warn dot">この組織で上書き</span></td><td class="text-r"><button class="btn btn-sm btn-ghost" data-mock="継承に戻す（モック）">継承に戻す</button></td></tr>
+                  <tr><td><b>所属変更の承認</b></td><td>テナント全体</td><td>承認フロー必須（教頭承認）</td><td><span class="badge b-neutral">継承</span></td><td class="text-r"><button class="btn btn-sm btn-secondary" data-mock>上書き</button></td></tr>
+                  <tr><td><b>CSVインポート権限</b></td><td>この組織で追加</td><td>教頭に限定許可</td><td><span class="badge b-info dot">この組織で追加</span></td><td class="text-r"><button class="btn btn-sm btn-ghost" data-mock>削除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- children -->
+        <div class="card">
+          <div class="card-head"><h3>下位の組織・クラス</h3><div class="right"><button class="btn btn-sm btn-soft" data-modal="m-org"><span id="ca"></span>追加</button></div></div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>名称</th><th>種別</th><th>担任／責任者</th><th>人数</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><div class="t-name"><span class="tico" style="color:var(--c-org)" id="cc1"></span><b>4年2組</b></div></td><td>クラス</td><td>小林 由美</td><td class="mono">33</td><td class="text-r"><a href="roster-list.html" class="btn btn-sm btn-secondary">名簿</a></td></tr>
+                <tr><td><div class="t-name"><span class="tico" style="color:var(--c-org)" id="cc2"></span>4年1組</div></td><td>クラス</td><td>田村 健</td><td class="mono">32</td><td class="text-r"><a href="roster-list.html" class="btn btn-sm btn-secondary">名簿</a></td></tr>
+                <tr><td><div class="t-name"><span class="tico" style="color:var(--c-org)" id="cc3"></span>5年3組</div></td><td>クラス</td><td>佐藤 恵</td><td class="mono">34</td><td class="text-r"><a href="roster-list.html" class="btn btn-sm btn-secondary">名簿</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- add org modal -->
+<div class="modal-root" id="m-org">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal">
+    <div class="modal-head"><span class="mico" style="background:#e7f7ee;color:var(--c-org)" id="mo1"></span><div><h3>組織を追加</h3><p>選択中の組織の配下に作成します</p></div><button class="icon-btn x" data-close id="mo2"></button></div>
+    <div class="modal-body">
+      <div class="field"><label>親組織</label><input class="input" value="横浜市立旭小学校" disabled></div>
+      <div class="field"><label>種別 <span class="req">*</span></label><select class="select"><option>クラス</option><option>市町村</option><option>学校種</option><option>学校</option><option>教育委員会・部署</option></select></div>
+      <div class="field"><label>名称 <span class="req">*</span></label><input class="input" placeholder="例：6年1組"></div>
+      <div class="field"><label>組織コード</label><input class="input mono" placeholder="自動採番（空欄可）"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="組織を追加しました（モック）">追加する</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');a0.innerHTML=ic('layers');a1.innerHTML=ic('plus');si.innerHTML=ic('search');
+  oi.innerHTML=ic('school');oe.innerHTML=ic('edit');op.innerHTML=ic('plus');in0.innerHTML=ic('info');ca.innerHTML=ic('plus');
+  p1.innerHTML=ic('chevRight');p2.innerHTML=ic('chevRight');
+  ti0.innerHTML=ic('building');
+  document.querySelectorAll('.tw').forEach(e=>e.innerHTML=ic('chevDown'));
+  document.querySelectorAll('.twist').forEach(e=>{if(!e.innerHTML.trim())e.innerHTML=ic('chevDown');});
+  document.querySelectorAll('.ti-b').forEach(e=>e.innerHTML=ic('pin'));
+  document.querySelectorAll('.ti-c').forEach(e=>e.innerHTML=ic('layers'));
+  document.querySelectorAll('.ti-s').forEach(e=>e.innerHTML=ic('school'));
+  document.querySelectorAll('.ti-e').forEach(e=>e.innerHTML=ic('building'));
+  document.querySelectorAll('.ti-d').forEach(e=>e.innerHTML=ic('folder'));
+  cc1.innerHTML=ic('users');cc2.innerHTML=ic('users');cc3.innerHTML=ic('users');
+  mo1.innerHTML=ic('sitemap');mo2.innerHTML=ic('x');
+  // mark the旭小学校 row as selected initially
+  document.querySelectorAll('.sel2').forEach(e=>{e.classList.add('sel');});
+</script>
+</body>
+</html>

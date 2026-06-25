@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduNexus Governance Mock</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="global-header">
+      <a class="brand" href="#/dashboard" aria-label="トップへ戻る">
+        <span class="brand-mark">EN</span>
+        <span>
+          <strong>EduNexus</strong>
+          <small>県域教育データ基盤</small>
+        </span>
+      </a>
+      <div class="tenant-switcher" role="button" tabindex="0">
+        <span class="status-dot"></span>
+        <span>青海県テナント</span>
+        <span class="muted">GCP: aomi-edu-prod</span>
+      </div>
+      <div class="header-search">
+        <span class="search-icon">⌕</span>
+        <input type="search" placeholder="人物・学校・申請・フォームを横断検索" aria-label="横断検索" />
+      </div>
+      <button class="ghost-button" data-modal="workspaceSync">Workspace同期</button>
+      <button class="notification-button" data-modal="notifications" aria-label="通知を開く">
+        <span>通知</span><strong>8</strong>
+      </button>
+      <div class="user-chip">
+        <span class="avatar">県</span>
+        <span><strong>県教育DX管理者</strong><small>全体管理者</small></span>
+      </div>
+    </header>
+
+    <div class="body-shell">
+      <aside class="sidebar" aria-label="主要ナビゲーション">
+        <nav id="sideNav"></nav>
+        <div class="sidebar-card">
+          <span class="eyebrow">運用状態</span>
+          <strong>99.98%</strong>
+          <small>過去30日の同期成功率</small>
+          <div class="mini-meter"><span style="width: 92%"></span></div>
+        </div>
+      </aside>
+      <main id="main" class="content" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

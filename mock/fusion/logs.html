@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>処理ログ｜Gakuto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-page="logs">
+  <div class="app">
+    <div id="shell-header"></div>
+    <div class="body">
+      <div id="shell-sidebar"></div>
+      <main class="main"><div class="main__scroll"><div class="page" id="page"></div></div></main>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    let logFilter = "all";
+    function jobBadge(j){
+      if(j.status==='processing') return `<span class="badge-s b-info"><span class="dot"></span>処理中 ${j.progress}%</span>`;
+      if(j.status==='completed') return `<span class="badge-s b-ok">${icon('check',11)} 完了</span>`;
+      if(j.status==='failed') return `<span class="badge-s b-err">${icon('x',11)} 失敗</span>`;
+      return `<span class="badge-s b-warn">${icon('alert',11)} エラー ${j.err}件</span>`;
+    }
+    function render(){
+      const filtered = IMPORT_LOGS.filter(j=>{
+        if(logFilter==='all')return true;
+        if(logFilter==='error')return j.err>0||j.status==='failed';
+        if(logFilter==='processing')return j.status==='processing';
+        return true;
+      });
+      const rows = filtered.map(j=>`
+        <tr class="clickable" onclick="openJob('${j.id}')">
+          <td><b style="font-family:var(--font-num)">${j.id}</b></td>
+          <td><b>${j.file}</b><span class="muted" style="display:block">${j.type}</span></td>
+          <td style="font-family:var(--font-num)">${j.rows}</td>
+          <td><span class="badge-s b-ok" style="font-size:11px">${j.ok}</span> ${j.err>0?`<span class="badge-s b-err" style="font-size:11px">${j.err}</span>`:''}</td>
+          <td>${jobBadge(j)}</td>
+          <td class="muted">${j.by}</td>
+          <td class="muted" style="font-family:var(--font-num);font-size:12px">${j.at}</td>
+          <td onclick="event.stopPropagation()">${(j.err>0||j.status==='failed')?`<button class="btn btn-secondary btn-sm" onclick="openJob('${j.id}')">${icon('eye',13)} 詳細</button>`:`<button class="icon-btn" style="width:30px;height:30px" onclick="openJob('${j.id}')">${icon('chevron',15)}</button>`}</td>
+        </tr>`).join('');
+
+      const errCount = IMPORT_LOGS.filter(j=>j.err>0||j.status==='failed').length;
+      document.getElementById('page').innerHTML = `
+        <div class="crumb"><a href="index.html">ダッシュボード</a><span class="sep">/</span><span>処理ログ</span></div>
+        <div class="page-head">
+          <div class="page-head__icon" style="background:linear-gradient(135deg,#475569,#1e293b)">${icon('list',24)}</div>
+          <div><h1>処理ログ</h1><p>CSVインポート等のバックグラウンド処理の状況を確認します。エラーはここから詳細確認・管理者への問い合わせができます。</p></div>
+          <div class="page-head__actions">
+            <button class="btn btn-secondary" onclick="toast('最新の状態に更新しました','info')">${icon('refresh',16)} 更新</button>
+            <button class="btn btn-secondary" onclick="openContactModal()">${icon('send',16)} 管理者へ問い合わせ</button>
+          </div>
+        </div>
+
+        ${errCount>0?`<div class="alert err mb-16"><span class="ai">${icon('alert',18)}</span><div style="flex:1"><b>${errCount}件のジョブにエラーがあります</b>内容を確認し、必要に応じてシステム管理者へ問い合わせてください。</div><button class="btn btn-danger btn-sm" onclick="logFilter='error';render()">エラーのみ表示</button></div>`:''}
+
+        <div class="grid grid-4 mb-16">
+          ${st('全ジョブ(24h)',IMPORT_LOGS.length,'list','var(--brand-50)','var(--brand-600)')}
+          ${st('処理中',IMPORT_LOGS.filter(j=>j.status==='processing').length,'clock','var(--info-50)','var(--info-700)')}
+          ${st('エラー',errCount,'alert','var(--err-50)','var(--err-700)')}
+          ${st('完了',IMPORT_LOGS.filter(j=>j.status==='completed').length,'check','var(--ok-50)','var(--ok-700)')}
+        </div>
+
+        <div class="toolbar">
+          <div class="seg">
+            <button class="${logFilter==='all'?'active':''}" onclick="logFilter='all';render()">すべて</button>
+            <button class="${logFilter==='processing'?'active':''}" onclick="logFilter='processing';render()">処理中</button>
+            <button class="${logFilter==='error'?'active':''}" onclick="logFilter='error';render()">エラー</button>
+          </div>
+          <div class="field-search">${icon('search',16)}<input placeholder="ジョブID・ファイル名で検索"></div>
+        </div>
+
+        <div class="card"><div class="card__body flush table-wrap">
+          <table class="tbl"><thead><tr><th>ジョブID</th><th>ファイル / 種別</th><th>件数</th><th>成功/失敗</th><th>状態</th><th>実行者</th><th>日時</th><th style="width:80px"></th></tr></thead>
+          <tbody>${rows}</tbody></table>
+        </div></div>
+      `;
+    }
+    function st(l,v,ic,bg,col){return `<div class="stat"><div class="stat__ico" style="background:${bg};color:${col}">${icon(ic,18)}</div><div class="stat__val">${v}</div><div class="stat__label">${l}</div></div>`;}
+
+    function openJob(id){
+      const j = IMPORT_LOGS.find(x=>x.id===id);
+      const hasErr = j.err>0||j.status==='failed';
+      const errRows = hasErr ? `
+        <div class="card mt-16"><div class="card__head" style="padding:12px 14px">${icon('alert',16)}<h3 style="font-size:13px;color:var(--err-700)">エラー明細</h3><div class="right"><span class="badge-s b-err">${j.status==='failed'?j.rows:j.err}件</span></div></div>
+        <div class="card__body flush table-wrap"><table class="tbl" style="font-size:12.5px">
+          <thead><tr><th style="width:50px">行</th><th>内容</th><th>エラー理由</th></tr></thead>
+          <tbody>
+            ${j.status==='failed'
+              ? `<tr><td>—</td><td class="muted">ファイル全体</td><td><span class="badge-s b-err">${j.reason}</span> ヘッダー列が定義と一致しません</td></tr>`
+              : `<tr><td>18</td><td>sato.misaki@...</td><td>生年月日が日付形式ではありません（"2016/13/40"）</td></tr>
+                 <tr><td>42</td><td>T-00882</td><td>所属コード "S-XXX" が組織マスターに存在しません</td></tr>
+                 <tr><td>91</td><td>ren.suzuki@...</td><td>識別子一致だが氏名が不一致（本人確認に失敗）</td></tr>
+                 <tr><td colspan="3" class="muted" style="text-align:center">… 他 ${j.err-3} 件</td></tr>`}
+          </tbody></table></div></div>` : '';
+      modal(`
+        <div class="modal__head">
+          <div class="mi" style="background:${hasErr?'var(--err-50)':'var(--ok-50)'};color:${hasErr?'var(--err-600)':'var(--ok-700)'}">${icon(hasErr?'alert':'check',20)}</div>
+          <div><h3>${j.id}</h3><p>${j.file} ・ ${j.type}</p></div>
+          <button class="icon-btn close" onclick="closeModal()" style="margin-left:auto">${icon('x',18)}</button>
+        </div>
+        <div class="modal__body">
+          <div class="grid grid-3 mb-16">
+            <div class="stat"><div class="stat__val">${j.rows}</div><div class="stat__label">対象行</div></div>
+            <div class="stat"><div class="stat__val" style="color:var(--ok-700)">${j.ok}</div><div class="stat__label">成功</div></div>
+            <div class="stat"><div class="stat__val" style="color:var(--err-700)">${j.status==='failed'?j.rows:j.err}</div><div class="stat__label">失敗</div></div>
+          </div>
+          <dl class="kv"><dt>状態</dt><dd>${jobBadge(j)}</dd><dt>実行者</dt><dd>${j.by}</dd><dt>日時</dt><dd style="font-family:var(--font-num)">${j.at}</dd></dl>
+          ${j.status==='processing'?`<div class="progress mt-16"><span style="width:${j.progress}%"></span></div><div class="muted" style="font-size:12px;margin-top:6px">処理中… ${j.progress}%</div>`:''}
+          ${errRows}
+        </div>
+        <div class="modal__foot">
+          ${hasErr?`<button class="btn btn-secondary" style="margin-right:auto" onclick="toast('エラー行のCSVを書き出しました','ok')">${icon('download',16)} エラー行を出力</button>`:''}
+          <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+          ${hasErr?`<button class="btn btn-primary" onclick="closeModal();openContactModal()">${icon('send',16)} 管理者へ問い合わせ</button>`:''}
+        </div>
+      `,'lg');
+    }
+    render();
+  </script>
+</body>
+</html>

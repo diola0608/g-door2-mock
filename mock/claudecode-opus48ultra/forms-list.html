@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>フォーム一覧 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="forms">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span class="cur">フォーム</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>フォーム</h1><p>対象者を絞ったアンケート・調査を作成します ・ 回答を名簿へ自動反映することもできます</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="テンプレートから作成（モック）"><span id="a0"></span>テンプレート</button>
+        <a class="btn btn-primary" href="form-builder.html"><span id="a1"></span>フォームを作成</a>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="f-all">すべて</div>
+      <div class="ptab" data-tab="f-live">実施中 <span class="pill">12</span></div>
+      <div class="ptab" data-tab="f-draft">下書き <span class="pill">3</span></div>
+      <div class="ptab" data-tab="f-closed">終了</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="grid g4 mb24" id="stats"></div>
+    <div data-panel="f-all"><div class="grid g3" id="cards"></div></div>
+    <div data-panel="f-live" style="display:none"><div class="empty"><div class="eico" id="em1"></div><h4>実施中のフォーム（12件）</h4><p>「すべて」タブでカード表示しています。</p></div></div>
+    <div data-panel="f-draft" style="display:none"><div class="empty"><div class="eico" id="em2"></div><h4>下書き（3件）</h4></div></div>
+    <div data-panel="f-closed" style="display:none"><div class="empty"><div class="eico" id="em3"></div><h4>終了したフォーム</h4></div></div>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');a0.innerHTML=ic('copy');a1.innerHTML=ic('plus');
+  em1.innerHTML=ic('file');em2.innerHTML=ic('edit');em3.innerHTML=ic('checkCircle');
+
+  const stats=[
+    {label:'実施中',num:'12',ico:'send',cls:'av-amber'},
+    {label:'下書き',num:'3',ico:'edit',cls:'av-slate'},
+    {label:'今月の回答総数',num:'4,820',ico:'inbox',cls:'av-blue'},
+    {label:'名簿連携中',num:'5',ico:'link',cls:'av-teal'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>`<div class="stat"><div class="top"><div class="ico ${s.cls}" style="color:#fff">${ic(s.ico)}</div></div><div class="label">${s.label}</div><div class="num">${s.num}</div></div>`).join('');
+
+  const forms=[
+    {t:'勤務実態調査 2026',st:'live',c:'var(--c-form)',tgt:['市内小学校','一般教員'],res:312,total:480,due:'残り3日',link:false},
+    {t:'教員 自家用携帯番号の登録',st:'live',c:'var(--c-account)',tgt:['全教員'],res:1180,total:1240,due:'残り10日',link:true,linkField:'自家用携帯番号'},
+    {t:'いじめ防止アンケート（児童向け）',st:'draft',c:'var(--c-data)',tgt:['対象未確定'],res:0,total:0,due:'下書き',link:false},
+    {t:'保護者連絡先の更新依頼',st:'live',c:'var(--c-org)',tgt:['全生徒の保護者'],res:2210,total:4800,due:'残り5日',link:true,linkField:'緊急連絡先・住所'},
+    {t:'研修受講希望調査',st:'live',c:'var(--brand-600)',tgt:['中学校教員'],res:540,total:820,due:'残り14日',link:false},
+    {t:'アレルギー情報の確認',st:'closed',c:'var(--c-data)',tgt:['全生徒'],res:4612,total:4800,due:'終了',link:true,linkField:'アレルギー'},
+  ];
+  const stB={live:'<span class="badge b-ok dot">実施中</span>',draft:'<span class="badge b-neutral">下書き</span>',closed:'<span class="badge b-info">終了</span>'};
+  document.getElementById('cards').innerHTML=forms.map(f=>{
+    const pct=f.total?Math.round(f.res/f.total*100):0;
+    return `<div class="card" style="display:flex;flex-direction:column">
+      <div class="card-pad" style="flex:1">
+        <div class="row between mb12">
+          <span class="tile-ico" style="width:40px;height:40px;background:${f.c}">${ic('file')}</span>
+          ${stB[f.st]}
+        </div>
+        <h3 style="margin:0 0 6px;font-size:15.5px">${f.t}</h3>
+        <div class="row wrap gap6 mb12">${f.tgt.map(t=>`<span class="badge b-neutral">${t}</span>`).join('')}${f.link?`<span class="badge b-teal">${ic('link')}名簿連携</span>`:''}</div>
+        ${f.total?`<div class="row between tiny muted mb8"><span>回答 ${f.res.toLocaleString()} / ${f.total.toLocaleString()}</span><b>${pct}%</b></div><div class="progress ${pct>=80?'ok':''}"><span style="width:${pct}%"></span></div>`:'<div class="tiny muted">対象者・項目は未設定です</div>'}
+        ${f.link?`<div class="alert alert-ok mt12" style="padding:8px 10px"><span style="color:var(--ok-700)">${ic('refresh')}</span><div class="body tiny">回答が <b>${f.linkField}</b> として名簿へ自動反映されます</div></div>`:''}
+      </div>
+      <div class="card-pad row between" style="border-top:1px solid var(--line-2);padding:12px 16px">
+        <span class="tiny muted">${f.due}</span>
+        <div class="row gap6">
+          ${f.st==='draft'?`<a class="btn btn-sm btn-primary" href="form-builder.html">編集を続ける</a>`:`<a class="btn btn-sm btn-secondary" href="form-builder.html">編集</a><a class="btn btn-sm btn-primary" href="form-results.html">結果を見る</a>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+</script>
+</body>
+</html>

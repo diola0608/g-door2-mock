@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>属性項目 ｜ まなびConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="attributes">
+<main class="main">
+  <div class="page-head">
+    <div class="breadcrumbs"><a href="index.html">ホーム</a><span id="b1"></span><span>管理設定</span><span id="b2"></span><span class="cur">属性項目</span></div>
+    <div class="page-title-row">
+      <div class="ttl"><h1>属性項目</h1><p>テナント独自の保持データを定義します ・ データ形式・バリデーション・カテゴリ・権限を項目ごとに設定できます</p></div>
+      <div class="actions">
+        <button class="btn btn-secondary" data-mock="カテゴリを管理（モック）"><span id="a0"></span>カテゴリ管理</button>
+        <button class="btn btn-primary" data-modal="m-attr"><span id="a1"></span>項目を追加</button>
+      </div>
+    </div>
+    <div class="page-tabs" data-tabs>
+      <div class="ptab active" data-tab="c-basic">基本情報 <span class="pill">8</span></div>
+      <div class="ptab" data-tab="c-contact">連絡先情報 <span class="pill">5</span></div>
+      <div class="ptab" data-tab="c-sensitive">機微情報 <span class="pill">4</span></div>
+      <div class="ptab" data-tab="c-school">学籍・所属 <span class="pill">6</span></div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="alert alert-info mb16"><span id="i0"></span><div class="body">カテゴリは名簿一覧・人物詳細でのタブ表示に対応します。各項目は値の履歴（有効期間）を自動的に保持します。</div></div>
+
+    <div class="card" data-panel="c-basic">
+      <div class="card-head"><h3>基本情報カテゴリの属性項目</h3><span class="sub">名簿の「基本情報」タブに表示</span></div>
+      <div class="table-wrap"><table class="tbl" id="tbl-basic"></table></div>
+    </div>
+    <div class="card" data-panel="c-contact" style="display:none">
+      <div class="card-head"><h3>連絡先情報カテゴリの属性項目</h3></div>
+      <div class="table-wrap"><table class="tbl" id="tbl-contact"></table></div>
+    </div>
+    <div class="card" data-panel="c-sensitive" style="display:none">
+      <div class="card-head"><h3>機微情報カテゴリの属性項目</h3><span class="badge b-err dot">高度な権限制限</span></div>
+      <div class="table-wrap"><table class="tbl" id="tbl-sensitive"></table></div>
+    </div>
+    <div class="card" data-panel="c-school" style="display:none">
+      <div class="card-head"><h3>学籍・所属カテゴリの属性項目</h3></div>
+      <div class="table-wrap"><table class="tbl" id="tbl-school"></table></div>
+    </div>
+  </div>
+</main>
+
+<!-- add/edit attribute modal -->
+<div class="modal-root" id="m-attr">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal lg">
+    <div class="modal-head"><span class="mico" style="background:var(--brand-50);color:var(--brand-600)" id="ma1"></span><div><h3>属性項目を追加</h3><p>データ形式に応じてバリデーションと権限を設定します</p></div><button class="icon-btn x" data-close id="ma2"></button></div>
+    <div class="modal-body">
+      <div class="grid g2">
+        <div class="field"><label>項目名 <span class="req">*</span></label><input class="input" placeholder="例：部活顧問"></div>
+        <div class="field"><label>カテゴリ</label><select class="select"><option>基本情報</option><option>連絡先情報</option><option>機微情報</option><option>学籍・所属</option></select></div>
+      </div>
+      <div class="field"><label>データ形式 <span class="req">*</span></label>
+        <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:8px" id="dt-pick"></div>
+      </div>
+      <div id="dt-config">
+        <!-- code datatype config (default shown) -->
+        <div class="field"><label>参照するコードマスター</label><select class="select"><option>部活動マスター</option><option>血液型マスター</option><option>役職マスター</option></select><div class="hint">コードマスターから選択肢を取得します</div></div>
+      </div>
+      <div class="grid g2">
+        <div class="field"><label>対象区分</label><div class="row gap16"><label class="row gap6"><input type="checkbox" class="cb" checked>生徒</label><label class="row gap6"><input type="checkbox" class="cb" checked>教員</label><label class="row gap6"><input type="checkbox" class="cb">職員</label></div></div>
+        <div class="field"><label>必須入力</label><label class="kv" style="cursor:pointer"><span class="k" style="width:auto;flex:1">登録時に必須とする</span><span class="toggle"><input type="checkbox"><span class="track"></span></span></label></div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">権限制限（この項目を見られる人）</div>
+      <div class="field"><label>閲覧条件</label><select class="select"><option>制限なし（権限ルールに従う）</option><option>所属校の教員 かつ 担任または学年主任</option><option>学年主任のみ</option></select></div>
+      <div class="alert alert-warn"><span id="ma3"></span><div class="body tiny">コード形式の場合、各選択肢（コード）ごとにさらに細かい表示制限を設定できます。詳細はコードマスター画面で設定します。</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" data-close>キャンセル</button><button class="btn btn-primary" data-mock-confirm="属性項目を追加しました（モック）">追加する</button></div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  const ic=icon;
+  b1.innerHTML=ic('chevRight');b2.innerHTML=ic('chevRight');a0.innerHTML=ic('folder');a1.innerHTML=ic('plus');i0.innerHTML=ic('info');
+  ma1.innerHTML=ic('sliders');ma2.innerHTML=ic('x');ma3.innerHTML=ic('alert');
+
+  const dt={num:['dt-num','type','数値'],str:['dt-str','type','単一文字列'],multi:['dt-multi','list','複数文字列'],date:['dt-date','calendar','日付'],code:['dt-code','hash','コード']};
+  function dtChip(k){const [c,i,l]=dt[k];return `<span class="dt ${c}">${ic(i)}${l}</span>`;}
+
+  // datatype picker
+  document.getElementById('dt-pick').innerHTML=Object.keys(dt).map((k,idx)=>`
+    <label class="card dt-pick-item" style="padding:10px;text-align:center;cursor:pointer;${idx===4?'border-color:var(--brand-400);background:var(--brand-50)':''}">
+      <input type="radio" name="dtp" class="rb" style="display:none" ${idx===4?'checked':''}>
+      <div style="display:flex;justify-content:center;margin-bottom:6px;color:var(--ink-600)">${ic(dt[k][1])}</div>
+      <span class="tiny" style="font-weight:700">${dt[k][2]}</span>
+    </label>`).join('');
+  document.querySelectorAll('.dt-pick-item').forEach(el=>el.addEventListener('click',()=>{
+    document.querySelectorAll('.dt-pick-item').forEach(x=>{x.style.borderColor='var(--line)';x.style.background='#fff';});
+    el.style.borderColor='var(--brand-400)';el.style.background='var(--brand-50)';
+  }));
+
+  function reqBadge(b){return b?'<span class="badge b-err">必須</span>':'<span class="badge b-neutral">任意</span>';}
+  function permBadge(p){return p?`<span class="badge b-purple">${ic('lock')}制限あり</span>`:'<span class="muted tiny">—</span>';}
+
+  function table(rows){
+    return `<thead><tr><th>項目名</th><th>データ形式</th><th>対象</th><th>必須</th><th>バリデーション</th><th>権限制限</th><th>履歴</th><th></th></tr></thead><tbody>`+
+      rows.map(r=>`<tr>
+        <td><b>${r.n}</b>${r.note?`<div class="sub tiny muted">${r.note}</div>`:''}</td>
+        <td>${dtChip(r.dt)}</td>
+        <td class="tiny">${r.tgt}</td>
+        <td>${reqBadge(r.req)}</td>
+        <td class="tiny muted">${r.val}</td>
+        <td>${permBadge(r.perm)}</td>
+        <td><span class="tiny muted">${r.hist}件</span></td>
+        <td class="text-r"><div class="row-actions" style="justify-content:flex-end"><button class="icon-btn btn-sm" style="width:30px;height:30px" data-modal="m-attr">${ic('edit')}</button><button class="icon-btn btn-sm" style="width:30px;height:30px" data-mock="削除（モック）">${ic('trash')}</button></div></td>
+      </tr>`).join('')+`</tbody>`;
+  }
+
+  document.getElementById('tbl-basic').innerHTML=table([
+    {n:'氏名',dt:'str',tgt:'全員',req:true,val:'1〜64文字',perm:false,hist:'1'},
+    {n:'ふりがな',dt:'str',tgt:'全員',req:false,val:'ひらがな',perm:false,hist:'1'},
+    {n:'生年月日',dt:'date',tgt:'全員',req:true,val:'過去日付',perm:false,hist:'1'},
+    {n:'血液型',dt:'code',tgt:'生徒',req:false,val:'血液型マスター',perm:false,hist:'1'},
+    {n:'身長(cm)',dt:'num',tgt:'生徒',req:false,val:'50〜250',perm:false,hist:'5'},
+    {n:'アレルギー',dt:'multi',tgt:'生徒',req:false,val:'アレルギーマスター',perm:false,hist:'3'},
+    {n:'入学年月日',dt:'date',tgt:'生徒',req:false,val:'—',perm:false,hist:'1'},
+    {n:'人物の特徴',dt:'code',tgt:'生徒',req:false,val:'特徴マスター',perm:true,note:'コードごとに表示制限あり',hist:'2'},
+  ]);
+  document.getElementById('tbl-contact').innerHTML=table([
+    {n:'住所',dt:'str',tgt:'全員',req:false,val:'1〜128文字',perm:true,hist:'4'},
+    {n:'電話番号',dt:'str',tgt:'全員',req:false,val:'電話番号形式',perm:true,hist:'2'},
+    {n:'自家用携帯番号',dt:'str',tgt:'教員',req:false,val:'電話番号形式',perm:true,note:'フォーム回答で更新',hist:'1'},
+    {n:'保護者氏名',dt:'str',tgt:'生徒',req:false,val:'—',perm:true,hist:'1'},
+    {n:'緊急連絡先',dt:'str',tgt:'生徒',req:false,val:'電話番号形式',perm:true,hist:'2'},
+  ]);
+  document.getElementById('tbl-sensitive').innerHTML=table([
+    {n:'人物の特徴',dt:'code',tgt:'生徒',req:false,val:'特徴マスター',perm:true,note:'「いじめ加害者」は学年主任のみ',hist:'2'},
+    {n:'不登校傾向',dt:'code',tgt:'生徒',req:false,val:'状態マスター',perm:true,hist:'3'},
+    {n:'いじめ歴',dt:'multi',tgt:'生徒',req:false,val:'—',perm:true,hist:'1'},
+    {n:'戸籍情報',dt:'str',tgt:'生徒',req:false,val:'—',perm:true,hist:'1'},
+  ]);
+  document.getElementById('tbl-school').innerHTML=table([
+    {n:'所属組織',dt:'code',tgt:'全員',req:true,val:'組織マスター',perm:false,hist:'6'},
+    {n:'クラス',dt:'code',tgt:'生徒',req:false,val:'クラスマスター',perm:false,hist:'4'},
+    {n:'学籍番号',dt:'str',tgt:'生徒',req:true,val:'一意制約',perm:false,hist:'1'},
+    {n:'職員番号',dt:'str',tgt:'教員/職員',req:true,val:'一意制約',perm:false,hist:'1'},
+    {n:'教員免許番号',dt:'num',tgt:'教員',req:false,val:'桁数チェック',perm:true,hist:'1'},
+    {n:'部活顧問',dt:'multi',tgt:'教員',req:false,val:'部活動マスター',perm:false,hist:'2'},
+  ]);
+</script>
+</body>
+</html>

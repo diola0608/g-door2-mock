@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSVインポート｜Gakuto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    .stepper{display:flex;gap:0;margin-bottom:24px}
+    .step{flex:1;display:flex;align-items:center;gap:10px;position:relative}
+    .step .num{width:30px;height:30px;border-radius:50%;background:var(--ink-100);color:var(--ink-400);display:grid;place-items:center;font-weight:800;font-family:var(--font-num);flex-shrink:0;border:2px solid var(--ink-100)}
+    .step.done .num{background:var(--ok-500);color:#fff;border-color:var(--ok-500)}
+    .step.active .num{background:var(--brand-500);color:#fff;border-color:var(--brand-100);box-shadow:0 0 0 4px var(--brand-50)}
+    .step .lbl{font-weight:700;font-size:13px;color:var(--ink-400)}
+    .step.active .lbl,.step.done .lbl{color:var(--ink-800)}
+    .step::after{content:"";flex:1;height:2px;background:var(--ink-200);margin:0 12px}
+    .step:last-child::after{display:none}
+    .step.done::after{background:var(--ok-400)}
+    .drop{border:2px dashed var(--ink-300);border-radius:14px;padding:40px;text-align:center;background:var(--ink-50);transition:.15s}
+    .drop:hover{border-color:var(--brand-400);background:var(--brand-50)}
+    .map-row{display:grid;grid-template-columns:1fr 40px 1fr 120px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ink-100)}
+    .csv-col{background:var(--ink-50);border:1px solid var(--ink-200);border-radius:9px;padding:9px 12px;font-weight:700;font-family:var(--font-num);font-size:12.5px}
+  </style>
+</head>
+<body data-page="import">
+  <div class="app">
+    <div id="shell-header"></div>
+    <div class="body">
+      <div id="shell-sidebar"></div>
+      <main class="main"><div class="main__scroll"><div class="page" id="page"></div></div></main>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    let step = 1;
+    const STEPS = ["ファイル選択","項目マッピング","識別・取込設定","確認・実行"];
+    const CSV_COLS = [
+      ["email","本人メール","email@school..."],
+      ["staff_no","職員番号","T-00231"],
+      ["full_name","氏名","佐藤 美咲"],
+      ["birthday","誕生日","2016/04/12"],
+      ["org_code","所属コード","S-AOBA-01"],
+      ["mobile","携帯番号","080-..."],
+    ];
+    const ROSTER_FIELDS = ["（取り込まない）","メールアドレス","職員番号","氏名","生年月日","所属組織","電話番号","自家用携帯番号"];
+
+    function render(){
+      document.getElementById('page').innerHTML = `
+        <div class="crumb"><a href="index.html">ダッシュボード</a><span class="sep">/</span><span>CSVインポート</span></div>
+        <div class="page-head">
+          <div class="page-head__icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">${icon('upload',24)}</div>
+          <div><h1>CSVインポート</h1><p>項目マッピングと識別設定を行い、名簿へ一括反映します。処理はバックグラウンドで実行され、結果は処理ログで確認できます。</p></div>
+          <div class="page-head__actions"><button class="btn btn-secondary" onclick="location.href='logs.html'">${icon('list',16)} 処理ログ</button></div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <div class="stepper">
+              ${STEPS.map((s,i)=>{const n=i+1;const cls=n<step?'done':n===step?'active':'';return `<div class="step ${cls}"><div class="num">${n<step?'✓':n}</div><div class="lbl">${s}</div></div>`;}).join('')}
+            </div>
+            <div id="step-body"></div>
+          </div>
+        </div>
+      `;
+      renderStep();
+    }
+
+    function renderStep(){
+      const b = document.getElementById('step-body');
+      if(step===1){
+        b.innerHTML = `
+          <div class="form-row"><label>取込種別</label>
+            <div class="seg"><button class="active">名簿更新</button><button>新規登録</button><button>所属変更</button><button>属性更新</button></div></div>
+          <div class="drop" onclick="this.querySelector('input').click()">
+            ${icon('upload',32,'muted')}
+            <div style="font-weight:700;margin-top:10px;color:var(--ink-700)">CSVファイルをドラッグ＆ドロップ</div>
+            <div class="muted" style="font-size:12.5px;margin-top:4px">または クリックして選択（UTF-8 / Shift-JIS 対応）</div>
+            <input type="file" hidden onchange="toast('students_aoba_2026q1.csv を読み込みました','ok')">
+          </div>
+          <div class="alert info mt-16"><span class="ai">${icon('database',16)}</span><div>取込先テナント：<b>${TENANT.name}</b>。データは当テナントの GCP プロジェクトにのみ反映されます。</div></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:20px"><button class="btn btn-primary" onclick="step=2;renderStep();updateStepper()">次へ：項目マッピング ${icon('arrowRight',16)}</button></div>`;
+      }
+      else if(step===2){
+        b.innerHTML = `
+          <p class="muted" style="margin-top:0">「どのCSV項目」が「名簿のどの情報」に紐づくかを指定します。識別キー（メール・職員番号）は次のステップで設定します。</p>
+          <div style="margin-top:8px">
+            ${CSV_COLS.map((c,i)=>`
+              <div class="map-row">
+                <div><div class="csv-col">${c[0]}</div><div class="muted" style="font-size:11px;margin-top:4px">例：${c[2]}</div></div>
+                <div style="text-align:center;color:var(--ink-300)">${icon('arrowRight',18)}</div>
+                <select class="input"><option ${i>0?'':''}>${ROSTER_FIELDS[i+1]||ROSTER_FIELDS[0]}</option>${ROSTER_FIELDS.map(f=>`<option>${f}</option>`).join('')}</select>
+                <div>${i<5?'<span class="badge-s b-ok">自動検出</span>':'<span class="badge-s b-warn">要確認</span>'}</div>
+              </div>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:20px"><button class="btn btn-secondary" onclick="step=1;renderStep();updateStepper()">戻る</button><button class="btn btn-primary" onclick="step=3;renderStep();updateStepper()">次へ：識別設定 ${icon('arrowRight',16)}</button></div>`;
+      }
+      else if(step===3){
+        b.innerHTML = `
+          <div class="card" style="margin-bottom:16px"><div class="card__head" style="padding:12px 14px">${icon('user',16)}<h3 style="font-size:13px">同一人物の識別設定</h3></div>
+            <div class="card__body" style="padding:14px">
+              <p class="muted" style="margin-top:0;font-size:12.5px">識別子で既存の人物を特定し、CSVの内容が本人のものか一致確認します。識別子が設定されている場合は、全項目の一致もあわせて確認します。</p>
+              <div class="form-row"><label>識別キー（優先順）</label>
+                <div class="flex gap-8" style="flex-wrap:wrap"><span class="tag">① メールアドレス <span class="x">${icon('x',12)}</span></span><span class="tag">② 職員番号 <span class="x">${icon('x',12)}</span></span><button class="chip-filter btn-sm" style="height:32px">${icon('plus',12)} 追加</button></div></div>
+              <div class="scope-row" style="justify-content:space-between"><div><b>全項目一致を確認する</b><div class="hint" style="margin-top:2px">識別子一致時、その他の項目も照合し不一致はエラーにします</div></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            </div></div>
+
+          <div class="card" style="margin-bottom:16px"><div class="card__head" style="padding:12px 14px">${icon('swap',16)}<h3 style="font-size:13px">所属変更の扱い</h3></div>
+            <div class="card__body" style="padding:14px">
+              <div class="scope-row" style="justify-content:space-between;border-color:var(--warn-200);background:var(--warn-50)">
+                <div><b>所属変更の承認を不要にする（承認スキップ）</b><div class="hint" style="margin-top:2px;color:var(--warn-700)">ONにすると承認フローを経ず即時反映されます。あなたは「承認スキップ可」権限を保有しています。</div></div>
+                <label class="switch"><input type="checkbox"><span class="track"></span></label></div>
+              <div class="alert info mt-8"><span class="ai">${icon('shield',14)}</span><div>権限がない場合、このチェックは無効になり、所属変更は承認フローに回されます。</div></div>
+            </div></div>
+
+          <div class="card"><div class="card__head" style="padding:12px 14px">${icon('google',16)}<h3 style="font-size:13px">Google Workspace 同期</h3></div>
+            <div class="card__body" style="padding:14px">
+              <div class="scope-row" style="justify-content:space-between"><div><b>取込後に Workspace へ同期する</b><div class="hint" style="margin-top:2px">本システム → Google Workspace の一方向同期</div></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            </div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:20px"><button class="btn btn-secondary" onclick="step=2;renderStep();updateStepper()">戻る</button><button class="btn btn-primary" onclick="step=4;renderStep();updateStepper()">次へ：確認 ${icon('arrowRight',16)}</button></div>`;
+      }
+      else {
+        b.innerHTML = `
+          <div class="grid grid-3 mb-16">
+            ${["対象行数","新規","更新"].map((l,i)=>`<div class="stat"><div class="stat__val">${[540,12,528][i]}</div><div class="stat__label">${l}</div></div>`).join('')}
+          </div>
+          <div class="card" style="margin-bottom:16px"><div class="card__body">
+            <dl class="kv"><dt>ファイル</dt><dd style="font-family:var(--font-num)">students_aoba_2026q1.csv</dd>
+            <dt>取込種別</dt><dd>名簿更新</dd>
+            <dt>識別キー</dt><dd>メールアドレス → 職員番号</dd>
+            <dt>承認スキップ</dt><dd><span class="badge-s b-gray">無効（承認フロー適用）</span></dd>
+            <dt>Workspace同期</dt><dd><span class="badge-s b-ok">有効</span></dd></dl>
+          </div></div>
+          <div class="alert warn mb-16"><span class="ai">${icon('clock',16)}</span><div><b>この処理はバックグラウンドで実行されます。</b>完了状況とエラー有無は<b>処理ログ</b>で確認してください。</div></div>
+          <div style="display:flex;justify-content:space-between"><button class="btn btn-secondary" onclick="step=3;renderStep();updateStepper()">戻る</button>
+          <button class="btn btn-primary btn-lg" onclick="runImport()">${icon('upload',18)} インポートを実行</button></div>`;
+      }
+    }
+    function updateStepper(){
+      document.querySelectorAll('.step').forEach((el,i)=>{const n=i+1;el.className='step '+(n<step?'done':n===step?'active':'');el.querySelector('.num').textContent=n<step?'✓':n;});
+    }
+    function runImport(){
+      modalShell({ title:"インポートを開始しました", sub:"ジョブ JOB-8843 を受け付けました", icon:"check", iconBg:"var(--ok-50)", iconColor:"var(--ok-700)",
+        body:`<div class="alert ok"><span class="ai">${icon('check',16)}</span><div>540件の取込ジョブをキューに登録しました。バックグラウンドで処理されます。</div></div>
+          <div class="progress mt-16"><span style="width:8%"></span></div><div class="muted" style="font-size:12px;margin-top:8px">処理中… 進捗は処理ログで確認できます。</div>`,
+        foot:`<button class="btn btn-secondary" onclick="closeModal()">閉じる</button><button class="btn btn-primary" onclick="location.href='logs.html'">${icon('list',16)} 処理ログで確認</button>` });
+    }
+    render();
+  </script>
+</body>
+</html>

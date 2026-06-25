@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダッシュボード｜Gakuto 教育委員会向け統合管理プラットフォーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-page="dashboard">
+  <div class="app">
+    <div id="shell-header"></div>
+    <div class="body">
+      <div id="shell-sidebar"></div>
+      <main class="main"><div class="main__scroll"><div class="page" id="page"></div></div></main>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/shell.js"></script>
+  <script>
+    const SERVICES = [
+      { id:"roster", t:"名簿管理", d:"教職員・生徒・関係者の名簿を一覧・編集。属性項目はタブで切替表示。", icon:"users", bg:"linear-gradient(135deg,#3b62e8,#283fa8)", href:"roster.html", stat:"18,420名", pill:"在籍" },
+      { id:"org", t:"組織管理", d:"県＞市町村＞学校種＞学校 の階層構造を管理。", icon:"sitemap", bg:"linear-gradient(135deg,#14b8a6,#0f766e)", href:"org.html", stat:"126組織", pill:"4階層" },
+      { id:"transfers", t:"所属変更", d:"異動の申請・承認・予約変更。バッチで自動反映。", icon:"swap", bg:"linear-gradient(135deg,#f59e0b,#b45309)", href:"transfers.html", stat:"承認待ち 2件", pill:"要対応" },
+      { id:"import", t:"CSVインポート", d:"項目マッピングと識別設定で安全に一括取込。", icon:"upload", bg:"linear-gradient(135deg,#8b5cf6,#6d28d9)", href:"import.html", stat:"前回 6/25", pill:"連携" },
+      { id:"forms", t:"フォーム", d:"対象を絞ったアンケート作成・集計・名簿への自動反映。", icon:"form", bg:"linear-gradient(135deg,#ef4444,#b91c1c)", href:"forms.html", stat:"公開中 3件", pill:"回答受付" },
+      { id:"permissions", t:"権限管理", d:"S-O関係・スコープ・属性条件を組み合わせた詳細権限。", icon:"shield", bg:"linear-gradient(135deg,#0f172a,#334155)", href:"permissions.html", stat:"5ロール", pill:"継承可" },
+    ];
+
+    function render() {
+      document.getElementById('page').innerHTML = `
+        <div class="page-head">
+          <div class="page-head__icon" style="background:linear-gradient(135deg,#3b62e8,#283fa8)">${icon('grid',24)}</div>
+          <div>
+            <h1>おかえりなさい、山本さん</h1>
+            <p>${TENANT.name} ・ 本日 2026年6月25日（木）。対応が必要な項目が 3 件あります。</p>
+          </div>
+          <div class="page-head__actions">
+            <button class="btn btn-secondary" onclick="location.href='logs.html'">${icon('list',16)} 処理ログ</button>
+            <button class="btn btn-primary" onclick="location.href='import.html'">${icon('upload',16)} CSVインポート</button>
+          </div>
+        </div>
+
+        <!-- 要対応アラート -->
+        <div class="alert err mb-16" style="border:1px solid var(--err-100)">
+          <span class="ai">${icon('alert',18)}</span>
+          <div style="flex:1">
+            <b>対応が必要なエラーがあります</b>
+            取込ジョブ <b>JOB-8842</b> で 12件、<b>JOB-8837</b> で 全410件 の取込エラーが発生しています。
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="location.href='logs.html'">エラーを確認</button>
+        </div>
+
+        <!-- KPI -->
+        <div class="grid grid-4 mb-16">
+          ${stat('users','登録人数','18,420','+312 今月','up','var(--brand-50)','var(--brand-600)')}
+          ${stat('swap','承認待ちの異動','2','要対応','down','var(--warn-50)','var(--warn-600)')}
+          ${stat('upload','取込ジョブ(24h)','6','エラー 2件','down','var(--violet-50)','var(--violet-700)')}
+          ${stat('form','フォーム回答率','71%','+8pt 今週','up','var(--ok-50)','var(--ok-700)')}
+        </div>
+
+        <!-- サービスランチャー -->
+        <div class="card mb-16">
+          <div class="card__head">
+            ${icon('grid',18)}<h3>サービス</h3><span class="sub">行きたい場所を選んでください</span>
+            <div class="right"><span class="badge-s b-gray">6 サービス</span></div>
+          </div>
+          <div class="card__body">
+            <div class="launcher">
+              ${SERVICES.map(s=>`
+                <a class="svc-card" href="${s.href}">
+                  <div class="svc-card__ico" style="background:${s.bg}">${icon(s.icon,22)}</div>
+                  <div class="svc-card__t"><b>${s.t}</b><p>${s.d}</p></div>
+                  <div class="svc-card__foot">
+                    <span class="badge-s b-gray">${s.stat}</span>
+                    <span class="go">開く ${icon('arrowRight',14)}</span>
+                  </div>
+                </a>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <!-- 申請・承認の状況 -->
+          <div class="card">
+            <div class="card__head">${icon('swap',18)}<h3>あなたの申請・承認状況</h3><div class="right"><a href="transfers.html" style="color:var(--brand-600);font-weight:700;font-size:12.5px">すべて →</a></div></div>
+            <div class="card__body flush">
+              <table class="tbl">
+                <thead><tr><th>対象者</th><th>異動先</th><th>適用日</th><th>状態</th></tr></thead>
+                <tbody>
+                  ${TRANSFER_REQS.slice(0,4).map(t=>`
+                    <tr class="clickable" onclick="location.href='transfers.html'">
+                      <td><b>${t.person}</b></td>
+                      <td class="muted">${t.to}</td>
+                      <td style="font-family:var(--font-num)">${t.effective}</td>
+                      <td>${transferBadge(t.status)}</td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 最近の取込ジョブ -->
+          <div class="card">
+            <div class="card__head">${icon('upload',18)}<h3>最近の取込ジョブ</h3><div class="right"><a href="logs.html" style="color:var(--brand-600);font-weight:700;font-size:12.5px">処理ログ →</a></div></div>
+            <div class="card__body flush">
+              <table class="tbl">
+                <thead><tr><th>ジョブ</th><th>件数</th><th>状態</th></tr></thead>
+                <tbody>
+                  ${IMPORT_LOGS.slice(0,4).map(j=>`
+                    <tr class="clickable" onclick="location.href='logs.html'">
+                      <td><b style="font-family:var(--font-num)">${j.id}</b><span class="muted" style="display:block">${j.type}</span></td>
+                      <td style="font-family:var(--font-num)">${j.rows}件</td>
+                      <td>${jobBadge(j)}</td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function stat(ic,label,val,delta,dir,bg,col){
+      return `<div class="stat">
+        <div class="stat__ico" style="background:${bg};color:${col}">${icon(ic,18)}</div>
+        <div class="stat__val">${val}</div>
+        <div class="stat__label">${label}</div>
+        <div class="stat__delta ${dir}">${dir==='up'?'▲':'▼'} ${delta}</div>
+      </div>`;
+    }
+    function transferBadge(s){
+      const m={pending:['b-warn','承認待ち'],approved:['b-info','承認済(予約)'],cancelled:['b-gray','取消'],done:['b-ok','完了']};
+      const [c,l]=m[s]||m.pending; return `<span class="badge-s ${c}">${l}</span>`;
+    }
+    function jobBadge(j){
+      if(j.status==='processing') return `<span class="badge-s b-info"><span class="dot"></span>処理中 ${j.progress}%</span>`;
+      if(j.status==='completed') return `<span class="badge-s b-ok">完了</span>`;
+      if(j.status==='failed') return `<span class="badge-s b-err">失敗</span>`;
+      return `<span class="badge-s b-warn">エラー${j.err}件</span>`;
+    }
+    render();
+  </script>
+</body>
+</html>
